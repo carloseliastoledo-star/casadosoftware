@@ -1,8 +1,21 @@
+import { resolve } from 'path'
+
 export default defineNuxtConfig({
-  modules: [
-    '@pinia/nuxt',
-    '@nuxtjs/tailwindcss'
-  ],
+  srcDir: 'app',
+
+  modules: ['@nuxtjs/tailwindcss'],
+
   css: ['~/assets/css/main.css'],
-  compatibilityDate: '2026-01-15'
+
+  alias: {
+    '#root': resolve(__dirname),
+  },
+
+  vite: {
+    resolve: {
+      alias: {
+        '#root': resolve(__dirname),
+      },
+    },
+  },
 })

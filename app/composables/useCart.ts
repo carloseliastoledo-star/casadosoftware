@@ -1,45 +1,25 @@
 import { ref, watch } from 'vue'
 
-const cart = ref<any[]>([])
+export const useCart = () => {
+  const cart = ref<any[]>([])
 
-// carregar do localStorage (client only)
-if (import.meta.client) {
-  const saved = localStorage.getItem('cart')
-  if (saved) {
-    cart.value = JSON.parse(saved)
+  // carregar do localStorage (client only)
+  if (import.meta.client) {
+    const saved = localStorage.getItem('cart')
+    if (saved) cart.value = JSON.parse(saved)
   }
-}
 
-// persistir automaticamente
-watch(
-  cart,
-  (val) => {
+  watch(cart, () => {
     if (import.meta.client) {
-      localStorage.setItem('cart', JSON.stringify(val))
+      localStorage.setItem('cart', JSON.stringify(cart.value))
     }
-  },
-  { deep: true }
-)
+  }, { deep: true })
 
-export function useCart () {
-  function addToCart (product: any) {
-    if (!product) return
-
-    const existing = cart.value.find(
-      (p) => p.slug === product.slug
-    )
-
-    if (existing) {
-      existing.quantidade++
-    } else {
-      cart.value.push({
-        ...product,
-        quantidade: 1
-      })
-    }
+  const addToCart = (product: any) => {
+    cart.value = [product] // MVP: 1 produto por vez
   }
 
-  function clearCart () {
+  const clearCart = () => {
     cart.value = []
     if (import.meta.client) {
       localStorage.removeItem('cart')

@@ -1,0 +1,29 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Produto {
+  id        String    @id @default(uuid())
+  nome      String
+  slug      String    @unique
+  descricao String?
+  preco     Float
+  imagem    String?   // 👈 NOVO CAMPO
+  criadoEm  DateTime  @default(now())
+  licencas  Licenca[]
+}
+
+
+model Licenca {
+  id          String   @id @default(uuid())
+  chave       String   @unique
+  status      String
+  produtoId   String
+  produto     Produto  @relation(fields: [produtoId], references: [id])
+  criadoEm    DateTime @default(now())
+}

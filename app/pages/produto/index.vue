@@ -6,27 +6,21 @@
         Nossos Produtos
       </h1>
 
-      <!-- Loading -->
       <div v-if="pending" class="text-center py-20 text-gray-500">
         Carregando produtos...
       </div>
 
-      <!-- Erro -->
       <div v-else-if="error" class="text-center py-20 text-red-600">
         Erro ao carregar produtos.
       </div>
 
-      <!-- Grid -->
-      <div
-        v-else
-        :key="products.length"
-        class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
-      >
+      <div v-else class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <ProductCard
-          v-for="product in products"
-          :key="product.id + product.imagem"
-          :product="product"
-        />
+  v-for="product in products"
+  :key="product.id + product.imagem"
+  :product="product"
+/>
+
       </div>
 
     </div>
