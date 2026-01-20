@@ -191,6 +191,38 @@
         </div>
       </div>
     </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+      <div class="text-center">
+        <h2 class="text-3xl font-extrabold text-gray-900">Perguntas frequentes</h2>
+        <p class="text-gray-600 mt-2">Tire suas dúvidas antes de comprar.</p>
+      </div>
+
+      <div class="mt-8 max-w-3xl mx-auto space-y-3">
+        <button
+          v-for="(item, idx) in faqs"
+          :key="idx"
+          type="button"
+          class="w-full text-left bg-white border rounded-2xl px-5 py-4 hover:border-blue-200 transition"
+          @click="toggleFaq(idx)"
+        >
+          <div class="flex items-center justify-between gap-4">
+            <div class="font-semibold text-gray-900">
+              {{ item.q }}
+            </div>
+            <div class="text-blue-700 font-bold">
+              {{ openFaq === idx ? '−' : '+' }}
+            </div>
+          </div>
+          <div
+            v-if="openFaq === idx"
+            class="mt-3 text-gray-600 text-sm leading-relaxed"
+          >
+            {{ item.a }}
+          </div>
+        </button>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -202,4 +234,29 @@ const { data, pending, error } = await useFetch('/api/products', {
 })
 
 const products = computed(() => data.value || [])
+
+const faqs = [
+  {
+    q: 'Como vou receber a chave do produto?',
+    a: 'Após a confirmação do pagamento, você recebe a chave digital com as instruções no e-mail informado na compra.'
+  },
+  {
+    q: 'A entrega é imediata?',
+    a: 'Sim. Em geral a entrega acontece em poucos minutos após a confirmação do pagamento.'
+  },
+  {
+    q: 'Tenho tutorial para ativar?',
+    a: 'Sim. Cada produto possui um tutorial específico. Você pode acessar pelo botão “Ver Tutorial” na página do produto.'
+  },
+  {
+    q: 'Se eu tiver dificuldades na ativação, tem suporte?',
+    a: 'Sim. Nosso suporte pode orientar você durante o processo de ativação.'
+  }
+] as const
+
+const openFaq = ref<number | null>(0)
+
+function toggleFaq(idx: number) {
+  openFaq.value = openFaq.value === idx ? null : idx
+}
 </script>
