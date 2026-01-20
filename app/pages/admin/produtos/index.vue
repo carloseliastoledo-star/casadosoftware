@@ -33,6 +33,7 @@ const produtos = computed(() => data.value || [])
           <th class="p-3 text-left">Nome</th>
           <th class="p-3 text-left">Preço</th>
           <th class="p-3 text-left">Slug</th>
+          <th class="p-3 text-left">Ações</th>
         </tr>
       </thead>
 
@@ -45,6 +46,14 @@ const produtos = computed(() => data.value || [])
           <td class="p-3 font-medium">{{ p.nome }}</td>
           <td class="p-3">R$ {{ p.preco }}</td>
           <td class="p-3 text-gray-500">{{ p.slug }}</td>
+          <td class="p-3">
+            <NuxtLink
+              :to="`/admin/produtos/editar/${p.id}`"
+              class="text-blue-600 hover:underline font-medium"
+            >
+              Editar
+            </NuxtLink>
+          </td>
         </tr>
       </tbody>
     </table>
