@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({ layout: 'admin' })
 
 const route = useRoute()
