@@ -177,12 +177,17 @@ const safeProduct = computed(() => {
     }
   }
 
-  const descricaoCurta = p.descricao || ''
+  const nome = (p as any).nome ?? (p as any).name ?? ''
+  const descricaoBase = (p as any).descricao ?? (p as any).description ?? ''
+  const preco = Number((p as any).preco ?? (p as any).price ?? 0)
+  const slugValue = (p as any).slug ?? ''
+
+  const descricaoCurta = descricaoBase || ''
 
   const descricaoLonga = `
 ${descricaoCurta}
 
-O ${p.nome} é a solução ideal para quem busca desempenho, segurança e confiabilidade.
+O ${nome} é a solução ideal para quem busca desempenho, segurança e confiabilidade.
 Com ativação rápida e compatibilidade total com sistemas atuais, você garante um produto
 original, com suporte especializado e entrega imediata.
 
@@ -190,7 +195,7 @@ Nossa licença é vitalícia, sem mensalidades ou renovações, permitindo uso c
 computador com total tranquilidade. A ativação é simples e rápida, podendo ser realizada em
 poucos minutos após a compra.
 
-Ao adquirir o ${p.nome}, você recebe:
+Ao adquirir o ${nome}, você recebe:
 
 • Chave de ativação oficial e exclusiva  
 • Link direto para download do software  
@@ -201,16 +206,18 @@ Trabalhamos apenas com licenças originais, garantindo segurança, estabilidade 
 oficiais diretamente do fabricante. Milhares de clientes confiam em nossa plataforma para
 aquisição de softwares digitais.
 
-Se você procura uma solução definitiva, segura e com excelente custo-benefício, o ${p.nome}
+Se você procura uma solução definitiva, segura e com excelente custo-benefício, o ${nome}
 é a escolha certa.
-  `.trim()
+`.trim()
 
   return {
     ...p,
-    imagem: p.image || '/products/placeholder.png',
-    slug: p.slug,
-    tutorialTitulo: p.tutorialTitle || null,
-    tutorialSubtitulo: p.tutorialSubtitle || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
+    nome,
+    preco,
+    imagem: (p as any).image || (p as any).imagem || '/products/placeholder.png',
+    slug: slugValue,
+    tutorialTitulo: (p as any).tutorialTitle || (p as any).tutorialTitulo || null,
+    tutorialSubtitulo: (p as any).tutorialSubtitle || (p as any).tutorialSubtitulo || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
     descricaoCurta,
     descricao: descricaoLonga
   }
