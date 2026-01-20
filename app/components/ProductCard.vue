@@ -52,6 +52,12 @@ const formattedOldPrice = computed(() => {
     currency: 'BRL'
   })
 })
+
+function buyNow(event: Event) {
+  event.preventDefault()
+  event.stopPropagation()
+  navigateTo({ path: '/checkout', query: { product: props.product.slug } })
+}
 </script>
 
 <template>
@@ -95,6 +101,7 @@ const formattedOldPrice = computed(() => {
       </div>
 
       <button
+        @click="buyNow"
         class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold"
       >
         Comprar agora

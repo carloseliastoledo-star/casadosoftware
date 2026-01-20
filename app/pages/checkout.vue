@@ -99,13 +99,25 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { products } from '~/data/products'
 
 const route = useRoute()
 
-const product = products.find(
-  p => p.slug === route.query.product
+const slug = computed(() => String(route.query.product || ''))
+
+const { data } = await useFetch(
+  () => (slug.value ? `/api/products/${slug.value}` : null),
+  { server: false }
 )
+
+const product = computed(() => {
+  const p: any = data.value
+  if (!p) return null
+
+  return {
+    ...p,
+    shortDescription: p.shortDescription ?? p.description ?? ''
+  }
+})
 
 async function goToPayment() {
   if (!product) return
