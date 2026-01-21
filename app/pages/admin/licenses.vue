@@ -10,10 +10,17 @@
         <label class="block font-medium mb-2">Produto</label>
         <input
           v-model="productId"
+          list="products"
           type="text"
-          placeholder="ex: office-2021"
+          placeholder="ex: windows-11-pro"
           class="w-full border rounded-lg p-3"
         />
+
+        <datalist id="products">
+          <option v-for="p in produtos" :key="p.id" :value="p.slug">
+            {{ p.nome }}
+          </option>
+        </datalist>
       </div>
 
       <div class="mb-6">
@@ -49,6 +56,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+definePageMeta({ layout: 'admin' })
+
+type ProdutoDto = {
+  id: string
+  nome: string
+  slug: string
+  preco: number
+}
+
+const { data: produtosData } = await useFetch<ProdutoDto[]>('/api/admin/produtos', {
+  server: false
+})
+
+const produtos = computed(() => produtosData.value || [])
+
 const productId = ref('')
 const keys = ref('')
 const loading = ref(false)
@@ -61,10 +83,19 @@ async function importLicenses() {
   error.value = ''
 
   try {
+    const raw = productId.value.trim()
+
+    const match = produtos.value.find((p) => {
+      if (p.slug === raw || p.id === raw) return true
+      return p.nome?.trim().toLowerCase() === raw.toLowerCase()
+    })
+
+    const product_id = match?.slug || raw
+
     const res = await $fetch('/api/admin/licenses/import', {
       method: 'POST',
       body: {
-        product_id: productId.value,
+        product_id,
         keys: keys.value
       }
     })
