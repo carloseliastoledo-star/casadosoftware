@@ -5,7 +5,7 @@ CREATE TABLE `Produto` (
     `slug` VARCHAR(191) NOT NULL,
     `descricao` VARCHAR(191) NULL,
     `preco` DOUBLE NOT NULL,
-    `criadoEm` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `criadoEm` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     UNIQUE INDEX `Produto_slug_key`(`slug`),
     PRIMARY KEY (`id`)
@@ -17,7 +17,7 @@ CREATE TABLE `Licenca` (
     `chave` VARCHAR(191) NOT NULL,
     `status` VARCHAR(191) NOT NULL,
     `produtoId` VARCHAR(191) NOT NULL,
-    `criadoEm` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `criadoEm` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     UNIQUE INDEX `Licenca_chave_key`(`chave`),
     PRIMARY KEY (`id`)

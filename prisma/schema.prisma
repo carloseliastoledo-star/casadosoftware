@@ -23,7 +23,7 @@ model Produto {
   tutorialTitulo    String?
   tutorialSubtitulo String?
   tutorialConteudo  String?   @db.Text
-  criadoEm  DateTime  @default(now())
+  criadoEm  DateTime  @default(now()) @db.DateTime(0)
   licencas  Licenca[]
 }
 
@@ -34,7 +34,7 @@ model Licenca {
   status      String
   produtoId   String
   produto     Produto  @relation(fields: [produtoId], references: [id])
-  criadoEm    DateTime @default(now())
+  criadoEm    DateTime @default(now()) @db.DateTime(0)
 }
 
 model AdminUser {
@@ -42,5 +42,5 @@ model AdminUser {
   email        String    @unique
   passwordHash String
   role         AdminRole @default(editor)
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime  @default(now()) @db.DateTime(0)
 }
