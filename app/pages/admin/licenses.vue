@@ -116,14 +116,24 @@
                   <thead class="bg-gray-100 text-gray-600">
                     <tr>
                       <th class="p-3 text-left">Chave</th>
+                      <th class="p-3 text-right">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="k in stockKeys" :key="k.id" class="border-t">
                       <td class="p-3 font-mono break-all">{{ k.chave }}</td>
+                      <td class="p-3 text-right">
+                        <button
+                          class="text-red-600 hover:text-red-800 text-sm"
+                          :disabled="deletingId === k.id"
+                          @click.stop="deleteStockKey(k.id)"
+                        >
+                          {{ deletingId === k.id ? 'Apagando...' : 'Apagar' }}
+                        </button>
+                      </td>
                     </tr>
                     <tr v-if="!stockKeys.length" class="border-t">
-                      <td class="p-3 text-gray-500">Sem licenças disponíveis.</td>
+                      <td class="p-3 text-gray-500" colspan="2">Sem licenças disponíveis.</td>
                     </tr>
                   </tbody>
                 </table>
@@ -165,6 +175,8 @@
 import { ref } from 'vue'
 
 definePageMeta({ layout: 'admin' })
+
+const deletingId = ref('')
 
 type ProdutoDto = {
   id: string
@@ -308,5 +320,18 @@ async function prevStockPage() {
   if (stockKeysPage.value <= 1) return
   stockKeysPage.value -= 1
   await refreshStockKeys()
+}
+
+async function deleteStockKey(id: string) {
+  if (!id) return
+  if (!confirm('Tem certeza que deseja apagar esta licença do estoque?')) return
+
+  deletingId.value = id
+  try {
+    await $fetch(`/api/admin/licenses/${id}`, { method: 'DELETE' })
+    await Promise.all([refreshStockKeys(), refreshStock()])
+  } finally {
+    deletingId.value = ''
+  }
 }
 </script>
