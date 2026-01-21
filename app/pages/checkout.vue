@@ -1,226 +1,228 @@
 <template>
-  <section class="bg-gray-50 min-h-screen py-20">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
-      <!-- PRODUTO -->
-      <div v-if="product" class="bg-white rounded-3xl shadow p-10">
-        <div class="flex gap-8 items-center">
-          <img
-            :src="product.image"
-            :alt="product.name"
-            class="w-32 object-contain"
-          />
+  <section class="bg-gray-50 min-h-screen py-12">
+    <div class="max-w-6xl mx-auto px-6">
+      <h1 class="text-4xl font-bold text-gray-900 mb-8">
+        Finalize Seu Pedido
+      </h1>
 
-          <div>
-            <h1 class="text-2xl font-bold mb-2">
-              {{ product.name }}
-            </h1>
-            <p class="text-gray-600">
-              {{ product.shortDescription }}
+      <div class="grid lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">E-mail</label>
+              <div class="relative">
+                <input
+                  v-model="customerEmail"
+                  type="email"
+                  placeholder="seuemail@gmail.com"
+                  class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Whatsapp</label>
+              <input
+                v-model="whatsapp"
+                type="tel"
+                placeholder="Ex: (00) 00000-0000"
+                class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nome</label>
+              <input
+                v-model="nome"
+                type="text"
+                placeholder="Ex: Roberto da Silva"
+                class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">CPF</label>
+              <input
+                v-model="cpf"
+                inputmode="numeric"
+                placeholder="Ex: 050.***.768-**"
+                class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+              />
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <div class="text-sm font-semibold text-gray-800 mb-3">Métodos de pagamento</div>
+            <div class="grid md:grid-cols-2 gap-4">
+              <button
+                type="button"
+                @click="paymentTab = 'pix'"
+                :class="paymentTab === 'pix' ? 'border-blue-600 ring-1 ring-blue-600' : 'border-gray-200'"
+                class="flex items-center justify-between gap-3 border rounded-xl p-4 bg-white"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 font-bold">P</div>
+                  <div class="text-left">
+                    <div class="text-sm font-semibold text-gray-900">Pix</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-lg">Desconto 5%</span>
+                  <span class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center">
+                    <span v-if="paymentTab === 'pix'" class="w-2 h-2 rounded-full bg-blue-600"></span>
+                  </span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                @click="paymentTab = 'card'"
+                :class="paymentTab === 'card' ? 'border-blue-600 ring-1 ring-blue-600' : 'border-gray-200'"
+                class="flex items-center justify-between gap-3 border rounded-xl p-4 bg-white"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-700 font-bold">C</div>
+                  <div class="text-left">
+                    <div class="text-sm font-semibold text-gray-900">Cartão de Crédito</div>
+                  </div>
+                </div>
+                <span class="w-4 h-4 rounded-full border border-gray-300 flex items-center justify-center">
+                  <span v-if="paymentTab === 'card'" class="w-2 h-2 rounded-full bg-blue-600"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <template v-if="paymentTab === 'pix'">
+              <div v-if="pixError" class="mt-4 text-sm text-red-600">
+                {{ pixError }}
+              </div>
+
+              <div v-if="pix.qrCodeBase64 || pix.qrCode" class="mt-6 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                <div class="font-semibold mb-3">PIX gerado</div>
+                <img v-if="pix.qrCodeBase64" :src="pix.qrCodeBase64" alt="QR Code PIX" class="w-56 mx-auto" />
+
+                <div v-if="pix.qrCode" class="mt-4">
+                  <div class="text-sm font-medium text-gray-700 mb-2">Copia e cola</div>
+                  <textarea
+                    readonly
+                    class="w-full border border-gray-200 rounded-lg p-3 text-xs bg-white"
+                    rows="4"
+                  >{{ pix.qrCode }}</textarea>
+                </div>
+              </div>
+            </template>
+
+            <template v-else>
+              <div v-if="cardSdkError" class="mt-4 text-sm text-red-600">
+                {{ cardSdkError }}
+              </div>
+
+              <div class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                <div class="font-semibold mb-3">Dados do cartão</div>
+                <div id="mp-card-form" class="space-y-3">
+                  <div class="grid grid-cols-1 gap-3">
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Número do cartão</label>
+                      <input id="form-cardNumber" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Nome no cartão</label>
+                      <input id="form-cardholderName" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-3">
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Mês</label>
+                      <input id="form-cardExpirationMonth" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Ano</label>
+                      <input id="form-cardExpirationYear" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">CVV</label>
+                      <input id="form-securityCode" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Bandeira</label>
+                      <select id="form-paymentMethodId" class="w-full border border-gray-200 p-3 rounded-xl bg-white"></select>
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Parcelas</label>
+                      <select id="form-installments" class="w-full border border-gray-200 p-3 rounded-xl bg-white"></select>
+                    </div>
+                    <div>
+                      <label class="block text-xs text-gray-600 mb-1">Emissor</label>
+                      <select id="form-issuer" class="w-full border border-gray-200 p-3 rounded-xl bg-white"></select>
+                    </div>
+                    <input id="form-identificationType" type="hidden" value="CPF" />
+                    <input id="form-identificationNumber" :value="cpf" type="hidden" />
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="cardError" class="mt-4 text-sm text-red-600">
+                {{ cardError }}
+              </div>
+            </template>
+
+            <p class="text-xs text-gray-500 mt-6">
+              Licenças digitais originais com entrega instantânea.
             </p>
           </div>
         </div>
 
-        <div class="mt-10 grid grid-cols-2 gap-4 text-sm">
-          <div class="flex items-center gap-2">⚡ Envio imediato</div>
-          <div class="flex items-center gap-2">🛡️ Licença original</div>
-          <div class="flex items-center gap-2">♻️ Reinstalação permitida</div>
-          <div class="flex items-center gap-2">💬 Suporte especializado</div>
-        </div>
-      </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 h-fit">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">Resumo do Pedido</h2>
 
-      <!-- RESUMO -->
-      <div class="bg-white rounded-3xl shadow p-10">
-        <h2 class="text-xl font-bold mb-6">
-          Resumo do Pedido
-        </h2>
+          <div v-if="product" class="space-y-4">
+            <div class="flex justify-between text-sm text-gray-600">
+              <span>Subtotal</span>
+              <span class="font-semibold text-gray-900">R$ {{ subtotal.toFixed(2).replace('.', ',') }}</span>
+            </div>
 
-        <div v-if="product" class="space-y-4 mb-6">
-          <div class="flex justify-between">
-            <span>{{ product.name }}</span>
-            <span>R$ {{ product.price.toFixed(2).replace('.', ',') }}</span>
-          </div>
+            <div class="flex justify-between text-sm text-gray-600">
+              <span>Desconto</span>
+              <span class="font-semibold text-green-700">- R$ {{ desconto.toFixed(2).replace('.', ',') }}</span>
+            </div>
 
-          <div class="flex justify-between text-sm text-gray-500">
-            <span>Desconto promocional</span>
-            <span>-40%</span>
-          </div>
+            <div class="border-t pt-4 flex justify-between items-center">
+              <span class="text-sm text-gray-600">Total</span>
+              <span class="text-2xl font-bold text-gray-900">R$ {{ total.toFixed(2).replace('.', ',') }}</span>
+            </div>
 
-          <!-- PARCELAMENTO VISÍVEL -->
-          <div class="flex justify-between text-sm text-gray-600">
-            <span>Parcelamento</span>
-            <span>
-              12x de R$ {{
-                (product.price / 12)
-                  .toFixed(2)
-                  .replace('.', ',')
-              }}
-            </span>
-          </div>
+            <div class="mt-4 border border-gray-200 bg-gray-50 rounded-xl p-4">
+              <label class="flex items-start gap-3 text-sm text-gray-700">
+                <input v-model="acceptedTerms" type="checkbox" class="mt-1" />
+                <span>
+                  Aceito os
+                  <a href="/legal/termos" class="text-blue-600 hover:underline">Termos de Uso</a>,
+                  <a href="/legal/privacidade" class="text-blue-600 hover:underline">Política de Privacidade</a>
+                  e
+                  <a href="/politica-de-devolucao" class="text-blue-600 hover:underline">Política de Devolução</a>
+                </span>
+              </label>
+            </div>
 
-          <div class="border-t pt-4 flex justify-between font-bold text-lg">
-            <span>Total</span>
-            <span class="text-blue-600">
-              R$ {{ product.price.toFixed(2).replace('.', ',') }}
-            </span>
-          </div>
-        </div>
+            <button
+              :disabled="finalizeLoading || !acceptedTerms"
+              @click="finalizeCheckout"
+              class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl shadow-sm transition disabled:opacity-60"
+            >
+              {{ finalizeLoading ? 'Processando...' : 'Finalizar Compra' }}
+            </button>
 
-        <!-- URGÊNCIA -->
-        <div
-          class="bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-xl text-sm mb-6"
-        >
-          🔥 Oferta por tempo limitado — preço pode mudar a qualquer momento
-        </div>
-
-     <!-- SELOS DE CARTÃO -->
-<div class="flex justify-center gap-4 my-6 text-sm font-semibold text-gray-500">
-  <span class="px-3 py-1 border rounded">VISA</span>
-  <span class="px-3 py-1 border rounded">Mastercard</span>
-  <span class="px-3 py-1 border rounded">Amex</span>
-</div>
-
-
-        <div class="mt-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Email para receber a licença
-          </label>
-          <input
-            v-model="customerEmail"
-            type="email"
-            placeholder="seuemail@exemplo.com"
-            class="w-full border p-3 rounded-xl"
-          />
-          <p class="text-xs text-gray-500 mt-2">
-            Use um email válido. Após a confirmação do pagamento, sua licença será enviada automaticamente.
-          </p>
-        </div>
-
-        <div class="mt-6 flex gap-2">
-          <button
-            @click="paymentTab = 'pix'"
-            :class="paymentTab === 'pix' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-            class="flex-1 py-3 rounded-xl text-sm font-semibold"
-          >
-            PIX
-          </button>
-          <button
-            @click="paymentTab = 'card'"
-            :class="paymentTab === 'card' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
-            class="flex-1 py-3 rounded-xl text-sm font-semibold"
-          >
-            Cartão
-          </button>
-        </div>
-
-        <template v-if="paymentTab === 'pix'">
-          <button
-            :disabled="pixLoading"
-            @click="goToPix"
-            class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-4 rounded-xl shadow-lg transition disabled:opacity-60"
-          >
-            {{ pixLoading ? 'Gerando PIX...' : 'Pagar com PIX' }}
-          </button>
-
-          <div v-if="pixError" class="mt-4 text-sm text-red-600">
-            {{ pixError }}
-          </div>
-
-          <div v-if="pix.qrCodeBase64 || pix.qrCode" class="mt-6 bg-gray-50 border rounded-xl p-4">
-            <div class="font-semibold mb-3">PIX gerado</div>
-            <img v-if="pix.qrCodeBase64" :src="pix.qrCodeBase64" alt="QR Code PIX" class="w-56 mx-auto" />
-
-            <div v-if="pix.qrCode" class="mt-4">
-              <div class="text-sm font-medium text-gray-700 mb-2">Copia e cola</div>
-              <textarea
-                readonly
-                class="w-full border rounded-lg p-3 text-xs"
-                rows="4"
-              >{{ pix.qrCode }}</textarea>
+            <div v-if="finalizeError" class="mt-3 text-sm text-red-600">
+              {{ finalizeError }}
             </div>
           </div>
-        </template>
-
-        <template v-else>
-          <div class="mt-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              CPF do titular
-            </label>
-            <input
-              v-model="cpf"
-              inputmode="numeric"
-              placeholder="000.000.000-00"
-              class="w-full border p-3 rounded-xl"
-            />
-          </div>
-
-          <div v-if="cardSdkError" class="mt-4 text-sm text-red-600">
-            {{ cardSdkError }}
-          </div>
-
-          <div class="mt-6 bg-gray-50 border rounded-xl p-4">
-            <div class="font-semibold mb-3">Dados do cartão</div>
-            <div id="mp-card-form" class="space-y-3">
-              <div class="grid grid-cols-1 gap-3">
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">Número do cartão</label>
-                  <input id="form-cardNumber" class="w-full border p-3 rounded-xl" />
-                </div>
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">Nome no cartão</label>
-                  <input id="form-cardholderName" class="w-full border p-3 rounded-xl" />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-3 gap-3">
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">Mês</label>
-                  <input id="form-cardExpirationMonth" class="w-full border p-3 rounded-xl" />
-                </div>
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">Ano</label>
-                  <input id="form-cardExpirationYear" class="w-full border p-3 rounded-xl" />
-                </div>
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">CVV</label>
-                  <input id="form-securityCode" class="w-full border p-3 rounded-xl" />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 gap-3">
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">Bandeira</label>
-                  <select id="form-paymentMethodId" class="w-full border p-3 rounded-xl"></select>
-                </div>
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">Parcelas</label>
-                  <select id="form-installments" class="w-full border p-3 rounded-xl"></select>
-                </div>
-                <div>
-                  <label class="block text-xs text-gray-600 mb-1">Emissor</label>
-                  <select id="form-issuer" class="w-full border p-3 rounded-xl"></select>
-                </div>
-                <input id="form-identificationType" type="hidden" value="CPF" />
-                <input id="form-identificationNumber" :value="cpf" type="hidden" />
-              </div>
-            </div>
-          </div>
-
-          <button
-            :disabled="cardLoading"
-            @click="payWithCard"
-            class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-4 rounded-xl shadow-lg transition disabled:opacity-60"
-          >
-            {{ cardLoading ? 'Processando...' : 'Pagar com Cartão' }}
-          </button>
-
-          <div v-if="cardError" class="mt-4 text-sm text-red-600">
-            {{ cardError }}
-          </div>
-        </template>
-
-        <p class="text-xs text-gray-500 text-center mt-4">
-          Pagamento 100% seguro • Processado pelo Mercado Pago
-        </p>
+        </div>
       </div>
     </div>
   </section>
@@ -252,6 +254,8 @@ const product = computed(() => {
 const paymentTab = ref<'pix' | 'card'>('pix')
 
 const customerEmail = ref('')
+const whatsapp = ref('')
+const nome = ref('')
 const pixLoading = ref(false)
 const pixError = ref('')
 const pix = reactive<{ qrCode: string; qrCodeBase64: string | null }>({
@@ -260,6 +264,18 @@ const pix = reactive<{ qrCode: string; qrCodeBase64: string | null }>({
 })
 
 const cpf = ref('')
+const acceptedTerms = ref(false)
+const finalizeLoading = ref(false)
+const finalizeError = ref('')
+
+const subtotal = computed(() => Number(product.value?.price || 0))
+const desconto = computed(() => {
+  const base = subtotal.value
+  if (!base) return 0
+  if (paymentTab.value !== 'pix') return 0
+  return Math.round(base * 0.05 * 100) / 100
+})
+const total = computed(() => Math.max(0, Math.round((subtotal.value - desconto.value) * 100) / 100))
 const cardLoading = ref(false)
 const cardError = ref('')
 const cardSdkError = ref('')
@@ -371,6 +387,39 @@ async function payWithCard() {
   }
 }
 
+async function finalizeCheckout() {
+  if (!product.value) return
+
+  finalizeLoading.value = true
+  finalizeError.value = ''
+
+  try {
+    if (!acceptedTerms.value) {
+      finalizeError.value = 'Você precisa aceitar os termos para continuar.'
+      return
+    }
+
+    if (!customerEmail.value || !customerEmail.value.includes('@')) {
+      finalizeError.value = 'Informe um e-mail válido.'
+      return
+    }
+
+    if (!cpf.value) {
+      finalizeError.value = 'Informe o CPF.'
+      return
+    }
+
+    if (paymentTab.value === 'pix') {
+      await goToPix()
+      return
+    }
+
+    await payWithCard()
+  } finally {
+    finalizeLoading.value = false
+  }
+}
+
 async function goToPix() {
   if (!product.value) return
 
@@ -384,7 +433,10 @@ async function goToPix() {
       method: 'POST',
       body: {
         produtoId: product.value.id,
-        email: customerEmail.value
+        email: customerEmail.value,
+        nome: nome.value,
+        whatsapp: whatsapp.value,
+        cpf: cpf.value
       }
     })
 

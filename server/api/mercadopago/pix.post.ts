@@ -7,6 +7,9 @@ export default defineEventHandler(async (event) => {
 
   const produtoId = String(body?.produtoId || '')
   const email = String(body?.email || '').trim().toLowerCase()
+  const nome = body?.nome ? String(body.nome).trim() : undefined
+  const whatsapp = body?.whatsapp ? String(body.whatsapp).trim() : undefined
+  const cpf = body?.cpf ? String(body.cpf).trim() : undefined
 
   if (!produtoId) {
     throw createError({ statusCode: 400, statusMessage: 'produtoId obrigatório' })
@@ -37,9 +40,12 @@ export default defineEventHandler(async (event) => {
 
   const payment = getMpPayment()
 
+  const baseAmount = Number(produto.preco)
+  const discountedAmount = Math.round(baseAmount * 0.95 * 100) / 100
+
   const result = await payment.create({
     body: {
-      transaction_amount: Number(produto.preco),
+      transaction_amount: discountedAmount,
       description: produto.nome,
       payment_method_id: 'pix',
       payer: {
@@ -47,7 +53,11 @@ export default defineEventHandler(async (event) => {
       },
       metadata: {
         orderId: order.id,
-        produtoId: produto.id
+        produtoId: produto.id,
+        nome,
+        whatsapp,
+        cpf,
+        descontoPercent: 5
       },
       external_reference: order.id
     }
