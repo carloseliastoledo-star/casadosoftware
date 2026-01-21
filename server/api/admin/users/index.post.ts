@@ -46,7 +46,11 @@ export default defineEventHandler(async (event) => {
     } catch {
       throw createError({ statusCode: 409, statusMessage: 'Usuário já existe' })
     }
-  } catch {
+  } catch (err: any) {
+    if (err?.statusCode) {
+      throw err
+    }
+
     throw createError({
       statusCode: 501,
       statusMessage: 'Funcionalidade requer migração do banco (tabela AdminUser)'

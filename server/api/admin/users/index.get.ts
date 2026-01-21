@@ -20,7 +20,11 @@ export default defineEventHandler(async (event) => {
         createdAt: true
       }
     })
-  } catch {
+  } catch (err: any) {
+    if (err?.statusCode) {
+      throw err
+    }
+
     throw createError({
       statusCode: 501,
       statusMessage: 'Funcionalidade requer migração do banco (tabela AdminUser)'
