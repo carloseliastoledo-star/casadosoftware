@@ -18,7 +18,12 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="it in stockItems" :key="it.produtoId" class="border-t">
+              <tr
+                v-for="it in stockItems"
+                :key="it.produtoId"
+                class="border-t hover:bg-white cursor-pointer"
+                @click="openStockModal(it.produtoId, it.produto?.nome || it.produtoId)"
+              >
                 <td class="p-3">
                   <div class="font-medium">{{ it.produto?.nome || it.produtoId }}</div>
                 </td>
@@ -86,6 +91,72 @@
         {{ error }}
       </p>
 
+      <div v-if="showStock" class="fixed inset-0 z-50">
+        <div class="absolute inset-0 bg-black/40" @click="closeStockModal" />
+
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+          <div class="bg-white w-full max-w-3xl rounded-xl shadow-lg">
+            <div class="flex items-center justify-between p-5 border-b">
+              <div>
+                <h2 class="text-lg font-semibold">Licenças disponíveis</h2>
+                <p class="text-sm text-gray-600 mt-1">{{ stockModalTitle }}</p>
+              </div>
+
+              <button class="text-gray-500 hover:text-gray-700" @click="closeStockModal">
+                Fechar
+              </button>
+            </div>
+
+            <div class="p-5">
+              <div v-if="stockKeysPending" class="text-sm text-gray-500">Carregando...</div>
+              <div v-else-if="stockKeysError" class="text-sm text-red-600">Não foi possível carregar as licenças.</div>
+
+              <div v-else class="border rounded-lg overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead class="bg-gray-100 text-gray-600">
+                    <tr>
+                      <th class="p-3 text-left">Chave</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="k in stockKeys" :key="k.id" class="border-t">
+                      <td class="p-3 font-mono break-all">{{ k.chave }}</td>
+                    </tr>
+                    <tr v-if="!stockKeys.length" class="border-t">
+                      <td class="p-3 text-gray-500">Sem licenças disponíveis.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="mt-4 flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                  Total: {{ stockKeysTotal }}
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button
+                    class="px-3 py-2 rounded-lg border disabled:opacity-50"
+                    :disabled="stockKeysPage <= 1 || stockKeysPending"
+                    @click="prevStockPage"
+                  >
+                    Anterior
+                  </button>
+                  <div class="text-sm text-gray-600">Página {{ stockKeysPage }}</div>
+                  <button
+                    class="px-3 py-2 rounded-lg border disabled:opacity-50"
+                    :disabled="!canNextStockPage || stockKeysPending"
+                    @click="nextStockPage"
+                  >
+                    Próxima
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -125,6 +196,43 @@ const {
 
 const stockItems = computed(() => stockData.value?.items || [])
 const stockTotal = computed(() => stockData.value?.total || 0)
+
+type StockKey = {
+  id: string
+  chave: string
+  status: string
+}
+
+const showStock = ref(false)
+const stockModalTitle = ref('')
+const stockProdutoId = ref('')
+const stockKeysPage = ref(1)
+const stockKeysPageSize = ref(100)
+
+const {
+  data: stockKeysData,
+  pending: stockKeysPending,
+  error: stockKeysError,
+  refresh: refreshStockKeys
+} = await useFetch<
+  { ok: true; page: number; pageSize: number; total: number; items: StockKey[] }
+>('/api/admin/licenses/stock-keys', {
+  server: false,
+  query: computed(() => ({
+    produtoId: stockProdutoId.value,
+    page: stockKeysPage.value,
+    pageSize: stockKeysPageSize.value
+  }))
+})
+
+const stockKeys = computed(() => stockKeysData.value?.items || [])
+const stockKeysTotal = computed(() => stockKeysData.value?.total || 0)
+const canNextStockPage = computed(() => {
+  const total = stockKeysTotal.value
+  const page = stockKeysPage.value
+  const size = stockKeysPageSize.value
+  return page * size < total
+})
 
 const productId = ref('')
 const keys = ref('')
@@ -176,5 +284,29 @@ async function importLicenses() {
   } finally {
     loading.value = false
   }
+}
+
+async function openStockModal(produtoId: string, title: string) {
+  stockProdutoId.value = produtoId
+  stockModalTitle.value = title
+  stockKeysPage.value = 1
+  showStock.value = true
+  await refreshStockKeys()
+}
+
+function closeStockModal() {
+  showStock.value = false
+}
+
+async function nextStockPage() {
+  if (!canNextStockPage.value) return
+  stockKeysPage.value += 1
+  await refreshStockKeys()
+}
+
+async function prevStockPage() {
+  if (stockKeysPage.value <= 1) return
+  stockKeysPage.value -= 1
+  await refreshStockKeys()
 }
 </script>
