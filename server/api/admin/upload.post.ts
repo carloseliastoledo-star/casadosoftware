@@ -1,5 +1,6 @@
-import { writeFile } from 'fs/promises'
+import { mkdir, writeFile } from 'fs/promises'
 import { join } from 'path'
+import { createError, defineEventHandler, readMultipartFormData } from 'h3'
 
 export default defineEventHandler(async (event) => {
   const formData = await readMultipartFormData(event)
@@ -15,7 +16,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const fileName = `${Date.now()}-${file.filename}`
-  const filePath = join(process.cwd(), 'public/uploads', fileName)
+  const uploadsDir = join(process.cwd(), 'app/public/uploads')
+  const filePath = join(uploadsDir, fileName)
+
+  await mkdir(uploadsDir, { recursive: true })
 
   await writeFile(filePath, file.data)
 

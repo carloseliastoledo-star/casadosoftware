@@ -131,11 +131,16 @@ async function salvar() {
         <div class="space-y-2">
           <label class="text-sm font-medium text-gray-700">Imagem</label>
 
-          <input type="file" @change="uploadImagem" />
+          <input type="file" accept="image/*" @change="uploadImagem" />
+
+          <div v-if="uploadLoading" class="text-xs text-gray-500">Enviando imagem...</div>
+          <div v-if="uploadError" class="text-xs text-red-600">{{ uploadError }}</div>
 
           <div v-if="form.imagem" class="text-xs text-gray-500">
             {{ form.imagem }}
           </div>
+
+          <img v-if="form.imagem" :src="form.imagem" class="rounded border" />
         </div>
 
         <button

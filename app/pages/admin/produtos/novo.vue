@@ -99,7 +99,11 @@ async function salvar() {
           type="file"
           @change="uploadImagem"
           class="w-full text-sm"
+          accept="image/*"
         />
+
+        <div v-if="uploadLoading" class="text-xs text-gray-500 mt-2">Enviando imagem...</div>
+        <div v-if="uploadError" class="text-xs text-red-600 mt-2">{{ uploadError }}</div>
 
         <img
           v-if="form.imagem"
