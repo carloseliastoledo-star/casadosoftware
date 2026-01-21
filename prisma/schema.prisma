@@ -25,6 +25,7 @@ model Produto {
   tutorialConteudo  String?   @db.Text
   criadoEm  DateTime  @default(now()) @db.DateTime(0)
   licencas  Licenca[]
+  orders    Order[]
 }
 
 
