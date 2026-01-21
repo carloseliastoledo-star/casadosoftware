@@ -80,17 +80,50 @@
 </div>
 
 
-        <!-- BOTÃO PAGAMENTO -->
+        <div class="mt-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Email para receber a licença
+          </label>
+          <input
+            v-model="customerEmail"
+            type="email"
+            placeholder="seuemail@exemplo.com"
+            class="w-full border p-3 rounded-xl"
+          />
+          <p class="text-xs text-gray-500 mt-2">
+            Use um email válido. Após a confirmação do pagamento, sua licença será enviada automaticamente.
+          </p>
+        </div>
+
+        <!-- BOTÃO PAGAMENTO (PIX) -->
         <button
-          @click="goToPayment"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-4 rounded-xl shadow-lg transition"
+          :disabled="pixLoading"
+          @click="goToPix"
+          class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-4 rounded-xl shadow-lg transition disabled:opacity-60"
         >
-          Finalizar Compra
+          {{ pixLoading ? 'Gerando PIX...' : 'Pagar com PIX' }}
         </button>
 
-        <!-- SEGURANÇA -->
+        <div v-if="pixError" class="mt-4 text-sm text-red-600">
+          {{ pixError }}
+        </div>
+
+        <div v-if="pix.qrCodeBase64 || pix.qrCode" class="mt-6 bg-gray-50 border rounded-xl p-4">
+          <div class="font-semibold mb-3">PIX gerado</div>
+          <img v-if="pix.qrCodeBase64" :src="pix.qrCodeBase64" alt="QR Code PIX" class="w-56 mx-auto" />
+
+          <div v-if="pix.qrCode" class="mt-4">
+            <div class="text-sm font-medium text-gray-700 mb-2">Copia e cola</div>
+            <textarea
+              readonly
+              class="w-full border rounded-lg p-3 text-xs"
+              rows="4"
+            >{{ pix.qrCode }}</textarea>
+          </div>
+        </div>
+
         <p class="text-xs text-gray-500 text-center mt-4">
-          Pagamento 100% seguro • Ambiente criptografado pela Stripe
+          Pagamento 100% seguro • Processado pelo Mercado Pago
         </p>
       </div>
     </div>
@@ -119,22 +152,37 @@ const product = computed(() => {
   }
 })
 
-async function goToPayment() {
-  if (!product) return
+const customerEmail = ref('')
+const pixLoading = ref(false)
+const pixError = ref('')
+const pix = reactive<{ qrCode: string; qrCodeBase64: string | null }>({
+  qrCode: '',
+  qrCodeBase64: null
+})
 
-  const { url } = await $fetch('/api/stripe/create-checkout', {
-    method: 'POST',
-    body: {
-      items: [
-        {
-          name: product.name,
-          price: product.price,
-          quantity: 1,
-        },
-      ],
-    },
-  })
+async function goToPix() {
+  if (!product.value) return
 
-  window.location.href = url
+  pixLoading.value = true
+  pixError.value = ''
+  pix.qrCode = ''
+  pix.qrCodeBase64 = null
+
+  try {
+    const res: any = await $fetch('/api/mercadopago/pix', {
+      method: 'POST',
+      body: {
+        produtoId: product.value.id,
+        email: customerEmail.value
+      }
+    })
+
+    pix.qrCode = res.qrCode || ''
+    pix.qrCodeBase64 = res.qrCodeBase64 || null
+  } catch (err: any) {
+    pixError.value = err?.data?.statusMessage || 'Não foi possível gerar o PIX'
+  } finally {
+    pixLoading.value = false
+  }
 }
 </script>
