@@ -1,5 +1,5 @@
 import prisma from '../db/prisma'
-import { getMpPayment } from './mercadopago.js'
+import { getMpAccessToken, getMpPayment } from './mercadopago.js'
 import { renderLicenseEmail, sendMail } from './mailer.js'
 
 export async function processMercadoPagoPayment(dataId: string) {
@@ -90,4 +90,32 @@ export async function processMercadoPagoPayment(dataId: string) {
   }
 
   return { ok: true }
+}
+
+export async function processMercadoPagoMerchantOrder(merchantOrderId: string) {
+  const accessToken = getMpAccessToken()
+
+  const resp = await fetch(`https://api.mercadopago.com/merchant_orders/${encodeURIComponent(merchantOrderId)}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  })
+
+  if (!resp.ok) {
+    console.log('[mp webhook] merchant_order fetch failed', { merchantOrderId, status: resp.status })
+    return { ok: true }
+  }
+
+  const mo = (await resp.json()) as any
+  const payments = Array.isArray(mo?.payments) ? mo.payments : []
+
+  const candidate = payments.find((p: any) => String(p?.status || '').toLowerCase() === 'approved') || payments[0]
+  const paymentId = String(candidate?.id || '')
+
+  if (!paymentId) {
+    console.log('[mp webhook] merchant_order no payment id', { merchantOrderId })
+    return { ok: true }
+  }
+
+  return await processMercadoPagoPayment(paymentId)
 }
