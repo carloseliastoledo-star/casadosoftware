@@ -45,6 +45,10 @@ model Licenca {
 model Customer {
   id        String   @id @default(uuid())
   email     String   @unique
+  passwordHash String?
+  nome      String?
+  whatsapp  String?
+  cpf       String?
   criadoEm  DateTime @default(now()) @db.DateTime(0)
   orders    Order[]
   licencas  Licenca[]
