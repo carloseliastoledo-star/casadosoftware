@@ -34,7 +34,32 @@ model Licenca {
   status      String
   produtoId   String
   produto     Produto  @relation(fields: [produtoId], references: [id])
+  customerId  String?
+  customer    Customer? @relation(fields: [customerId], references: [id])
+  orderId     String?
+  order       Order?    @relation(fields: [orderId], references: [id])
   criadoEm    DateTime @default(now()) @db.DateTime(0)
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  criadoEm  DateTime @default(now()) @db.DateTime(0)
+  orders    Order[]
+  licencas  Licenca[]
+}
+
+model Order {
+  id                  String   @id @default(uuid())
+  status              String
+  produtoId            String
+  produto              Produto  @relation(fields: [produtoId], references: [id])
+  customerId           String
+  customer             Customer @relation(fields: [customerId], references: [id])
+  mercadoPagoPaymentId String?  @unique
+  criadoEm             DateTime @default(now()) @db.DateTime(0)
+  pagoEm               DateTime? @db.DateTime(0)
+  licencas             Licenca[]
 }
 
 model AdminUser {
