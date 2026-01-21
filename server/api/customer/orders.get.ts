@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
     orderBy: { criadoEm: 'desc' },
     select: {
       id: true,
+      numero: true,
       status: true,
       criadoEm: true,
       pagoEm: true,

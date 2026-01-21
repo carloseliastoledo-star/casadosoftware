@@ -27,7 +27,8 @@
           <div class="flex items-start justify-between gap-4">
             <div>
               <div class="font-semibold text-gray-900">{{ o.produto?.nome }}</div>
-              <div class="text-xs text-gray-500 mt-1">Pedido: {{ o.id }}</div>
+              <div class="text-xs text-gray-500 mt-1">Pedido: #{{ o.numero }}</div>
+              <div class="text-xs text-gray-400 font-mono">{{ o.id }}</div>
               <div class="text-xs text-gray-500">Status: {{ o.status }}</div>
             </div>
             <div class="text-xs text-gray-500">
@@ -60,6 +61,7 @@ definePageMeta({ middleware: ['customer'] })
 
 type OrderDto = {
   id: string
+  numero: number
   status: string
   criadoEm: string
   pagoEm: string | null

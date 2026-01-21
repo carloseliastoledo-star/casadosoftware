@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
     take: 200,
     select: {
       id: true,
+      numero: true,
       status: true,
       criadoEm: true,
       pagoEm: true,

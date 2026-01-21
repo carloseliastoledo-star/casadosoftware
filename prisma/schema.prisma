@@ -56,6 +56,7 @@ model Customer {
 
 model Order {
   id                  String   @id @default(uuid())
+  numero              Int      @unique @default(autoincrement())
   status              String
   produtoId            String
   produto              Produto  @relation(fields: [produtoId], references: [id])

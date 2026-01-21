@@ -34,7 +34,10 @@
 
         <tbody>
           <tr v-for="o in orders" :key="o.id" class="border-t">
-            <td class="p-3 font-mono text-xs">{{ o.id }}</td>
+            <td class="p-3">
+              <div class="font-mono text-xs">#{{ o.numero }}</div>
+              <div class="font-mono text-xs text-gray-400">{{ o.id }}</div>
+            </td>
             <td class="p-3">
               <div class="font-medium">{{ o.produto?.nome }}</div>
               <div class="text-xs text-gray-500">{{ o.produto?.slug }}</div>
@@ -215,6 +218,7 @@ type ProdutoDto = {
 
 type OrderDto = {
   id: string
+  numero: number
   status: string
   criadoEm: string
   pagoEm: string | null
