@@ -127,7 +127,7 @@
       <div v-else class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <ProductCard
           v-for="product in products"
-          :key="product.id"
+          :key="product.id + (product.imagem || product.image || '')"
           :product="product"
         />
       </div>
