@@ -12,14 +12,9 @@
       </div>
 
       <!-- Título -->
-      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 text-center">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8">
         {{ safeProduct.nome }}
       </h1>
-
-      <!-- Descrição curta centralizada -->
-      <p class="text-gray-600 text-center mt-3 mb-10 max-w-3xl mx-auto">
-        {{ safeProduct.descricaoCurta }}
-      </p>
 
       <!-- Loading -->
       <div v-if="pending" class="text-center py-20 text-gray-500">
@@ -34,7 +29,7 @@
       <!-- Card principal -->
       <div
         v-else
-        class="bg-white rounded-2xl shadow p-8 grid lg:grid-cols-2 gap-12"
+        class="bg-white rounded-2xl shadow p-8 grid lg:grid-cols-2 gap-10"
       >
 
         <!-- Imagem -->
@@ -42,64 +37,67 @@
           <img
             :src="safeProduct.imagem"
             :alt="safeProduct.nome"
-            class="max-h-[420px] object-contain"
+            class="w-full max-w-[520px] max-h-[520px] object-contain"
           />
         </div>
 
         <!-- Coluna compra -->
-        <div class="space-y-5">
-
-          <!-- Avaliações -->
-          <div class="flex items-center gap-2 text-yellow-500 text-sm">
-            ★★★★★ <span class="text-gray-500">(128 avaliações)</span>
+        <div class="space-y-6">
+          <div v-if="safeProduct.descricaoCurta" class="text-gray-600">
+            {{ safeProduct.descricaoCurta }}
           </div>
 
-          <!-- Preço -->
-          <div class="space-y-1">
-            <div class="text-sm text-gray-400 line-through">
-              R$ 299,90
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div v-if="formattedOldPrice" class="text-gray-400 line-through">
+                {{ formattedOldPrice }}
+              </div>
+
+              <span
+                v-if="discountPercent"
+                class="inline-flex items-center rounded-full bg-green-100 text-green-700 text-xs font-semibold px-3 py-1"
+              >
+                {{ discountPercent }}% OFF
+              </span>
             </div>
 
-            <div class="text-4xl font-extrabold text-blue-600">
-              R$ {{ safeProduct.preco.toFixed(2) }}
+            <div class="text-4xl font-extrabold text-gray-900">
+              {{ formattedPrice }}
             </div>
 
-            <div class="text-sm text-gray-500">
-              ou 12x de R$ {{ (safeProduct.preco / 12).toFixed(2) }}
+            <div class="text-sm text-blue-600">
+              Pagamento à vista no PIX
+              <span v-if="formattedPixPrice" class="text-gray-500">({{ formattedPixPrice }})</span>
             </div>
           </div>
 
-          <!-- Botões -->
           <div class="space-y-3">
             <button
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-4 rounded-lg transition"
+              type="button"
+              @click="buyNow"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-4 rounded-xl transition"
             >
-              Comprar agora
-            </button>
-
-            <button
-              class="w-full border border-blue-600 text-blue-600 font-semibold py-3 rounded-lg hover:bg-blue-50 transition"
-            >
-              Adicionar ao carrinho
+              Comprar
             </button>
           </div>
 
-          <!-- Selos -->
-          <div class="grid grid-cols-2 gap-3 text-sm text-gray-600">
-            <div>🔒 Compra 100% segura</div>
-            <div>⚡ Entrega imediata</div>
-            <div>💬 Suporte especializado</div>
-            <div>📄 Nota fiscal</div>
+          <div class="pt-2">
+            <div class="text-lg font-semibold text-gray-900 mb-3">O que está incluído:</div>
+            <ul class="space-y-2 text-gray-700">
+              <li v-for="item in includedItems" :key="item" class="flex items-start gap-3">
+                <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100">
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-green-600">
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.704 5.29a1 1 0 010 1.415l-7.25 7.25a1 1 0 01-1.415 0L3.296 9.21a1 1 0 011.415-1.415l3.018 3.018 6.543-6.543a1 1 0 011.432.02z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span class="text-sm">{{ item }}</span>
+              </li>
+            </ul>
           </div>
-
-          <!-- Benefícios -->
-          <ul class="mt-4 space-y-2 text-gray-700 text-sm list-disc list-inside">
-            <li>Licença original vitalícia</li>
-            <li>Ativação online oficial</li>
-            <li>Compatível com Windows 10/11</li>
-            <li>Entrega automática por e-mail</li>
-          </ul>
-
         </div>
       </div>
 
@@ -216,10 +214,64 @@ Se você procura uma solução definitiva, segura e com excelente custo-benefíc
     preco,
     imagem: (p as any).image || (p as any).imagem || '/products/placeholder.png',
     slug: slugValue,
+    precoAntigo: Number((p as any).precoAntigo ?? (p as any).old_price ?? 0) || null,
     tutorialTitulo: (p as any).tutorialTitle || (p as any).tutorialTitulo || null,
     tutorialSubtitulo: (p as any).tutorialSubtitle || (p as any).tutorialSubtitulo || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
     descricaoCurta,
     descricao: descricaoLonga
   }
 })
+
+const formattedPrice = computed(() => {
+  return Number(safeProduct.value.preco || 0).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
+})
+
+const formattedOldPrice = computed(() => {
+  const oldPrice = (safeProduct.value as any).precoAntigo
+  if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
+  if (Number(oldPrice) <= Number(safeProduct.value.preco || 0)) return null
+  return Number(oldPrice).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
+})
+
+const discountPercent = computed(() => {
+  const oldPrice = (safeProduct.value as any).precoAntigo
+  const current = Number(safeProduct.value.preco || 0)
+  if (!oldPrice || !current) return null
+  const oldN = Number(oldPrice)
+  if (!oldN || oldN <= current) return null
+  return Math.round((1 - current / oldN) * 100)
+})
+
+const formattedPixPrice = computed(() => {
+  const price = Number(safeProduct.value.preco || 0)
+  if (!price) return null
+  const pixPrice = Math.round(price * 0.95 * 100) / 100
+  if (pixPrice === price) return null
+  return pixPrice.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
+})
+
+const includedItems = [
+  'Entrega instantânea',
+  'Licença original e vitalícia',
+  'Suporte 24/7',
+  '1 PC',
+  'Versão profissional com recursos avançados',
+  'Compatível Windows 10 e 11',
+  'Ativação permanente',
+  'Sem renovação necessária'
+]
+
+function buyNow() {
+  const slugValue = String((safeProduct.value as any)?.slug || slug || '')
+  navigateTo({ path: '/checkout', query: { product: slugValue } })
+}
 </script>
