@@ -3,13 +3,13 @@
 
     <!-- HEADER -->
     <header class="border-b bg-white sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
         <!-- LOGO -->
         <NuxtLink to="/" class="flex items-center gap-3">
           <img
             src="/logo-casa-do-software.png"
             alt="Casa do Software"
-            class="h-10 w-auto"
+            class="h-11 md:h-14 w-auto"
           />
           <span class="text-lg font-extrabold tracking-tight text-gray-900">
             Casa do Software
