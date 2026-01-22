@@ -19,6 +19,9 @@ const form = reactive({
 const uploadLoading = ref(false)
 const uploadError = ref('')
 
+const saving = ref(false)
+const saveError = ref('')
+
 async function uploadImagem(event) {
   const file = event.target.files[0]
   if (!file) return
@@ -44,12 +47,31 @@ async function uploadImagem(event) {
 }
 
 async function salvar() {
-  await $fetch('/api/admin/produtos', {
-    method: 'POST',
-    body: form
-  })
+  saveError.value = ''
 
-  navigateTo('/admin/produtos')
+  if (!form.nome || !form.slug || !form.preco) {
+    saveError.value = 'Preencha nome, slug e preço'
+    return
+  }
+
+  saving.value = true
+  try {
+    await $fetch('/api/admin/produtos', {
+      method: 'POST',
+      body: form
+    })
+
+    navigateTo('/admin/produtos')
+  } catch (err: any) {
+    const status = err?.status || err?.response?.status || err?.data?.statusCode
+    if (status === 401) {
+      await navigateTo('/admin/login')
+      return
+    }
+    saveError.value = err?.data?.statusMessage || err?.message || 'Não foi possível publicar'
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 
@@ -157,10 +179,13 @@ async function salvar() {
 
       <button
         @click="salvar"
-        class="w-full bg-blue-600 text-white py-2 rounded"
+        :disabled="saving"
+        class="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-60"
       >
-        Publicar
+        {{ saving ? 'Publicando...' : 'Publicar' }}
       </button>
+
+      <div v-if="saveError" class="text-xs text-red-600">{{ saveError }}</div>
 
     </div>
 

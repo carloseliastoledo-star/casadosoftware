@@ -55,10 +55,17 @@ export function setAdminSession(event: H3Event, email: string) {
 
   const isProd = process.env.NODE_ENV === 'production'
 
+  const host = String(event.node.req.headers.host || '')
+    .split(':')[0]
+    .trim()
+  const baseHost = host.replace(/^www\./, '')
+  const cookieDomain = (process.env.ADMIN_COOKIE_DOMAIN || (isProd && baseHost && baseHost !== 'localhost' ? `.${baseHost}` : '')) || undefined
+
   setCookie(event, COOKIE_NAME, `${payloadB64}.${signature}`, {
     httpOnly: true,
     sameSite: 'lax',
     secure: isProd,
+    domain: cookieDomain,
     path: '/',
     maxAge: 60 * 60 * 24 * 7
   })
@@ -68,10 +75,16 @@ export function setAdminSession(event: H3Event, email: string) {
 
 export function clearAdminSession(event: H3Event) {
   const isProd = process.env.NODE_ENV === 'production'
+  const host = String(event.node.req.headers.host || '')
+    .split(':')[0]
+    .trim()
+  const baseHost = host.replace(/^www\./, '')
+  const cookieDomain = (process.env.ADMIN_COOKIE_DOMAIN || (isProd && baseHost && baseHost !== 'localhost' ? `.${baseHost}` : '')) || undefined
   setCookie(event, COOKIE_NAME, '', {
     httpOnly: true,
     sameSite: 'lax',
     secure: isProd,
+    domain: cookieDomain,
     path: '/',
     maxAge: 0
   })
