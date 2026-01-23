@@ -182,6 +182,39 @@
           <h2 class="text-xl font-bold text-gray-900 mb-6">Resumo do Pedido</h2>
 
           <div v-if="product" class="space-y-4">
+            <div class="border border-gray-200 bg-gray-50 rounded-xl p-4">
+              <div class="text-sm font-semibold text-gray-900">Cupom de desconto</div>
+              <div class="mt-3 flex gap-3">
+                <input
+                  v-model="couponInput"
+                  class="flex-1 border border-gray-200 bg-white p-3 rounded-xl"
+                  placeholder="Digite seu cupom"
+                  :disabled="applyingCoupon || !!appliedCoupon"
+                />
+                <button
+                  v-if="!appliedCoupon"
+                  type="button"
+                  class="bg-gray-900 text-white px-4 rounded-xl disabled:opacity-60"
+                  :disabled="applyingCoupon || !couponInput"
+                  @click="applyCoupon"
+                >
+                  {{ applyingCoupon ? 'Aplicando...' : 'Aplicar' }}
+                </button>
+                <button
+                  v-else
+                  type="button"
+                  class="border border-gray-300 text-gray-800 px-4 rounded-xl"
+                  @click="removeCoupon"
+                >
+                  Remover
+                </button>
+              </div>
+              <div v-if="couponError" class="mt-2 text-xs text-red-600">{{ couponError }}</div>
+              <div v-if="appliedCoupon" class="mt-2 text-xs text-green-700">
+                Cupom aplicado: <span class="font-bold">{{ appliedCoupon.code }}</span> ({{ appliedCoupon.percent }}%)
+              </div>
+            </div>
+
             <div class="flex justify-between text-sm text-gray-600">
               <span>Subtotal</span>
               <span class="font-semibold text-gray-900">R$ {{ subtotal.toFixed(2).replace('.', ',') }}</span>
@@ -272,14 +305,20 @@ const subtotal = computed(() => Number(product.value?.price || 0))
 const desconto = computed(() => {
   const base = subtotal.value
   if (!base) return 0
-  if (paymentTab.value !== 'pix') return 0
-  return Math.round(base * 0.05 * 100) / 100
+  const pixDiscount = paymentTab.value === 'pix' ? Math.round(base * 0.05 * 100) / 100 : 0
+  const couponDiscount = appliedCoupon.value ? Math.round(base * (appliedCoupon.value.percent / 100) * 100) / 100 : 0
+  return Math.round((pixDiscount + couponDiscount) * 100) / 100
 })
 const total = computed(() => Math.max(0, Math.round((subtotal.value - desconto.value) * 100) / 100))
 const cardLoading = ref(false)
 const cardError = ref('')
 const cardSdkError = ref('')
 let mpCardForm: any = null
+
+const couponInput = ref('')
+const appliedCoupon = ref<{ id: string; code: string; percent: number } | null>(null)
+const couponError = ref('')
+const applyingCoupon = ref(false)
 
 function loadMpSdk() {
   return new Promise<void>((resolve, reject) => {
@@ -311,7 +350,7 @@ async function initCardForm() {
     const mp = new MercadoPago(publicKey, { locale: 'pt-BR' })
 
     mpCardForm = mp.cardForm({
-      amount: String(product.value?.price || 0),
+      amount: String(total.value || 0),
       autoMount: true,
       form: {
         id: 'mp-card-form',
@@ -364,6 +403,7 @@ async function payWithCard() {
       body: {
         produtoId: product.value.id,
         email: customerEmail.value,
+        couponCode: appliedCoupon.value?.code || null,
         token: cardData.token,
         payment_method_id: cardData.paymentMethodId,
         issuer_id: cardData.issuerId,
@@ -442,7 +482,8 @@ async function goToPix() {
         email: customerEmail.value,
         nome: nome.value,
         whatsapp: whatsapp.value,
-        cpf: cpf.value
+        cpf: cpf.value,
+        couponCode: appliedCoupon.value?.code || null
       }
     })
 
@@ -452,6 +493,45 @@ async function goToPix() {
     pixError.value = err?.data?.statusMessage || 'Não foi possível gerar o PIX'
   } finally {
     pixLoading.value = false
+  }
+}
+
+async function applyCoupon() {
+  if (!product.value) return
+  couponError.value = ''
+  applyingCoupon.value = true
+  try {
+    const res: any = await $fetch('/api/coupons/apply', {
+      method: 'POST',
+      body: {
+        produtoId: product.value.id,
+        paymentMethod: paymentTab.value,
+        code: couponInput.value
+      }
+    })
+
+    appliedCoupon.value = res.coupon
+    couponInput.value = ''
+
+    if (paymentTab.value === 'card') {
+      mpCardForm = null
+      await nextTick()
+      await initCardForm()
+    }
+  } catch (err: any) {
+    couponError.value = err?.data?.statusMessage || err?.message || 'Cupom inválido'
+    appliedCoupon.value = null
+  } finally {
+    applyingCoupon.value = false
+  }
+}
+
+function removeCoupon() {
+  appliedCoupon.value = null
+  couponError.value = ''
+  if (paymentTab.value === 'card') {
+    mpCardForm = null
+    nextTick(() => initCardForm())
   }
 }
 </script>

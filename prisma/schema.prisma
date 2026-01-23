@@ -66,11 +66,33 @@ model Order {
   produto              Produto  @relation(fields: [produtoId], references: [id])
   customerId           String
   customer             Customer @relation(fields: [customerId], references: [id])
+  cupomId              String?
+  cupom                Cupom?   @relation(fields: [cupomId], references: [id])
+  subtotalAmount       Float?
+  pixDiscountPercent   Int?
+  pixDiscountAmount    Float?
+  couponCode           String?
+  couponPercent        Int?
+  couponDiscountAmount Float?
+  totalAmount          Float?
   mercadoPagoPaymentId String?  @unique
   criadoEm             DateTime @default(now()) @db.DateTime(0)
   pagoEm               DateTime? @db.DateTime(0)
   emailEnviadoEm       DateTime? @db.DateTime(0)
   licencas             Licenca[]
+}
+
+model Cupom {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  percent   Int
+  active    Boolean  @default(true)
+  startsAt  DateTime? @db.DateTime(0)
+  expiresAt DateTime? @db.DateTime(0)
+  maxUses   Int?
+  usedCount Int      @default(0)
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  orders    Order[]
 }
 
 model Pagina {

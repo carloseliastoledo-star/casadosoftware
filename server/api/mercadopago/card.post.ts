@@ -8,6 +8,8 @@ export default defineEventHandler(async (event) => {
   const produtoId = String(body?.produtoId || '')
   const email = String(body?.email || '').trim().toLowerCase()
 
+  const couponCode = body?.couponCode ? String(body.couponCode) : ''
+
   const token = String(body?.token || '')
   const paymentMethodId = String(body?.payment_method_id || '')
   const issuerId = body?.issuer_id ? String(body.issuer_id) : undefined
@@ -26,25 +28,87 @@ export default defineEventHandler(async (event) => {
   const produto = await prisma.produto.findUnique({ where: { id: produtoId } })
   if (!produto) throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
 
-  const customer = await prisma.customer.upsert({
-    where: { email },
-    create: { email },
-    update: {}
-  })
+  const round2 = (n: number) => Math.round(n * 100) / 100
 
-  const order = await prisma.order.create({
-    data: {
-      status: 'PENDING',
-      produtoId: produto.id,
-      customerId: customer.id
+  const { order, coupon } = await prisma.$transaction(async (tx) => {
+    const customer = await tx.customer.upsert({
+      where: { email },
+      create: { email },
+      update: {}
+    })
+
+    let coupon: { id: string; code: string; percent: number } | null = null
+    const normalizedCode = String(couponCode || '').trim().toUpperCase()
+    if (normalizedCode) {
+      const c = await tx.cupom.findUnique({
+        where: { code: normalizedCode },
+        select: {
+          id: true,
+          code: true,
+          percent: true,
+          active: true,
+          startsAt: true,
+          expiresAt: true,
+          maxUses: true,
+          usedCount: true
+        }
+      })
+
+      if (!c) throw createError({ statusCode: 404, statusMessage: 'Cupom inválido' })
+      if (!c.active) throw createError({ statusCode: 400, statusMessage: 'Cupom inativo' })
+      const now = new Date()
+      if (c.startsAt && c.startsAt > now) throw createError({ statusCode: 400, statusMessage: 'Cupom ainda não está válido' })
+      if (c.expiresAt && c.expiresAt < now) throw createError({ statusCode: 400, statusMessage: 'Cupom expirado' })
+      if (c.maxUses !== null && c.maxUses !== undefined && c.usedCount >= c.maxUses) {
+        throw createError({ statusCode: 400, statusMessage: 'Cupom esgotado' })
+      }
+      const percent = Number(c.percent)
+      if (!Number.isFinite(percent) || percent <= 0 || percent > 100) {
+        throw createError({ statusCode: 400, statusMessage: 'Cupom inválido' })
+      }
+
+      coupon = { id: c.id, code: c.code, percent }
     }
+
+    const subtotalAmount = round2(Number(produto.preco))
+    const pixDiscountPercent = 0
+    const pixDiscountAmount = 0
+    const couponDiscountAmount = coupon ? round2(subtotalAmount * (coupon.percent / 100)) : 0
+    const totalAmount = Math.max(0, round2(subtotalAmount - pixDiscountAmount - couponDiscountAmount))
+
+    if (coupon) {
+      await tx.cupom.update({
+        where: { id: coupon.id },
+        data: { usedCount: { increment: 1 } }
+      })
+    }
+
+    const order = await tx.order.create({
+      data: {
+        status: 'PENDING',
+        produtoId: produto.id,
+        customerId: customer.id,
+        cupomId: coupon?.id || null,
+        subtotalAmount,
+        pixDiscountPercent,
+        pixDiscountAmount,
+        couponCode: coupon?.code || null,
+        couponPercent: coupon?.percent || null,
+        couponDiscountAmount: coupon ? couponDiscountAmount : null,
+        totalAmount
+      }
+    })
+
+    return { order, coupon }
   })
 
   const payment = getMpPayment()
 
+  const transactionAmount = Number(order.totalAmount ?? Number(produto.preco))
+
   const result = await payment.create({
     body: {
-      transaction_amount: Number(produto.preco),
+      transaction_amount: transactionAmount,
       description: produto.nome,
       token,
       installments,
@@ -59,7 +123,9 @@ export default defineEventHandler(async (event) => {
       },
       metadata: {
         orderId: order.id,
-        produtoId: produto.id
+        produtoId: produto.id,
+        couponCode: coupon?.code || null,
+        couponPercent: coupon?.percent || null
       },
       external_reference: order.id
     }

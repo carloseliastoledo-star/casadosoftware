@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
   const nome = body?.nome ? String(body.nome).trim() : undefined
   const whatsapp = body?.whatsapp ? String(body.whatsapp).trim() : undefined
   const cpf = body?.cpf ? String(body.cpf).trim() : undefined
+  const couponCode = body?.couponCode ? String(body.couponCode) : ''
 
   if (!produtoId) {
     throw createError({ statusCode: 400, statusMessage: 'produtoId obrigatório' })
@@ -24,28 +25,87 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
   }
 
-  const customer = await prisma.customer.upsert({
-    where: { email },
-    create: { email },
-    update: {}
-  })
+  const round2 = (n: number) => Math.round(n * 100) / 100
 
-  const order = await prisma.order.create({
-    data: {
-      status: 'PENDING',
-      produtoId: produto.id,
-      customerId: customer.id
+  const { customer, order, coupon } = await prisma.$transaction(async (tx) => {
+    const customer = await tx.customer.upsert({
+      where: { email },
+      create: { email },
+      update: {}
+    })
+
+    let coupon: { id: string; code: string; percent: number } | null = null
+    const normalizedCode = String(couponCode || '').trim().toUpperCase()
+    if (normalizedCode) {
+      const c = await tx.cupom.findUnique({
+        where: { code: normalizedCode },
+        select: {
+          id: true,
+          code: true,
+          percent: true,
+          active: true,
+          startsAt: true,
+          expiresAt: true,
+          maxUses: true,
+          usedCount: true
+        }
+      })
+
+      if (!c) throw createError({ statusCode: 404, statusMessage: 'Cupom inválido' })
+      if (!c.active) throw createError({ statusCode: 400, statusMessage: 'Cupom inativo' })
+      const now = new Date()
+      if (c.startsAt && c.startsAt > now) throw createError({ statusCode: 400, statusMessage: 'Cupom ainda não está válido' })
+      if (c.expiresAt && c.expiresAt < now) throw createError({ statusCode: 400, statusMessage: 'Cupom expirado' })
+      if (c.maxUses !== null && c.maxUses !== undefined && c.usedCount >= c.maxUses) {
+        throw createError({ statusCode: 400, statusMessage: 'Cupom esgotado' })
+      }
+      const percent = Number(c.percent)
+      if (!Number.isFinite(percent) || percent <= 0 || percent > 100) {
+        throw createError({ statusCode: 400, statusMessage: 'Cupom inválido' })
+      }
+
+      coupon = { id: c.id, code: c.code, percent }
     }
+
+    const subtotalAmount = round2(Number(produto.preco))
+    const pixDiscountPercent = 5
+    const pixDiscountAmount = round2(subtotalAmount * 0.05)
+    const couponDiscountAmount = coupon ? round2(subtotalAmount * (coupon.percent / 100)) : 0
+    const totalAmount = Math.max(0, round2(subtotalAmount - pixDiscountAmount - couponDiscountAmount))
+
+    if (coupon) {
+      await tx.cupom.update({
+        where: { id: coupon.id },
+        data: { usedCount: { increment: 1 } }
+      })
+    }
+
+    const order = await tx.order.create({
+      data: {
+        status: 'PENDING',
+        produtoId: produto.id,
+        customerId: customer.id,
+        cupomId: coupon?.id || null,
+        subtotalAmount,
+        pixDiscountPercent,
+        pixDiscountAmount,
+        couponCode: coupon?.code || null,
+        couponPercent: coupon?.percent || null,
+        couponDiscountAmount: coupon ? couponDiscountAmount : null,
+        totalAmount
+      }
+    })
+
+    return { customer, order, coupon }
   })
 
   const payment = getMpPayment()
 
-  const baseAmount = Number(produto.preco)
-  const discountedAmount = Math.round(baseAmount * 0.95 * 100) / 100
+  const transactionAmount = Number(order.totalAmount ?? Number(produto.preco))
 
   const result = await payment.create({
     body: {
-      transaction_amount: discountedAmount,
+      transaction_amount: transactionAmount,
       description: produto.nome,
       payment_method_id: 'pix',
       payer: {
@@ -57,7 +117,9 @@ export default defineEventHandler(async (event) => {
         nome,
         whatsapp,
         cpf,
-        descontoPercent: 5
+        pixDiscountPercent: 5,
+        couponCode: coupon?.code || null,
+        couponPercent: coupon?.percent || null
       },
       external_reference: order.id
     }

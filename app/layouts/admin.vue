@@ -26,6 +26,10 @@
           📦 Pedidos
         </NuxtLink>
 
+        <NuxtLink to="/admin/cupons" class="menu">
+          🏷️ Cupons
+        </NuxtLink>
+
         <NuxtLink to="/admin/tutoriais" class="menu">
           📘 Tutoriais
         </NuxtLink>
