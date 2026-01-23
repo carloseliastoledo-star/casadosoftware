@@ -134,14 +134,17 @@
         v-if="data"
         class="bg-white rounded-2xl shadow mt-12 p-8 space-y-10"
       >
-        <section>
-          <h2 class="text-2xl font-bold mb-3">
-            Descrição Detalhada
-          </h2>
-          <p class="text-gray-700 leading-relaxed whitespace-pre-line">
-            {{ safeProduct.descricao }}
-          </p>
-        </section>
+        <details class="group">
+          <summary class="list-none cursor-pointer select-none flex items-center justify-between gap-4">
+            <span class="text-2xl font-bold">Descrição Detalhada</span>
+            <span class="text-gray-500 group-open:rotate-180 transition-transform">▾</span>
+          </summary>
+          <div class="mt-4">
+            <p class="text-gray-700 leading-relaxed whitespace-pre-line">
+              {{ safeProduct.descricao }}
+            </p>
+          </div>
+        </details>
       </div>
 
     </div>
