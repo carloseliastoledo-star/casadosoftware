@@ -296,6 +296,10 @@ const pix = reactive<{ qrCode: string; qrCodeBase64: string | null }>({
   qrCodeBase64: null
 })
 
+const pixOrderId = ref('')
+const pixPaymentId = ref('')
+const pixPolling = ref(false)
+
 const cpf = ref('')
 const acceptedTerms = ref(false)
 const finalizeLoading = ref(false)
@@ -473,6 +477,8 @@ async function goToPix() {
   pixError.value = ''
   pix.qrCode = ''
   pix.qrCodeBase64 = null
+  pixOrderId.value = ''
+  pixPaymentId.value = ''
 
   try {
     const res: any = await $fetch('/api/mercadopago/pix', {
@@ -487,12 +493,53 @@ async function goToPix() {
       }
     })
 
+    pixOrderId.value = String(res.orderId || '')
+    pixPaymentId.value = String(res.paymentId || '')
+
     pix.qrCode = res.qrCode || ''
     pix.qrCodeBase64 = res.qrCodeBase64 || null
+
+    if (pixOrderId.value) {
+      startPixStatusPolling()
+    }
   } catch (err: any) {
     pixError.value = err?.data?.statusMessage || 'Não foi possível gerar o PIX'
   } finally {
     pixLoading.value = false
+  }
+}
+
+async function startPixStatusPolling() {
+  if (pixPolling.value) return
+  if (!pixOrderId.value) return
+
+  pixPolling.value = true
+  try {
+    const startedAt = Date.now()
+
+    while (Date.now() - startedAt < 10 * 60 * 1000) {
+      const res: any = await $fetch('/api/order-status', {
+        query: { orderId: pixOrderId.value }
+      })
+
+      const status = String(res?.order?.status || '').toUpperCase()
+      if (status === 'PAID') {
+        navigateTo({
+          path: '/obrigado',
+          query: {
+            orderId: pixOrderId.value,
+            paymentId: pixPaymentId.value || undefined
+          }
+        })
+        return
+      }
+
+      await new Promise((r) => setTimeout(r, 4000))
+    }
+  } catch {
+    // ignora: usuário ainda pode pagar e o webhook confirmar depois
+  } finally {
+    pixPolling.value = false
   }
 }
 
