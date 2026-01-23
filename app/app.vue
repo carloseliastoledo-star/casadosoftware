@@ -29,7 +29,7 @@ useHead(() => {
   return {
     script: [
       {
-        src: `https://googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryId)}`,
+        src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryId)}`,
         async: true
       },
       {
