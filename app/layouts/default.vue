@@ -88,6 +88,11 @@
           <ul class="space-y-2">
             <li><NuxtLink to="/produtos" class="hover:text-blue-600">Produtos</NuxtLink></li>
             <li><NuxtLink to="/tutoriais" class="hover:text-blue-600">Tutoriais</NuxtLink></li>
+            <li><NuxtLink to="/quem-somos" class="hover:text-blue-600">Quem somos</NuxtLink></li>
+            <li><NuxtLink to="/entrega-digital" class="hover:text-blue-600">Entrega digital</NuxtLink></li>
+            <li><NuxtLink to="/reembolso" class="hover:text-blue-600">Política de reembolso</NuxtLink></li>
+            <li><NuxtLink to="/privacidade" class="hover:text-blue-600">Privacidade</NuxtLink></li>
+            <li><NuxtLink to="/termos" class="hover:text-blue-600">Termos de uso</NuxtLink></li>
             <li v-for="p in paginas" :key="p.slug">
               <NuxtLink :to="`/paginas/${p.slug}`" class="hover:text-blue-600">{{ p.titulo }}</NuxtLink>
             </li>
@@ -99,6 +104,9 @@
           <p>Atendimento rápido e especializado</p>
           <p class="mt-2 font-medium text-gray-800">
             suporte@casadosoftware.com
+          </p>
+          <p class="mt-2 text-xs text-gray-500">
+            Eletrokeys LTDA — CNPJ 44.694.365/0001-48
           </p>
         </div>
       </div>

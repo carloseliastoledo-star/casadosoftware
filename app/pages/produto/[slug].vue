@@ -201,31 +201,7 @@ const safeProduct = computed(() => {
 
   const descricaoCurta = descricaoCurtaBase.length > 220 ? `${descricaoCurtaBase.slice(0, 220)}...` : descricaoCurtaBase
 
-  const descricaoLonga = `
-${descricaoBase || descricaoCurta}
-
-O ${nome} é a solução ideal para quem busca desempenho, segurança e confiabilidade.
-Com ativação rápida e compatibilidade total com sistemas atuais, você garante um produto
-original, com suporte especializado e entrega imediata.
-
-Nossa licença é vitalícia, sem mensalidades ou renovações, permitindo uso contínuo em seu
-computador com total tranquilidade. A ativação é simples e rápida, podendo ser realizada em
-poucos minutos após a compra.
-
-Ao adquirir o ${nome}, você recebe:
-
-• Chave de ativação oficial e exclusiva  
-• Link direto para download do software  
-• Guia completo de instalação passo a passo  
-• Suporte técnico especializado em português  
-
-Trabalhamos apenas com licenças originais, garantindo segurança, estabilidade e atualizações
-oficiais diretamente do fabricante. Milhares de clientes confiam em nossa plataforma para
-aquisição de softwares digitais.
-
-Se você procura uma solução definitiva, segura e com excelente custo-benefício, o ${nome}
-é a escolha certa.
-`.trim()
+  const descricaoLonga = String(descricaoBase || descricaoCurta || '').trim()
 
   return {
     ...p,
