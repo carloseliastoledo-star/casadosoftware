@@ -1,5 +1,6 @@
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
+import { getDefaultProductDescription } from '../../../utils/productDescriptionTemplate'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -9,6 +10,16 @@ export default defineEventHandler(async (event) => {
 
   const hasGoogleAds = Boolean(body.googleAdsConversionLabel)
 
+  const descricaoProvided = typeof body.descricao === 'string'
+  const rawDescricao = descricaoProvided ? body.descricao.trim() : ''
+
+  let descricao: string | undefined
+  if (descricaoProvided) {
+    descricao = rawDescricao ? rawDescricao : getDefaultProductDescription({ nome: body.nome, slug: body.slug })
+  } else {
+    descricao = undefined
+  }
+
   try {
     return await prisma.produto.update({
       where: { id },
@@ -16,7 +27,7 @@ export default defineEventHandler(async (event) => {
         nome: body.nome,
         slug: body.slug,
         preco: Number(body.preco),
-        descricao: body.descricao,
+        ...(descricao !== undefined ? { descricao } : {}),
         ativo: body.ativo,
         imagem: body.imagem,
         ...(hasGoogleAds
