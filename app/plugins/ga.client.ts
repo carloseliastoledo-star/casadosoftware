@@ -17,20 +17,23 @@ export default defineNuxtPlugin(async (nuxtApp) => {
 
   w.gtag('js', new Date())
 
+  const isDebug = window.location.search.includes('debug_ga=1')
+
   if (googleAnalyticsId) {
-    w.gtag('config', googleAnalyticsId)
+    w.gtag('config', googleAnalyticsId, {
+      send_page_view: false,
+      ...(isDebug ? { debug_mode: true } : {})
+    })
   }
 
   if (googleAdsConversionId) {
     w.gtag('config', googleAdsConversionId)
   }
 
-  const isDebug = window.location.search.includes('debug_ga=1')
-
   const pageView = (path: string) => {
     if (!googleAnalyticsId) return
 
-    w.gtag('config', googleAnalyticsId, {
+    w.gtag('event', 'page_view', {
       page_path: path,
       page_location: window.location.href,
       page_title: document.title,
