@@ -62,7 +62,7 @@ export function getDefaultProductDescription(input: ProductTemplateInput) {
       '- Acesso válido por 12 meses (assinatura anual)',
       '- Conta de acesso (login e senha) fornecida após a compra',
       '- Troca de senha obrigatória no primeiro acesso',
-      '- Uso individual (1 usuário)',
+      '- Ativação para até 5 dispositivos (PC, Mac, tablet e celular — iOS/Android)',
       '- Instruções de primeiro acesso',
       '- Suporte por e-mail',
       '',
