@@ -12,11 +12,15 @@ export default defineEventHandler(async (event) => {
   const rawDescricao = typeof body.descricao === 'string' ? body.descricao.trim() : ''
   const descricao = rawDescricao ? rawDescricao : getDefaultProductDescription({ nome: body.nome, slug: body.slug })
 
+  const rawFinalUrl = typeof body.finalUrl === 'string' ? body.finalUrl.trim() : ''
+  const finalUrl = rawFinalUrl ? rawFinalUrl : null
+
   try {
     return await prisma.produto.create({
       data: {
         nome: body.nome,
         slug: body.slug,
+        finalUrl,
         preco: Number(body.preco),
         descricao,
         ativo: body.ativo ?? true,

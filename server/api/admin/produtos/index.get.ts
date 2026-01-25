@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
       id: true,
       nome: true,
       slug: true,
+      finalUrl: true,
       preco: true,
       ativo: true
     },

@@ -4,6 +4,7 @@ definePageMeta({ layout: 'admin' })
 const form = reactive({
   nome: '',
   slug: '',
+  finalUrl: '',
   preco: '',
   descricao: '',
   ativo: true,
@@ -120,6 +121,12 @@ async function salvar() {
       <input
         v-model="form.slug"
         placeholder="Slug (ex: windows-11-pro)"
+        class="w-full border p-2 rounded"
+      />
+
+      <input
+        v-model="form.finalUrl"
+        placeholder="URL final (opcional)"
         class="w-full border p-2 rounded"
       />
 

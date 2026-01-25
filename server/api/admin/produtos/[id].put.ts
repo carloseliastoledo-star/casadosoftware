@@ -10,6 +10,10 @@ export default defineEventHandler(async (event) => {
 
   const hasGoogleAds = Boolean(body.googleAdsConversionLabel)
 
+  const finalUrlProvided = typeof body.finalUrl === 'string'
+  const rawFinalUrl = finalUrlProvided ? body.finalUrl.trim() : ''
+  const finalUrl = finalUrlProvided ? (rawFinalUrl ? rawFinalUrl : null) : undefined
+
   const descricaoProvided = typeof body.descricao === 'string'
   const rawDescricao = descricaoProvided ? body.descricao.trim() : ''
 
@@ -26,6 +30,7 @@ export default defineEventHandler(async (event) => {
       data: {
         nome: body.nome,
         slug: body.slug,
+        ...(finalUrl !== undefined ? { finalUrl } : {}),
         preco: Number(body.preco),
         ...(descricao !== undefined ? { descricao } : {}),
         ativo: body.ativo,

@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
     id: product.id,
     name: product.nome,
     slug: product.slug,
+    finalUrl: product.finalUrl,
     description,
     price: product.preco,
     image: product.imagem,

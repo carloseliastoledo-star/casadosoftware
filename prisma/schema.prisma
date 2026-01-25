@@ -17,6 +17,7 @@ model Produto {
   id        String    @id @default(uuid())
   nome      String
   slug      String    @unique
+  finalUrl  String?
   descricao String?   @db.Text
   preco     Float
   ativo     Boolean   @default(true)
