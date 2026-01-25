@@ -105,6 +105,11 @@
           <p class="mt-2 font-medium text-gray-800">
             sac@acasadosoftware.com.br
           </p>
+          <p class="mt-2 font-medium text-gray-800">
+            <a class="hover:underline" href="https://wa.me/5511910512647" target="_blank" rel="noopener noreferrer">
+              WhatsApp: (11) 91051-2647
+            </a>
+          </p>
           <p class="mt-2 text-xs text-gray-500">
             Eletrokeys LTDA — CNPJ 44.694.365/0001-48
           </p>
