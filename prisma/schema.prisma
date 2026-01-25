@@ -31,7 +31,7 @@ model Produto {
   criadoEm  DateTime  @default(now()) @db.DateTime(0)
   licencas  Licenca[]
   orders    Order[]
-  categorias Categoria[]
+  produtoCategorias ProdutoCategoria[]
 }
 
 
@@ -66,7 +66,16 @@ model Categoria {
   id       String    @id @default(uuid())
   nome     String
   slug     String    @unique
-  produtos Produto[]
+  produtoCategorias ProdutoCategoria[]
+}
+
+model ProdutoCategoria {
+  produtoId  String
+  categoriaId String
+  produto    Produto   @relation(fields: [produtoId], references: [id])
+  categoria  Categoria @relation(fields: [categoriaId], references: [id])
+
+  @@id([produtoId, categoriaId])
 }
 
 model WooImportState {

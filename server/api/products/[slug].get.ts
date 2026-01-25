@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   const product = await prisma.produto.findUnique({
     where: { slug: String(slug) },
     include: {
-      categorias: { select: { slug: true } }
+      produtoCategorias: { select: { categoria: { select: { slug: true } } } }
     }
   })
 
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
     description,
     price: product.preco,
     image: product.imagem,   // 👈 CAMPO CRÍTICO
-    categories: (product.categorias || []).map((c) => c.slug),
+    categories: (product.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
     tutorialTitle: product.tutorialTitulo,
     tutorialSubtitle: product.tutorialSubtitulo,
     tutorialContent: product.tutorialConteudo,

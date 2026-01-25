@@ -13,7 +13,7 @@ export default defineEventHandler(async () => {
         descricao: true,
         preco: true,
         imagem: true,
-        categorias: { select: { slug: true } },
+        produtoCategorias: { select: { categoria: { select: { slug: true } } } },
         tutorialTitulo: true,
         tutorialSubtitulo: true,
         criadoEm: true
@@ -30,7 +30,7 @@ export default defineEventHandler(async () => {
       description: p.descricao,
       price: p.preco,
       image: p.imagem,
-      categories: (p.categorias || []).map((c) => c.slug),
+      categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
       tutorialTitle: p.tutorialTitulo,
       tutorialSubtitle: p.tutorialSubtitulo,
       createdAt: p.criadoEm

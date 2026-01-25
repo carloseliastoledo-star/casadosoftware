@@ -40,9 +40,11 @@ export default defineEventHandler(async (event) => {
         imagem: body.imagem,
         ...(categoriasProvided
           ? {
-              categorias: {
-                set: [],
-                connect: categorias.map((slug: string) => ({ slug }))
+              produtoCategorias: {
+                deleteMany: {},
+                create: categorias.map((slug: string) => ({
+                  categoria: { connect: { slug } }
+                }))
               }
             }
           : {}),

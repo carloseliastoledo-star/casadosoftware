@@ -13,17 +13,20 @@ export default defineEventHandler(async (event) => {
       id: true,
       nome: true,
       slug: true,
-      produtos: {
-        where: { ativo: true },
-        orderBy: { criadoEm: 'desc' },
+      produtoCategorias: {
         select: {
-          id: true,
-          nome: true,
-          slug: true,
-          descricao: true,
-          preco: true,
-          imagem: true,
-          criadoEm: true
+          produto: {
+            where: { ativo: true },
+            select: {
+              id: true,
+              nome: true,
+              slug: true,
+              descricao: true,
+              preco: true,
+              imagem: true,
+              criadoEm: true
+            }
+          }
         }
       }
     }
@@ -40,14 +43,18 @@ export default defineEventHandler(async (event) => {
       nome: categoria.nome,
       slug: categoria.slug
     },
-    produtos: categoria.produtos.map((p) => ({
-      id: p.id,
-      name: p.nome,
-      slug: p.slug,
-      description: p.descricao,
-      price: p.preco,
-      image: p.imagem,
-      createdAt: p.criadoEm
-    }))
+    produtos: (categoria.produtoCategorias || [])
+      .map((pc) => pc.produto)
+      .filter(Boolean)
+      .sort((a, b) => Number(new Date(b.criadoEm)) - Number(new Date(a.criadoEm)))
+      .map((p) => ({
+        id: p.id,
+        name: p.nome,
+        slug: p.slug,
+        description: p.descricao,
+        price: p.preco,
+        image: p.imagem,
+        createdAt: p.criadoEm
+      }))
   }
 })

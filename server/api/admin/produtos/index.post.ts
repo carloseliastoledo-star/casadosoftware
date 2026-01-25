@@ -29,8 +29,10 @@ export default defineEventHandler(async (event) => {
         imagem: body.imagem,
         ...(categorias.length
           ? {
-              categorias: {
-                connect: categorias.map((slug: string) => ({ slug }))
+              produtoCategorias: {
+                create: categorias.map((slug: string) => ({
+                  categoria: { connect: { slug } }
+                }))
               }
             }
           : {}),
