@@ -26,6 +26,14 @@
           📦 Pedidos
         </NuxtLink>
 
+        <NuxtLink to="/admin/clientes" class="menu">
+          👤 Clientes
+        </NuxtLink>
+
+        <NuxtLink to="/admin/importar-woocommerce" class="menu">
+          🔄 Importar WooCommerce
+        </NuxtLink>
+
         <NuxtLink to="/admin/cupons" class="menu">
           🏷️ Cupons
         </NuxtLink>
