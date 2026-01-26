@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../db/prisma'
 import { getMpPayment } from '../../utils/mercadopago.js'
+import { processMercadoPagoPayment } from '../../utils/mercadopagoWebhook.js'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -146,6 +147,12 @@ export default defineEventHandler(async (event) => {
       pagoEm: status === 'approved' ? new Date() : null
     }
   })
+
+  if (status === 'approved') {
+    processMercadoPagoPayment(mpPaymentId).catch((err) => {
+      console.log('[card] processMercadoPagoPayment error', err)
+    })
+  }
 
   return {
     ok: true,
