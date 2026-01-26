@@ -9,6 +9,8 @@ export default defineEventHandler((event: H3Event) => {
   if (path.startsWith('/api/customer/auth/login')) return
   if (path.startsWith('/api/customer/auth/register')) return
   if (path.startsWith('/api/customer/auth/logout')) return
+  if (path.startsWith('/api/customer/auth/forgot')) return
+  if (path.startsWith('/api/customer/auth/reset')) return
 
   const session = getCustomerSession(event)
   if (!session) {

@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({ layout: 'admin' })
 
 const { data, refresh } = await useFetch('/api/admin/produtos')
 
 const deletingId = ref('')
 
-async function excluirProduto(id) {
+async function excluirProduto(id: string) {
   const ok = confirm('Tem certeza que deseja excluir este produto?')
   if (!ok) return
 

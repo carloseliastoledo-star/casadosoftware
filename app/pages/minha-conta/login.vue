@@ -50,6 +50,14 @@
             <input v-model="password" type="password" class="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl" />
           </div>
 
+          <NuxtLink
+            v-if="mode === 'login'"
+            to="/minha-conta/esqueci-senha"
+            class="block text-sm text-blue-600 hover:underline"
+          >
+            Esqueci a senha
+          </NuxtLink>
+
           <button
             :disabled="loading"
             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl transition disabled:opacity-60"
