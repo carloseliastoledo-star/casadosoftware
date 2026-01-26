@@ -15,7 +15,9 @@
         :to="`/produto/${p.slug}`"
         class="bg-white rounded-lg shadow hover:shadow-md transition p-4"
       >
-        <img v-if="p.image" :src="p.image" class="w-full h-40 object-cover rounded" />
+        <div v-if="p.image" class="w-full h-40 bg-gray-50 rounded overflow-hidden flex items-center justify-center">
+          <img :src="p.image" class="w-full h-full object-contain" />
+        </div>
         <div class="mt-3 font-semibold">{{ p.name }}</div>
         <div class="mt-1 text-sm text-gray-600" v-if="p.price !== null && p.price !== undefined">
           {{ formatMoney(p.price) }}
