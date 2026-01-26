@@ -72,6 +72,13 @@
                 <button class="text-blue-600 hover:text-blue-800" @click="openEditModal(o)">
                   Editar
                 </button>
+                <button
+                  v-if="canManualFulfill(o)"
+                  class="text-emerald-700 hover:text-emerald-900"
+                  @click="openFulfillModal(o)"
+                >
+                  Entregar licença
+                </button>
                 <button class="text-red-600 hover:text-red-800" @click="deleteOrder(o)">
                   Apagar
                 </button>
@@ -203,6 +210,65 @@
         </div>
       </div>
     </div>
+
+    <div v-if="showFulfill" class="fixed inset-0 z-50">
+      <div class="absolute inset-0 bg-black/40" @click="closeFulfillModal" />
+
+      <div class="absolute inset-0 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg">
+          <div class="flex items-center justify-between p-5 border-b">
+            <div>
+              <h2 class="text-lg font-semibold">Entrega manual de licença</h2>
+              <p class="text-sm text-gray-600 mt-1 font-mono">{{ fulfillOrder?.id }}</p>
+            </div>
+            <button class="text-gray-500 hover:text-gray-700" @click="closeFulfillModal">Fechar</button>
+          </div>
+
+          <div class="p-5 space-y-4">
+            <div class="text-sm text-gray-700">
+              <div><span class="font-semibold">Produto:</span> {{ fulfillOrder?.produto?.nome }}</div>
+              <div><span class="font-semibold">Cliente:</span> {{ fulfillOrder?.customer?.email }}</div>
+            </div>
+
+            <div v-if="fulfillLoadingKeys" class="text-sm text-gray-500">
+              Carregando licenças em estoque...
+            </div>
+            <div v-else-if="fulfillKeysError" class="text-sm text-red-700">
+              {{ fulfillKeysError }}
+            </div>
+
+            <div v-else>
+              <label class="block font-medium mb-2">Selecione uma licença (estoque)</label>
+              <select v-model="selectedLicencaId" class="w-full border rounded-lg p-3">
+                <option value="">Selecione...</option>
+                <option v-for="k in fulfillKeys" :key="k.id" :value="k.id">
+                  {{ k.chave }}
+                </option>
+              </select>
+              <p v-if="!fulfillKeys.length" class="text-xs text-gray-500 mt-2">
+                Não há licenças em estoque para este produto.
+              </p>
+            </div>
+
+            <div v-if="fulfillMessage" class="text-green-700 text-sm font-medium">{{ fulfillMessage }}</div>
+            <div v-if="fulfillError" class="text-red-700 text-sm font-medium">{{ fulfillError }}</div>
+          </div>
+
+          <div class="p-5 border-t flex items-center justify-end gap-3">
+            <button class="px-4 py-2 rounded-lg border" @click="closeFulfillModal" :disabled="fulfillSubmitting">
+              Cancelar
+            </button>
+            <button
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+              @click="submitFulfill"
+              :disabled="fulfillSubmitting || !selectedLicencaId"
+            >
+              {{ fulfillSubmitting ? 'Enviando...' : 'Vincular e enviar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -255,6 +321,22 @@ const importLoading = ref(false)
 const importMessage = ref('')
 const importError = ref('')
 
+type StockKey = {
+  id: string
+  chave: string
+  status: string
+}
+
+const showFulfill = ref(false)
+const fulfillOrder = ref<OrderDto | null>(null)
+const fulfillKeys = ref<StockKey[]>([])
+const fulfillLoadingKeys = ref(false)
+const fulfillKeysError = ref('')
+const selectedLicencaId = ref('')
+const fulfillSubmitting = ref(false)
+const fulfillMessage = ref('')
+const fulfillError = ref('')
+
 function openImportModal() {
   showImport.value = true
   importMessage.value = ''
@@ -263,6 +345,75 @@ function openImportModal() {
 
 function closeImportModal() {
   showImport.value = false
+}
+
+function canManualFulfill(o: OrderDto) {
+  return String(o.status || '').toUpperCase() === 'PAID' && (!o.licencas || o.licencas.length === 0)
+}
+
+async function openFulfillModal(o: OrderDto) {
+  showFulfill.value = true
+  fulfillOrder.value = o
+  selectedLicencaId.value = ''
+  fulfillMessage.value = ''
+  fulfillError.value = ''
+  fulfillKeysError.value = ''
+  fulfillKeys.value = []
+
+  const produtoId = o?.produto?.id || ''
+  if (!produtoId) {
+    fulfillKeysError.value = 'Produto do pedido não encontrado.'
+    return
+  }
+
+  fulfillLoadingKeys.value = true
+  try {
+    const res: any = await $fetch('/api/admin/licenses/stock-keys', {
+      query: {
+        produtoId,
+        page: 1,
+        pageSize: 200
+      }
+    })
+    fulfillKeys.value = Array.isArray(res?.items) ? res.items : []
+  } catch (err: any) {
+    fulfillKeysError.value = err?.data?.statusMessage || 'Erro ao carregar licenças em estoque'
+  } finally {
+    fulfillLoadingKeys.value = false
+  }
+}
+
+function closeFulfillModal() {
+  showFulfill.value = false
+  fulfillOrder.value = null
+  fulfillKeys.value = []
+  fulfillKeysError.value = ''
+  selectedLicencaId.value = ''
+  fulfillSubmitting.value = false
+  fulfillMessage.value = ''
+  fulfillError.value = ''
+}
+
+async function submitFulfill() {
+  if (!fulfillOrder.value?.id) return
+  if (!selectedLicencaId.value) return
+
+  fulfillSubmitting.value = true
+  fulfillMessage.value = ''
+  fulfillError.value = ''
+  try {
+    await $fetch(`/api/admin/pedidos/${fulfillOrder.value.id}/fulfill`, {
+      method: 'POST',
+      body: { licencaId: selectedLicencaId.value }
+    })
+    fulfillMessage.value = 'Licença vinculada e e-mail enviado com sucesso.'
+    await refresh()
+    closeFulfillModal()
+  } catch (err: any) {
+    fulfillError.value = err?.data?.statusMessage || 'Erro ao vincular/enviar licença'
+  } finally {
+    fulfillSubmitting.value = false
+  }
 }
 
 function openEditModal(o: OrderDto) {
