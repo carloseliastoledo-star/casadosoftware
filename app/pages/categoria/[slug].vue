@@ -36,13 +36,32 @@ const { data, pending, error } = await useFetch(() => `/api/categorias/${slug}`,
 const categoria = computed(() => (data.value as any)?.categoria || null)
 const produtos = computed(() => (data.value as any)?.produtos || [])
 
+const canonicalUrl = computed(() => {
+  const s = categoria.value?.slug || slug
+  if (!s) return ''
+  const url = useRequestURL()
+  const origin = url?.origin || ''
+  return origin ? `${origin}/categoria/${s}` : ''
+})
+
 const pageTitle = computed(() => {
   return categoria.value?.nome ? `${categoria.value.nome} | Casa do Software` : 'Categoria | Casa do Software'
 })
 
-useSeoMeta({
-  title: pageTitle
+const pageDescription = computed(() => {
+  return categoria.value?.descricao || ''
 })
+
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription
+})
+
+useHead(() => ({
+  link: canonicalUrl.value
+    ? [{ rel: 'canonical', href: canonicalUrl.value }]
+    : []
+}))
 
 function formatMoney(n: number) {
   try {

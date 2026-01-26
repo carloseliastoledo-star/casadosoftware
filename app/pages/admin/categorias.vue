@@ -27,6 +27,9 @@
         >
           Criar
         </button>
+        <button class="px-4 py-2 rounded-lg border" :disabled="loading" @click="seedPadrao">
+          Criar categorias padrão
+        </button>
         <button class="px-4 py-2 rounded-lg border" :disabled="loading" @click="refresh">Atualizar</button>
       </div>
 
@@ -140,6 +143,24 @@ async function remove(c: CategoriaDto) {
     message.value = 'Categoria apagada.'
   } catch (err: any) {
     error.value = err?.data?.statusMessage || 'Erro ao apagar categoria'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function seedPadrao() {
+  if (!confirm('Criar/atualizar as categorias padrão?')) return
+
+  loading.value = true
+  error.value = ''
+  message.value = ''
+
+  try {
+    await $fetch('/api/admin/categorias/seed', { method: 'POST' })
+    await refresh()
+    message.value = 'Categorias padrão criadas.'
+  } catch (err: any) {
+    error.value = err?.data?.statusMessage || 'Erro ao criar categorias padrão'
   } finally {
     loading.value = false
   }

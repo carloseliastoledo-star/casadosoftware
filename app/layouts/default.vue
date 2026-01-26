@@ -22,6 +22,29 @@
             Produtos
           </NuxtLink>
 
+          <div class="relative group">
+            <NuxtLink to="/categorias" class="hover:text-blue-600">
+              Categorias
+            </NuxtLink>
+            <div
+              class="hidden group-hover:block absolute left-0 top-full pt-3"
+            >
+              <div class="bg-white border rounded-xl shadow-lg p-3 min-w-56">
+                <div v-if="!categorias.length" class="text-xs text-gray-500 px-2 py-1">
+                  Nenhuma categoria
+                </div>
+                <NuxtLink
+                  v-for="c in categorias"
+                  :key="c.id"
+                  :to="`/categoria/${c.slug}`"
+                  class="block px-2 py-2 rounded hover:bg-gray-50 hover:text-blue-600"
+                >
+                  {{ c.nome }}
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+
           <NuxtLink to="/tutoriais" class="hover:text-blue-600">
             Tutoriais
           </NuxtLink>
@@ -50,6 +73,12 @@
             class="text-sm font-semibold text-gray-700 hover:text-blue-600"
           >
             Conta
+          </NuxtLink>
+          <NuxtLink
+            to="/categorias"
+            class="text-sm font-semibold text-gray-700 hover:text-blue-600"
+          >
+            Categorias
           </NuxtLink>
           <NuxtLink
             to="/checkout"
@@ -130,13 +159,24 @@ type PaginaLinkDto = {
   slug: string
 }
 
+type CategoriaLinkDto = {
+  id: string
+  nome: string
+  slug: string
+}
+
 const { cart } = useCart()
 
 const { data } = await useFetch<{ ok: true; paginas: PaginaLinkDto[] }>('/api/paginas', {
   server: true
 })
 
+const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaLinkDto[] }>('/api/categorias', {
+  server: true
+})
+
 const paginas = computed(() => data.value?.paginas || [])
+const categorias = computed(() => categoriasData.value?.categorias || [])
 
 const cartCount = computed(() => (cart.value || []).length)
 </script>
