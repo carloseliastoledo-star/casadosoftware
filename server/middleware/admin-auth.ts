@@ -7,6 +7,7 @@ export default defineEventHandler((event: H3Event) => {
   if (!path.startsWith('/api/admin')) return
 
   if (path.startsWith('/api/admin/auth/login')) return
+  if (path.startsWith('/api/admin/auth/logout')) return
 
   const session = getAdminSession(event)
   if (!session) {

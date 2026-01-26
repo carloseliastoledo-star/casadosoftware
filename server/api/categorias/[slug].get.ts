@@ -14,9 +14,11 @@ export default defineEventHandler(async (event) => {
       nome: true,
       slug: true,
       produtoCategorias: {
+        where: {
+          produto: { ativo: true }
+        },
         select: {
           produto: {
-            where: { ativo: true },
             select: {
               id: true,
               nome: true,

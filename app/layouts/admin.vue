@@ -88,8 +88,11 @@
 
 <script setup>
 async function logout() {
-  await $fetch('/api/admin/auth/logout', { method: 'POST' })
-  navigateTo('/admin/login')
+  try {
+    await $fetch('/api/admin/auth/logout', { method: 'POST' })
+  } finally {
+    navigateTo('/admin/login')
+  }
 }
 </script>
 
