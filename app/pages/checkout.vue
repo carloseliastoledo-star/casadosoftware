@@ -300,6 +300,9 @@ const pixOrderId = ref('')
 const pixPaymentId = ref('')
 const pixPolling = ref(false)
 
+const PIX_ORDER_STORAGE_KEY = 'checkout_pix_order_id'
+const PIX_PAYMENT_STORAGE_KEY = 'checkout_pix_payment_id'
+
 const cpf = ref('')
 const acceptedTerms = ref(false)
 const finalizeLoading = ref(false)
@@ -496,6 +499,29 @@ async function goToPix() {
     pixOrderId.value = String(res.orderId || '')
     pixPaymentId.value = String(res.paymentId || '')
 
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(PIX_ORDER_STORAGE_KEY, pixOrderId.value)
+        window.localStorage.setItem(PIX_PAYMENT_STORAGE_KEY, pixPaymentId.value)
+      } catch {
+        // ignore
+      }
+    }
+
+    if (pixOrderId.value) {
+      navigateTo(
+        {
+          path: '/checkout',
+          query: {
+            ...(route.query || {}),
+            orderId: pixOrderId.value,
+            paymentId: pixPaymentId.value || undefined
+          }
+        },
+        { replace: true }
+      )
+    }
+
     pix.qrCode = res.qrCode || ''
     pix.qrCodeBase64 = res.qrCodeBase64 || null
 
@@ -524,6 +550,14 @@ async function startPixStatusPolling() {
 
       const status = String(res?.order?.status || '').toUpperCase()
       if (status === 'PAID') {
+        if (typeof window !== 'undefined') {
+          try {
+            window.localStorage.removeItem(PIX_ORDER_STORAGE_KEY)
+            window.localStorage.removeItem(PIX_PAYMENT_STORAGE_KEY)
+          } catch {
+            // ignore
+          }
+        }
         navigateTo({
           path: '/obrigado',
           query: {
@@ -581,4 +615,30 @@ function removeCoupon() {
     nextTick(() => initCardForm())
   }
 }
+
+onMounted(() => {
+  if (typeof window === 'undefined') return
+
+  const qOrderId = String(route.query.orderId || '').trim()
+  const qPaymentId = String(route.query.paymentId || '').trim()
+
+  if (qOrderId) {
+    pixOrderId.value = qOrderId
+    if (qPaymentId) pixPaymentId.value = qPaymentId
+    startPixStatusPolling()
+    return
+  }
+
+  try {
+    const savedOrderId = String(window.localStorage.getItem(PIX_ORDER_STORAGE_KEY) || '').trim()
+    const savedPaymentId = String(window.localStorage.getItem(PIX_PAYMENT_STORAGE_KEY) || '').trim()
+    if (savedOrderId) {
+      pixOrderId.value = savedOrderId
+      if (savedPaymentId) pixPaymentId.value = savedPaymentId
+      startPixStatusPolling()
+    }
+  } catch {
+    // ignore
+  }
+})
 </script>
