@@ -147,6 +147,10 @@
 
       <div class="text-center text-xs text-gray-500 py-4 border-t">
         © {{ new Date().getFullYear() }} Casa do Software — Todos os direitos reservados.
+        <div class="mt-2 max-w-4xl mx-auto">
+          A Casa do Software (Eletrokeys LTDA) é uma empresa independente registrada no Microsoft Partner Network.
+          Não somos a loja oficial da Microsoft.
+        </div>
       </div>
     </footer>
 
