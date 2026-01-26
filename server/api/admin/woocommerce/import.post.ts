@@ -20,7 +20,17 @@ function parseMoney(input: unknown): number | null {
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const body = await readBody(event)
+  let body: any = {}
+  try {
+    body = await readBody(event)
+  } catch (err: any) {
+    const status = Number(err?.statusCode || err?.status || 0)
+    const msg = String(err?.statusMessage || err?.message || '')
+    if (status !== 415 && !msg.toLowerCase().includes('unsupported media type')) {
+      throw err
+    }
+    body = {}
+  }
 
   const pagesPerRunRaw = Number(body?.pagesPerRun ?? 3)
   const pagesPerRun = Number.isFinite(pagesPerRunRaw) ? Math.max(1, Math.min(25, Math.floor(pagesPerRunRaw))) : 3

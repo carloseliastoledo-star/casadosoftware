@@ -218,51 +218,61 @@ async function upsertProdutoByWoo(input: {
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  let body: any = {}
   try {
-    const body = await readBody(event)
-
-    const pagesPerRunRaw = Number(body?.pagesPerRun ?? 3)
-    const pagesPerRun = Number.isFinite(pagesPerRunRaw) ? Math.max(1, Math.min(25, Math.floor(pagesPerRunRaw))) : 3
-
-    const perPageRaw = Number(body?.perPage ?? 100)
-    const perPage = Number.isFinite(perPageRaw) ? Math.max(10, Math.min(100, Math.floor(perPageRaw))) : 100
-
-    const forceRestart = Boolean(body?.forceRestart)
-
-    let state = await prisma.wooImportState.findUnique({ where: { key: STATE_KEY } })
-
-    if (!state || forceRestart) {
-      state = await prisma.wooImportState.upsert({
-        where: { key: STATE_KEY },
-        create: {
-          key: STATE_KEY,
-          resource: 'products',
-          after: null,
-          nextPage: 1,
-          done: false
-        },
-        update: {
-          resource: 'products',
-          after: null,
-          nextPage: 1,
-          done: false
-        }
-      })
+    body = await readBody(event)
+  } catch (err: any) {
+    const status = Number(err?.statusCode || err?.status || 0)
+    const msg = String(err?.statusMessage || err?.message || '')
+    if (status !== 415 && !msg.toLowerCase().includes('unsupported media type')) {
+      throw err
     }
+    body = {}
+  }
 
-    if (state.done) {
-      return {
-        ok: true,
-        done: true,
-        nextPage: state.nextPage,
-        processedCategories: 0,
-        upsertedCategories: 0,
-        processedProducts: 0,
-        createdProducts: 0,
-        updatedProducts: 0
+  const pagesPerRunRaw = Number(body?.pagesPerRun ?? 3)
+  const pagesPerRun = Number.isFinite(pagesPerRunRaw) ? Math.max(1, Math.min(25, Math.floor(pagesPerRunRaw))) : 3
+
+  const perPageRaw = Number(body?.perPage ?? 100)
+  const perPage = Number.isFinite(perPageRaw) ? Math.max(10, Math.min(100, Math.floor(perPageRaw))) : 100
+
+  const forceRestart = Boolean(body?.forceRestart)
+
+  let state = await prisma.wooImportState.findUnique({ where: { key: STATE_KEY } })
+
+  if (!state || forceRestart) {
+    state = await prisma.wooImportState.upsert({
+      where: { key: STATE_KEY },
+      create: {
+        key: STATE_KEY,
+        resource: 'products',
+        after: null,
+        nextPage: 1,
+        done: false
+      },
+      update: {
+        resource: 'products',
+        after: null,
+        nextPage: 1,
+        done: false
       }
-    }
+    })
+  }
 
+  if (state.done) {
+    return {
+      ok: true,
+      done: true,
+      nextPage: state.nextPage,
+      processedCategories: 0,
+      upsertedCategories: 0,
+      processedProducts: 0,
+      createdProducts: 0,
+      updatedProducts: 0
+    }
+  }
+
+  try {
     let processedCategories = 0
     let upsertedCategories = 0
     let processedProducts = 0
