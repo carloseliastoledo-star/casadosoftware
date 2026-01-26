@@ -17,7 +17,8 @@ export default defineEventHandler(async (event) => {
       id: true,
       status: true,
       pagoEm: true,
-      mercadoPagoPaymentId: true
+      mercadoPagoPaymentId: true,
+      emailEnviadoEm: true
     }
   })
 
@@ -59,13 +60,20 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  if (statusUpper === 'PAID' && !order.emailEnviadoEm && mpPaymentId) {
+    processMercadoPagoPayment(mpPaymentId).catch((err) => {
+      console.log('[order-status] reprocessMercadoPagoPayment error', err)
+    })
+  }
+
   return {
     ok: true,
     order: {
       id: order.id,
       status: order.status,
       pagoEm: order.pagoEm,
-      mercadoPagoPaymentId: order.mercadoPagoPaymentId
+      mercadoPagoPaymentId: order.mercadoPagoPaymentId,
+      emailEnviadoEm: order.emailEnviadoEm
     }
   }
 })
