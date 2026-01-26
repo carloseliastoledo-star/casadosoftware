@@ -280,16 +280,20 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: false })
+definePageMeta({ ssr: true })
+
+useHead(() => ({
+  link: [{ rel: 'canonical', href: 'https://casadosoftware.com.br/' }]
+}))
 
 const { data, pending, error } = await useFetch('/api/products/best-sellers', {
-  server: false
+  server: true
 })
 
 type CategoriaDto = { id: string; nome: string; slug: string }
 
 const { data: categoriasData, pending: categoriasPending, error: categoriasError } = await useFetch<{ ok: true; categorias: CategoriaDto[] }>('/api/categorias', {
-  server: false
+  server: true
 })
 
 const products = computed(() => data.value || [])

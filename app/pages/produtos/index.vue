@@ -36,10 +36,14 @@
 <script setup lang="ts">
 import ProductCard from '~/components/ProductCard.vue'
 
-definePageMeta({ ssr: false })
+definePageMeta({ ssr: true })
+
+useHead(() => ({
+  link: [{ rel: 'canonical', href: 'https://casadosoftware.com.br/produtos' }]
+}))
 
 const { data, pending, error } = await useFetch('/api/products', {
-  server: false
+  server: true
 })
 
 const products = computed(() => data.value || [])

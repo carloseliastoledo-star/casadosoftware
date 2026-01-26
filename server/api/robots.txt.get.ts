@@ -1,0 +1,12 @@
+import { defineEventHandler, setHeader } from 'h3'
+
+export default defineEventHandler((event) => {
+  setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
+
+  return [
+    'User-agent: *',
+    'Allow: /',
+    'Sitemap: https://casadosoftware.com.br/sitemap.xml',
+    ''
+  ].join('\n')
+})

@@ -41,9 +41,7 @@ const produtos = computed(() => (data.value as any)?.produtos || [])
 const canonicalUrl = computed(() => {
   const s = categoria.value?.slug || slug
   if (!s) return ''
-  const url = useRequestURL()
-  const origin = url?.origin || ''
-  return origin ? `${origin}/categoria/${s}` : ''
+  return `https://casadosoftware.com.br/categoria/${s}`
 })
 
 const pageTitle = computed(() => {

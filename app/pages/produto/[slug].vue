@@ -161,14 +161,24 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: false })
+definePageMeta({ ssr: true })
 
 const route = useRoute()
 const slug = route.params.slug as string
 
+const canonicalUrl = computed(() => {
+  const s = String((safeProduct.value as any)?.slug || slug || '').trim()
+  if (!s) return 'https://casadosoftware.com.br/'
+  return `https://casadosoftware.com.br/produto/${s}`
+})
+
+useHead(() => ({
+  link: canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []
+}))
+
 const { data, pending, error } = await useFetch(
   () => `/api/products/${slug}`,
-  { server: false }
+  { server: true }
 )
 
 /**
