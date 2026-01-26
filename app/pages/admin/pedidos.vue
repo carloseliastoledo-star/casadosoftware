@@ -27,6 +27,7 @@
             <th class="p-3 text-left">Status</th>
             <th class="p-3 text-left">Criado</th>
             <th class="p-3 text-left">Pago</th>
+            <th class="p-3 text-left">Entrega</th>
             <th class="p-3 text-left">Licenças</th>
             <th class="p-3 text-left">Ações</th>
           </tr>
@@ -58,6 +59,13 @@
             </td>
             <td class="p-3 text-xs text-gray-600">{{ formatDate(o.criadoEm) }}</td>
             <td class="p-3 text-xs text-gray-600">{{ o.pagoEm ? formatDate(o.pagoEm) : '-' }}</td>
+            <td class="p-3">
+              <div v-if="o.fulfillmentStatus" class="text-xs">
+                <div class="text-gray-700 font-medium">{{ o.fulfillmentStatus }}</div>
+                <div v-if="o.fulfillmentError" class="text-gray-500 mt-1">{{ o.fulfillmentError }}</div>
+              </div>
+              <div v-else class="text-xs text-gray-500">-</div>
+            </td>
             <td class="p-3">
               <div v-if="!o.licencas?.length" class="text-xs text-gray-500">-</div>
               <div v-else class="space-y-1">
@@ -289,6 +297,9 @@ type OrderDto = {
   criadoEm: string
   pagoEm: string | null
   emailEnviadoEm: string | null
+  fulfillmentStatus: string | null
+  fulfillmentError: string | null
+  fulfillmentUpdatedAt: string | null
   mercadoPagoPaymentId: string | null
   produto: { id: string; nome: string; slug: string } | null
   customer: { id: string; email: string; nome: string | null; whatsapp: string | null; cpf: string | null } | null

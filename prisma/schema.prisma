@@ -136,6 +136,9 @@ model Order {
   pagoEm               DateTime? @db.DateTime(0)
   emailEnviadoEm       DateTime? @db.DateTime(0)
   telegramEnviadoEm    DateTime? @db.DateTime(0)
+  fulfillmentStatus    String?
+  fulfillmentError     String?  @db.Text
+  fulfillmentUpdatedAt DateTime? @db.DateTime(0)
   licencas             Licenca[]
 }
 

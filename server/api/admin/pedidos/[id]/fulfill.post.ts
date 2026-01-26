@@ -96,7 +96,12 @@ export default defineEventHandler(async (event) => {
 
     await tx.order.update({
       where: { id: order.id },
-      data: { emailEnviadoEm: new Date() },
+      data: {
+        emailEnviadoEm: new Date(),
+        fulfillmentStatus: 'SENT',
+        fulfillmentError: null,
+        fulfillmentUpdatedAt: new Date()
+      },
       select: { id: true }
     })
 

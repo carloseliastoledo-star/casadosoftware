@@ -30,7 +30,10 @@ export async function processMercadoPagoPayment(dataId: string) {
             data: {
               status: 'PAID',
               pagoEm: new Date(),
-              mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId)
+              mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId),
+              fulfillmentStatus: 'PENDING',
+              fulfillmentError: null,
+              fulfillmentUpdatedAt: new Date()
             },
             select: { id: true, produtoId: true, customerId: true, emailEnviadoEm: true, telegramEnviadoEm: true }
           })
@@ -63,13 +66,35 @@ export async function processMercadoPagoPayment(dataId: string) {
           }
         }
 
-        if (order.emailEnviadoEm) return
+        if (order.emailEnviadoEm) {
+          await tx.order.update({
+            where: { id: order.id },
+            data: {
+              fulfillmentStatus: 'SENT',
+              fulfillmentError: null,
+              fulfillmentUpdatedAt: new Date()
+            },
+            select: { id: true }
+          })
+          return
+        }
 
         const already = await tx.licenca.findFirst({
           where: { orderId: order.id },
           select: { id: true }
         })
-        if (already) return
+        if (already) {
+          await tx.order.update({
+            where: { id: order.id },
+            data: {
+              fulfillmentStatus: 'PENDING',
+              fulfillmentError: 'Licença já vinculada ao pedido, mas e-mail ainda não foi enviado.',
+              fulfillmentUpdatedAt: new Date()
+            },
+            select: { id: true }
+          })
+          return
+        }
 
         const candidate = await tx.licenca.findFirst({
           where: {
@@ -81,7 +106,18 @@ export async function processMercadoPagoPayment(dataId: string) {
           select: { id: true }
         })
 
-        if (!candidate) return
+        if (!candidate) {
+          await tx.order.update({
+            where: { id: order.id },
+            data: {
+              fulfillmentStatus: 'NO_STOCK',
+              fulfillmentError: 'Sem licença em estoque para este produto.',
+              fulfillmentUpdatedAt: new Date()
+            },
+            select: { id: true }
+          })
+          return
+        }
 
         const licenca = await tx.licenca.update({
           where: { id: candidate.id },
@@ -98,7 +134,18 @@ export async function processMercadoPagoPayment(dataId: string) {
           tx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
         ])
 
-        if (!customer?.email || !produto?.nome) return
+        if (!customer?.email || !produto?.nome) {
+          await tx.order.update({
+            where: { id: order.id },
+            data: {
+              fulfillmentStatus: 'PENDING',
+              fulfillmentError: 'Dados insuficientes para envio (cliente/produto).',
+              fulfillmentUpdatedAt: new Date()
+            },
+            select: { id: true }
+          })
+          return
+        }
 
         const html = renderLicenseEmail({
           produtoNome: produto.nome,
@@ -106,16 +153,36 @@ export async function processMercadoPagoPayment(dataId: string) {
           orderId: order.id
         })
 
-        await sendMail({
-          to: customer.email,
-          subject: `Sua licença: ${produto.nome}`,
-          html
-        })
+        const now = new Date()
+        try {
+          await sendMail({
+            to: customer.email,
+            subject: `Sua licença: ${produto.nome}`,
+            html
+          })
 
-        await tx.order.update({
-          where: { id: order.id },
-          data: { emailEnviadoEm: new Date() }
-        })
+          await tx.order.update({
+            where: { id: order.id },
+            data: {
+              emailEnviadoEm: now,
+              fulfillmentStatus: 'SENT',
+              fulfillmentError: null,
+              fulfillmentUpdatedAt: now
+            }
+          })
+        } catch (err: any) {
+          const msg = String(err?.data?.statusMessage || err?.message || 'Falha ao enviar e-mail')
+          await tx.order.update({
+            where: { id: order.id },
+            data: {
+              fulfillmentStatus: 'SMTP_ERROR',
+              fulfillmentError: msg,
+              fulfillmentUpdatedAt: now
+            },
+            select: { id: true }
+          })
+          return
+        }
       })
 
       if (telegramReservation && telegramPayload) {
