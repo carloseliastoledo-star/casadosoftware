@@ -10,6 +10,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'id obrigatório' })
   }
 
+  await prisma.produtoCategoria.deleteMany({
+    where: { categoriaId: id }
+  })
+
   await prisma.categoria.delete({ where: { id } })
 
   return { ok: true }

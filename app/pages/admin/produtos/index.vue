@@ -12,10 +12,16 @@ async function excluirProduto(id) {
   deletingId.value = id
 
   try {
-    await $fetch(`/api/admin/produtos/${id}`, {
+    const res: any = await $fetch(`/api/admin/produtos/${id}`, {
       method: 'DELETE'
     })
+
+    if (res?.deactivated && res?.message) {
+      alert(res.message)
+    }
     await refresh()
+  } catch (err: any) {
+    alert(err?.data?.statusMessage || err?.message || 'Não foi possível excluir o produto')
   } finally {
     deletingId.value = ''
   }

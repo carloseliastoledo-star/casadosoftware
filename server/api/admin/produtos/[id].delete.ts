@@ -1,5 +1,6 @@
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
+import { createError } from 'h3'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -27,10 +28,16 @@ export default defineEventHandler(async (event) => {
   }
 
   if (produto._count.orders > 0) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Não é possível excluir um produto que já possui pedidos.'
+    await prisma.produto.update({
+      where: { id },
+      data: { ativo: false }
     })
+
+    return {
+      ok: true,
+      deactivated: true,
+      message: 'Produto possui pedidos e foi inativado em vez de excluído.'
+    }
   }
 
   if (produto._count.licencas > 0) {
@@ -38,6 +45,10 @@ export default defineEventHandler(async (event) => {
       where: { produtoId: id }
     })
   }
+
+  await prisma.produtoCategoria.deleteMany({
+    where: { produtoId: id }
+  })
 
   await prisma.produto.delete({
     where: { id }
