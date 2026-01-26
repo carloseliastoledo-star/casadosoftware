@@ -1,11 +1,21 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, getQuery } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  const q = String((getQuery(event)?.q ?? '') || '').trim()
+
   const customers = await prisma.customer.findMany({
+    where: q
+      ? {
+          OR: [
+            { email: { contains: q, mode: 'insensitive' } },
+            { nome: { contains: q, mode: 'insensitive' } }
+          ]
+        }
+      : undefined,
     orderBy: { criadoEm: 'desc' },
     take: 500,
     select: {

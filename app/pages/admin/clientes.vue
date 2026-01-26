@@ -11,6 +11,16 @@
       </NuxtLink>
     </div>
 
+    <div class="bg-white rounded shadow p-4 mb-6">
+      <label class="block text-sm font-medium mb-2">Pesquisar</label>
+      <input
+        v-model="q"
+        class="w-full border rounded-lg p-3"
+        placeholder="Buscar por nome ou e-mail"
+      />
+      <div class="text-xs text-gray-500 mt-2">Mostrando até 500 resultados.</div>
+    </div>
+
     <div v-if="pending" class="text-gray-500">Carregando...</div>
     <div v-else-if="error" class="text-red-600">Não foi possível carregar os clientes.</div>
 
@@ -107,11 +117,21 @@ type CustomerDto = {
   wooTotalSpent: number
 }
 
-const { data, pending, error, refresh } = await useFetch<{ ok: true; customers: CustomerDto[] }>('/api/admin/clientes', {
+const q = ref('')
+
+const { data, pending, error, refresh } = await useFetch<{ ok: true; customers: CustomerDto[] }>(() => `/api/admin/clientes?q=${encodeURIComponent(q.value.trim())}`, {
   server: false
 })
 
 const customers = computed(() => data.value?.customers || [])
+
+let qTimer: any = null
+watch(q, () => {
+  if (qTimer) clearTimeout(qTimer)
+  qTimer = setTimeout(() => {
+    refresh()
+  }, 250)
+})
 
 const showEdit = ref(false)
 const edit = ref<CustomerDto | null>(null)
