@@ -122,6 +122,7 @@ async function upsertProdutoByWoo(input: {
   preco: number
   descricao: string | null
   imagem: string | null
+  finalUrl: string | null
   categoriaIds: string[]
 }) {
   const baseSlug = input.slug
@@ -130,6 +131,7 @@ async function upsertProdutoByWoo(input: {
     wcProductId: input.wcProductId,
     nome: input.nome,
     slug,
+    finalUrl: input.finalUrl,
     preco: input.preco,
     descricao: input.descricao,
     imagem: input.imagem,
@@ -319,6 +321,9 @@ export default defineEventHandler(async (event) => {
         const imagem = Array.isArray(p?.images) && p.images.length > 0 ? String(p.images[0]?.src || '').trim() : ''
         const imagemUrl = imagem || null
 
+        const rawFinalUrl = String((p as any)?.permalink || (p as any)?.link || '').trim()
+        const finalUrl = rawFinalUrl || null
+
         const existing = await prisma.produto.findUnique({ where: { wcProductId }, select: { id: true } })
 
         // categorias do produto
@@ -337,6 +342,7 @@ export default defineEventHandler(async (event) => {
           preco,
           descricao,
           imagem: imagemUrl,
+          finalUrl,
           categoriaIds: categoriasDb.map((c) => c.id)
         })
 

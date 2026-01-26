@@ -51,6 +51,8 @@ export type WooProduct = {
   id: number
   name: string
   slug?: string
+  permalink?: string
+  link?: string
   price?: string
   regular_price?: string
   description?: string
