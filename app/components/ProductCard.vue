@@ -26,8 +26,7 @@ const productImage = computed(() => {
     return '/products/placeholder.png'
   }
 
-  const isHttpsSite = typeof window !== 'undefined' && window.location?.protocol === 'https:'
-  if (isHttpsSite && image.startsWith('http://')) {
+  if (image.startsWith('http://')) {
     return image.replace(/^http:\/\//, 'https://')
   }
 
