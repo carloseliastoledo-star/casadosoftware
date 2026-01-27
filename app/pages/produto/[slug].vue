@@ -231,7 +231,7 @@ const safeProduct = computed(() => {
     ...p,
     nome,
     preco,
-    imagem: (p as any).image || (p as any).imagem || '/products/placeholder.png',
+    imagem: (p as any).image || (p as any).imagem || '/products/placeholder.svg',
     slug: slugValue,
     precoAntigo: Number((p as any).precoAntigo ?? (p as any).old_price ?? 0) || null,
     tutorialTitulo: (p as any).tutorialTitle || (p as any).tutorialTitulo || null,
@@ -243,7 +243,7 @@ const safeProduct = computed(() => {
 
 const safeImage = computed(() => {
   const image = String((safeProduct.value as any)?.imagem || '')
-  if (!image) return '/products/placeholder.png'
+  if (!image) return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
     return image.replace(/^http:\/\//, 'https://')
@@ -255,8 +255,8 @@ const safeImage = computed(() => {
 function onImageError(e: Event) {
   const el = e.target as HTMLImageElement | null
   if (!el) return
-  if (el.src.endsWith('/products/placeholder.png')) return
-  el.src = '/products/placeholder.png'
+  if (el.src.endsWith('/products/placeholder.svg')) return
+  el.src = '/products/placeholder.svg'
 }
 
 const formattedPrice = computed(() => {

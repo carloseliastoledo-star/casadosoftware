@@ -23,7 +23,7 @@ const productImage = computed(() => {
   const image = (props.product as any)?.image ?? (props.product as any)?.imagem
 
   if (!image) {
-    return '/products/placeholder.png'
+    return '/products/placeholder.svg'
   }
 
   if (image.startsWith('http://')) {
@@ -49,8 +49,8 @@ const productImage = computed(() => {
 function onImageError(e: Event) {
   const el = e.target as HTMLImageElement | null
   if (!el) return
-  if (el.src.endsWith('/products/placeholder.png')) return
-  el.src = '/products/placeholder.png'
+  if (el.src.endsWith('/products/placeholder.svg')) return
+  el.src = '/products/placeholder.svg'
 }
 
 const productName = computed(() => {
