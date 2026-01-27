@@ -26,6 +26,17 @@ function normalizeImageUrl(input: unknown): string | null {
     return `${baseUrl}/${raw}`
   }
 
+  if (
+    !raw.startsWith('/') &&
+    !/^products\//i.test(raw) &&
+    !/^public\//i.test(raw) &&
+    /\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(raw)
+  ) {
+    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
+    if (!baseUrl) return `/${raw.replace(/^\/+/, '')}`
+    return `${baseUrl}/${raw.replace(/^\/+/, '')}`
+  }
+
   return raw
 }
 
