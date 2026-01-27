@@ -26,6 +26,11 @@ const productImage = computed(() => {
     return '/products/placeholder.png'
   }
 
+  const isHttpsSite = typeof window !== 'undefined' && window.location?.protocol === 'https:'
+  if (isHttpsSite && image.startsWith('http://')) {
+    return image.replace(/^http:\/\//, 'https://')
+  }
+
   if (image.startsWith('http')) {
     return image
   }
@@ -41,6 +46,13 @@ const productImage = computed(() => {
 
   return `/${cleanImage}`
 })
+
+function onImageError(e: Event) {
+  const el = e.target as HTMLImageElement | null
+  if (!el) return
+  if (el.src.endsWith('/products/placeholder.png')) return
+  el.src = '/products/placeholder.png'
+}
 
 const productName = computed(() => {
   return String((props.product as any)?.nome ?? (props.product as any)?.name ?? '')
@@ -137,8 +149,8 @@ function buyNow(event: Event) {
       <img
         :src="productImage"
         :alt="productName"
-        class="max-h-full object-contain"
-        loading="lazy"
+        class="w-full h-[180px] object-contain"
+        @error="onImageError"
       />
     </div>
 

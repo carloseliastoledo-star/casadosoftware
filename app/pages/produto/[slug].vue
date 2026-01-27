@@ -35,9 +35,10 @@
         <!-- Imagem -->
         <div class="flex items-center justify-center">
           <img
-            :src="safeProduct.imagem"
+            :src="safeImage"
             :alt="safeProduct.nome"
             class="w-full max-w-[520px] max-h-[520px] object-contain"
+            @error="onImageError"
           />
         </div>
 
@@ -239,6 +240,25 @@ const safeProduct = computed(() => {
     descricao: descricaoLonga
   }
 })
+
+const safeImage = computed(() => {
+  const image = String((safeProduct.value as any)?.imagem || '')
+  if (!image) return '/products/placeholder.png'
+
+  const isHttpsSite = typeof window !== 'undefined' && window.location?.protocol === 'https:'
+  if (isHttpsSite && image.startsWith('http://')) {
+    return image.replace(/^http:\/\//, 'https://')
+  }
+
+  return image
+})
+
+function onImageError(e: Event) {
+  const el = e.target as HTMLImageElement | null
+  if (!el) return
+  if (el.src.endsWith('/products/placeholder.png')) return
+  el.src = '/products/placeholder.png'
+}
 
 const formattedPrice = computed(() => {
   return Number(safeProduct.value.preco || 0).toLocaleString('pt-BR', {
