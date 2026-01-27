@@ -2,6 +2,23 @@ import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getDefaultProductDescription } from '../../../utils/productDescriptionTemplate'
 
+function normalizeImageUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+
+  if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
+  if (raw.startsWith('https://')) return raw
+  if (raw.startsWith('//')) return `https:${raw}`
+
+  if (raw.startsWith('/')) {
+    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
+    if (!baseUrl) return raw
+    return `${baseUrl}${raw}`
+  }
+
+  return raw
+}
+
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
@@ -35,6 +52,8 @@ export default defineEventHandler(async (event) => {
   const rawCardItems = body.cardItems === null || body.cardItems === undefined ? '' : String(body.cardItems).trim()
   const cardItems = rawCardItems === '' ? null : rawCardItems
 
+  const imagem = normalizeImageUrl(body.imagem)
+
   try {
     return await prisma.produto.update({
       where: { id },
@@ -46,7 +65,7 @@ export default defineEventHandler(async (event) => {
         ...(precoAntigoProvided ? { precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo } : {}),
         ...(descricao !== undefined ? { descricao } : {}),
         ativo: body.ativo,
-        imagem: body.imagem,
+        imagem,
         ...(cardItemsProvided ? { cardItems } : {}),
         ...(categoriasProvided
           ? {

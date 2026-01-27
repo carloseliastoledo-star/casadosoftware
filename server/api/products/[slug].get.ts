@@ -2,6 +2,23 @@ import prisma from '#root/server/db/prisma'
 import { getDefaultProductDescription } from '#root/server/utils/productDescriptionTemplate'
 import { createError } from 'h3'
 
+function normalizeImageUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+
+  if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
+  if (raw.startsWith('https://')) return raw
+  if (raw.startsWith('//')) return `https:${raw}`
+
+  if (raw.startsWith('/')) {
+    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
+    if (!baseUrl) return raw
+    return `${baseUrl}${raw}`
+  }
+
+  return raw
+}
+
 export default defineEventHandler(async (event) => {
   const slug = event.context.params?.slug
 
@@ -32,7 +49,7 @@ export default defineEventHandler(async (event) => {
     description,
     price: product.preco,
     precoAntigo: (product as any).precoAntigo ?? null,
-    image: product.imagem,   // 👈 CAMPO CRÍTICO
+    image: normalizeImageUrl(product.imagem),
     categories: (product.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
     tutorialTitle: product.tutorialTitulo,
     tutorialSubtitle: product.tutorialSubtitulo,

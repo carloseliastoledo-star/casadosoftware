@@ -1,5 +1,22 @@
 import prisma from '#root/server/db/prisma'
 
+function normalizeImageUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+
+  if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
+  if (raw.startsWith('https://')) return raw
+  if (raw.startsWith('//')) return `https:${raw}`
+
+  if (raw.startsWith('/')) {
+    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
+    if (!baseUrl) return raw
+    return `${baseUrl}${raw}`
+  }
+
+  return raw
+}
+
 function parseSlugs(raw: unknown): string[] {
   const s = String(raw ?? '').trim()
   if (!s) return []
@@ -61,7 +78,7 @@ export default defineEventHandler(async () => {
         slug: p.slug,
         description: p.descricao,
         price: p.preco,
-        image: p.imagem,
+        image: normalizeImageUrl(p.imagem),
         categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
         tutorialTitle: p.tutorialTitulo,
         tutorialSubtitle: p.tutorialSubtitulo,
@@ -94,7 +111,7 @@ export default defineEventHandler(async () => {
       slug: p.slug,
       description: p.descricao,
       price: p.preco,
-      image: p.imagem,
+      image: normalizeImageUrl(p.imagem),
       categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
       tutorialTitle: p.tutorialTitulo,
       tutorialSubtitle: p.tutorialSubtitulo,

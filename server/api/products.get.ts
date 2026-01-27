@@ -1,6 +1,23 @@
 import prisma from '#root/server/db/prisma'
 import { createError } from 'h3'
 
+function normalizeImageUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+
+  if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
+  if (raw.startsWith('https://')) return raw
+  if (raw.startsWith('//')) return `https:${raw}`
+
+  if (raw.startsWith('/')) {
+    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
+    if (!baseUrl) return raw
+    return `${baseUrl}${raw}`
+  }
+
+  return raw
+}
+
 export default defineEventHandler(async () => {
   try {
     const products = await prisma.produto.findMany({
@@ -33,7 +50,7 @@ export default defineEventHandler(async () => {
       description: p.descricao,
       price: p.preco,
       precoAntigo: p.precoAntigo,
-      image: p.imagem,
+      image: normalizeImageUrl(p.imagem),
       cardItems: p.cardItems,
       categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
       tutorialTitle: p.tutorialTitulo,

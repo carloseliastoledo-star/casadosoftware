@@ -5,6 +5,23 @@ import { wooGetProductCategories, wooGetProducts } from '../../../../utils/wooco
 
 const STATE_KEY = 'woo_products'
 
+function normalizeImageUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+
+  if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
+  if (raw.startsWith('https://')) return raw
+  if (raw.startsWith('//')) return `https:${raw}`
+
+  if (raw.startsWith('/')) {
+    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
+    if (!baseUrl) return raw
+    return `${baseUrl}${raw}`
+  }
+
+  return raw
+}
+
 function parseMoney(input: unknown): number {
   const raw = typeof input === 'string' ? input : String(input ?? '')
   const n = Number(raw)
@@ -329,7 +346,7 @@ export default defineEventHandler(async (event) => {
         const descricao = descricaoText || null
 
         const imagem = Array.isArray(p?.images) && p.images.length > 0 ? String(p.images[0]?.src || '').trim() : ''
-        const imagemUrl = imagem || null
+        const imagemUrl = normalizeImageUrl(imagem)
 
         const rawFinalUrl = String((p as any)?.permalink || (p as any)?.link || '').trim()
         const finalUrl = rawFinalUrl || null

@@ -2,6 +2,23 @@ import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getDefaultProductDescription } from '../../../utils/productDescriptionTemplate'
 
+function normalizeImageUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+
+  if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
+  if (raw.startsWith('https://')) return raw
+  if (raw.startsWith('//')) return `https:${raw}`
+
+  if (raw.startsWith('/')) {
+    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
+    if (!baseUrl) return raw
+    return `${baseUrl}${raw}`
+  }
+
+  return raw
+}
+
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
@@ -21,6 +38,8 @@ export default defineEventHandler(async (event) => {
   const rawCardItems = typeof body.cardItems === 'string' ? body.cardItems.trim() : ''
   const cardItems = rawCardItems ? rawCardItems : null
 
+  const imagem = normalizeImageUrl(body.imagem)
+
   const categorias = Array.isArray(body.categorias) ? body.categorias.map((s: any) => String(s).trim()).filter(Boolean) : []
 
   try {
@@ -33,7 +52,7 @@ export default defineEventHandler(async (event) => {
         precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
         descricao,
         ativo: body.ativo ?? true,
-        imagem: body.imagem,
+        imagem,
         cardItems,
         ...(categorias.length
           ? {
