@@ -5,13 +5,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
   if (to.path === '/admin/login') return
 
-  if (import.meta.server) {
-    const $fetch = useRequestFetch()
-    const headers = useRequestHeaders(['cookie'])
-    return $fetch('/api/admin/auth/me', { headers })
-      .then(() => undefined)
-      .catch(() => navigateTo('/admin/login'))
-  }
+  if (import.meta.server) return
 
   const { $fetch } = useNuxtApp()
 
