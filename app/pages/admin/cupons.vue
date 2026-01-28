@@ -28,6 +28,53 @@ const form = reactive({
 const saving = ref(false)
 const errorMsg = ref('')
 
+const statsForm = reactive({
+  code: '',
+  from: '',
+  to: ''
+})
+
+const statsLoading = ref(false)
+const statsError = ref('')
+const stats = ref<null | {
+  code: string
+  from: string | null
+  to: string | null
+  count: number
+  sums: {
+    subtotalAmount: number
+    couponDiscountAmount: number
+    totalAmount: number
+  }
+}>(null)
+
+async function fetchStats() {
+  statsError.value = ''
+  stats.value = null
+  statsLoading.value = true
+
+  try {
+    const code = String(statsForm.code || '').trim()
+    if (!code) {
+      statsError.value = 'Informe o código do cupom.'
+      return
+    }
+
+    const res = await $fetch('/api/admin/cupons/stats', {
+      query: {
+        code,
+        from: statsForm.from || undefined,
+        to: statsForm.to || undefined
+      }
+    })
+    stats.value = res as any
+  } catch (err: any) {
+    statsError.value = err?.data?.statusMessage || err?.message || 'Falha ao gerar relatório'
+  } finally {
+    statsLoading.value = false
+  }
+}
+
 async function criarCupom() {
   errorMsg.value = ''
   saving.value = true
@@ -74,6 +121,63 @@ async function toggleActive(c: CupomDto) {
       <div>
         <h1 class="text-2xl font-bold">Cupons</h1>
         <div class="text-sm text-gray-600">Desconto por porcentagem (vale para Pix e Cartão).</div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded shadow p-6">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-semibold">Relatório por período</h2>
+          <div class="text-sm text-gray-600">Pedidos pagos (status PAID) que usaram o cupom no intervalo.</div>
+        </div>
+      </div>
+
+      <div class="mt-4 grid md:grid-cols-6 gap-4 items-end">
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold mb-1">Cupom</label>
+          <input v-model="statsForm.code" class="w-full border p-2 rounded" placeholder="EX: PROMO10" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold mb-1">De</label>
+          <input v-model="statsForm.from" type="datetime-local" class="w-full border p-2 rounded" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold mb-1">Até</label>
+          <input v-model="statsForm.to" type="datetime-local" class="w-full border p-2 rounded" />
+        </div>
+      </div>
+
+      <div class="mt-4 flex items-center justify-end">
+        <button
+          class="bg-gray-900 text-white px-4 py-2 rounded disabled:opacity-60"
+          :disabled="statsLoading"
+          @click="fetchStats"
+        >
+          {{ statsLoading ? 'Gerando...' : 'Gerar relatório' }}
+        </button>
+      </div>
+
+      <div v-if="statsError" class="mt-2 text-sm text-red-600">{{ statsError }}</div>
+
+      <div v-if="stats" class="mt-4 grid md:grid-cols-4 gap-4">
+        <div class="border rounded p-4">
+          <div class="text-xs text-gray-500">Pedidos (PAID)</div>
+          <div class="text-2xl font-bold">{{ stats.count }}</div>
+        </div>
+        <div class="border rounded p-4">
+          <div class="text-xs text-gray-500">Subtotal (soma)</div>
+          <div class="text-2xl font-bold">R$ {{ Number(stats.sums.subtotalAmount).toFixed(2) }}</div>
+        </div>
+        <div class="border rounded p-4">
+          <div class="text-xs text-gray-500">Desconto cupom (soma)</div>
+          <div class="text-2xl font-bold">R$ {{ Number(stats.sums.couponDiscountAmount).toFixed(2) }}</div>
+        </div>
+        <div class="border rounded p-4">
+          <div class="text-xs text-gray-500">Total pago (soma)</div>
+          <div class="text-2xl font-bold">R$ {{ Number(stats.sums.totalAmount).toFixed(2) }}</div>
+        </div>
       </div>
     </div>
 
