@@ -10,7 +10,7 @@ async function main() {
       {
         nome: 'Windows 11 Pro',
         slug: 'windows-11-pro',
-        descricao: 'Licença original Windows 11 Pro vitalícia para 1 PC.',
+        descricao: 'Licença digital Windows 11 Pro permanente para 1 PC.',
         preco: 149.90,
         imagem: '/windows-11-pro.jpg',
         tutorialTitulo: 'Tutorial de Ativação',
@@ -20,7 +20,7 @@ async function main() {
       {
         nome: 'Windows 10 Pro',
         slug: 'windows-10-pro',
-        descricao: 'Windows 10 Pro original vitalício.',
+        descricao: 'Windows 10 Pro permanente.',
         preco: 129.90,
         imagem: '/windows-10-pro.jpg',
         tutorialTitulo: 'Tutorial de Ativação',
@@ -30,7 +30,7 @@ async function main() {
       {
         nome: 'Office 2021 Pro Plus',
         slug: 'office-2021-pro-plus',
-        descricao: 'Pacote Office 2021 completo vitalício.',
+        descricao: 'Pacote Office 2021 completo permanente.',
         preco: 199.90,
         imagem: '/office-2021-pro.jpg',
         tutorialTitulo: 'Tutorial de Ativação',

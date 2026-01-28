@@ -173,7 +173,7 @@
             </template>
 
             <p class="text-xs text-gray-500 mt-6">
-              Licenças digitais originais com entrega instantânea.
+              Licenças digitais com envio imediato após confirmação.
             </p>
           </div>
         </div>

@@ -108,7 +108,7 @@
         <div>
           <h3 class="font-semibold text-gray-800 mb-2">Casa do Software</h3>
           <p>
-            Licenças digitais originais de Windows e Office com entrega imediata.
+            Licenças digitais de Windows e Office com envio imediato após confirmação.
           </p>
         </div>
 
@@ -149,7 +149,7 @@
         © {{ new Date().getFullYear() }} Casa do Software — Todos os direitos reservados.
         <div class="mt-2 max-w-4xl mx-auto">
           A Casa do Software (Eletrokeys LTDA) é uma empresa independente registrada no Microsoft Partner Network.
-          Não somos a loja oficial da Microsoft.
+          Não somos afiliados à Microsoft.
         </div>
       </div>
     </footer>

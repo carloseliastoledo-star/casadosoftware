@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer'
 
 type MailParams = {
   to: string
+  bcc?: string
   subject: string
   html: string
 }
@@ -31,14 +32,15 @@ function getTransporter() {
   return cachedTransporter
 }
 
-export async function sendMail({ to, subject, html }: MailParams) {
+export async function sendMail({ to, bcc, subject, html }: MailParams) {
   const from = process.env.SMTP_FROM || process.env.SMTP_USER || ''
   if (!from) {
     throw createError({ statusCode: 500, statusMessage: 'SMTP_FROM não configurado' })
   }
 
   const transporter = getTransporter()
-  await transporter.sendMail({ from, to, subject, html })
+  const safeBcc = String(bcc || '').trim()
+  await transporter.sendMail({ from, to, bcc: safeBcc || undefined, subject, html })
 }
 
 export function renderLicenseEmail(params: {

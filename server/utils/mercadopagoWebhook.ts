@@ -155,8 +155,11 @@ export async function processMercadoPagoPayment(dataId: string) {
 
         const now = new Date()
         try {
+          const bcc =
+            String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
           await sendMail({
             to: customer.email,
+            bcc,
             subject: `Sua licença: ${produto.nome}`,
             html
           })

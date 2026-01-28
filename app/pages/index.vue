@@ -10,9 +10,9 @@
           <h1 class="mt-8 text-4xl md:text-6xl font-extrabold tracking-tight text-white">
             Licenças Digitais
             <span class="block mt-3">
-              <span class="text-cyan-300">Originais</span>
+              <span class="text-cyan-300">Digitais</span>
               <span class="text-white"> e </span>
-              <span class="text-indigo-300">Instantâneas</span>
+              <span class="text-indigo-300">com envio rápido</span>
             </span>
           </h1>
 
@@ -38,11 +38,11 @@
           <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-white/85">
             <div class="flex items-center gap-2">
               <span class="text-green-300">✔</span>
-              Entrega em 5 minutos
+              Envio rápido após confirmação
             </div>
             <div class="flex items-center gap-2">
               <span class="text-green-300">✔</span>
-              100% Original
+              Entrega digital
             </div>
             <div class="flex items-center gap-2">
               <span class="text-green-300">✔</span>
@@ -339,7 +339,7 @@ const testimonials = [
     cor: 'bg-blue-600'
   },
   {
-    texto: 'Melhor preço que encontrei! Office 365 original, suporte me ajudou na instalação. Produto 100% genuíno.',
+    texto: 'Melhor preço que encontrei! Suporte me ajudou na instalação e deu tudo certo.',
     nome: 'Ana Rodrigues',
     tempo: 'há 1 semana',
     inicial: 'A',

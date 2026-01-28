@@ -7,7 +7,11 @@ export default defineNuxtConfig({
     head: {
       link: [
         { rel: 'icon', type: 'image/png', href: '/logo-casa-do-software.png' },
-        { rel: 'apple-touch-icon', href: '/logo-casa-do-software.png' }
+        { rel: 'apple-touch-icon', href: '/logo-casa-do-software.png' },
+        { rel: 'manifest', href: '/site.webmanifest' }
+      ],
+      meta: [
+        { name: 'theme-color', content: '#2563eb' }
       ]
     }
   },

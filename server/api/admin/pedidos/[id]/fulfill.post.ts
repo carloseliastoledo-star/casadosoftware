@@ -88,8 +88,12 @@ export default defineEventHandler(async (event) => {
       orderId: order.id
     })
 
+    const bcc =
+      String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
+
     await sendMail({
       to: customer.email,
+      bcc,
       subject: `Sua licença: ${produto.nome}`,
       html
     })

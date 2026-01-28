@@ -1,8 +1,16 @@
-import { defineEventHandler } from 'h3'
+import { createError, defineEventHandler } from 'h3'
 import { requireAdminSession } from '#root/server/utils/adminSession'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
+
+  const allowDebug =
+    String(process.env.ALLOW_ADMIN_SMTP_DEBUG || '').trim().toLowerCase() === 'true'
+  const isProd = String(process.env.NODE_ENV || '').trim() === 'production'
+
+  if (isProd && !allowDebug) {
+    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
+  }
 
   const host = String(process.env.SMTP_HOST || '').trim()
   const port = String(process.env.SMTP_PORT || '').trim()

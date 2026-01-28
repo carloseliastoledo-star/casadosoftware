@@ -28,6 +28,30 @@ const uploadError = ref('')
 const saving = ref(false)
 const saveError = ref('')
 
+const microsoft365Text =
+  'Microsoft 365/Office 365 (assinatura anual):\n' +
+  '- Entrega por conta fornecida (login e senha) após a confirmação do pagamento.\n' +
+  '- Validade de 12 meses (assinatura anual), conforme descrito no produto.\n' +
+  '- O acesso é feito com a conta fornecida (não é ativação em uma conta Microsoft pessoal já existente).'
+
+const isMicrosoft365Candidate = computed(() => {
+  const nome = String(form.nome || '').toLowerCase()
+  const slug = String(form.slug || '').toLowerCase()
+  return (
+    nome.includes('microsoft 365') ||
+    nome.includes('office 365') ||
+    slug.includes('microsoft-365') ||
+    slug.includes('office-365') ||
+    slug.includes('365')
+  )
+})
+
+function inserirTextoMicrosoft365() {
+  const current = String(form.descricao || '').trim()
+  if (current.toLowerCase().includes('conta fornecida')) return
+  form.descricao = current ? `${current}\n\n${microsoft365Text}` : microsoft365Text
+}
+
 const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaDto[] }>('/api/admin/categorias', {
   server: false
 })
@@ -106,6 +130,15 @@ async function salvar() {
         class="w-full border p-3 rounded"
       />
 
+      <button
+        v-if="isMicrosoft365Candidate"
+        type="button"
+        @click="inserirTextoMicrosoft365"
+        class="w-fit border border-gray-300 text-gray-800 px-3 py-2 rounded"
+      >
+        Inserir texto Microsoft 365
+      </button>
+
       <input
         v-model="form.tutorialTitulo"
         placeholder="Título do tutorial (ex: Tutorial de Ativação)"
@@ -157,7 +190,7 @@ async function salvar() {
         <label class="text-sm font-semibold">Itens do card (opcional)</label>
         <textarea
           v-model="form.cardItems"
-          placeholder="1 item por linha (ex: Entrega instantânea)"
+          placeholder="1 item por linha (ex: Envio imediato após confirmação)"
           rows="8"
           class="w-full border p-2 rounded text-sm"
         />

@@ -111,8 +111,8 @@ const categoryLabel = computed(() => {
 })
 
 const defaultIncludedItems = [
-  'Entrega instantânea',
-  'Licença original e vitalícia',
+  'Envio imediato após confirmação',
+  'Licença digital permanente',
   'Suporte 24/7',
   '1 PC',
   'Versão profissional com recursos avançados',

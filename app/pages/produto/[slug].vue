@@ -100,6 +100,21 @@
               </li>
             </ul>
           </div>
+
+          <div
+            v-if="isMicrosoft365"
+            class="rounded-xl border bg-gray-50 p-5 text-sm text-gray-700"
+          >
+            <div class="font-semibold text-gray-900">Microsoft 365 / Office 365 — como funciona</div>
+            <ul class="mt-3 list-disc pl-5 space-y-2">
+              <li>Assinatura anual (12 meses), conforme descrito no produto.</li>
+              <li>Entrega por conta fornecida (login e senha) após a confirmação do pagamento.</li>
+              <li>O acesso é feito com a conta fornecida (não é ativação em uma conta Microsoft pessoal já existente).</li>
+            </ul>
+            <div class="mt-3">
+              Dúvidas? Consulte <NuxtLink class="text-blue-600 hover:underline" to="/entrega-digital">Entrega digital</NuxtLink>.
+            </div>
+          </div>
         </div>
       </div>
 
@@ -167,7 +182,7 @@
           Nossos preços são mais acessíveis porque trabalhamos com distribuição digital, sem custos de mídia física, logística ou intermediários.
         </p>
         <p class="text-gray-700 leading-relaxed mt-4">
-          Isso nos permite oferecer valores competitivos, mantendo suporte e entrega imediata.
+          Isso nos permite oferecer valores competitivos, mantendo suporte e envio imediato após confirmação.
         </p>
       </div>
 
@@ -298,9 +313,9 @@ const formattedPixPrice = computed(() => {
 })
 
 const defaultIncludedItems = [
-  'Entrega instantânea',
-  'Licença original e vitalícia',
-  'Suporte 24/7',
+  'Envio imediato após confirmação',
+  'Licença digital permanente',
+  'Suporte em horário comercial',
   '1 PC',
   'Versão profissional com recursos avançados',
   'Compatível Windows 10 e 11',
@@ -316,6 +331,18 @@ const includedItems = computed(() => {
     .map((s) => s.trim())
     .filter(Boolean)
   return items.length ? items : defaultIncludedItems
+})
+
+const isMicrosoft365 = computed(() => {
+  const nome = String((safeProduct.value as any)?.nome || '').toLowerCase()
+  const slugValue = String((safeProduct.value as any)?.slug || '').toLowerCase()
+  return (
+    nome.includes('microsoft 365') ||
+    nome.includes('office 365') ||
+    slugValue.includes('microsoft-365') ||
+    slugValue.includes('office-365') ||
+    slugValue.includes('365')
+  )
 })
 
 function buyNow() {

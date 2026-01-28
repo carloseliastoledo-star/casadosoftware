@@ -14,18 +14,18 @@ const rawProducts = [
     name: 'Windows 11 Pro',
     slug: 'windows-11-pro',
     price: 59.9,
-    shortDescription: 'Licença original e vitalícia para 1 PC',
+    shortDescription: 'Licença digital permanente para 1 PC',
     description:
-      'Windows 11 Pro com licença original e vitalícia. Compatível com Windows 10 e 11.',
+      'Windows 11 Pro com licença digital permanente. Compatível com Windows 10 e 11.',
   },
   {
     id: 2,
     name: 'Windows 10 Pro',
     slug: 'windows-10-pro',
     price: 49.9,
-    shortDescription: 'Licença original do Windows 10 Pro',
+    shortDescription: 'Licença digital do Windows 10 Pro',
     description:
-      'Windows 10 Pro original, ativação segura e entrega imediata.',
+      'Windows 10 Pro, ativação segura e envio imediato após confirmação.',
   },
   {
     id: 3,
@@ -41,9 +41,9 @@ const rawProducts = [
     name: 'Office 365',
     slug: 'office-365',
     price: 119.9,
-    shortDescription: 'Office por assinatura anual',
+    shortDescription: 'Assinatura anual (12 meses) por conta fornecida',
     description:
-      'Office 365 com aplicativos sempre atualizados por 12 meses.',
+      'Assinatura anual do Office 365 (12 meses). Entrega por conta fornecida (login e senha) com envio imediato após confirmação.',
   },
 ]
 

@@ -95,8 +95,8 @@
         <div class="absolute inset-0 bg-black/40" @click="closeStockModal" />
 
         <div class="absolute inset-0 flex items-center justify-center p-4">
-          <div class="bg-white w-full max-w-3xl rounded-xl shadow-lg">
-            <div class="flex items-center justify-between p-5 border-b">
+          <div class="bg-white w-full max-w-3xl rounded-xl shadow-lg max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between p-5 border-b shrink-0">
               <div>
                 <h2 class="text-lg font-semibold">Licenças disponíveis</h2>
                 <p class="text-sm text-gray-600 mt-1">{{ stockModalTitle }}</p>
@@ -107,20 +107,38 @@
               </button>
             </div>
 
-            <div class="p-5">
+            <div class="p-5 overflow-hidden flex-1 flex flex-col">
               <div v-if="stockKeysPending" class="text-sm text-gray-500">Carregando...</div>
               <div v-else-if="stockKeysError" class="text-sm text-red-600">Não foi possível carregar as licenças.</div>
 
-              <div v-else class="border rounded-lg overflow-x-auto">
+              <div v-else class="border rounded-lg overflow-x-auto flex-1 overflow-y-auto">
                 <table class="w-full text-sm">
                   <thead class="bg-gray-100 text-gray-600">
                     <tr>
+                      <th class="p-3 text-left w-10">
+                        <input
+                          type="checkbox"
+                          :checked="allSelected"
+                          :disabled="!stockKeys.length || stockKeysPending"
+                          class="h-4 w-4 accent-blue-600"
+                          @change="toggleSelectAll"
+                        />
+                      </th>
                       <th class="p-3 text-left">Chave</th>
                       <th class="p-3 text-right">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="k in stockKeys" :key="k.id" class="border-t">
+                      <td class="p-3">
+                        <input
+                          type="checkbox"
+                          :checked="selectedIds.includes(k.id)"
+                          @click.stop
+                          class="h-4 w-4 accent-blue-600"
+                          @change="toggleSelected(k.id, $event)"
+                        />
+                      </td>
                       <td class="p-3 font-mono break-all">{{ k.chave }}</td>
                       <td class="p-3 text-right">
                         <button
@@ -133,15 +151,32 @@
                       </td>
                     </tr>
                     <tr v-if="!stockKeys.length" class="border-t">
-                      <td class="p-3 text-gray-500" colspan="2">Sem licenças disponíveis.</td>
+                      <td class="p-3 text-gray-500" colspan="3">Sem licenças disponíveis.</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              <div class="mt-4 flex items-center justify-between">
+              <div class="mt-4 flex items-center justify-between shrink-0">
                 <div class="text-sm text-gray-600">
                   Total: {{ stockKeysTotal }}
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button
+                    class="px-3 py-2 rounded-lg border text-red-700 border-red-200 bg-red-50 disabled:opacity-50"
+                    :disabled="!selectedIds.length || stockKeysPending"
+                    @click="deleteSelected"
+                  >
+                    Excluir selecionadas ({{ selectedIds.length }})
+                  </button>
+                  <button
+                    class="px-3 py-2 rounded-lg border text-red-700 border-red-200 bg-red-50 disabled:opacity-50"
+                    :disabled="!stockProdutoId || stockKeysPending"
+                    @click="deleteAllFromProduct"
+                  >
+                    Excluir todas
+                  </button>
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -220,6 +255,7 @@ const stockModalTitle = ref('')
 const stockProdutoId = ref('')
 const stockKeysPage = ref(1)
 const stockKeysPageSize = ref(100)
+const selectedIds = ref<string[]>([])
 
 const {
   data: stockKeysData,
@@ -239,6 +275,10 @@ const {
 
 const stockKeys = computed(() => stockKeysData.value?.items || [])
 const stockKeysTotal = computed(() => stockKeysData.value?.total || 0)
+const allSelected = computed(() => {
+  if (!stockKeys.value.length) return false
+  return stockKeys.value.every((k) => selectedIds.value.includes(k.id))
+})
 const canNextStockPage = computed(() => {
   const total = stockKeysTotal.value
   const page = stockKeysPage.value
@@ -302,23 +342,47 @@ async function openStockModal(produtoId: string, title: string) {
   stockProdutoId.value = produtoId
   stockModalTitle.value = title
   stockKeysPage.value = 1
+  selectedIds.value = []
   showStock.value = true
   await refreshStockKeys()
 }
 
 function closeStockModal() {
   showStock.value = false
+  selectedIds.value = []
+}
+
+function toggleSelected(id: string, ev: Event) {
+  const checked = Boolean((ev.target as HTMLInputElement | null)?.checked)
+  const current = selectedIds.value
+  if (checked) {
+    if (!current.includes(id)) selectedIds.value = [...current, id]
+  } else {
+    selectedIds.value = current.filter((x) => x !== id)
+  }
+}
+
+function toggleSelectAll(ev: Event) {
+  const checked = Boolean((ev.target as HTMLInputElement | null)?.checked)
+  if (!checked) {
+    selectedIds.value = []
+    return
+  }
+
+  selectedIds.value = stockKeys.value.map((k) => k.id)
 }
 
 async function nextStockPage() {
   if (!canNextStockPage.value) return
   stockKeysPage.value += 1
+  selectedIds.value = []
   await refreshStockKeys()
 }
 
 async function prevStockPage() {
   if (stockKeysPage.value <= 1) return
   stockKeysPage.value -= 1
+  selectedIds.value = []
   await refreshStockKeys()
 }
 
@@ -329,6 +393,41 @@ async function deleteStockKey(id: string) {
   deletingId.value = id
   try {
     await $fetch(`/api/admin/licenses/${id}`, { method: 'DELETE' })
+    selectedIds.value = selectedIds.value.filter((x) => x !== id)
+    await Promise.all([refreshStockKeys(), refreshStock()])
+  } finally {
+    deletingId.value = ''
+  }
+}
+
+async function deleteSelected() {
+  if (!selectedIds.value.length) return
+  if (!confirm(`Tem certeza que deseja apagar ${selectedIds.value.length} licenças selecionadas?`)) return
+
+  deletingId.value = '__bulk__'
+  try {
+    await $fetch('/api/admin/licenses/bulk-delete', {
+      method: 'POST',
+      body: { ids: selectedIds.value }
+    })
+    selectedIds.value = []
+    await Promise.all([refreshStockKeys(), refreshStock()])
+  } finally {
+    deletingId.value = ''
+  }
+}
+
+async function deleteAllFromProduct() {
+  if (!stockProdutoId.value) return
+  if (!confirm('Tem certeza que deseja apagar TODAS as licenças em estoque deste produto?')) return
+
+  deletingId.value = '__bulk_all__'
+  try {
+    await $fetch('/api/admin/licenses/bulk-delete', {
+      method: 'POST',
+      body: { deleteAll: true, produtoId: stockProdutoId.value }
+    })
+    selectedIds.value = []
     await Promise.all([refreshStockKeys(), refreshStock()])
   } finally {
     deletingId.value = ''
