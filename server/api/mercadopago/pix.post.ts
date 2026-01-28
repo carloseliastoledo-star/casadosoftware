@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody, createError } from 'h3'
-import prisma from '../../db/prisma'
+import prisma from '../../db/prisma.js'
 import { getMpPayment } from '../../utils/mercadopago.js'
 
 export default defineEventHandler(async (event) => {
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
 
   const round2 = (n: number) => Math.round(n * 100) / 100
 
-  const { customer, order, coupon } = await prisma.$transaction(async (tx) => {
+  const { customer, order, coupon } = await (prisma as any).$transaction(async (tx: any) => {
     const customer = await tx.customer.upsert({
       where: { email },
       create: { email },
@@ -130,9 +130,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 502, statusMessage: 'Falha ao criar pagamento no Mercado Pago' })
   }
 
-  await prisma.order.update({
+  const paymentTypeId = (result as any)?.payment_type_id
+  const paymentMethodId = (result as any)?.payment_method_id
+
+  await (prisma as any).order.update({
     where: { id: order.id },
-    data: { mercadoPagoPaymentId: mpPaymentId }
+    data: {
+      mercadoPagoPaymentId: mpPaymentId,
+      mercadoPagoPaymentTypeId: paymentTypeId ? String(paymentTypeId) : null,
+      mercadoPagoPaymentMethodId: paymentMethodId ? String(paymentMethodId) : null
+    }
   })
 
   const qrCode = (result as any)?.point_of_interaction?.transaction_data?.qr_code

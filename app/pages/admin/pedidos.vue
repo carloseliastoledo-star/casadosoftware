@@ -25,6 +25,7 @@
             <th class="p-3 text-left">Produto</th>
             <th class="p-3 text-left">Cliente</th>
             <th class="p-3 text-left">Status</th>
+            <th class="p-3 text-left">Pagamento</th>
             <th class="p-3 text-left">Criado</th>
             <th class="p-3 text-left">Pago</th>
             <th class="p-3 text-left">Entrega</th>
@@ -56,6 +57,13 @@
               >
                 {{ o.status }}
               </span>
+            </td>
+            <td class="p-3 text-xs text-gray-700">
+              <div v-if="o.mercadoPagoPaymentTypeId || o.mercadoPagoPaymentMethodId">
+                <div class="font-mono">{{ o.mercadoPagoPaymentTypeId || '-' }}</div>
+                <div class="font-mono text-gray-400">{{ o.mercadoPagoPaymentMethodId || '-' }}</div>
+              </div>
+              <div v-else class="text-gray-500">-</div>
             </td>
             <td class="p-3 text-xs text-gray-600">{{ formatDate(o.criadoEm) }}</td>
             <td class="p-3 text-xs text-gray-600">{{ o.pagoEm ? formatDate(o.pagoEm) : '-' }}</td>
@@ -308,6 +316,8 @@ type OrderDto = {
   fulfillmentError: string | null
   fulfillmentUpdatedAt: string | null
   mercadoPagoPaymentId: string | null
+  mercadoPagoPaymentTypeId: string | null
+  mercadoPagoPaymentMethodId: string | null
   produto: { id: string; nome: string; slug: string } | null
   customer: { id: string; email: string; nome: string | null; whatsapp: string | null; cpf: string | null } | null
   licencas: { id: string; chave: string; status: string }[]

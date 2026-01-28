@@ -9,6 +9,8 @@ export async function processMercadoPagoPayment(dataId: string) {
     const mpPayment = await payment.get({ id: dataId })
 
     const status = String((mpPayment as any)?.status || '')
+    const paymentTypeId = (mpPayment as any)?.payment_type_id
+    const paymentMethodId = (mpPayment as any)?.payment_method_id
     const orderId = (mpPayment as any)?.metadata?.orderId || (mpPayment as any)?.external_reference
 
     if (!orderId) {
@@ -20,17 +22,20 @@ export async function processMercadoPagoPayment(dataId: string) {
       let telegramPayload: { orderId: string; produtoNome: string; customerEmail: string } | null = null
 
       await prisma.$transaction(async (tx) => {
+        const anyTx: any = tx as any
         let order:
           | { id: string; produtoId: string; customerId: string; emailEnviadoEm: Date | null; telegramEnviadoEm: Date | null }
           | null = null
 
         try {
-          order = await tx.order.update({
+          order = await anyTx.order.update({
             where: { id: String(orderId) },
             data: {
               status: 'PAID',
               pagoEm: new Date(),
               mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId),
+              mercadoPagoPaymentTypeId: paymentTypeId ? String(paymentTypeId) : null,
+              mercadoPagoPaymentMethodId: paymentMethodId ? String(paymentMethodId) : null,
               fulfillmentStatus: 'PENDING',
               fulfillmentError: null,
               fulfillmentUpdatedAt: new Date()
@@ -49,15 +54,15 @@ export async function processMercadoPagoPayment(dataId: string) {
 
         if (!order.telegramEnviadoEm) {
           const reservedAt = new Date()
-          await tx.order.update({
+          await anyTx.order.update({
             where: { id: order.id },
             data: { telegramEnviadoEm: reservedAt },
             select: { id: true }
           })
 
           const [customer, produto] = await Promise.all([
-            tx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
-            tx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
+            anyTx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
+            anyTx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
           ])
 
           if (customer?.email && produto?.nome) {
@@ -67,7 +72,7 @@ export async function processMercadoPagoPayment(dataId: string) {
         }
 
         if (order.emailEnviadoEm) {
-          await tx.order.update({
+          await anyTx.order.update({
             where: { id: order.id },
             data: {
               fulfillmentStatus: 'SENT',
@@ -79,12 +84,12 @@ export async function processMercadoPagoPayment(dataId: string) {
           return
         }
 
-        const already = await tx.licenca.findFirst({
+        const already = await anyTx.licenca.findFirst({
           where: { orderId: order.id },
           select: { id: true }
         })
         if (already) {
-          await tx.order.update({
+          await anyTx.order.update({
             where: { id: order.id },
             data: {
               fulfillmentStatus: 'PENDING',
@@ -96,7 +101,7 @@ export async function processMercadoPagoPayment(dataId: string) {
           return
         }
 
-        const candidate = await tx.licenca.findFirst({
+        const candidate = await anyTx.licenca.findFirst({
           where: {
             produtoId: order.produtoId,
             status: 'STOCK',
@@ -107,7 +112,7 @@ export async function processMercadoPagoPayment(dataId: string) {
         })
 
         if (!candidate) {
-          await tx.order.update({
+          await anyTx.order.update({
             where: { id: order.id },
             data: {
               fulfillmentStatus: 'NO_STOCK',
@@ -119,7 +124,7 @@ export async function processMercadoPagoPayment(dataId: string) {
           return
         }
 
-        const licenca = await tx.licenca.update({
+        const licenca = await anyTx.licenca.update({
           where: { id: candidate.id },
           data: {
             status: 'SOLD',
@@ -130,12 +135,12 @@ export async function processMercadoPagoPayment(dataId: string) {
         })
 
         const [customer, produto] = await Promise.all([
-          tx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
-          tx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
+          anyTx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
+          anyTx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
         ])
 
         if (!customer?.email || !produto?.nome) {
-          await tx.order.update({
+          await anyTx.order.update({
             where: { id: order.id },
             data: {
               fulfillmentStatus: 'PENDING',
@@ -164,7 +169,7 @@ export async function processMercadoPagoPayment(dataId: string) {
             html
           })
 
-          await tx.order.update({
+          await anyTx.order.update({
             where: { id: order.id },
             data: {
               emailEnviadoEm: now,
@@ -175,7 +180,7 @@ export async function processMercadoPagoPayment(dataId: string) {
           })
         } catch (err: any) {
           const msg = String(err?.data?.statusMessage || err?.message || 'Falha ao enviar e-mail')
-          await tx.order.update({
+          await anyTx.order.update({
             where: { id: order.id },
             data: {
               fulfillmentStatus: 'SMTP_ERROR',
@@ -210,11 +215,13 @@ export async function processMercadoPagoPayment(dataId: string) {
       }
     } else if (status === 'rejected' || status === 'cancelled') {
       try {
-        await prisma.order.update({
+        await (prisma as any).order.update({
           where: { id: String(orderId) },
           data: {
             status: status.toUpperCase(),
-            mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId)
+            mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId),
+            mercadoPagoPaymentTypeId: paymentTypeId ? String(paymentTypeId) : null,
+            mercadoPagoPaymentMethodId: paymentMethodId ? String(paymentMethodId) : null
           }
         })
       } catch (err: any) {

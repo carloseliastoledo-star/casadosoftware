@@ -136,6 +136,8 @@ model Order {
   couponDiscountAmount Float?
   totalAmount          Float?
   mercadoPagoPaymentId String?  @unique
+  mercadoPagoPaymentTypeId String?
+  mercadoPagoPaymentMethodId String?
   criadoEm             DateTime @default(now()) @db.DateTime(0)
   pagoEm               DateTime? @db.DateTime(0)
   emailEnviadoEm       DateTime? @db.DateTime(0)
