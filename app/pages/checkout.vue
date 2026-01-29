@@ -121,7 +121,7 @@
 
               <div class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
                 <div class="font-semibold mb-3">Dados do cartão</div>
-                <div id="mp-card-form" class="space-y-3">
+                <form id="mp-card-form" class="space-y-3" @submit.prevent>
                   <div class="grid grid-cols-1 gap-3">
                     <div>
                       <label class="block text-xs text-gray-600 mb-1">Número do cartão</label>
@@ -164,7 +164,7 @@
                     <input id="form-identificationType" type="hidden" value="CPF" />
                     <input id="form-identificationNumber" :value="cpf" type="hidden" />
                   </div>
-                </div>
+                </form>
               </div>
 
               <div v-if="cardError" class="mt-4 text-sm text-red-600">
@@ -404,7 +404,26 @@ async function payWithCard() {
       throw new Error('Checkout de cartão indisponível')
     }
 
-    const cardData = mpCardForm.getCardFormData()
+    let cardData = mpCardForm.getCardFormData()
+
+    if (!cardData?.token) {
+      try {
+        mpCardForm.submit()
+        await new Promise((r) => setTimeout(r, 100))
+        cardData = mpCardForm.getCardFormData()
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!cardData?.token) {
+      throw new Error('Token do cartão não foi gerado. Verifique os dados do cartão e tente novamente.')
+    }
+
+    if (!cardData?.paymentMethodId) {
+      throw new Error('Selecione a bandeira do cartão e tente novamente.')
+    }
+
     const res: any = await $fetch('/api/mercadopago/card', {
       method: 'POST',
       body: {
