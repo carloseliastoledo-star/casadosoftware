@@ -1,11 +1,10 @@
 <script setup>
 definePageMeta({
-  layout: 'admin'
+  layout: 'admin',
+  ssr: false
 })
 
-const headers = import.meta.server ? useRequestHeaders(['cookie']) : undefined
-
-const { data, pending, error } = await useFetch('/api/admin/stats', { headers })
+const { data, pending, error } = useFetch('/api/admin/stats', { server: false })
 
 const stats = computed(() => data.value || { produtosTotal: 0, licencasTotal: 0, ultimosProdutos: [] })
 </script>
