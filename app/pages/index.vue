@@ -8,7 +8,7 @@
           </div>
 
           <h1 class="mt-8 text-4xl md:text-6xl font-extrabold tracking-tight text-white">
-            Licenças Digitais
+            Licenças
             <span class="block mt-3">
               <span class="text-cyan-300">Digitais</span>
               <span class="text-white"> e </span>
