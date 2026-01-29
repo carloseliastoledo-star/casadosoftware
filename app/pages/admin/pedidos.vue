@@ -17,40 +17,40 @@
     <div v-if="pending" class="text-gray-500">Carregando...</div>
     <div v-else-if="error" class="text-red-600">Não foi possível carregar os pedidos.</div>
 
-    <div v-else class="bg-white rounded shadow overflow-x-auto">
-      <table class="w-full text-sm">
+    <div v-else class="bg-white rounded shadow overflow-x-auto -mx-4 md:-mx-8">
+      <table class="min-w-max w-full text-sm">
         <thead class="bg-gray-100 text-gray-600">
           <tr>
-            <th class="p-3 text-left">Pedido</th>
-            <th class="p-3 text-left">Produto</th>
-            <th class="p-3 text-left">Cliente</th>
-            <th class="p-3 text-left">Status</th>
-            <th class="p-3 text-left">Pagamento</th>
-            <th class="p-3 text-left">Criado</th>
-            <th class="p-3 text-left">Pago</th>
-            <th class="p-3 text-left">Entrega</th>
-            <th class="p-3 text-left">Licenças</th>
-            <th class="p-3 text-left">Ações</th>
+            <th class="px-2 py-2 text-left">Pedido</th>
+            <th class="px-2 py-2 text-left">Produto</th>
+            <th class="px-2 py-2 text-left">Cliente</th>
+            <th class="px-2 py-2 text-left">Status</th>
+            <th class="px-2 py-2 text-left">Pagamento</th>
+            <th class="px-2 py-2 text-left">Criado</th>
+            <th class="px-2 py-2 text-left">Pago</th>
+            <th class="px-2 py-2 text-left">Entrega</th>
+            <th class="px-2 py-2 text-left">Licenças</th>
+            <th class="px-2 py-2 text-left">Ações</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-for="o in orders" :key="o.id" class="border-t">
-            <td class="p-3">
+            <td class="px-2 py-2">
               <div class="font-mono text-xs">#{{ o.numero }}</div>
               <div class="font-mono text-xs text-gray-400">{{ o.id }}</div>
             </td>
-            <td class="p-3">
+            <td class="px-2 py-2">
               <div class="font-medium">{{ o.produto?.nome }}</div>
               <div class="text-xs text-gray-500">{{ o.produto?.slug }}</div>
             </td>
-            <td class="p-3">
+            <td class="px-2 py-2">
               <div class="font-medium">{{ o.customer?.email }}</div>
               <div v-if="o.customer?.nome" class="text-xs text-gray-500">{{ o.customer?.nome }}</div>
               <div v-if="o.customer?.whatsapp" class="text-xs text-gray-500">WhatsApp: {{ o.customer?.whatsapp }}</div>
               <div v-if="o.customer?.cpf" class="text-xs text-gray-500">CPF: {{ o.customer?.cpf }}</div>
             </td>
-            <td class="p-3">
+            <td class="px-2 py-2">
               <span
                 class="px-2 py-1 rounded"
                 :class="o.status === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-gray-100'"
@@ -58,23 +58,23 @@
                 {{ o.status }}
               </span>
             </td>
-            <td class="p-3 text-xs text-gray-700">
+            <td class="px-2 py-2 text-xs text-gray-700">
               <div v-if="o.mercadoPagoPaymentTypeId || o.mercadoPagoPaymentMethodId">
                 <div class="font-mono">{{ o.mercadoPagoPaymentTypeId || '-' }}</div>
                 <div class="font-mono text-gray-400">{{ o.mercadoPagoPaymentMethodId || '-' }}</div>
               </div>
               <div v-else class="text-gray-500">-</div>
             </td>
-            <td class="p-3 text-xs text-gray-600">{{ formatDate(o.criadoEm) }}</td>
-            <td class="p-3 text-xs text-gray-600">{{ o.pagoEm ? formatDate(o.pagoEm) : '-' }}</td>
-            <td class="p-3">
+            <td class="px-2 py-2 text-xs text-gray-600">{{ formatDate(o.criadoEm) }}</td>
+            <td class="px-2 py-2 text-xs text-gray-600">{{ o.pagoEm ? formatDate(o.pagoEm) : '-' }}</td>
+            <td class="px-2 py-2">
               <div v-if="o.fulfillmentStatus" class="text-xs">
                 <div class="text-gray-700 font-medium">{{ o.fulfillmentStatus }}</div>
                 <div v-if="o.fulfillmentError" class="text-gray-500 mt-1">{{ o.fulfillmentError }}</div>
               </div>
               <div v-else class="text-xs text-gray-500">-</div>
             </td>
-            <td class="p-3">
+            <td class="px-2 py-2">
               <div v-if="!o.licencas?.length" class="text-xs text-gray-500">-</div>
               <div v-else class="space-y-1">
                 <div v-for="l in o.licencas" :key="l.id" class="text-xs">
@@ -83,7 +83,7 @@
                 </div>
               </div>
             </td>
-            <td class="p-3">
+            <td class="px-2 py-2">
               <div class="flex items-center gap-3">
                 <button class="text-blue-600 hover:text-blue-800" @click="openEditModal(o)">
                   Editar
