@@ -148,19 +148,10 @@
                     </div>
                   </div>
 
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <label class="block text-xs text-gray-600 mb-1">Bandeira</label>
-                      <select id="form-paymentMethodId" class="w-full border border-gray-200 p-3 rounded-xl bg-white"></select>
-                    </div>
-                    <div>
-                      <label class="block text-xs text-gray-600 mb-1">Parcelas</label>
-                      <select id="form-installments" class="w-full border border-gray-200 p-3 rounded-xl bg-white"></select>
-                    </div>
-                    <div>
-                      <label class="block text-xs text-gray-600 mb-1">Emissor</label>
-                      <select id="form-issuer" class="w-full border border-gray-200 p-3 rounded-xl bg-white"></select>
-                    </div>
+                  <div class="sr-only">
+                    <select id="form-paymentMethodId"></select>
+                    <select id="form-installments"></select>
+                    <select id="form-issuer"></select>
                     <input id="form-identificationType" type="hidden" value="CPF" />
                     <input id="form-identificationNumber" :value="cpf" type="hidden" />
                   </div>
