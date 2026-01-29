@@ -321,6 +321,7 @@ const cardLoading = ref(false)
 const cardError = ref('')
 const cardSdkError = ref('')
 let mpCardForm: any = null
+let mpCardSubmitResolver: ((data: any) => void) | null = null
 
 const couponInput = ref('')
 const appliedCoupon = ref<{ id: string; code: string; percent: number } | null>(null)
@@ -375,6 +376,20 @@ async function initCardForm() {
       callbacks: {
         onFormMounted: (error: any) => {
           if (error) cardSdkError.value = 'Erro ao montar formulário do cartão'
+        },
+        onSubmit: (event: any) => {
+          try {
+            event?.preventDefault?.()
+          } catch {
+            // ignore
+          }
+
+          const data = mpCardForm?.getCardFormData?.()
+          if (mpCardSubmitResolver) {
+            const resolve = mpCardSubmitResolver
+            mpCardSubmitResolver = null
+            resolve(data)
+          }
         }
       }
     })
@@ -404,17 +419,23 @@ async function payWithCard() {
       throw new Error('Checkout de cartão indisponível')
     }
 
-    let cardData = mpCardForm.getCardFormData()
-
-    if (!cardData?.token) {
+    const cardData = await new Promise<any>((resolve, reject) => {
+      mpCardSubmitResolver = resolve
       try {
         mpCardForm.submit()
-        await new Promise((r) => setTimeout(r, 100))
-        cardData = mpCardForm.getCardFormData()
-      } catch {
-        // ignore
+      } catch (e) {
+        mpCardSubmitResolver = null
+        reject(e)
+        return
       }
-    }
+
+      setTimeout(() => {
+        if (mpCardSubmitResolver) {
+          mpCardSubmitResolver = null
+          reject(new Error('Não foi possível validar o cartão. Tente novamente.'))
+        }
+      }, 10000)
+    })
 
     if (!cardData?.token) {
       throw new Error('Token do cartão não foi gerado. Verifique os dados do cartão e tente novamente.')
