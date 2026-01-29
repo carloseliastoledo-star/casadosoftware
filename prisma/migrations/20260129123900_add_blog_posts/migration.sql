@@ -1,0 +1,13 @@
+-- CreateTable
+CREATE TABLE `BlogPost` (
+    `id` VARCHAR(191) NOT NULL,
+    `titulo` VARCHAR(191) NOT NULL,
+    `slug` VARCHAR(191) NOT NULL,
+    `html` TEXT NULL,
+    `publicado` BOOLEAN NOT NULL DEFAULT false,
+    `criadoEm` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `atualizadoEm` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    UNIQUE INDEX `BlogPost_slug_key`(`slug`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
