@@ -17,38 +17,38 @@
     <div v-if="pending" class="text-gray-500">Carregando...</div>
     <div v-else-if="error" class="text-red-600">Não foi possível carregar os pedidos.</div>
 
-    <div v-else class="bg-white rounded shadow overflow-x-auto">
-      <table class="min-w-max w-full text-xs whitespace-nowrap">
+    <div v-else class="bg-white rounded shadow overflow-hidden">
+      <table class="w-full text-xs table-fixed">
         <thead class="bg-gray-100 text-gray-600">
           <tr>
-            <th class="px-2 py-2 text-left">Pedido</th>
-            <th class="px-2 py-2 text-left">Produto</th>
-            <th class="px-2 py-2 text-left">Cliente</th>
-            <th class="px-2 py-2 text-left">Status</th>
-            <th class="px-2 py-2 text-left">Pagamento</th>
-            <th class="px-2 py-2 text-left">Criado</th>
-            <th class="px-2 py-2 text-left">Pago</th>
-            <th class="px-2 py-2 text-left">Entrega</th>
-            <th class="px-2 py-2 text-left">Licenças</th>
-            <th class="px-2 py-2 text-left">Ações</th>
+            <th class="px-2 py-2 text-left w-28">Pedido</th>
+            <th class="px-2 py-2 text-left w-64">Produto</th>
+            <th class="px-2 py-2 text-left w-56">Cliente</th>
+            <th class="px-2 py-2 text-left w-20">Status</th>
+            <th class="px-2 py-2 text-left w-24">Pagamento</th>
+            <th class="px-2 py-2 text-left w-24">Criado</th>
+            <th class="px-2 py-2 text-left w-24">Pago</th>
+            <th class="px-2 py-2 text-left w-20">Entrega</th>
+            <th class="px-2 py-2 text-left w-24">Licenças</th>
+            <th class="px-2 py-2 text-left w-28">Ações</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-for="o in orders" :key="o.id" class="border-t">
-            <td class="px-2 py-2">
-              <div class="font-mono text-xs">#{{ o.numero }}</div>
-              <div class="font-mono text-xs text-gray-400">{{ o.id }}</div>
+            <td class="px-2 py-2 align-top">
+              <div class="font-mono text-xs truncate" :title="`#${o.numero}`">#{{ o.numero }}</div>
+              <div class="font-mono text-xs text-gray-400 truncate" :title="o.id">{{ o.id }}</div>
             </td>
-            <td class="px-2 py-2">
-              <div class="font-medium whitespace-nowrap">{{ o.produto?.nome }}</div>
-              <div class="text-xs text-gray-500 whitespace-nowrap">{{ o.produto?.slug }}</div>
+            <td class="px-2 py-2 align-top">
+              <div class="font-medium truncate" :title="o.produto?.nome">{{ o.produto?.nome }}</div>
+              <div class="text-xs text-gray-500 truncate" :title="o.produto?.slug">{{ o.produto?.slug }}</div>
             </td>
-            <td class="px-2 py-2">
-              <div class="font-medium whitespace-nowrap">{{ o.customer?.email }}</div>
-              <div v-if="o.customer?.nome" class="text-xs text-gray-500 whitespace-nowrap">{{ o.customer?.nome }}</div>
-              <div v-if="o.customer?.whatsapp" class="text-xs text-gray-500 whitespace-nowrap">WhatsApp: {{ o.customer?.whatsapp }}</div>
-              <div v-if="o.customer?.cpf" class="text-xs text-gray-500 whitespace-nowrap">CPF: {{ o.customer?.cpf }}</div>
+            <td class="px-2 py-2 align-top">
+              <div class="font-medium truncate" :title="o.customer?.email">{{ o.customer?.email }}</div>
+              <div v-if="o.customer?.nome" class="text-xs text-gray-500 truncate" :title="o.customer?.nome">{{ o.customer?.nome }}</div>
+              <div v-if="o.customer?.whatsapp" class="text-xs text-gray-500 truncate" :title="`WhatsApp: ${o.customer?.whatsapp}`">WhatsApp: {{ o.customer?.whatsapp }}</div>
+              <div v-if="o.customer?.cpf" class="text-xs text-gray-500 truncate" :title="`CPF: ${o.customer?.cpf}`">CPF: {{ o.customer?.cpf }}</div>
             </td>
             <td class="px-2 py-2">
               <span
@@ -58,29 +58,25 @@
                 {{ o.status }}
               </span>
             </td>
-            <td class="px-2 py-2 text-xs text-gray-700">
+            <td class="px-2 py-2 text-xs text-gray-700 align-top">
               <div v-if="o.mercadoPagoPaymentTypeId || o.mercadoPagoPaymentMethodId">
                 <div class="font-mono">{{ o.mercadoPagoPaymentTypeId || '-' }}</div>
                 <div class="font-mono text-gray-400">{{ o.mercadoPagoPaymentMethodId || '-' }}</div>
               </div>
               <div v-else class="text-gray-500">-</div>
             </td>
-            <td class="px-2 py-2 text-xs text-gray-600">{{ formatDate(o.criadoEm) }}</td>
-            <td class="px-2 py-2 text-xs text-gray-600">{{ o.pagoEm ? formatDate(o.pagoEm) : '-' }}</td>
-            <td class="px-2 py-2">
+            <td class="px-2 py-2 text-xs text-gray-600 align-top">{{ formatDate(o.criadoEm) }}</td>
+            <td class="px-2 py-2 text-xs text-gray-600 align-top">{{ o.pagoEm ? formatDate(o.pagoEm) : '-' }}</td>
+            <td class="px-2 py-2 align-top">
               <div v-if="o.fulfillmentStatus" class="text-xs">
                 <div class="text-gray-700 font-medium">{{ o.fulfillmentStatus }}</div>
                 <div v-if="o.fulfillmentError" class="text-gray-500 mt-1">{{ o.fulfillmentError }}</div>
               </div>
               <div v-else class="text-xs text-gray-500">-</div>
             </td>
-            <td class="px-2 py-2">
-              <div v-if="!o.licencas?.length" class="text-xs text-gray-500">-</div>
-              <div v-else class="space-y-1">
-                <div v-for="l in o.licencas" :key="l.id" class="text-xs">
-                  <div class="text-gray-500">{{ l.status }}</div>
-                  <div class="font-mono break-all">{{ l.chave }}</div>
-                </div>
+            <td class="px-2 py-2 align-top">
+              <div class="text-xs text-gray-600 truncate" :title="o.licencas?.length ? `${o.licencas.length} licença(s)` : '-'">
+                {{ o.licencas?.length ? `${o.licencas.length} licença(s)` : '-' }}
               </div>
             </td>
             <td class="px-2 py-2">
