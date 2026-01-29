@@ -9,7 +9,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "start": "node .output/server/index.mjs",
+    "start": "prisma migrate deploy && node .output/server/index.mjs",
     "start:prod": "prisma migrate deploy && node .output/server/index.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
