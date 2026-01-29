@@ -24,7 +24,14 @@ async function submit() {
     }
 
     const redirect = String(route.query.redirect || '')
-    navigateTo(redirect && redirect.startsWith('/') ? redirect : '/admin')
+    const target = redirect && redirect.startsWith('/') ? redirect : '/admin'
+    try {
+      await navigateTo(target)
+    } catch (navErr: any) {
+      const msg = navErr?.message ? String(navErr.message) : 'Erro ao navegar após login'
+      error.value = msg
+      if (import.meta.client) window.location.href = target
+    }
   } catch (err: any) {
     const statusCode = err?.data?.statusCode || err?.statusCode
     const statusMessage = err?.data?.statusMessage || err?.statusMessage
