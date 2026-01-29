@@ -18,24 +18,34 @@ export default defineEventHandler(async (event) => {
   if (!titulo) throw createError({ statusCode: 400, statusMessage: 'Título obrigatório' })
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Slug obrigatório' })
 
-  const post = await (prisma as any).blogPost.update({
-    where: { id },
-    data: {
-      titulo,
-      slug,
-      html,
-      publicado
-    },
-    select: {
-      id: true,
-      titulo: true,
-      slug: true,
-      html: true,
-      publicado: true,
-      criadoEm: true,
-      atualizadoEm: true
-    }
-  })
+  try {
+    const post = await (prisma as any).blogPost.update({
+      where: { id },
+      data: {
+        titulo,
+        slug,
+        html,
+        publicado
+      },
+      select: {
+        id: true,
+        titulo: true,
+        slug: true,
+        html: true,
+        publicado: true,
+        criadoEm: true,
+        atualizadoEm: true
+      }
+    })
 
-  return { ok: true, post }
+    return { ok: true, post }
+  } catch (err: any) {
+    const message = String(err?.message || '')
+    throw createError({
+      statusCode: 500,
+      statusMessage: message.includes('Unknown column') || message.includes("doesn't exist")
+        ? 'Banco de dados desatualizado (migração pendente). Rode as migrations em produção.'
+        : (err?.message || 'Server Error')
+    })
+  }
 })
