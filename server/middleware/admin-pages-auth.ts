@@ -19,14 +19,19 @@ function shouldIgnore(path: string): boolean {
 }
 
 export default defineEventHandler((event: H3Event) => {
-  const rawUrl = event.node.req.url || ''
-  const path = (rawUrl.split('?')[0] || '').trim()
+  try {
+    const rawUrl = event.node.req.url || ''
+    const path = (rawUrl.split('?')[0] || '').trim()
 
-  if (shouldIgnore(path)) return
+    if (shouldIgnore(path)) return
 
-  const session = getAdminSession(event)
-  if (session) return
+    const session = getAdminSession(event)
+    if (session) return
 
-  const redirectTo = encodeURIComponent(rawUrl || '/admin')
-  return sendRedirect(event, `/admin/login?redirect=${redirectTo}`, 302)
+    const redirectTo = encodeURIComponent(rawUrl || '/admin')
+    return sendRedirect(event, `/admin/login?redirect=${redirectTo}`, 302)
+  } catch (err) {
+    // Fallback: nunca quebrar navegação com 500 por causa do middleware.
+    console.error('[admin-pages-auth] error', err)
+  }
 })
