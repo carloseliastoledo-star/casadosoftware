@@ -145,7 +145,7 @@
 
         <div v-else class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <NuxtLink
-            v-for="c in categoriasHome"
+            v-for="c in categoriasHomeFiltered"
             :key="c.id"
             :to="`/categoria/${c.slug}`"
             class="bg-white border rounded-2xl p-5 hover:shadow-sm transition"
@@ -436,7 +436,7 @@ const products = computed(() => data.value || [])
 const allProducts = computed(() => allProductsData.value || [])
 
 const categorias = computed(() => categoriasData.value?.categorias || [])
-const categoriasHome = computed(() => categorias.value.slice(0, 8))
+const categoriasHome = computed(() => categorias.value.slice(0, 12))
 
 const categoriasSet = computed(() => {
   return new Set(categorias.value.map((c) => String(c.slug || '').trim()).filter(Boolean))
@@ -452,6 +452,15 @@ const categoriasDestaque = computed(() => {
   return items.map((it) => {
     const to = categoriasSet.value.has(it.slug) ? `/categoria/${it.slug}` : '/categorias'
     return { ...it, to }
+  })
+})
+
+const categoriasHomeFiltered = computed(() => {
+  const highlight = new Set(categoriasDestaque.value.map((c) => String(c.slug || '').trim()).filter(Boolean))
+  return categoriasHome.value.filter((c: any) => {
+    const slug = String(c?.slug || '').trim()
+    if (!slug) return false
+    return !highlight.has(slug)
   })
 })
 
