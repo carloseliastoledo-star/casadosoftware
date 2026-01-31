@@ -36,6 +36,7 @@ model Produto {
   orders    Order[]
   produtoCategorias ProdutoCategoria[]
   precosLoja ProdutoPrecoLoja[]
+  precosMoeda ProdutoPrecoMoeda[]
 }
 
 
@@ -50,6 +51,21 @@ model ProdutoPrecoLoja {
   updatedAt  DateTime @updatedAt @db.DateTime(0)
 
   @@unique([produtoId, storeSlug])
+}
+
+
+model ProdutoPrecoMoeda {
+  id         String   @id @default(uuid())
+  produtoId  String
+  produto    Produto  @relation(fields: [produtoId], references: [id])
+  storeSlug  String
+  currency   String
+  amount     Float
+  oldAmount  Float?
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  updatedAt  DateTime @updatedAt @db.DateTime(0)
+
+  @@unique([produtoId, storeSlug, currency])
 }
 
 
@@ -142,6 +158,8 @@ model Order {
   numero              Int      @unique @default(autoincrement())
   status              String
   storeSlug            String?
+  currency            String?
+  countryCode         String?
   produtoId            String
   produto              Produto  @relation(fields: [produtoId], references: [id])
   customerId           String
@@ -158,6 +176,7 @@ model Order {
   mercadoPagoPaymentId String?  @unique
   mercadoPagoPaymentTypeId String?
   mercadoPagoPaymentMethodId String?
+  stripePaymentIntentId String? @unique
   criadoEm             DateTime @default(now()) @db.DateTime(0)
   pagoEm               DateTime? @db.DateTime(0)
   emailEnviadoEm       DateTime? @db.DateTime(0)

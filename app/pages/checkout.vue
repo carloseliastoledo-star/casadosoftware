@@ -1,6 +1,121 @@
 <template>
   <section class="bg-gray-50 min-h-screen py-12">
-    <div class="max-w-6xl mx-auto px-6">
+    <div v-if="isIntl" class="max-w-3xl mx-auto px-6">
+      <div class="mb-8">
+        <h1 class="text-4xl font-extrabold text-gray-900">{{ intlTitle }}</h1>
+        <p class="text-gray-600 mt-2">{{ intlSubtitle }}</p>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ intlEmailLabel }}</label>
+            <input
+              v-model="customerEmail"
+              type="email"
+              placeholder="you@example.com"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ intlNameLabel }}</label>
+            <input
+              v-model="nome"
+              type="text"
+              placeholder="Full name"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ intlCountryLabel }}</label>
+            <select
+              v-model="intlCountryCode"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+            >
+              <option value="">{{ intlCountryPlaceholder }}</option>
+              <optgroup label="South America">
+                <option value="AR">Argentina</option>
+                <option value="BO">Bolivia</option>
+                <option value="BR">Brazil</option>
+                <option value="CL">Chile</option>
+                <option value="CO">Colombia</option>
+                <option value="EC">Ecuador</option>
+                <option value="PY">Paraguay</option>
+                <option value="PE">Peru</option>
+                <option value="UY">Uruguay</option>
+                <option value="VE">Venezuela</option>
+              </optgroup>
+              <optgroup label="Europe">
+                <option value="DE">Germany</option>
+                <option value="ES">Spain</option>
+                <option value="FR">France</option>
+                <option value="IE">Ireland</option>
+                <option value="IT">Italy</option>
+                <option value="NL">Netherlands</option>
+                <option value="PT">Portugal</option>
+                <option value="UK">United Kingdom</option>
+              </optgroup>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">{{ intlCurrencyLabel }}</label>
+            <select
+              v-model="intlCurrency"
+              class="w-full border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-0 p-3 rounded-xl"
+            >
+              <option value="usd">USD</option>
+              <option value="eur">EUR</option>
+            </select>
+          </div>
+        </div>
+
+        <div v-if="intlError" class="mt-4 text-sm text-red-600">
+          {{ intlError }}
+        </div>
+
+        <div class="mt-6 border border-gray-200 rounded-2xl overflow-hidden">
+          <div class="bg-gray-50 px-4 py-3 flex items-center justify-between gap-4">
+            <div>
+              <div class="font-semibold text-gray-900">{{ intlPaymentTitle }}</div>
+              <div class="text-xs text-gray-600">{{ intlPaymentSubtitle }}</div>
+            </div>
+            <div v-if="intlAmountFormatted" class="text-sm font-extrabold text-gray-900">
+              {{ intlAmountFormatted }}
+            </div>
+          </div>
+          <div class="p-4 bg-white">
+            <div id="stripe-payment-element" class="min-h-[44px]" />
+          </div>
+        </div>
+
+        <button
+          :disabled="stripeLoading || !product || !customerEmail || !acceptedTerms"
+          @click="payWithStripe"
+          class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl shadow-sm transition disabled:opacity-60"
+        >
+          {{ stripeLoading ? intlPayLoadingLabel : intlPayLabel }}
+        </button>
+
+        <div class="mt-4 border border-gray-200 bg-gray-50 rounded-xl p-4">
+          <label class="flex items-start gap-3 text-sm text-gray-700">
+            <input v-model="acceptedTerms" type="checkbox" class="mt-1" />
+            <span>
+              {{ intlTermsPrefix }}
+              <a href="/termos" class="text-blue-600 hover:underline">{{ intlTermsLink }}</a>,
+              <a href="/privacidade" class="text-blue-600 hover:underline">{{ intlPrivacyLink }}</a>
+              {{ intlTermsAnd }}
+              <a href="/reembolso" class="text-blue-600 hover:underline">{{ intlRefundLink }}</a>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="max-w-6xl mx-auto px-6">
       <div class="mb-8">
         <h1 class="text-4xl font-extrabold text-gray-900">
           Finalize seu pedido
@@ -330,6 +445,30 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 const config = useRuntimeConfig()
 
+const host = computed(() => {
+  if (import.meta.server) {
+    try {
+      const h = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
+      const raw = h?.['x-forwarded-host'] || h?.host || ''
+      return String(String(raw).split(',')[0] || '').trim().toLowerCase()
+    } catch {
+      return ''
+    }
+  }
+
+  if (typeof window !== 'undefined') return String(window.location.host || '').toLowerCase()
+  return ''
+})
+
+const intlLocale = computed<'pt' | 'en' | 'es'>(() => {
+  const h = host.value
+  if (h.startsWith('en.')) return 'en'
+  if (h.startsWith('es.')) return 'es'
+  return 'pt'
+})
+
+const isIntl = computed(() => intlLocale.value === 'en' || intlLocale.value === 'es')
+
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
 
@@ -384,6 +523,177 @@ const cpf = ref('')
 const acceptedTerms = ref(false)
 const finalizeLoading = ref(false)
 const finalizeError = ref('')
+
+const intlCountryCode = ref('')
+const intlCurrency = ref<'usd' | 'eur'>('usd')
+const stripeLoading = ref(false)
+const intlError = ref('')
+const stripeClientSecret = ref<string | null>(null)
+const stripeOrderId = ref<string | null>(null)
+const stripeAmount = ref<number | null>(null)
+const stripeCurrency = ref<'usd' | 'eur'>('usd')
+let stripeInstance: any = null
+let stripeElements: any = null
+let stripePaymentElement: any = null
+
+function tIntl(pt: string, en: string, es: string) {
+  return intlLocale.value === 'en' ? en : intlLocale.value === 'es' ? es : pt
+}
+
+const intlTitle = computed(() => tIntl('Finalize seu pedido', 'Checkout', 'Finalizar compra'))
+const intlSubtitle = computed(() =>
+  tIntl(
+    'Preencha seus dados e escolha a forma de pagamento.',
+    'Enter your details and complete payment securely.',
+    'Completa tus datos y paga de forma segura.'
+  )
+)
+const intlEmailLabel = computed(() => tIntl('E-mail', 'Email', 'Correo'))
+const intlNameLabel = computed(() => tIntl('Nome', 'Name', 'Nombre'))
+const intlCountryLabel = computed(() => tIntl('País', 'Country', 'País'))
+const intlCountryPlaceholder = computed(() => tIntl('Selecione...', 'Select...', 'Selecciona...'))
+const intlCurrencyLabel = computed(() => tIntl('Moeda', 'Currency', 'Moneda'))
+const intlPaymentTitle = computed(() => tIntl('Pagamento', 'Payment', 'Pago'))
+const intlPaymentSubtitle = computed(() => tIntl('Cartão e métodos suportados pela Stripe.', 'Card and supported methods powered by Stripe.', 'Tarjeta y métodos compatibles con Stripe.'))
+const intlPayLabel = computed(() => tIntl('Pagar', 'Pay now', 'Pagar ahora'))
+const intlPayLoadingLabel = computed(() => tIntl('Processando...', 'Processing...', 'Procesando...'))
+const intlTermsPrefix = computed(() => tIntl('Aceito os', 'I accept the', 'Acepto los'))
+const intlTermsLink = computed(() => tIntl('Termos de Uso', 'Terms of Use', 'Términos de uso'))
+const intlPrivacyLink = computed(() => tIntl('Política de Privacidade', 'Privacy Policy', 'Política de privacidad'))
+const intlRefundLink = computed(() => tIntl('Política de Reembolso', 'Refund Policy', 'Política de reembolso'))
+const intlTermsAnd = computed(() => tIntl('e', 'and', 'y'))
+
+const intlAmountFormatted = computed(() => {
+  if (!stripeAmount.value) return null
+  const currency = stripeCurrency.value || intlCurrency.value
+  try {
+    return new Intl.NumberFormat(intlLocale.value === 'pt' ? 'pt-BR' : intlLocale.value === 'es' ? 'es-ES' : 'en-US', {
+      style: 'currency',
+      currency: currency.toUpperCase()
+    }).format(Number(stripeAmount.value || 0))
+  } catch {
+    return String(stripeAmount.value)
+  }
+})
+
+function loadStripeJs() {
+  return new Promise<void>((resolve, reject) => {
+    if (typeof window === 'undefined') return reject(new Error('no window'))
+    if ((window as any).Stripe) return resolve()
+
+    const script = document.createElement('script')
+    script.src = 'https://js.stripe.com/v3'
+    script.async = true
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error('Falha ao carregar Stripe.js'))
+    document.head.appendChild(script)
+  })
+}
+
+async function ensureStripeElement() {
+  if (!isIntl.value) return
+  if (!product.value) return
+  if (!customerEmail.value || !customerEmail.value.includes('@')) return
+
+  intlError.value = ''
+
+  const res: any = await $fetch('/api/stripe/payment-intent', {
+    method: 'POST',
+    body: {
+      produtoId: product.value.id,
+      email: customerEmail.value,
+      nome: nome.value,
+      whatsapp: whatsapp.value,
+      currency: intlCurrency.value,
+      countryCode: intlCountryCode.value || null
+    }
+  })
+
+  stripeClientSecret.value = String(res.clientSecret || '') || null
+  stripeOrderId.value = String(res.orderId || '') || null
+  stripeAmount.value = res.amount == null ? null : Number(res.amount)
+  stripeCurrency.value = String(res.currency || intlCurrency.value).toLowerCase() as any
+
+  const publishableKey = String(res.publishableKey || '')
+  if (!publishableKey) {
+    throw new Error('STRIPE_PUBLISHABLE_KEY não configurado')
+  }
+
+  if (!stripeClientSecret.value) {
+    throw new Error('Falha ao inicializar pagamento')
+  }
+
+  await loadStripeJs()
+
+  stripeInstance = (window as any).Stripe(publishableKey)
+  stripeElements = stripeInstance.elements({ clientSecret: stripeClientSecret.value })
+
+  const el = document.getElementById('stripe-payment-element')
+  if (!el) return
+
+  el.innerHTML = ''
+  stripePaymentElement = stripeElements.create('payment')
+  stripePaymentElement.mount('#stripe-payment-element')
+}
+
+watch([isIntl, intlCurrency, intlCountryCode, customerEmail], async () => {
+  if (!isIntl.value) return
+  if (stripeLoading.value) return
+
+  try {
+    await nextTick()
+    await ensureStripeElement()
+  } catch (err: any) {
+    intlError.value = err?.data?.statusMessage || err?.message || 'Falha ao iniciar pagamento'
+  }
+})
+
+async function payWithStripe() {
+  if (!isIntl.value) return
+  if (!product.value) return
+
+  stripeLoading.value = true
+  intlError.value = ''
+
+  try {
+    if (!acceptedTerms.value) {
+      intlError.value = tIntl('Você precisa aceitar os termos para continuar.', 'You must accept the terms to continue.', 'Debes aceptar los términos para continuar.')
+      return
+    }
+
+    if (!stripeInstance || !stripeElements) {
+      await ensureStripeElement()
+    }
+
+    if (!stripeInstance || !stripeElements) {
+      throw new Error('Stripe não inicializado')
+    }
+
+    const orderId = String(stripeOrderId.value || '').trim()
+    const returnUrl = typeof window !== 'undefined'
+      ? `${window.location.origin}/obrigado?orderId=${encodeURIComponent(orderId)}`
+      : ''
+
+    const result = await stripeInstance.confirmPayment({
+      elements: stripeElements,
+      confirmParams: { return_url: returnUrl },
+      redirect: 'if_required'
+    })
+
+    if (result?.error) {
+      throw new Error(String(result.error.message || 'Pagamento não autorizado'))
+    }
+
+    const status = String(result?.paymentIntent?.status || '').toLowerCase()
+    if (status === 'succeeded' && orderId) {
+      navigateTo({ path: '/obrigado', query: { orderId } })
+    }
+  } catch (err: any) {
+    intlError.value = err?.data?.statusMessage || err?.message || 'Falha ao processar pagamento'
+  } finally {
+    stripeLoading.value = false
+  }
+}
 
 const subtotal = computed(() => Number(product.value?.price || 0))
 const formattedSubtotal = computed(() => {
