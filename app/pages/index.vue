@@ -1,53 +1,67 @@
 <template>
   <section class="bg-gray-50">
-    <div class="bg-gradient-to-br from-[#0b2b6a] via-[#203a7a] to-[#2f4fb4]">
-      <div class="max-w-7xl mx-auto px-6 pt-10 pb-14">
-        <div class="flex flex-col items-center text-center">
-          <div class="text-xs font-semibold tracking-wide text-white/80 border border-white/15 bg-white/10 px-4 py-2 rounded-full">
-            + Milhares de clientes satisfeitos
+    <div class="bg-white border-b">
+      <div class="max-w-7xl mx-auto px-6 pt-8 pb-10">
+        <div class="rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-800 overflow-hidden border border-black/10 shadow-sm">
+          <div class="px-6 py-10 md:px-12 md:py-14">
+            <div class="max-w-2xl">
+              <div class="inline-flex items-center gap-2 text-[11px] font-extrabold tracking-widest text-orange-200 bg-orange-500/15 border border-orange-500/20 px-3 py-1 rounded-full">
+                MICROSOFT PARTNER
+              </div>
+              <h1 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tight text-white">
+                Licenças Digitais
+                <span class="block text-cyan-300">com envio por e-mail</span>
+              </h1>
+              <p class="mt-4 text-white/80 text-sm md:text-base leading-relaxed">
+                Windows, Office e Windows Server com entrega digital rápida após confirmação.
+              </p>
+
+              <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                <NuxtLink
+                  to="/produtos"
+                  class="bg-cyan-400 hover:bg-cyan-300 text-neutral-950 font-extrabold px-6 py-3 rounded-xl transition text-center"
+                >
+                  Ver ofertas
+                </NuxtLink>
+                <NuxtLink
+                  to="/tutoriais"
+                  class="bg-white/5 hover:bg-white/10 border border-white/15 text-white font-semibold px-6 py-3 rounded-xl transition text-center"
+                >
+                  Como ativar
+                </NuxtLink>
+              </div>
+
+              <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-white/85">
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-300">✔</span>
+                  Envio rápido após confirmação
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-300">✔</span>
+                  Entrega digital
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-300">✔</span>
+                  Suporte especializado
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <h1 class="mt-8 text-4xl md:text-6xl font-extrabold tracking-tight text-white">
-            Licenças
-            <span class="block mt-3">
-              <span class="text-cyan-300">Digitais</span>
-              <span class="text-white"> e </span>
-              <span class="text-indigo-300">com envio rápido</span>
-            </span>
-          </h1>
-
-          <p class="mt-6 max-w-2xl text-white/80 text-base md:text-lg leading-relaxed">
-            Compre Windows, Office, Autodesk e mais com entrega imediata por e-mail e suporte
-          </p>
-
-          <div class="mt-8 flex flex-col sm:flex-row gap-4">
+        <div class="mt-8 overflow-x-auto">
+          <div class="flex gap-6 min-w-max py-2">
             <NuxtLink
-              to="/produtos"
-              class="bg-cyan-400 hover:bg-cyan-300 text-[#0b2b6a] font-bold px-8 py-3 rounded-xl transition text-center"
+              v-for="it in categoriasAtalhos"
+              :key="it.slug"
+              :to="it.to"
+              class="flex flex-col items-center gap-3"
             >
-              Ver Produtos
+              <div class="w-20 h-20 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center">
+                <span class="text-2xl" aria-hidden="true">{{ it.icon }}</span>
+              </div>
+              <div class="text-xs font-semibold text-gray-700">{{ it.label }}</div>
             </NuxtLink>
-            <NuxtLink
-              to="/tutoriais"
-              class="border border-white/40 text-white hover:bg-white/10 font-semibold px-8 py-3 rounded-xl transition text-center"
-            >
-              Como Ativar
-            </NuxtLink>
-          </div>
-
-          <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-white/85">
-            <div class="flex items-center gap-2">
-              <span class="text-green-300">✔</span>
-              Envio rápido após confirmação
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-300">✔</span>
-              Entrega digital
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-300">✔</span>
-              Suporte Gratuito
-            </div>
           </div>
         </div>
       </div>
@@ -144,16 +158,15 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-6 py-12">
-      <div class="flex items-end justify-between gap-6 flex-wrap">
+      <div class="flex items-center justify-between gap-6 flex-wrap">
         <div>
-          <h2 class="text-3xl font-extrabold text-gray-900">Ofertas da semana</h2>
-          <p class="text-gray-600 mt-2">Aproveite os destaques com entrega digital rápida.</p>
+          <div class="inline-flex items-end gap-3">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Ofertas da semana</h2>
+            <span class="hidden md:block h-[3px] w-16 bg-blue-600 rounded-full mb-1" />
+          </div>
         </div>
-        <NuxtLink
-          to="/produtos"
-          class="text-blue-700 font-semibold hover:underline"
-        >
-          Ver todos →
+        <NuxtLink to="/produtos" class="text-sm font-semibold text-gray-800 hover:underline">
+          Ver todos
         </NuxtLink>
       </div>
 
@@ -437,6 +450,22 @@ const categoriasDestaque = computed(() => {
   ]
 
   return items.map((it) => {
+    const to = categoriasSet.value.has(it.slug) ? `/categoria/${it.slug}` : '/categorias'
+    return { ...it, to }
+  })
+})
+
+const categoriasAtalhos = computed(() => {
+  const base = [
+    { label: 'Windows', slug: 'windows', icon: '🪟' },
+    { label: 'Office', slug: 'office', icon: '📄' },
+    { label: 'Antivírus', slug: 'antivirus', icon: '🛡️' },
+    { label: 'Windows Server', slug: 'windows-server', icon: '🖥️' },
+    { label: 'Mais vendidos', slug: 'mais-vendidos', icon: '🔥' }
+  ]
+
+  return base.map((it) => {
+    if (it.slug === 'mais-vendidos') return { ...it, to: '/produtos' }
     const to = categoriasSet.value.has(it.slug) ? `/categoria/${it.slug}` : '/categorias'
     return { ...it, to }
   })

@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
 
-    <div v-if="topbarText" class="bg-gray-900 text-white text-xs">
-      <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center">
+    <div v-if="topbarText" class="bg-blue-600 text-white text-xs">
+      <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
         <a
           v-if="topbarLink"
           :href="topbarLink"
@@ -18,69 +18,81 @@
 
     <!-- HEADER -->
     <header class="border-b bg-white sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-6 h-16 md:h-20 flex items-center justify-between">
-        <!-- LOGO -->
-        <NuxtLink to="/" class="flex items-center gap-3">
-          <img
-            :src="logoPath"
-            :alt="siteName"
-            class="h-11 md:h-14 w-auto"
-          />
-          <span class="text-lg font-extrabold tracking-tight text-gray-900">
-            {{ siteName }}
-          </span>
-        </NuxtLink>
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="h-16 md:h-20 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-4 min-w-0">
+            <button
+              type="button"
+              class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border text-gray-700"
+              @click="mobileMenuOpen = true"
+              aria-label="Abrir menu"
+            >
+              ☰
+            </button>
 
-        <!-- MENU -->
-        <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-700">
+            <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
+              <img :src="logoPath" :alt="siteName" class="h-10 md:h-12 w-auto" />
+              <span class="hidden sm:block text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
+                {{ siteName }}
+              </span>
+            </NuxtLink>
+          </div>
+
+          <form class="hidden md:flex flex-1 max-w-2xl" @submit.prevent="submitSearch">
+            <div class="flex w-full">
+              <input
+                v-model="search"
+                type="search"
+                placeholder="O que está buscando?"
+                class="w-full h-11 rounded-l-xl border border-gray-200 bg-gray-50 px-4 text-sm outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600"
+              />
+              <button
+                type="submit"
+                class="h-11 px-5 rounded-r-xl bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm"
+              >
+                Buscar
+              </button>
+            </div>
+          </form>
+
+          <div class="flex items-center gap-3">
+            <NuxtLink
+              to="/minha-conta/login"
+              class="hidden md:flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-blue-600"
+            >
+              <span aria-hidden="true">👤</span>
+              <span>Minha conta</span>
+            </NuxtLink>
+
+            <NuxtLink
+              to="/checkout"
+              class="relative inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
+            >
+              <span aria-hidden="true">🛒</span>
+              <span class="font-semibold">Carrinho</span>
+              <span
+                v-if="cartCount > 0"
+                class="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full bg-red-600 text-white text-[11px] font-bold flex items-center justify-center"
+              >
+                {{ cartCount }}
+              </span>
+            </NuxtLink>
+          </div>
+        </div>
+
+        <div class="hidden md:flex items-center gap-6 h-12 border-t">
+          <NuxtLink to="/" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-blue-600">
+            <span aria-hidden="true">🏠</span>
+            Início
+          </NuxtLink>
           <NuxtLink
             v-for="it in mainMenu"
             :key="it.label"
             :to="it.to"
-            class="hover:text-blue-600"
+            class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-blue-600"
           >
+            <span aria-hidden="true">{{ menuIcon(it.label) }}</span>
             {{ it.label }}
-          </NuxtLink>
-
-          <NuxtLink to="/minha-conta/login" class="hover:text-blue-600">
-            Minha conta
-          </NuxtLink>
-
-          <NuxtLink
-            to="/checkout"
-            class="relative inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
-          >
-            <span class="font-semibold">Carrinho</span>
-            <span
-              v-if="cartCount > 0"
-              class="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full bg-red-600 text-white text-[11px] font-bold flex items-center justify-center"
-            >
-              {{ cartCount }}
-            </span>
-          </NuxtLink>
-        </nav>
-
-        <div class="md:hidden flex items-center gap-3">
-          <button
-            type="button"
-            class="inline-flex items-center justify-center w-10 h-10 rounded-lg border text-gray-700"
-            @click="mobileMenuOpen = true"
-            aria-label="Abrir menu"
-          >
-            ☰
-          </button>
-
-          <NuxtLink
-            to="/checkout"
-            class="relative inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
-          >
-            Carrinho
-            <span
-              v-if="cartCount > 0"
-              class="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full bg-red-600 text-white text-[11px] font-bold flex items-center justify-center"
-            >
-              {{ cartCount }}
-            </span>
           </NuxtLink>
         </div>
       </div>
@@ -203,7 +215,20 @@
 <script setup lang="ts">
 const { siteName, logoPath, supportEmail, topbarText, topbarLink, whatsappNumber } = useSiteBranding()
 
+const route = useRoute()
+
 const mobileMenuOpen = ref(false)
+
+const search = ref('')
+
+watch(
+  () => route.query.q,
+  (q) => {
+    const next = String(q || '').trim()
+    if (next && next !== search.value) search.value = next
+  },
+  { immediate: true }
+)
 
 const mainMenuBase = [
   { label: 'Windows', slug: 'windows', fallbackTo: '/categorias' },
@@ -251,6 +276,24 @@ const mainMenu = computed(() => {
 })
 
 const cartCount = computed(() => (cart.value || []).length)
+
+function submitSearch() {
+  const q = String(search.value || '').trim()
+  if (!q) {
+    navigateTo('/produtos')
+    return
+  }
+  navigateTo({ path: '/produtos', query: { q } })
+}
+
+function menuIcon(label: string) {
+  const k = String(label || '').toLowerCase()
+  if (k.includes('windows server')) return '🖥️'
+  if (k.includes('windows')) return '🪟'
+  if (k.includes('office')) return '📄'
+  if (k.includes('contato')) return '☎️'
+  return '•'
+}
 
 const whatsappHref = computed(() => {
   const n = String(whatsappNumber || '').replace(/\D/g, '')
