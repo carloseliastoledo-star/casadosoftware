@@ -18,6 +18,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      storeSlug: process.env.STORE_SLUG || '',
       siteUrl: process.env.SITE_URL || '',
       siteName: process.env.SITE_NAME || 'Site',
       logoPath: process.env.SITE_LOGO_PATH || '/logo.png',
