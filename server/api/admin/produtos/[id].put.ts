@@ -76,6 +76,14 @@ export default defineEventHandler(async (event) => {
   const rawCardItems = body.cardItems === null || body.cardItems === undefined ? '' : String(body.cardItems).trim()
   const cardItems = rawCardItems === '' ? null : rawCardItems
 
+  const precoUsdProvided = body.precoUsd !== undefined
+  const rawPrecoUsd = body.precoUsd === null || body.precoUsd === undefined ? '' : String(body.precoUsd).trim()
+  const precoUsd = rawPrecoUsd === '' ? null : Number(rawPrecoUsd)
+
+  const precoEurProvided = body.precoEur !== undefined
+  const rawPrecoEur = body.precoEur === null || body.precoEur === undefined ? '' : String(body.precoEur).trim()
+  const precoEur = rawPrecoEur === '' ? null : Number(rawPrecoEur)
+
   const imagem = normalizeImageUrl(body.imagem)
 
   try {
@@ -136,6 +144,56 @@ export default defineEventHandler(async (event) => {
           updatedAt: new Date()
         }
       })
+
+      if (precoUsdProvided) {
+        if (precoUsd !== null && Number.isFinite(precoUsd) && precoUsd > 0) {
+          await (prisma as any).produtoPrecoMoeda.upsert({
+            where: { produtoId_storeSlug_currency: { produtoId: id, storeSlug, currency: 'usd' } },
+            create: {
+              id: crypto.randomUUID(),
+              produtoId: id,
+              storeSlug,
+              currency: 'usd',
+              amount: precoUsd,
+              oldAmount: null,
+              updatedAt: new Date()
+            },
+            update: {
+              amount: precoUsd,
+              updatedAt: new Date()
+            }
+          })
+        } else {
+          await (prisma as any).produtoPrecoMoeda.deleteMany({
+            where: { produtoId: id, storeSlug, currency: 'usd' }
+          })
+        }
+      }
+
+      if (precoEurProvided) {
+        if (precoEur !== null && Number.isFinite(precoEur) && precoEur > 0) {
+          await (prisma as any).produtoPrecoMoeda.upsert({
+            where: { produtoId_storeSlug_currency: { produtoId: id, storeSlug, currency: 'eur' } },
+            create: {
+              id: crypto.randomUUID(),
+              produtoId: id,
+              storeSlug,
+              currency: 'eur',
+              amount: precoEur,
+              oldAmount: null,
+              updatedAt: new Date()
+            },
+            update: {
+              amount: precoEur,
+              updatedAt: new Date()
+            }
+          })
+        } else {
+          await (prisma as any).produtoPrecoMoeda.deleteMany({
+            where: { produtoId: id, storeSlug, currency: 'eur' }
+          })
+        }
+      }
     }
 
     return updated

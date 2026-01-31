@@ -66,6 +66,12 @@ export default defineEventHandler(async (event) => {
 
   const categorias = Array.isArray(body.categorias) ? body.categorias.map((s: any) => String(s).trim()).filter(Boolean) : []
 
+  const rawPrecoUsd = body.precoUsd === null || body.precoUsd === undefined ? '' : String(body.precoUsd).trim()
+  const precoUsd = rawPrecoUsd === '' ? null : Number(rawPrecoUsd)
+
+  const rawPrecoEur = body.precoEur === null || body.precoEur === undefined ? '' : String(body.precoEur).trim()
+  const precoEur = rawPrecoEur === '' ? null : Number(rawPrecoEur)
+
   try {
     const created = await (prisma as any).produto.create({
       data: {
@@ -120,6 +126,44 @@ export default defineEventHandler(async (event) => {
           updatedAt: new Date()
         }
       })
+
+      if (precoUsd !== null && Number.isFinite(precoUsd) && precoUsd > 0) {
+        await (prisma as any).produtoPrecoMoeda.upsert({
+          where: { produtoId_storeSlug_currency: { produtoId: created.id, storeSlug, currency: 'usd' } },
+          create: {
+            id: crypto.randomUUID(),
+            produtoId: created.id,
+            storeSlug,
+            currency: 'usd',
+            amount: precoUsd,
+            oldAmount: null,
+            updatedAt: new Date()
+          },
+          update: {
+            amount: precoUsd,
+            updatedAt: new Date()
+          }
+        })
+      }
+
+      if (precoEur !== null && Number.isFinite(precoEur) && precoEur > 0) {
+        await (prisma as any).produtoPrecoMoeda.upsert({
+          where: { produtoId_storeSlug_currency: { produtoId: created.id, storeSlug, currency: 'eur' } },
+          create: {
+            id: crypto.randomUUID(),
+            produtoId: created.id,
+            storeSlug,
+            currency: 'eur',
+            amount: precoEur,
+            oldAmount: null,
+            updatedAt: new Date()
+          },
+          update: {
+            amount: precoEur,
+            updatedAt: new Date()
+          }
+        })
+      }
     }
 
     return created
