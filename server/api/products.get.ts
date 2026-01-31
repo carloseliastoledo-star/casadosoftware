@@ -1,5 +1,6 @@
 import prisma from '#root/server/db/prisma'
 import { createError } from 'h3'
+import { getStoreContext } from '#root/server/utils/store'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -41,7 +42,9 @@ function normalizeImageUrl(input: unknown): string | null {
 
 export default defineEventHandler(async () => {
   try {
-    const products = await prisma.produto.findMany({
+    const { storeSlug } = getStoreContext()
+
+    const products = await (prisma as any).produto.findMany({
       where: {
         ativo: true
       },
@@ -54,6 +57,10 @@ export default defineEventHandler(async () => {
         precoAntigo: true,
         imagem: true,
         cardItems: true,
+        precosLoja: {
+          where: { storeSlug: storeSlug || undefined },
+          select: { preco: true, precoAntigo: true }
+        },
         produtoCategorias: { select: { categoria: { select: { slug: true } } } },
         tutorialTitulo: true,
         tutorialSubtitulo: true,
@@ -64,20 +71,26 @@ export default defineEventHandler(async () => {
       }
     })
 
-    return products.map((p) => ({
-      id: p.id,
-      name: p.nome,
-      slug: p.slug,
-      description: p.descricao,
-      price: p.preco,
-      precoAntigo: p.precoAntigo,
-      image: normalizeImageUrl(p.imagem),
-      cardItems: p.cardItems,
-      categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
-      tutorialTitle: p.tutorialTitulo,
-      tutorialSubtitle: p.tutorialSubtitulo,
-      createdAt: p.criadoEm
-    }))
+    return products.map((p) => {
+      const override = (p as any).precosLoja?.[0] || null
+      const effectivePrice = override?.preco ?? p.preco
+      const effectiveOldPrice = override?.precoAntigo ?? p.precoAntigo
+
+      return {
+        id: p.id,
+        name: p.nome,
+        slug: p.slug,
+        description: p.descricao,
+        price: effectivePrice,
+        precoAntigo: effectiveOldPrice,
+        image: normalizeImageUrl(p.imagem),
+        cardItems: p.cardItems,
+        categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
+        tutorialTitle: p.tutorialTitulo,
+        tutorialSubtitle: p.tutorialSubtitulo,
+        createdAt: p.criadoEm
+      }
+    })
   } catch (err: any) {
     console.error('GET /api/products failed', err)
     throw createError({

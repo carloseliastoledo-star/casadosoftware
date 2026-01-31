@@ -1,4 +1,5 @@
 import prisma from '#root/server/db/prisma'
+import { getStoreContext } from '#root/server/utils/store'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -62,6 +63,8 @@ function parseSlugs(raw: unknown): string[] {
 
 export default defineEventHandler(async () => {
   try {
+    const { storeSlug } = getStoreContext()
+
     const settings = await prisma.siteSettings.findFirst({
       select: { homeBestSellerSlugs: true }
     })
@@ -75,7 +78,12 @@ export default defineEventHandler(async () => {
       descricao: true,
       cardItems: true,
       preco: true,
+      precoAntigo: true,
       imagem: true,
+      precosLoja: {
+        where: { storeSlug: storeSlug || undefined },
+        select: { preco: true, precoAntigo: true }
+      },
       produtoCategorias: { select: { categoria: { select: { slug: true } } } },
       tutorialTitulo: true,
       tutorialSubtitulo: true,
@@ -83,7 +91,7 @@ export default defineEventHandler(async () => {
     } as const
 
     if (manualSlugs.length > 0) {
-      const products = await prisma.produto.findMany({
+      const products = await (prisma as any).produto.findMany({
         where: {
           ativo: true,
           slug: { in: manualSlugs }
@@ -94,22 +102,29 @@ export default defineEventHandler(async () => {
       const bySlug = new Map(products.map((p) => [p.slug, p]))
       const ordered = manualSlugs.map((slug) => bySlug.get(slug)).filter(Boolean) as typeof products
 
-      return ordered.map((p) => ({
-        id: p.id,
-        name: p.nome,
-        slug: p.slug,
-        description: p.descricao,
-        cardItems: p.cardItems,
-        price: p.preco,
-        image: normalizeImageUrl(p.imagem),
-        categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
-        tutorialTitle: p.tutorialTitulo,
-        tutorialSubtitle: p.tutorialSubtitulo,
-        createdAt: p.criadoEm
-      }))
+      return ordered.map((p) => {
+        const override = (p as any).precosLoja?.[0] || null
+        const effectivePrice = override?.preco ?? p.preco
+        const effectiveOldPrice = override?.precoAntigo ?? p.precoAntigo
+
+        return {
+          id: p.id,
+          name: p.nome,
+          slug: p.slug,
+          description: p.descricao,
+          cardItems: p.cardItems,
+          price: effectivePrice,
+          precoAntigo: effectiveOldPrice,
+          image: normalizeImageUrl(p.imagem),
+          categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
+          tutorialTitle: p.tutorialTitulo,
+          tutorialSubtitle: p.tutorialSubtitulo,
+          createdAt: p.criadoEm
+        }
+      })
     }
 
-    const grouped = await prisma.order.groupBy({
+    const grouped = await (prisma as any).order.groupBy({
       by: ['produtoId'],
       where: { status: 'PAID' },
       _count: { produtoId: true },
@@ -120,7 +135,7 @@ export default defineEventHandler(async () => {
     const productIds = grouped.map((g) => g.produtoId)
     if (productIds.length === 0) return []
 
-    const products = await prisma.produto.findMany({
+    const products = await (prisma as any).produto.findMany({
       where: { ativo: true, id: { in: productIds } },
       select: productSelect
     })
@@ -128,19 +143,26 @@ export default defineEventHandler(async () => {
     const byId = new Map(products.map((p) => [p.id, p]))
     const ordered = productIds.map((id) => byId.get(id)).filter(Boolean) as typeof products
 
-    return ordered.map((p) => ({
-      id: p.id,
-      name: p.nome,
-      slug: p.slug,
-      description: p.descricao,
-      cardItems: p.cardItems,
-      price: p.preco,
-      image: normalizeImageUrl(p.imagem),
-      categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
-      tutorialTitle: p.tutorialTitulo,
-      tutorialSubtitle: p.tutorialSubtitulo,
-      createdAt: p.criadoEm
-    }))
+    return ordered.map((p) => {
+      const override = (p as any).precosLoja?.[0] || null
+      const effectivePrice = override?.preco ?? p.preco
+      const effectiveOldPrice = override?.precoAntigo ?? p.precoAntigo
+
+      return {
+        id: p.id,
+        name: p.nome,
+        slug: p.slug,
+        description: p.descricao,
+        cardItems: p.cardItems,
+        price: effectivePrice,
+        precoAntigo: effectiveOldPrice,
+        image: normalizeImageUrl(p.imagem),
+        categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
+        tutorialTitle: p.tutorialTitulo,
+        tutorialSubtitle: p.tutorialSubtitulo,
+        createdAt: p.criadoEm
+      }
+    })
   } catch (err: any) {
     console.error('GET /api/products/best-sellers failed', err)
     throw createError({

@@ -1,6 +1,7 @@
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getDefaultProductDescription } from '../../../utils/productDescriptionTemplate'
+import { getStoreContext } from '#root/server/utils/store'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -43,6 +44,8 @@ function normalizeImageUrl(input: unknown): string | null {
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  const { storeSlug } = getStoreContext()
+
   const body = await readBody(event)
 
   const hasGoogleAds = Boolean(body.googleAdsConversionLabel)
@@ -64,7 +67,7 @@ export default defineEventHandler(async (event) => {
   const categorias = Array.isArray(body.categorias) ? body.categorias.map((s: any) => String(s).trim()).filter(Boolean) : []
 
   try {
-    return await prisma.produto.create({
+    const created = await (prisma as any).produto.create({
       data: {
         nome: body.nome,
         slug: body.slug,
@@ -99,6 +102,27 @@ export default defineEventHandler(async (event) => {
         tutorialConteudo: body.tutorialConteudo
       }
     })
+
+    if (storeSlug) {
+      await (prisma as any).produtoPrecoLoja.upsert({
+        where: { produtoId_storeSlug: { produtoId: created.id, storeSlug } },
+        create: {
+          id: crypto.randomUUID(),
+          produtoId: created.id,
+          storeSlug,
+          preco: Number(body.preco),
+          precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
+          updatedAt: new Date()
+        },
+        update: {
+          preco: Number(body.preco),
+          precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
+          updatedAt: new Date()
+        }
+      })
+    }
+
+    return created
   } catch (err: any) {
     const message = String(err?.message || '')
     throw createError({

@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { validateCoupon } from '#root/server/utils/coupon'
+import { getStoreContext } from '#root/server/utils/store'
 
 function round2(n: number) {
   return Math.round(n * 100) / 100
@@ -8,6 +9,8 @@ function round2(n: number) {
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
+
+  const { storeSlug } = getStoreContext()
 
   const produtoId = String(body?.produtoId || '')
   const paymentMethod = String(body?.paymentMethod || '') as 'pix' | 'card'
@@ -21,16 +24,26 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'paymentMethod inválido' })
   }
 
-  const produto = await prisma.produto.findUnique({
+  const produto = await (prisma as any).produto.findUnique({
     where: { id: produtoId },
-    select: { id: true, preco: true }
+    select: {
+      id: true,
+      preco: true,
+      precosLoja: {
+        where: { storeSlug: storeSlug || undefined },
+        select: { preco: true }
+      }
+    }
   })
 
   if (!produto) {
     throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
   }
 
-  const subtotalAmount = round2(Number(produto.preco))
+  const override = (produto as any).precosLoja?.[0] || null
+  const effectivePrice = override?.preco ?? produto.preco
+
+  const subtotalAmount = round2(Number(effectivePrice))
 
   const pixDiscountPercent = paymentMethod === 'pix' ? 5 : 0
   const pixDiscountAmount = paymentMethod === 'pix' ? round2(subtotalAmount * 0.05) : 0

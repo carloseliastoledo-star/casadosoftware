@@ -35,6 +35,21 @@ model Produto {
   licencas  Licenca[]
   orders    Order[]
   produtoCategorias ProdutoCategoria[]
+  precosLoja ProdutoPrecoLoja[]
+}
+
+
+model ProdutoPrecoLoja {
+  id         String   @id @default(uuid())
+  produtoId  String
+  produto    Produto  @relation(fields: [produtoId], references: [id])
+  storeSlug  String
+  preco      Float
+  precoAntigo Float?
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  updatedAt  DateTime @updatedAt @db.DateTime(0)
+
+  @@unique([produtoId, storeSlug])
 }
 
 

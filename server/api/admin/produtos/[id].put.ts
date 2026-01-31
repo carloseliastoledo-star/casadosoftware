@@ -1,6 +1,7 @@
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getDefaultProductDescription } from '../../../utils/productDescriptionTemplate'
+import { getStoreContext } from '#root/server/utils/store'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -43,6 +44,8 @@ function normalizeImageUrl(input: unknown): string | null {
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  const { storeSlug } = getStoreContext()
+
   const id = event.context.params.id
   const body = await readBody(event)
 
@@ -76,14 +79,12 @@ export default defineEventHandler(async (event) => {
   const imagem = normalizeImageUrl(body.imagem)
 
   try {
-    return await prisma.produto.update({
+    const updated = await (prisma as any).produto.update({
       where: { id },
       data: {
         nome: body.nome,
         slug: body.slug,
         ...(finalUrl !== undefined ? { finalUrl } : {}),
-        preco: Number(body.preco),
-        ...(precoAntigoProvided ? { precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo } : {}),
         ...(descricao !== undefined ? { descricao } : {}),
         ativo: body.ativo,
         imagem,
@@ -110,9 +111,34 @@ export default defineEventHandler(async (event) => {
           : {}),
         tutorialTitulo: body.tutorialTitulo,
         tutorialSubtitulo: body.tutorialSubtitulo,
-        tutorialConteudo: body.tutorialConteudo
+        tutorialConteudo: body.tutorialConteudo,
+        ...(storeSlug ? {} : { preco: Number(body.preco) }),
+        ...(storeSlug || !precoAntigoProvided
+          ? {}
+          : { precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo })
       }
     })
+
+    if (storeSlug) {
+      await (prisma as any).produtoPrecoLoja.upsert({
+        where: { produtoId_storeSlug: { produtoId: id, storeSlug } },
+        create: {
+          id: crypto.randomUUID(),
+          produtoId: id,
+          storeSlug,
+          preco: Number(body.preco),
+          precoAntigo: precoAntigoProvided ? (precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo) : null,
+          updatedAt: new Date()
+        },
+        update: {
+          preco: Number(body.preco),
+          ...(precoAntigoProvided ? { precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo } : {}),
+          updatedAt: new Date()
+        }
+      })
+    }
+
+    return updated
   } catch (err: any) {
     const message = String(err?.message || '')
     throw createError({

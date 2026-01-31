@@ -1,6 +1,7 @@
 import prisma from '#root/server/db/prisma'
 import { getDefaultProductDescription } from '#root/server/utils/productDescriptionTemplate'
 import { createError } from 'h3'
+import { getStoreContext } from '#root/server/utils/store'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -43,9 +44,28 @@ function normalizeImageUrl(input: unknown): string | null {
 export default defineEventHandler(async (event) => {
   const slug = event.context.params?.slug
 
-  const product = await prisma.produto.findUnique({
+  const { storeSlug } = getStoreContext()
+
+  const product = await (prisma as any).produto.findUnique({
     where: { slug: String(slug) },
-    include: {
+    select: {
+      id: true,
+      nome: true,
+      slug: true,
+      finalUrl: true,
+      descricao: true,
+      preco: true,
+      precoAntigo: true,
+      ativo: true,
+      imagem: true,
+      tutorialTitulo: true,
+      tutorialSubtitulo: true,
+      tutorialConteudo: true,
+      criadoEm: true,
+      precosLoja: {
+        where: { storeSlug: storeSlug || undefined },
+        select: { preco: true, precoAntigo: true }
+      },
       produtoCategorias: { select: { categoria: { select: { slug: true } } } }
     }
   })
@@ -62,14 +82,18 @@ export default defineEventHandler(async (event) => {
     ? rawDescription
     : getDefaultProductDescription({ nome: product.nome, slug: product.slug })
 
+  const override = (product as any).precosLoja?.[0] || null
+  const effectivePrice = override?.preco ?? product.preco
+  const effectiveOldPrice = override?.precoAntigo ?? product.precoAntigo
+
   return {
     id: product.id,
     name: product.nome,
     slug: product.slug,
     finalUrl: product.finalUrl,
     description,
-    price: product.preco,
-    precoAntigo: (product as any).precoAntigo ?? null,
+    price: effectivePrice,
+    precoAntigo: effectiveOldPrice ?? null,
     image: normalizeImageUrl(product.imagem),
     categories: (product.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
     tutorialTitle: product.tutorialTitulo,

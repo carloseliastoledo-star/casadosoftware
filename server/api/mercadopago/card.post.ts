@@ -30,8 +30,23 @@ export default defineEventHandler(async (event) => {
   if (!paymentMethodId) throw createError({ statusCode: 400, statusMessage: 'payment_method_id obrigatório' })
   if (!identificationNumber) throw createError({ statusCode: 400, statusMessage: 'CPF obrigatório' })
 
-  const produto = await prisma.produto.findUnique({ where: { id: produtoId } })
+  const produto = await (prisma as any).produto.findUnique({
+    where: { id: produtoId },
+    select: {
+      id: true,
+      nome: true,
+      preco: true,
+      precoAntigo: true,
+      precosLoja: {
+        where: { storeSlug: storeSlug || undefined },
+        select: { preco: true, precoAntigo: true }
+      }
+    }
+  })
   if (!produto) throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
+
+  const priceOverride = (produto as any).precosLoja?.[0] || null
+  const effectivePrice = priceOverride?.preco ?? (produto as any).preco
 
   if (!storeSlug) {
     throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
@@ -79,7 +94,7 @@ export default defineEventHandler(async (event) => {
       coupon = { id: c.id, code: c.code, percent }
     }
 
-    const subtotalAmount = round2(Number(produto.preco))
+    const subtotalAmount = round2(Number(effectivePrice))
     const pixDiscountPercent = 0
     const pixDiscountAmount = 0
     const couponDiscountAmount = coupon ? round2(subtotalAmount * (coupon.percent / 100)) : 0
@@ -114,7 +129,7 @@ export default defineEventHandler(async (event) => {
 
   const payment = getMpPayment()
 
-  const transactionAmount = Number(order.totalAmount ?? Number(produto.preco))
+  const transactionAmount = Number(order.totalAmount ?? Number(effectivePrice))
 
   const result = await payment.create({
     body: {
