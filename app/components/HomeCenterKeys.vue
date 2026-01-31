@@ -6,7 +6,7 @@
           <div class="px-6 py-10 md:px-12 md:py-14">
             <div class="max-w-2xl">
               <div class="inline-flex items-center gap-2 text-[11px] font-extrabold tracking-widest text-orange-200 bg-orange-500/15 border border-orange-500/20 px-3 py-1 rounded-full">
-                MICROSOFT PARTNER
+                Parceiro Microsoft Network
               </div>
               <h1 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tight text-white">
                 Licenças Digitais
@@ -44,6 +44,10 @@
                   <span class="text-emerald-300">✔</span>
                   Suporte especializado
                 </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-emerald-300">✔</span>
+                  Atendimento Internacional em Português, Espanhol e Inglês
+                </div>
               </div>
             </div>
           </div>
@@ -71,14 +75,14 @@
       <div class="max-w-7xl mx-auto px-6 py-10">
         <h2 class="text-2xl font-extrabold text-gray-900 text-center">Por que comprar aqui?</h2>
         <p class="text-gray-600 text-center mt-2">
-          Uma experiência simples e segura do início ao fim.
+          Uma experiência simples e segura do início ao fim. Todas as licenças são digitais, entregues por e-mail após confirmação de pagamento, com suporte para ativação.
         </p>
 
         <div class="mt-8 grid md:grid-cols-4 gap-5">
           <div class="bg-gray-50 border rounded-2xl p-6">
             <div class="text-2xl">✅</div>
-            <div class="font-bold mt-3">Empresa registrada no Microsoft Partner Network</div>
-            <div class="text-sm text-gray-600 mt-1">Chaves digitais com entrega imediata.</div>
+            <div class="font-bold mt-3">Parceiro Microsoft Network</div>
+            <div class="text-sm text-gray-600 mt-1">Marcas pertencem aos seus respectivos proprietários.</div>
             <a
               href="https://appsource.microsoft.com/en-us/marketplace/partner-dir/6f443328-4eb9-4548-9928-f302947f80a5/overview"
               target="_blank"
@@ -161,7 +165,7 @@
       <div class="flex items-center justify-between gap-6 flex-wrap">
         <div>
           <div class="inline-flex items-end gap-3">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Ofertas da semana</h2>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Mais vendidos</h2>
             <span class="hidden md:block h-[3px] w-16 bg-blue-600 rounded-full mb-1" />
           </div>
         </div>
