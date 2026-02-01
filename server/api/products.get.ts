@@ -1,6 +1,8 @@
 import prisma from '#root/server/db/prisma'
 import { createError } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
+import { getIntlContext } from '#root/server/utils/intl'
+import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -40,9 +42,11 @@ function normalizeImageUrl(input: unknown): string | null {
   return raw
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   try {
     const { storeSlug } = getStoreContext()
+
+    const intl = getIntlContext(event)
 
     const products = await (prisma as any).produto.findMany({
       where: {
@@ -61,6 +65,10 @@ export default defineEventHandler(async () => {
           where: { storeSlug: storeSlug || undefined },
           select: { preco: true, precoAntigo: true }
         },
+        precosMoeda: {
+          where: { storeSlug: storeSlug || undefined },
+          select: { currency: true, amount: true, oldAmount: true }
+        },
         produtoCategorias: { select: { categoria: { select: { slug: true } } } },
         tutorialTitulo: true,
         tutorialSubtitulo: true,
@@ -71,10 +79,20 @@ export default defineEventHandler(async () => {
       }
     })
 
-    return products.map((p) => {
+    return products.map((p: any) => {
       const override = (p as any).precosLoja?.[0] || null
-      const effectivePrice = override?.preco ?? p.preco
-      const effectiveOldPrice = override?.precoAntigo ?? p.precoAntigo
+
+      const effective = resolveEffectivePrice({
+        requestedCurrency: intl.currency,
+        baseAmount: p.preco,
+        baseOldAmount: p.precoAntigo,
+        storeAmountOverride: override?.preco,
+        storeOldAmountOverride: override?.precoAntigo,
+        currencyRows: (p as any).precosMoeda || []
+      })
+
+      const effectivePrice = effective.amount
+      const effectiveOldPrice = effective.oldAmount
 
       return {
         id: p.id,
@@ -83,9 +101,10 @@ export default defineEventHandler(async () => {
         description: p.descricao,
         price: effectivePrice,
         precoAntigo: effectiveOldPrice,
+        currency: effective.currency,
         image: normalizeImageUrl(p.imagem),
         cardItems: p.cardItems,
-        categories: (p.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
+        categories: (p.produtoCategorias || []).map((pc: any) => pc.categoria?.slug).filter(Boolean),
         tutorialTitle: p.tutorialTitulo,
         tutorialSubtitle: p.tutorialSubtitulo,
         createdAt: p.criadoEm

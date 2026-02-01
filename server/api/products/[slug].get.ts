@@ -2,6 +2,8 @@ import prisma from '#root/server/db/prisma'
 import { getDefaultProductDescription } from '#root/server/utils/productDescriptionTemplate'
 import { createError } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
+import { getIntlContext } from '#root/server/utils/intl'
+import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -46,6 +48,8 @@ export default defineEventHandler(async (event) => {
 
   const { storeSlug } = getStoreContext()
 
+  const intl = getIntlContext(event)
+
   const product = await (prisma as any).produto.findUnique({
     where: { slug: String(slug) },
     select: {
@@ -66,6 +70,10 @@ export default defineEventHandler(async (event) => {
         where: { storeSlug: storeSlug || undefined },
         select: { preco: true, precoAntigo: true }
       },
+      precosMoeda: {
+        where: { storeSlug: storeSlug || undefined },
+        select: { currency: true, amount: true, oldAmount: true }
+      },
       produtoCategorias: { select: { categoria: { select: { slug: true } } } }
     }
   })
@@ -83,8 +91,18 @@ export default defineEventHandler(async (event) => {
     : getDefaultProductDescription({ nome: product.nome, slug: product.slug })
 
   const override = (product as any).precosLoja?.[0] || null
-  const effectivePrice = override?.preco ?? product.preco
-  const effectiveOldPrice = override?.precoAntigo ?? product.precoAntigo
+
+  const effective = resolveEffectivePrice({
+    requestedCurrency: intl.currency,
+    baseAmount: product.preco,
+    baseOldAmount: product.precoAntigo,
+    storeAmountOverride: override?.preco,
+    storeOldAmountOverride: override?.precoAntigo,
+    currencyRows: (product as any).precosMoeda || []
+  })
+
+  const effectivePrice = effective.amount
+  const effectiveOldPrice = effective.oldAmount
 
   return {
     id: product.id,
@@ -94,8 +112,9 @@ export default defineEventHandler(async (event) => {
     description,
     price: effectivePrice,
     precoAntigo: effectiveOldPrice ?? null,
+    currency: effective.currency,
     image: normalizeImageUrl(product.imagem),
-    categories: (product.produtoCategorias || []).map((pc) => pc.categoria?.slug).filter(Boolean),
+    categories: (product.produtoCategorias || []).map((pc: any) => pc.categoria?.slug).filter(Boolean),
     tutorialTitle: product.tutorialTitulo,
     tutorialSubtitle: product.tutorialSubtitulo,
     tutorialContent: product.tutorialConteudo,

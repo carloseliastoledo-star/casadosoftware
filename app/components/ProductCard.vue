@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useIntlContext } from '#imports'
+
+const intl = useIntlContext()
 
 interface Product {
   id: number
@@ -61,6 +64,40 @@ const productPrice = computed(() => {
   return Number((props.product as any)?.preco ?? (props.product as any)?.price ?? 0)
 })
 
+const productCurrencyLower = computed(() => {
+  const c = String((props.product as any)?.currency || '').trim().toLowerCase()
+  if (c === 'usd' || c === 'eur' || c === 'brl') return c
+  return intl.currencyLower.value
+})
+
+const currencyUpper = computed(() => {
+  if (productCurrencyLower.value === 'usd') return 'USD'
+  if (productCurrencyLower.value === 'eur') return 'EUR'
+  return 'BRL'
+})
+
+const locale = computed(() => intl.locale.value)
+
+const isBrl = computed(() => productCurrencyLower.value === 'brl')
+
+const installmentsLabel = computed(() => {
+  if (intl.language.value === 'en') return 'up to 12x of'
+  if (intl.language.value === 'es') return 'hasta 12x de'
+  return 'em até 12x de'
+})
+
+const pixLabel = computed(() => {
+  if (intl.language.value === 'en') return 'PIX upfront payment'
+  if (intl.language.value === 'es') return 'Pago al contado con PIX'
+  return 'Pagamento à vista no PIX'
+})
+
+const buyNowLabel = computed(() => {
+  if (intl.language.value === 'en') return 'Buy now'
+  if (intl.language.value === 'es') return 'Comprar ahora'
+  return 'Comprar agora'
+})
+
 const productOldPrice = computed(() => {
   const oldPrice = (props.product as any)?.precoAntigo ?? (props.product as any)?.old_price
   const n = oldPrice == null ? 0 : Number(oldPrice)
@@ -78,39 +115,41 @@ const discountPercent = computed(() => {
 })
 
 const formattedPrice = computed(() => {
-  return productPrice.value.toLocaleString('pt-BR', {
+  return productPrice.value.toLocaleString(locale.value, {
     style: 'currency',
-    currency: 'BRL'
+    currency: currencyUpper.value
   })
 })
 
 const formattedOldPrice = computed(() => {
   if (!productOldPrice.value) return null
-  return productOldPrice.value.toLocaleString('pt-BR', {
+  return productOldPrice.value.toLocaleString(locale.value, {
     style: 'currency',
-    currency: 'BRL'
+    currency: currencyUpper.value
   })
 })
 
 const formattedPixPrice = computed(() => {
+  if (!isBrl.value) return null
   const price = productPrice.value
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
   if (pixPrice === price) return null
-  return pixPrice.toLocaleString('pt-BR', {
+  return pixPrice.toLocaleString(locale.value, {
     style: 'currency',
-    currency: 'BRL'
+    currency: currencyUpper.value
   })
 })
 
 const installments12 = computed(() => {
+  if (!isBrl.value) return null
   const price = productPrice.value
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   if (!value) return null
-  return value.toLocaleString('pt-BR', {
+  return value.toLocaleString(locale.value, {
     style: 'currency',
-    currency: 'BRL'
+    currency: currencyUpper.value
   })
 })
 
@@ -193,11 +232,11 @@ function buyNow(event: Event) {
         </div>
 
         <div v-if="installments12" class="text-sm text-gray-600">
-          em até 12x de {{ installments12 }}
+          {{ installmentsLabel }} {{ installments12 }}
         </div>
 
-        <div class="text-sm text-blue-600">
-          Pagamento à vista no PIX
+        <div v-if="isBrl" class="text-sm text-blue-600">
+          {{ pixLabel }}
           <span v-if="formattedPixPrice" class="text-gray-500">({{ formattedPixPrice }})</span>
         </div>
       </div>
@@ -218,10 +257,11 @@ function buyNow(event: Event) {
       </ul>
 
       <button
+        type="button"
         @click="buyNow"
-        class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
+        class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition"
       >
-        Comprar
+        {{ buyNowLabel }}
       </button>
     </div>
   </NuxtLink>

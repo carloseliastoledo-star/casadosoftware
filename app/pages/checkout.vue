@@ -441,34 +441,14 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import { useIntlContext } from '#imports'
+
+const intl = useIntlContext()
 
 const route = useRoute()
 const config = useRuntimeConfig()
 
-const host = computed(() => {
-  if (import.meta.server) {
-    try {
-      const h = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
-      const raw = h?.['x-forwarded-host'] || h?.host || ''
-      return String(String(raw).split(',')[0] || '').trim().toLowerCase()
-    } catch {
-      return ''
-    }
-  }
-
-  if (typeof window !== 'undefined') return String(window.location.host || '').toLowerCase()
-  return ''
-})
-
-const intlLocale = computed<'pt' | 'en' | 'es'>(() => {
-  const h = host.value
-  if (h.startsWith('en.')) return 'en'
-  if (h.startsWith('es.')) return 'es'
-  return 'pt'
-})
-
-const isIntl = computed(() => intlLocale.value === 'en' || intlLocale.value === 'es')
-
+const isIntl = computed(() => intl.isIntl.value)
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
 
@@ -525,7 +505,16 @@ const finalizeLoading = ref(false)
 const finalizeError = ref('')
 
 const intlCountryCode = ref('')
-const intlCurrency = ref<'usd' | 'eur'>('usd')
+const intlCurrency = ref('usd')
+
+watchEffect(() => {
+  if (!isIntl.value) return
+  const preferred = intl.currencyLower.value
+  if (preferred === 'usd' || preferred === 'eur') {
+    intlCurrency.value = preferred
+  }
+})
+
 const stripeLoading = ref(false)
 const intlError = ref('')
 const stripeClientSecret = ref<string | null>(null)
@@ -537,7 +526,7 @@ let stripeElements: any = null
 let stripePaymentElement: any = null
 
 function tIntl(pt: string, en: string, es: string) {
-  return intlLocale.value === 'en' ? en : intlLocale.value === 'es' ? es : pt
+  return intl.language.value === 'en' ? en : intl.language.value === 'es' ? es : pt
 }
 
 const intlTitle = computed(() => tIntl('Finalize seu pedido', 'Checkout', 'Finalizar compra'))
@@ -567,7 +556,7 @@ const intlAmountFormatted = computed(() => {
   if (!stripeAmount.value) return null
   const currency = stripeCurrency.value || intlCurrency.value
   try {
-    return new Intl.NumberFormat(intlLocale.value === 'pt' ? 'pt-BR' : intlLocale.value === 'es' ? 'es-ES' : 'en-US', {
+    return new Intl.NumberFormat(intl.language.value === 'pt' ? 'pt-BR' : intl.language.value === 'es' ? 'es-ES' : 'en-US', {
       style: 'currency',
       currency: currency.toUpperCase()
     }).format(Number(stripeAmount.value || 0))

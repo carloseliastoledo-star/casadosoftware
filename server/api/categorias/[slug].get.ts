@@ -1,6 +1,17 @@
 import { defineEventHandler, getRouterParam, createError } from 'h3'
 import prisma from '../../db/prisma'
 import { getStoreContext } from '#root/server/utils/store'
+import { getIntlContext } from '#root/server/utils/intl'
+import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
+
+function normalizeImageUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+  if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
+  if (raw.startsWith('https://')) return raw
+  if (raw.startsWith('//')) return `https:${raw}`
+  return raw
+}
 
 export default defineEventHandler(async (event) => {
   const slug = String(getRouterParam(event, 'slug') || '').trim()
@@ -9,6 +20,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const { storeSlug } = getStoreContext()
+
+  const intl = getIntlContext(event)
 
   const categoria = await (prisma as any).categoria.findUnique({
     where: { slug },
@@ -34,6 +47,10 @@ export default defineEventHandler(async (event) => {
               precosLoja: {
                 where: { storeSlug: storeSlug || undefined },
                 select: { preco: true, precoAntigo: true }
+              },
+              precosMoeda: {
+                where: { storeSlug: storeSlug || undefined },
+                select: { currency: true, amount: true, oldAmount: true }
               },
               criadoEm: true
             }
@@ -76,8 +93,18 @@ export default defineEventHandler(async (event) => {
       .sort((a: ProdutoItem, b: ProdutoItem) => Number(new Date(b.criadoEm)) - Number(new Date(a.criadoEm)))
       .map((p: ProdutoItem) => {
         const override = (p as any).precosLoja?.[0] || null
-        const effectivePrice = override?.preco ?? p.preco
-        const effectiveOldPrice = override?.precoAntigo ?? p.precoAntigo
+
+        const effective = resolveEffectivePrice({
+          requestedCurrency: intl.currency,
+          baseAmount: p.preco,
+          baseOldAmount: p.precoAntigo,
+          storeAmountOverride: override?.preco,
+          storeOldAmountOverride: override?.precoAntigo,
+          currencyRows: (p as any).precosMoeda || []
+        })
+
+        const effectivePrice = effective.amount
+        const effectiveOldPrice = effective.oldAmount
 
         return {
           id: p.id,
@@ -86,7 +113,8 @@ export default defineEventHandler(async (event) => {
           description: p.descricao,
           price: effectivePrice,
           precoAntigo: effectiveOldPrice,
-          image: p.imagem,
+          currency: effective.currency,
+          image: normalizeImageUrl(p.imagem),
           createdAt: p.criadoEm
         }
       })

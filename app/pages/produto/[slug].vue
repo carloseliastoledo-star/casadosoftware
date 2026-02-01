@@ -4,9 +4,9 @@
 
       <!-- Breadcrumb -->
       <div class="text-sm text-gray-500 mb-6">
-        <NuxtLink to="/" class="hover:underline">Início</NuxtLink>
+        <NuxtLink to="/" class="hover:underline">{{ t.home }}</NuxtLink>
         <span class="mx-2">/</span>
-        <NuxtLink to="/produtos" class="hover:underline">Produtos</NuxtLink>
+        <NuxtLink to="/produtos" class="hover:underline">{{ t.products }}</NuxtLink>
         <span class="mx-2">/</span>
         <span class="text-gray-700 font-medium">{{ safeProduct.nome }}</span>
       </div>
@@ -18,12 +18,12 @@
 
       <!-- Loading -->
       <div v-if="pending" class="text-center py-20 text-gray-500">
-        Carregando produto...
+        {{ t.loading }}
       </div>
 
       <!-- Erro -->
       <div v-else-if="error || !data" class="text-center py-20 text-red-600">
-        Produto não encontrado.
+        {{ t.notFound }}
       </div>
 
       <!-- Card principal -->
@@ -67,12 +67,12 @@
               {{ formattedPrice }}
             </div>
 
-            <div class="text-sm text-gray-600">
-              em até 12x de {{ installments12 }}
+            <div v-if="installments12" class="text-sm text-gray-600">
+              {{ t.installmentsPrefix }} {{ installments12 }}
             </div>
 
-            <div class="text-sm text-blue-600">
-              Pagamento à vista no PIX
+            <div v-if="isBrl" class="text-sm text-blue-600">
+              {{ t.pixLabel }}
               <span v-if="formattedPixPrice" class="text-gray-500">({{ formattedPixPrice }})</span>
             </div>
           </div>
@@ -80,19 +80,19 @@
           <div class="space-y-2 text-sm text-gray-700">
             <div class="flex items-center gap-2">
               <span class="text-emerald-600">✔</span>
-              Entrega digital • Disponível
+              {{ t.digitalDelivery }}
             </div>
             <div class="flex items-center gap-2">
               <span class="text-emerald-600">✔</span>
-              Devolução grátis. Até 7 dias a partir do recebimento
+              {{ t.freeRefund }}
             </div>
             <div class="flex items-center gap-2">
               <span class="text-emerald-600">✔</span>
-              Compra garantida. Saia satisfeito ou devolvemos seu dinheiro
+              {{ t.guarantee }}
             </div>
             <div class="flex items-center gap-2">
               <span class="text-emerald-600">✔</span>
-              Envio por e-mail após confirmação
+              {{ t.emailDelivery }}
             </div>
           </div>
 
@@ -102,12 +102,12 @@
               @click="buyNow"
               class="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-4 rounded-xl transition"
             >
-              Comprar
+              {{ t.buy }}
             </button>
           </div>
 
           <div class="pt-2">
-            <div class="text-lg font-semibold text-gray-900 mb-3">O que está incluído:</div>
+            <div class="text-lg font-semibold text-gray-900 mb-3">{{ t.included }}</div>
             <ul class="mt-6 space-y-2 text-gray-700">
               <li v-for="item in includedItems" :key="item" class="flex items-start gap-3">
                 <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100">
@@ -211,10 +211,15 @@
 
     </div>
   </section>
+
 </template>
 
 <script setup lang="ts">
+import { useIntlContext } from '#imports'
+
 definePageMeta({ ssr: true })
+
+const intl = useIntlContext()
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -236,9 +241,6 @@ const { data, pending, error } = await useFetch(
   { server: true }
 )
 
-/**
- * Produto blindado + descrição longa automática
- */
 const safeProduct = computed(() => {
   const p = data.value
 
@@ -265,7 +267,6 @@ const safeProduct = computed(() => {
     .trim()
 
   const descricaoCurta = descricaoCurtaBase.length > 220 ? `${descricaoCurtaBase.slice(0, 220)}...` : descricaoCurtaBase
-
   const descricaoLonga = String(descricaoBase || descricaoCurta || '').trim()
 
   return {
@@ -274,6 +275,7 @@ const safeProduct = computed(() => {
     preco,
     imagem: (p as any).image || (p as any).imagem || '/products/placeholder.svg',
     slug: slugValue,
+    currency: (p as any).currency || null,
     precoAntigo: Number((p as any).precoAntigo ?? (p as any).old_price ?? 0) || null,
     tutorialTitulo: (p as any).tutorialTitle || (p as any).tutorialTitulo || null,
     tutorialSubtitulo: (p as any).tutorialSubtitle || (p as any).tutorialSubtitulo || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
@@ -300,10 +302,14 @@ function onImageError(e: Event) {
   el.src = '/products/placeholder.svg'
 }
 
+const isBrl = computed(() => intl.currencyLower.value === 'brl')
+
 const formattedPrice = computed(() => {
-  return Number(safeProduct.value.preco || 0).toLocaleString('pt-BR', {
+  const currencyLower = String((safeProduct.value as any)?.currency || intl.currencyLower.value).trim().toLowerCase()
+  const currency = currencyLower === 'usd' ? 'USD' : currencyLower === 'eur' ? 'EUR' : 'BRL'
+  return Number(safeProduct.value.preco || 0).toLocaleString(intl.locale.value, {
     style: 'currency',
-    currency: 'BRL'
+    currency
   })
 })
 
@@ -311,9 +317,12 @@ const formattedOldPrice = computed(() => {
   const oldPrice = (safeProduct.value as any).precoAntigo
   if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
   if (Number(oldPrice) <= Number(safeProduct.value.preco || 0)) return null
-  return Number(oldPrice).toLocaleString('pt-BR', {
+
+  const currencyLower = String((safeProduct.value as any)?.currency || intl.currencyLower.value).trim().toLowerCase()
+  const currency = currencyLower === 'usd' ? 'USD' : currencyLower === 'eur' ? 'EUR' : 'BRL'
+  return Number(oldPrice).toLocaleString(intl.locale.value, {
     style: 'currency',
-    currency: 'BRL'
+    currency
   })
 })
 
@@ -327,6 +336,7 @@ const discountPercent = computed(() => {
 })
 
 const formattedPixPrice = computed(() => {
+  if (!isBrl.value) return null
   const price = Number(safeProduct.value.preco || 0)
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
@@ -338,8 +348,9 @@ const formattedPixPrice = computed(() => {
 })
 
 const installments12 = computed(() => {
+  if (!isBrl.value) return null
   const price = Number(safeProduct.value.preco || 0)
-  if (!price) return Number(0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+  if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   return value.toLocaleString('pt-BR', {
     style: 'currency',
@@ -378,6 +389,57 @@ const isMicrosoft365 = computed(() => {
     slugValue.includes('office-365') ||
     slugValue.includes('365')
   )
+})
+
+const t = computed(() => {
+  if (intl.language.value === 'en') {
+    return {
+      home: 'Home',
+      products: 'Products',
+      loading: 'Loading product...',
+      notFound: 'Product not found.',
+      buy: 'Buy',
+      included: "What's included:",
+      installmentsPrefix: 'up to 12x of',
+      pixLabel: 'PIX upfront payment',
+      digitalDelivery: 'Digital delivery • Available',
+      freeRefund: 'Free refund up to 7 days after purchase',
+      guarantee: 'Guaranteed purchase. If you are not satisfied, we refund you',
+      emailDelivery: 'Delivered by email after confirmation'
+    }
+  }
+
+  if (intl.language.value === 'es') {
+    return {
+      home: 'Inicio',
+      products: 'Productos',
+      loading: 'Cargando producto...',
+      notFound: 'Producto no encontrado.',
+      buy: 'Comprar',
+      included: 'Qué incluye:',
+      installmentsPrefix: 'hasta 12x de',
+      pixLabel: 'Pago al contado con PIX',
+      digitalDelivery: 'Entrega digital • Disponible',
+      freeRefund: 'Devolución gratis hasta 7 días después de la compra',
+      guarantee: 'Compra garantizada. Si no queda satisfecho, le devolvemos su dinero',
+      emailDelivery: 'Envío por e-mail tras la confirmación'
+    }
+  }
+
+  return {
+    home: 'Início',
+    products: 'Produtos',
+    loading: 'Carregando produto...',
+    notFound: 'Produto não encontrado.',
+    buy: 'Comprar',
+    included: 'O que está incluído:',
+    installmentsPrefix: 'em até 12x de',
+    pixLabel: 'Pagamento à vista no PIX',
+    digitalDelivery: 'Entrega digital • Disponível',
+    freeRefund: 'Devolução grátis. Até 7 dias a partir do recebimento',
+    guarantee: 'Compra garantida. Saia satisfeito ou devolvemos seu dinheiro',
+    emailDelivery: 'Envio por e-mail após confirmação'
+  }
 })
 
 function buyNow() {
