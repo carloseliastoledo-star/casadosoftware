@@ -237,6 +237,7 @@ const mainMenuBase = [
   { label: 'Windows', slug: 'windows', fallbackTo: '/categorias' },
   { label: 'Office', slug: 'office', fallbackTo: '/categorias' },
   { label: 'Windows Server', slug: 'windows-server', fallbackTo: '/categorias' },
+  { label: 'Blog', to: '/blog' },
   { label: 'Contato', to: '/quem-somos' }
 ] as const
 

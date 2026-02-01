@@ -31,7 +31,7 @@
         <tbody>
           <tr v-for="p in posts" :key="p.id" class="border-t">
             <td class="p-3 font-medium">{{ p.titulo }}</td>
-            <td class="p-3 font-mono text-xs">/blog/{{ p.slug }}</td>
+            <td class="p-3 font-mono text-xs">/{{ p.slug }}</td>
             <td class="p-3">
               <span
                 class="px-2 py-1 rounded text-xs"
@@ -74,7 +74,7 @@
             <div>
               <label class="block font-medium mb-2">Slug</label>
               <input v-model="formSlug" type="text" class="w-full border rounded-lg p-3 font-mono" placeholder="ex: como-ativar-o-windows" />
-              <p class="text-xs text-gray-500 mt-2">A URL ficará: <span class="font-mono">/blog/{{ formSlug || '...' }}</span></p>
+              <p class="text-xs text-gray-500 mt-2">A URL ficará: <span class="font-mono">/{{ formSlug || '...' }}</span></p>
             </div>
 
             <div>

@@ -13,7 +13,7 @@
         <NuxtLink
           v-for="p in posts"
           :key="p.slug"
-          :to="`/blog/${p.slug}`"
+          :to="`/${p.slug}`"
           class="block bg-white border border-gray-100 rounded-2xl p-6 hover:border-blue-200 hover:shadow-sm transition"
         >
           <div class="text-xl font-bold text-gray-900">{{ p.titulo }}</div>
