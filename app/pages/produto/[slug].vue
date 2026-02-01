@@ -280,13 +280,22 @@ const seoTitle = computed(() => {
 })
 
 const seoDescription = computed(() => {
-  const raw = String((safeProduct.value as any)?.descricaoCurta || '').trim()
+  const rawShort = String((safeProduct.value as any)?.descricaoCurta || '').trim()
+  const rawLong = String((safeProduct.value as any)?.descricao || '').trim()
+
+  const raw = rawShort || rawLong
   if (!raw) return ''
-  return raw.length > 160 ? `${raw.slice(0, 157)}...` : raw
+
+  const textOnly = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return textOnly.length > 155 ? textOnly.slice(0, 155) : textOnly
 })
 
 useHead(() => ({
   title: seoTitle.value,
+  meta: [{ name: 'description', content: seoDescription.value }],
   link: canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []
 }))
 
