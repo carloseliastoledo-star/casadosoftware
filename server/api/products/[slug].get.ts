@@ -1,6 +1,6 @@
 import prisma from '#root/server/db/prisma'
 import { getDefaultProductDescription } from '#root/server/utils/productDescriptionTemplate'
-import { createError } from 'h3'
+import { createError, getQuery } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
 import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
@@ -51,6 +51,9 @@ export default defineEventHandler(async (event) => {
 
   const intl = getIntlContext(event)
 
+  const query = getQuery(event)
+  const includeTutorial = String((query as any)?.includeTutorial || '').trim() === '1'
+
   const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
   const product = await (prisma as any).produto.findUnique({
@@ -97,7 +100,9 @@ export default defineEventHandler(async (event) => {
   const translatedDescription = autoTranslateText(description, { lang }) || description
   const translatedTutorialTitle = autoTranslateText(product.tutorialTitulo, { lang }) || product.tutorialTitulo
   const translatedTutorialSubtitle = autoTranslateText(product.tutorialSubtitulo, { lang }) || product.tutorialSubtitulo
-  const translatedTutorialContent = autoTranslateText(product.tutorialConteudo, { lang }) || product.tutorialConteudo
+  const translatedTutorialContent = includeTutorial
+    ? (autoTranslateText(product.tutorialConteudo, { lang }) || product.tutorialConteudo)
+    : null
 
   const override = (product as any).precosLoja?.[0] || null
 

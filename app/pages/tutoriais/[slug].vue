@@ -34,7 +34,7 @@ const route = useRoute()
 const slug = route.params.slug as string
 
 const { data, pending, error } = await useFetch(
-  () => `/api/products/${slug}`,
+  () => `/api/products/${slug}?includeTutorial=1`,
   { server: false }
 )
 
