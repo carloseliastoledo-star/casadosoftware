@@ -174,25 +174,15 @@
         v-if="data"
         class="bg-white rounded-2xl shadow mt-12 p-8 space-y-10"
       >
-        <details class="group md:hidden">
-          <summary class="list-none cursor-pointer select-none flex items-center justify-between gap-4">
-            <span class="text-2xl font-bold">Descrição Detalhada</span>
-            <span class="text-gray-500 group-open:rotate-180 transition-transform">▾</span>
-          </summary>
-          <div class="mt-4">
-            <p class="text-gray-700 leading-relaxed whitespace-pre-line">
-              {{ safeProduct.descricao }}
-            </p>
-          </div>
-        </details>
-
-        <section class="hidden md:block">
+        <section>
           <h2 class="text-2xl font-bold mb-3">
             Descrição Detalhada
           </h2>
-          <p class="text-gray-700 leading-relaxed whitespace-pre-line">
-            {{ safeProduct.descricao }}
-          </p>
+
+          <div
+            class="prose prose-gray max-w-none"
+            v-html="safeDescriptionHtml"
+          />
         </section>
       </div>
 
@@ -216,10 +206,13 @@
 
 <script setup lang="ts">
 import { useIntlContext } from '#imports'
+import DOMPurify from 'isomorphic-dompurify'
 
 definePageMeta({ ssr: true })
 
 const intl = useIntlContext()
+
+const { siteName } = useSiteBranding()
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -231,10 +224,6 @@ const canonicalUrl = computed(() => {
   if (!s) return baseUrl ? `${baseUrl}/` : ''
   return baseUrl ? `${baseUrl}/produto/${s}` : ''
 })
-
-useHead(() => ({
-  link: canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []
-}))
 
 const { data, pending, error } = await useFetch(
   () => `/api/products/${slug}`,
@@ -282,6 +271,49 @@ const safeProduct = computed(() => {
     descricaoCurta,
     descricao: descricaoLonga
   }
+})
+
+const seoTitle = computed(() => {
+  const name = String((safeProduct.value as any)?.nome || '').trim()
+  const base = String(siteName.value || 'Casa do Software')
+  return name ? `${name} | ${base}` : base
+})
+
+const seoDescription = computed(() => {
+  const raw = String((safeProduct.value as any)?.descricaoCurta || '').trim()
+  if (!raw) return ''
+  return raw.length > 160 ? `${raw.slice(0, 157)}...` : raw
+})
+
+useHead(() => ({
+  title: seoTitle.value,
+  link: canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []
+}))
+
+useSeoMeta(() => {
+  const title = seoTitle.value
+  const description = seoDescription.value
+
+  return {
+    title,
+    description,
+    ogTitle: title,
+    ogDescription: description,
+    twitterTitle: title,
+    twitterDescription: description
+  }
+})
+
+const safeDescriptionHtml = computed(() => {
+  const raw = String((safeProduct.value as any)?.descricao || '').trim()
+  if (!raw) return ''
+
+  const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)
+  const normalized = hasHtml ? raw : raw.replace(/\r\n/g, '\n').replace(/\n/g, '<br />')
+
+  return DOMPurify.sanitize(normalized, {
+    USE_PROFILES: { html: true }
+  })
 })
 
 const safeImage = computed(() => {
