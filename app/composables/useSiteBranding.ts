@@ -1,8 +1,31 @@
 export function useSiteBranding() {
   const config = useRuntimeConfig()
 
-  const siteName = String(config.public.siteName || '').trim() || 'Site'
-  const logoPath = String(config.public.logoPath || '').trim() || '/logo.png'
+  const storeSlug = String((config.public as any)?.storeSlug || '').trim()
+
+  const host = computed(() => {
+    if (process.server) {
+      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
+      const raw = headers?.['x-forwarded-host'] || headers?.host || ''
+      const first = String(raw).split(',')[0]?.trim()
+      return String(first || '').toLowerCase()
+    }
+
+    return String(window.location.host || '').toLowerCase()
+  })
+
+  const isCasaDoSoftware = computed(() => {
+    if (storeSlug === 'casadosoftware') return true
+    return host.value.includes('casadosoftware.com.br')
+  })
+
+  const defaultSiteName = computed(() => (isCasaDoSoftware.value ? 'Casa do Software' : 'Licenças Digitais'))
+  const defaultLogoPath = computed(() => (isCasaDoSoftware.value ? '/logo-casa-do-software.png' : '/logo-licencasdigitais.png'))
+
+  const siteName = String(config.public.siteName || '').trim() || defaultSiteName.value
+
+  const rawLogo = String(config.public.logoPath || '').trim()
+  const logoPath = rawLogo && rawLogo !== '/logo.png' ? rawLogo : defaultLogoPath.value
   const supportEmail = String(config.public.supportEmail || '').trim() || ''
   const topbarText = String(config.public.topbarText || '').trim() || ''
   const topbarLink = String(config.public.topbarLink || '').trim() || ''
