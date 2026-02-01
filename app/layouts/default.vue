@@ -293,7 +293,22 @@ const t = computed(() => {
       myAccount: 'My account',
       cart: 'Cart',
       goToCart: 'Go to cart',
-      rightsReserved: 'All rights reserved.'
+      rightsReserved: 'All rights reserved.',
+      footerDescription: 'Digital Windows and Office licenses with fast delivery after confirmation.',
+      footerLinksTitle: 'Links',
+      footerProducts: 'Products',
+      footerTutorials: 'Tutorials',
+      footerAbout: 'About us',
+      footerDigitalDelivery: 'Digital delivery',
+      footerRefundPolicy: 'Refund policy',
+      footerPrivacy: 'Privacy',
+      footerTerms: 'Terms of use',
+      footerSupportTitle: 'Support',
+      footerSupportSubtitle: 'Fast and specialized support',
+      footerIntlSupport: 'International support in Portuguese, Spanish and English',
+      whatsappPrefix: 'WhatsApp:',
+      footerDisclaimer1: `${siteName.value} (Eletrokeys LTDA) is an independent company registered in the Microsoft Partner Network.`,
+      footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
 
@@ -307,7 +322,22 @@ const t = computed(() => {
       myAccount: 'Mi cuenta',
       cart: 'Carrito',
       goToCart: 'Ir al carrito',
-      rightsReserved: 'Todos los derechos reservados.'
+      rightsReserved: 'Todos los derechos reservados.',
+      footerDescription: 'Licencias digitales de Windows y Office con envío rápido tras la confirmación.',
+      footerLinksTitle: 'Enlaces',
+      footerProducts: 'Productos',
+      footerTutorials: 'Tutoriales',
+      footerAbout: 'Quiénes somos',
+      footerDigitalDelivery: 'Entrega digital',
+      footerRefundPolicy: 'Política de reembolso',
+      footerPrivacy: 'Privacidad',
+      footerTerms: 'Términos de uso',
+      footerSupportTitle: 'Soporte',
+      footerSupportSubtitle: 'Atención rápida y especializada',
+      footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
+      whatsappPrefix: 'WhatsApp:',
+      footerDisclaimer1: `${siteName.value} (Eletrokeys LTDA) es una empresa independiente registrada en Microsoft Partner Network.`,
+      footerDisclaimer2: 'No estamos afiliados a Microsoft.'
     }
   }
 
@@ -320,7 +350,22 @@ const t = computed(() => {
     myAccount: 'Minha conta',
     cart: 'Carrinho',
     goToCart: 'Ir para o carrinho',
-    rightsReserved: 'Todos os direitos reservados.'
+    rightsReserved: 'Todos os direitos reservados.',
+    footerDescription: 'Licenças digitais de Windows e Office com envio imediato após confirmação.',
+    footerLinksTitle: 'Links',
+    footerProducts: 'Produtos',
+    footerTutorials: 'Tutoriais',
+    footerAbout: 'Quem somos',
+    footerDigitalDelivery: 'Entrega digital',
+    footerRefundPolicy: 'Política de reembolso',
+    footerPrivacy: 'Privacidade',
+    footerTerms: 'Termos de uso',
+    footerSupportTitle: 'Suporte',
+    footerSupportSubtitle: 'Atendimento rápido e especializado',
+    footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',
+    whatsappPrefix: 'WhatsApp:',
+    footerDisclaimer1: `${siteName.value} (Eletrokeys LTDA) é uma empresa independente registrada no Microsoft Partner Network.`,
+    footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
 })
 

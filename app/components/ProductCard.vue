@@ -206,7 +206,40 @@ const includedItems = computed(() => {
     .split(/\r?\n/)
     .map((s) => s.trim())
     .filter(Boolean)
-  return items.length ? items : defaultIncludedItems.value
+  if (!items.length) return defaultIncludedItems.value
+
+  if (intl.language.value === 'pt') return items
+
+  const dictEn: Record<string, string> = {
+    'Envio imediato após confirmação': 'Fast delivery after confirmation',
+    'Envio rápido após confirmação': 'Fast delivery after confirmation',
+    'Licença digital permanente': 'Permanent digital license',
+    'Licença digital': 'Digital license',
+    'Suporte 24/7': '24/7 support',
+    'Suporte em horário comercial': 'Business hours support',
+    '1 PC': '1 PC',
+    'Compatível Windows 10 e 11': 'Compatible with Windows 10 and 11',
+    'Ativação permanente': 'Permanent activation',
+    'Sem renovação necessária': 'No renewal required',
+    'Sem renovação': 'No renewal required'
+  }
+
+  const dictEs: Record<string, string> = {
+    'Envio imediato após confirmação': 'Envío rápido tras la confirmación',
+    'Envio rápido após confirmação': 'Envío rápido tras la confirmación',
+    'Licença digital permanente': 'Licencia digital permanente',
+    'Licença digital': 'Licencia digital',
+    'Suporte 24/7': 'Soporte 24/7',
+    'Suporte em horário comercial': 'Soporte en horario comercial',
+    '1 PC': '1 PC',
+    'Compatível Windows 10 e 11': 'Compatible con Windows 10 y 11',
+    'Ativação permanente': 'Activación permanente',
+    'Sem renovação necessária': 'Sin renovación',
+    'Sem renovação': 'Sin renovación'
+  }
+
+  const dict = intl.language.value === 'en' ? dictEn : dictEs
+  return items.map((it) => dict[it] || it)
 })
 
 function buyNow(event: Event) {
