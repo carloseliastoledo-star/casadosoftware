@@ -239,7 +239,7 @@
 
         <div class="mt-10 grid gap-6 md:grid-cols-3">
           <div
-            v-for="(t, idx) in testimonials.value"
+            v-for="(t, idx) in testimonials"
             :key="idx"
             class="bg-white border rounded-2xl p-6 shadow-sm"
           >
@@ -330,7 +330,7 @@
 
       <div class="mt-8 max-w-3xl mx-auto space-y-3">
         <button
-          v-for="(item, idx) in faqs.value"
+          v-for="(item, idx) in faqs"
           :key="idx"
           type="button"
           class="w-full text-left bg-white border rounded-2xl px-5 py-4 hover:border-blue-200 transition"
