@@ -55,9 +55,9 @@
     <div v-if="showModal" class="fixed inset-0 z-50">
       <div class="absolute inset-0 bg-black/40" @click="closeModal" />
 
-      <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-3xl rounded-xl shadow-lg">
-          <div class="flex items-center justify-between p-5 border-b">
+      <div class="absolute inset-0 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-3xl rounded-xl shadow-lg max-h-[85vh] flex flex-col">
+          <div class="flex items-center justify-between p-5 border-b shrink-0">
             <div>
               <h2 class="text-lg font-semibold">{{ editingId ? 'Editar post' : 'Novo post' }}</h2>
               <p v-if="editingId" class="text-sm text-gray-600 mt-1 font-mono">{{ editingId }}</p>
@@ -65,7 +65,7 @@
             <button class="text-gray-500 hover:text-gray-700" @click="closeModal">Fechar</button>
           </div>
 
-          <div class="p-5 space-y-4">
+          <div class="p-5 space-y-4 overflow-y-auto flex-1">
             <div>
               <label class="block font-medium mb-2">Título</label>
               <input v-model="formTitulo" type="text" class="w-full border rounded-lg p-3" placeholder="Ex: Como ativar o Windows" />
@@ -129,8 +129,15 @@
             <div v-if="modalError" class="text-red-700 text-sm font-medium">{{ modalError }}</div>
           </div>
 
-          <div class="p-5 border-t flex items-center justify-end gap-3">
+          <div class="p-5 border-t flex items-center justify-end gap-3 shrink-0">
             <button class="px-4 py-2 rounded-lg border" @click="closeModal" :disabled="modalLoading">Cancelar</button>
+            <button
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+              @click="publishNow"
+              :disabled="modalLoading"
+            >
+              Publicar
+            </button>
             <button
               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
               @click="saveModal"
@@ -270,6 +277,11 @@ async function openEdit(id: string) {
   } catch (err: any) {
     modalError.value = err?.data?.statusMessage || 'Erro ao carregar post'
   }
+}
+
+async function publishNow() {
+  formPublicado.value = true
+  await saveModal()
 }
 
 function closeModal() {
