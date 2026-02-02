@@ -307,7 +307,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Fast and specialized support',
       footerIntlSupport: 'International support in Portuguese, Spanish and English',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: `${siteName.value} (Eletrokeys LTDA) is an independent company registered in the Microsoft Partner Network.`,
+      footerDisclaimer1: `${safeSiteName.value} (Eletrokeys LTDA) is an independent company registered in the Microsoft Partner Network.`,
       footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
@@ -337,7 +337,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Atención rápida y especializada',
       footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: `${siteName.value} (Eletrokeys LTDA) es una empresa independiente registrada en Microsoft Partner Network.`,
+      footerDisclaimer1: `${safeSiteName.value} (Eletrokeys LTDA) es una empresa independiente registrada en Microsoft Partner Network.`,
       footerDisclaimer2: 'No estamos afiliados a Microsoft.'
     }
   }
@@ -366,7 +366,7 @@ const t = computed(() => {
     footerSupportSubtitle: 'Atendimento rápido e especializado',
     footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',
     whatsappPrefix: 'WhatsApp:',
-    footerDisclaimer1: `${siteName.value} (Eletrokeys LTDA) é uma empresa independente registrada no Microsoft Partner Network.`,
+    footerDisclaimer1: `${safeSiteName.value} (Eletrokeys LTDA) é uma empresa independente registrada no Microsoft Partner Network.`,
     footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
 })

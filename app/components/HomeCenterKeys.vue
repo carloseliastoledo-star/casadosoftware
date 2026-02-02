@@ -70,7 +70,7 @@
         </div>
 
         <div class="mt-8 overflow-x-auto">
-          <div class="flex gap-6 min-w-max py-2">
+          <div class="flex gap-6 w-max md:mx-auto py-2 px-2 md:px-0">
             <NuxtLink
               v-for="it in categoriasAtalhos"
               :key="it.slug"
