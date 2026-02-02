@@ -216,6 +216,11 @@
 <script setup lang="ts">
 const { siteName, logoPath, supportEmail, topbarText, topbarLink, whatsappNumber } = useSiteBranding()
 
+const safeSiteName = computed(() => {
+  const n = String(siteName.value || '').trim()
+  return n || 'Casa do Software'
+})
+
 const intl = useIntlContext()
 
 const route = useRoute()
