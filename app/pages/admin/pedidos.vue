@@ -6,12 +6,22 @@
         <p class="text-sm text-gray-600 mt-1">Lista de pedidos e status.</p>
       </div>
 
-      <button
-        @click="openImportModal"
-        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-      >
-        Importar licenças (.txt)
-      </button>
+      <div class="flex items-center gap-3">
+        <button
+          class="px-4 py-2 rounded-lg border border-red-200 bg-red-50 text-red-800 hover:bg-red-100 disabled:opacity-50"
+          :disabled="!selectedOrderIds.length"
+          @click="deleteSelectedOrders"
+        >
+          Excluir selecionados ({{ selectedOrderIds.length }})
+        </button>
+
+        <button
+          @click="openImportModal"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Importar licenças (.txt)
+        </button>
+      </div>
     </div>
 
     <div v-if="pending" class="text-gray-500">Carregando...</div>
@@ -21,6 +31,15 @@
       <table class="w-full text-xs table-fixed">
         <thead class="bg-gray-100 text-gray-600">
           <tr>
+            <th class="px-2 py-2 text-left w-10">
+              <input
+                type="checkbox"
+                class="h-4 w-4 accent-blue-600"
+                :checked="allOrdersSelected"
+                :disabled="!orders.length"
+                @change="toggleSelectAllOrders"
+              />
+            </th>
             <th class="px-2 py-2 text-left w-28">Pedido</th>
             <th class="px-2 py-2 text-left w-64">Produto</th>
             <th class="px-2 py-2 text-left w-56">Cliente</th>
@@ -36,6 +55,15 @@
 
         <tbody>
           <tr v-for="o in orders" :key="o.id" class="border-t">
+            <td class="px-2 py-2 align-top">
+              <input
+                type="checkbox"
+                class="h-4 w-4 accent-blue-600"
+                :checked="selectedOrderIds.includes(o.id)"
+                @click.stop
+                @change="toggleSelectedOrder(o.id, $event)"
+              />
+            </td>
             <td class="px-2 py-2 align-top">
               <div class="font-mono text-xs truncate" :title="`#${o.numero}`">#{{ o.numero }}</div>
               <div class="font-mono text-xs text-gray-400 truncate" :title="o.id">{{ o.id }}</div>
@@ -319,6 +347,56 @@ async function copyToClipboard(value?: string) {
     }, 1200)
   } catch {
     // ignore
+  }
+}
+
+const selectedOrderIds = ref<string[]>([])
+
+const allOrdersSelected = computed(() => {
+  if (!orders.value.length) return false
+  return orders.value.every((o) => selectedOrderIds.value.includes(o.id))
+})
+
+function toggleSelectedOrder(id: string, e: Event) {
+  const checked = (e.target as HTMLInputElement)?.checked
+  if (checked) {
+    if (!selectedOrderIds.value.includes(id)) selectedOrderIds.value.push(id)
+    return
+  }
+
+  selectedOrderIds.value = selectedOrderIds.value.filter((x) => x !== id)
+}
+
+function toggleSelectAllOrders(e: Event) {
+  const checked = (e.target as HTMLInputElement)?.checked
+  if (!checked) {
+    selectedOrderIds.value = []
+    return
+  }
+  selectedOrderIds.value = orders.value.map((o) => o.id)
+}
+
+async function deleteSelectedOrders() {
+  if (!selectedOrderIds.value.length) return
+  if (!confirm(`Tem certeza que deseja apagar ${selectedOrderIds.value.length} pedidos selecionados?`)) return
+
+  try {
+    const res: any = await $fetch('/api/admin/pedidos/bulk-delete', {
+      method: 'POST',
+      body: { ids: selectedOrderIds.value }
+    })
+
+    const deleted = Number(res?.deleted || 0)
+    const skipped = Number(res?.skipped || 0)
+
+    selectedOrderIds.value = []
+    await refresh()
+
+    if (skipped > 0) {
+      alert(`Pedidos apagados: ${deleted}. Não apagados (PAID ou com licença): ${skipped}.`)
+    }
+  } catch (err: any) {
+    alert(err?.data?.statusMessage || 'Erro ao apagar pedidos')
   }
 }
 
