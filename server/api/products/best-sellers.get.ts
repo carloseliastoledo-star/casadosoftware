@@ -74,11 +74,23 @@ export default defineEventHandler(async (event) => {
 
     const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
-    const settings = await prisma.siteSettings.findFirst({
-      select: { homeBestSellerSlugs: true }
-    })
+    const settings = storeSlug
+      ? await (prisma as any).siteSettings.findFirst({
+          where: { storeSlug },
+          select: { homeBestSellerSlugs: true }
+        })
+      : await prisma.siteSettings.findFirst({
+          select: { homeBestSellerSlugs: true }
+        })
 
-    const manualSlugs = parseSlugs(settings?.homeBestSellerSlugs)
+    const legacySettings = storeSlug
+      ? await (prisma as any).siteSettings.findFirst({
+          where: { storeSlug: null },
+          select: { homeBestSellerSlugs: true }
+        })
+      : null
+
+    const manualSlugs = parseSlugs(settings?.homeBestSellerSlugs || legacySettings?.homeBestSellerSlugs)
 
     const productSelect = {
       id: true,

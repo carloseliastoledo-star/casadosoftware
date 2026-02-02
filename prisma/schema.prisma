@@ -230,6 +230,7 @@ model AdminUser {
 
 model SiteSettings {
   id                     String   @id @default(uuid())
+  storeSlug               String?  @unique
   googleAnalyticsId       String?
   googleAdsConversionId  String?
   googleAdsConversionLabel String?

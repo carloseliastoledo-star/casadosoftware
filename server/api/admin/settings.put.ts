@@ -1,9 +1,12 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../db/prisma'
 import { requireAdminSession } from '../../utils/adminSession'
+import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
+
+  const { storeSlug } = getStoreContext()
 
   const body = await readBody(event)
 
@@ -63,7 +66,61 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'homeBestSellerSlugs muito grande' })
   }
 
+  if (!storeSlug) {
+    const existing = await prisma.siteSettings.findFirst({
+      select: { id: true }
+    })
+
+    const settings = existing
+      ? await prisma.siteSettings.update({
+          where: { id: existing.id },
+          data: {
+            googleAnalyticsId: googleAnalyticsId || null,
+            googleAdsConversionId: googleAdsConversionId || null,
+            googleAdsConversionLabel: googleAdsConversionLabel || null,
+            headHtml,
+            bodyOpenHtml,
+            bodyCloseHtml,
+            homeBestSellerSlugs
+          },
+          select: {
+            id: true,
+            googleAnalyticsId: true,
+            googleAdsConversionId: true,
+            googleAdsConversionLabel: true,
+            headHtml: true,
+            bodyOpenHtml: true,
+            bodyCloseHtml: true,
+            homeBestSellerSlugs: true
+          }
+        })
+      : await prisma.siteSettings.create({
+          data: {
+            googleAnalyticsId: googleAnalyticsId || null,
+            googleAdsConversionId: googleAdsConversionId || null,
+            googleAdsConversionLabel: googleAdsConversionLabel || null,
+            headHtml,
+            bodyOpenHtml,
+            bodyCloseHtml,
+            homeBestSellerSlugs
+          },
+          select: {
+            id: true,
+            googleAnalyticsId: true,
+            googleAdsConversionId: true,
+            googleAdsConversionLabel: true,
+            headHtml: true,
+            bodyOpenHtml: true,
+            bodyCloseHtml: true,
+            homeBestSellerSlugs: true
+          }
+        })
+
+    return { ok: true, settings }
+  }
+
   const existing = await prisma.siteSettings.findFirst({
+    where: { storeSlug },
     select: { id: true }
   })
 
@@ -92,6 +149,7 @@ export default defineEventHandler(async (event) => {
       })
     : await prisma.siteSettings.create({
         data: {
+          storeSlug,
           googleAnalyticsId: googleAnalyticsId || null,
           googleAdsConversionId: googleAdsConversionId || null,
           googleAdsConversionLabel: googleAdsConversionLabel || null,
