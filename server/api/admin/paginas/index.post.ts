@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
+import DOMPurify from 'isomorphic-dompurify'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -9,7 +10,8 @@ export default defineEventHandler(async (event) => {
 
   const titulo = String(body?.titulo || '').trim()
   const slug = String(body?.slug || '').trim()
-  const conteudo = body?.conteudo != null ? String(body.conteudo) : null
+  const conteudoRaw = body?.conteudo != null ? String(body.conteudo) : null
+  const conteudo = conteudoRaw != null ? DOMPurify.sanitize(conteudoRaw) : null
   const publicado = Boolean(body?.publicado)
 
   if (!titulo) throw createError({ statusCode: 400, statusMessage: 'Título obrigatório' })

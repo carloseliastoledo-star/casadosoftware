@@ -56,7 +56,7 @@
       <div class="absolute inset-0 bg-black/40" @click="closeModal" />
 
       <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg">
+        <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg max-h-[85vh] flex flex-col">
           <div class="flex items-center justify-between p-5 border-b">
             <div>
               <h2 class="text-lg font-semibold">{{ editingId ? 'Editar página' : 'Nova página' }}</h2>
@@ -65,7 +65,7 @@
             <button class="text-gray-500 hover:text-gray-700" @click="closeModal">Fechar</button>
           </div>
 
-          <div class="p-5 space-y-4">
+          <div class="p-5 space-y-4 overflow-y-auto">
             <div>
               <label class="block font-medium mb-2">Título</label>
               <input v-model="formTitulo" type="text" class="w-full border rounded-lg p-3" placeholder="Ex: Política de Privacidade" />
@@ -79,8 +79,28 @@
 
             <div>
               <label class="block font-medium mb-2">Conteúdo</label>
-              <textarea v-model="formConteudo" rows="10" class="w-full border rounded-lg p-3" placeholder="Digite o conteúdo da página..." />
-              <p class="text-xs text-gray-500 mt-2">Este campo aceita texto simples. Se quiser, posso melhorar depois para editor rico.</p>
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                  <input id="isHtml" v-model="formIsHtml" type="checkbox" class="h-4 w-4" />
+                  <label for="isHtml" class="text-sm">Conteúdo em HTML (colar página inteira)</label>
+                </div>
+              </div>
+              <p v-if="formIsHtml" class="text-xs text-gray-500 mt-2">
+                Você pode colar HTML completo aqui. O sistema faz limpeza (sanitização) automaticamente ao salvar.
+              </p>
+              <textarea
+                v-model="formConteudo"
+                rows="12"
+                class="w-full border rounded-lg p-3 font-mono text-xs"
+                :placeholder="formIsHtml ? 'Cole aqui o HTML completo da página...' : 'Digite o conteúdo em texto simples...'"
+              />
+
+              <div v-if="formIsHtml" class="mt-4">
+                <div class="text-xs font-semibold text-gray-700 mb-2">Pré-visualização</div>
+                <div class="border rounded-lg p-4 bg-gray-50">
+                  <div class="prose prose-gray max-w-none" v-html="previewHtml" />
+                </div>
+              </div>
             </div>
 
             <div class="flex items-center gap-2">
@@ -109,6 +129,8 @@
 </template>
 
 <script setup lang="ts">
+import DOMPurify from 'isomorphic-dompurify'
+
 definePageMeta({ layout: 'admin' })
 
 type PaginaListItem = {
@@ -142,6 +164,7 @@ const editingId = ref<string | null>(null)
 const formTitulo = ref('')
 const formSlug = ref('')
 const formConteudo = ref('')
+const formIsHtml = ref(false)
 const formPublicado = ref(false)
 
 const modalLoading = ref(false)
@@ -153,6 +176,7 @@ function openCreate() {
   formTitulo.value = ''
   formSlug.value = ''
   formConteudo.value = ''
+  formIsHtml.value = false
   formPublicado.value = false
   modalMessage.value = ''
   modalError.value = ''
@@ -170,11 +194,18 @@ async function openEdit(id: string) {
     formTitulo.value = res.pagina.titulo
     formSlug.value = res.pagina.slug
     formConteudo.value = res.pagina.conteudo || ''
+    formIsHtml.value = /<\s*[a-z][\s\S]*>/i.test(String(res.pagina.conteudo || ''))
     formPublicado.value = Boolean(res.pagina.publicado)
   } catch (err: any) {
     modalError.value = err?.data?.statusMessage || 'Erro ao carregar página'
   }
 }
+
+const previewHtml = computed(() => {
+  const raw = String(formConteudo.value || '')
+  if (!raw.trim()) return ''
+  return DOMPurify.sanitize(raw)
+})
 
 function closeModal() {
   showModal.value = false

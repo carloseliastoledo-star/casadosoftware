@@ -11,7 +11,8 @@
             {{ t.updatedAt }} {{ formatDate(pagina.atualizadoEm) }}
           </p>
 
-          <div class="prose prose-gray max-w-none mt-6 whitespace-pre-wrap">
+          <div v-if="conteudoHtml" class="prose prose-gray max-w-none mt-6" v-html="conteudoHtml" />
+          <div v-else class="prose prose-gray max-w-none mt-6 whitespace-pre-wrap">
             {{ pagina?.conteudo || '' }}
           </div>
         </div>
@@ -21,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+import DOMPurify from 'isomorphic-dompurify'
+
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 
@@ -62,6 +65,18 @@ const { data, pending, error } = await useFetch<{ ok: true; pagina: PaginaDto }>
 })
 
 const pagina = computed(() => data.value?.pagina || null)
+
+const looksLikeHtml = computed(() => {
+  const raw = String(pagina.value?.conteudo || '')
+  if (!raw.trim()) return false
+  return /<\s*[a-z][\s\S]*>/i.test(raw)
+})
+
+const conteudoHtml = computed(() => {
+  if (!looksLikeHtml.value) return ''
+  const raw = String(pagina.value?.conteudo || '')
+  return DOMPurify.sanitize(raw)
+})
 
 const { siteName } = useSiteBranding()
 
