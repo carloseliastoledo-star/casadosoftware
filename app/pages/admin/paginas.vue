@@ -240,7 +240,7 @@ async function saveModal() {
     await refresh()
     closeModal()
   } catch (err: any) {
-    modalError.value = err?.data?.statusMessage || 'Erro ao salvar página'
+    modalError.value = err?.data?.statusMessage || err?.data?.message || err?.message || 'Erro ao salvar página'
   } finally {
     modalLoading.value = false
   }
