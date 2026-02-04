@@ -114,19 +114,9 @@
 
     <section class="max-w-6xl mx-auto pb-16 px-6">
       <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 md:p-10">
-        <div class="grid md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Pronto para escolher sua licença?</h2>
-            <p class="mt-3 text-gray-600">Veja a lista completa de licenças disponíveis.</p>
-          </div>
-          <div class="flex md:justify-end">
-            <NuxtLink
-              to="/produtos"
-              class="inline-flex items-center justify-center w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-7 py-3 rounded-xl transition"
-            >
-              Ver Licenças
-            </NuxtLink>
-          </div>
+        <div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Pronto para escolher sua licença?</h2>
+          <p class="mt-3 text-gray-600">Veja a lista completa de licenças disponíveis.</p>
         </div>
       </div>
     </section>

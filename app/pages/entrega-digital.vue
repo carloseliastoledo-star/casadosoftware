@@ -19,20 +19,6 @@
       </div>
 
       <div class="rounded-xl border bg-white p-5 space-y-3">
-        <h2 class="text-xl font-bold text-gray-900">{{ t.m365Title }}</h2>
-        <div class="text-sm space-y-2">
-          <p>
-            {{ t.m365Intro }}
-          </p>
-          <ul class="list-disc pl-5 space-y-2">
-            <li>{{ t.m365Item1 }}</li>
-            <li>{{ t.m365Item2 }}</li>
-            <li>{{ t.m365Item3 }}</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="rounded-xl border bg-white p-5 space-y-3">
         <h2 class="text-xl font-bold text-gray-900">{{ t.deadlineTitle }}</h2>
         <p class="text-sm">
           {{ t.deadlineBody }}
