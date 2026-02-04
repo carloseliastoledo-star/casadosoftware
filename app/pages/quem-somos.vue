@@ -50,11 +50,16 @@ const { siteName, supportEmail } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 
+const safeSiteName = computed(() => {
+  const n = String(siteName.value || '').trim()
+  return n || 'Licenças Digitais'
+})
+
 const t = computed(() => {
   if (intl.language.value === 'en') {
     return {
       title: 'About us',
-      intro: `${siteName.value} is an online store focused on selling digital products and software licenses, with delivery and support.`,
+      intro: `${safeSiteName.value} is an online store focused on selling digital products and software licenses, with delivery and support.`,
       companyDataTitle: 'Company details',
       companyLabel: 'Company:',
       companyTaxIdLabel: 'Tax ID:',
@@ -71,7 +76,7 @@ const t = computed(() => {
   if (intl.language.value === 'es') {
     return {
       title: 'Quiénes somos',
-      intro: `${siteName.value} es una tienda online enfocada en la venta de productos digitales y licencias de software, con entrega y soporte.`,
+      intro: `${safeSiteName.value} es una tienda online enfocada en la venta de productos digitales y licencias de software, con entrega y suporte.`,
       companyDataTitle: 'Datos de la empresa',
       companyLabel: 'Empresa:',
       companyTaxIdLabel: 'CIF/CNPJ:',
@@ -87,7 +92,7 @@ const t = computed(() => {
 
   return {
     title: 'Quem Somos',
-    intro: `${siteName.value} é uma loja online focada na venda de produtos digitais e licenças de software, com entrega e suporte.`,
+    intro: `${safeSiteName.value} é uma loja online focada na venda de produtos digitais e licenças de software, com entrega e suporte.`,
     companyDataTitle: 'Dados da empresa',
     companyLabel: 'Empresa:',
     companyTaxIdLabel: 'CNPJ:',
@@ -103,12 +108,12 @@ const t = computed(() => {
 })
 
 const mailtoSupport = computed(() => {
-  const email = String(supportEmail || '').trim()
+  const email = String(supportEmail.value || '').trim()
   return email ? `mailto:${email}` : 'mailto:'
 })
 
 useSeoMeta({
-  title: `${t.value.title} | ${siteName}`
+  title: `${t.value.title} | ${safeSiteName.value}`
 })
 
 useHead(() => ({
