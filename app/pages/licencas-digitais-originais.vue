@@ -15,21 +15,6 @@
           <p class="mt-4 text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
             Ativação legal, suporte ao cliente e transparência.
           </p>
-
-          <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <NuxtLink
-              to="/produtos"
-              class="inline-flex items-center justify-center bg-white text-blue-800 font-extrabold px-7 py-3 rounded-xl shadow hover:shadow-md transition"
-            >
-              Ver Licenças
-            </NuxtLink>
-            <NuxtLink
-              to="/atendimento-e-politicas"
-              class="inline-flex items-center justify-center bg-white/10 border border-white/20 text-white font-semibold px-7 py-3 rounded-xl hover:bg-white/15 transition"
-            >
-              Atendimento e Políticas
-            </NuxtLink>
-          </div>
         </div>
       </div>
     </section>
@@ -65,89 +50,6 @@
           <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl">🧾</div>
           <h3 class="mt-4 font-extrabold text-gray-900">Transparência</h3>
           <p class="text-sm text-gray-600 mt-2">Informações claras e nota fiscal.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-white border-y">
-      <div class="max-w-6xl mx-auto py-16 px-6">
-        <div class="flex items-center justify-between gap-6 flex-col md:flex-row">
-          <div>
-            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Licenças em Destaque</h2>
-            <p class="mt-2 text-gray-600">Produtos mais procurados e com entrega digital.</p>
-          </div>
-
-          <NuxtLink
-            to="/produtos"
-            class="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-gray-200 text-gray-800 font-semibold hover:border-blue-300 hover:text-blue-700 transition"
-          >
-            Ver todos os produtos
-          </NuxtLink>
-        </div>
-
-        <div class="mt-10 grid md:grid-cols-3 gap-8">
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center justify-between">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700">DESTAQUE</span>
-                <span class="text-xs text-gray-500">Digital</span>
-              </div>
-              <div class="mt-6 h-28 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-5xl">🪟</div>
-              <h3 class="mt-5 font-extrabold text-gray-900">Windows 11 Pro</h3>
-              <p class="mt-2 text-sm text-gray-600">Licença digital com ativação e suporte.</p>
-              <div class="mt-4 flex items-end justify-between">
-                <div>
-                  <div class="text-xs text-gray-500">A partir de</div>
-                  <div class="text-blue-700 font-extrabold text-2xl">R$ 89</div>
-                </div>
-              </div>
-              <NuxtLink to="/produto/windows-11-pro" class="btn w-full text-center">
-                Ver Detalhes
-              </NuxtLink>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center justify-between">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700">MAIS VENDIDO</span>
-                <span class="text-xs text-gray-500">Digital</span>
-              </div>
-              <div class="mt-6 h-28 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-5xl">📦</div>
-              <h3 class="mt-5 font-extrabold text-gray-900">Office 2021 Pro</h3>
-              <p class="mt-2 text-sm text-gray-600">Aplicativos essenciais para produtividade.</p>
-              <div class="mt-4 flex items-end justify-between">
-                <div>
-                  <div class="text-xs text-gray-500">A partir de</div>
-                  <div class="text-blue-700 font-extrabold text-2xl">R$ 119</div>
-                </div>
-              </div>
-              <NuxtLink to="/produto/office-2021" class="btn w-full text-center">
-                Ver Detalhes
-              </NuxtLink>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden">
-            <div class="p-6">
-              <div class="flex items-center justify-between">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700">COMBO</span>
-                <span class="text-xs text-gray-500">Digital</span>
-              </div>
-              <div class="mt-6 h-28 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center text-5xl">🎁</div>
-              <h3 class="mt-5 font-extrabold text-gray-900">Combo Windows + Office</h3>
-              <p class="mt-2 text-sm text-gray-600">Economize comprando os dois juntos.</p>
-              <div class="mt-4 flex items-end justify-between">
-                <div>
-                  <div class="text-xs text-gray-500">A partir de</div>
-                  <div class="text-blue-700 font-extrabold text-2xl">R$ 149</div>
-                </div>
-              </div>
-              <NuxtLink to="/produto/combo" class="btn w-full text-center">
-                Ver Detalhes
-              </NuxtLink>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -191,8 +93,33 @@
         </div>
       </div>
     </section>
+
+    <section class="max-w-6xl mx-auto pb-16 px-6">
+      <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 md:p-10">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Pronto para escolher sua licença?</h2>
+            <p class="mt-3 text-gray-600">
+              Veja a lista completa de licenças disponíveis.
+            </p>
+          </div>
+          <div class="flex md:justify-end">
+            <NuxtLink
+              to="/produtos"
+              class="inline-flex items-center justify-center w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-extrabold px-7 py-3 rounded-xl transition"
+            >
+              Ver Licenças
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
+
+<script setup lang="ts">
+definePageMeta({ layout: 'blank' })
+</script>
 
 <style scoped>
 .btn {
