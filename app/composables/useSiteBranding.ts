@@ -15,8 +15,9 @@ export function useSiteBranding() {
   })
 
   const isCasaDoSoftware = computed(() => {
-    if (storeSlug === 'casadosoftware') return true
-    return host.value.includes('casadosoftware.com.br')
+    if (host.value.includes('licencasdigitais.com.br')) return false
+    if (host.value.includes('casadosoftware.com.br')) return true
+    return storeSlug === 'casadosoftware'
   })
 
   const defaultSiteName = computed(() => (isCasaDoSoftware.value ? 'Casa do Software' : 'Licenças Digitais'))
