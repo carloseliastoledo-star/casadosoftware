@@ -48,16 +48,6 @@ const normalizedHost = computed(() => {
   return h4.replace(/\.$/, '')
 })
 
-const debugHost = computed(() => {
-  if (process.server) return false
-  try {
-    const params = new URLSearchParams(window.location.search)
-    return params.get('debugHost') === '1'
-  } catch {
-    return false
-  }
-})
-
 const isCasaDoSoftware = computed(() => {
   if (normalizedHost.value.includes('casadosoftware.com.br')) return true
   return storeSlug.value === 'casadosoftware'
@@ -66,5 +56,19 @@ const isCasaDoSoftware = computed(() => {
 const isLicencasDigitais = computed(() => {
   if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
   return storeSlug.value === 'licencasdigitais'
+})
+
+watchEffect(() => {
+  setPageLayout(isLicencasDigitais.value ? 'eletrokeys' : 'default')
+})
+
+const debugHost = computed(() => {
+  if (process.server) return false
+  try {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('debugHost') === '1'
+  } catch {
+    return false
+  }
 })
 </script>
