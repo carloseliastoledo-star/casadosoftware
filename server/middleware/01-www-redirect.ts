@@ -23,11 +23,11 @@ export default defineEventHandler((event: H3Event) => {
   const { hostname, port } = splitHostAndPort(host)
   const lower = hostname.toLowerCase()
 
-  // Only redirect www -> apex for Casa do Software domain.
-  if (lower !== 'www.casadosoftware.com.br') return
+  if (lower !== 'www.casadosoftware.com.br' && lower !== 'www.licencasdigitais.com.br') return
 
   const rawUrl = event.node.req.url || '/'
-  const targetHost = `casadosoftware.com.br${port}`
+  const apex = lower === 'www.licencasdigitais.com.br' ? 'licencasdigitais.com.br' : 'casadosoftware.com.br'
+  const targetHost = `${apex}${port}`
   const location = `https://${targetHost}${rawUrl}`
 
   return sendRedirect(event, location, 301)
