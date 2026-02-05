@@ -161,6 +161,50 @@
           </div>
 
           <div class="p-5 space-y-4">
+            <div class="border rounded-lg p-3">
+              <div class="font-medium mb-2">Origem / Tracking</div>
+              <div class="grid grid-cols-1 gap-2 text-xs">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="text-gray-600">Tipo</div>
+                  <div class="font-mono text-right break-all">{{ editOrder?.trafficSourceType || '-' }}</div>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="text-gray-600">UTM Source</div>
+                  <div class="font-mono text-right break-all">{{ editOrder?.utmSource || '-' }}</div>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="text-gray-600">UTM Medium</div>
+                  <div class="font-mono text-right break-all">{{ editOrder?.utmMedium || '-' }}</div>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="text-gray-600">UTM Campaign</div>
+                  <div class="font-mono text-right break-all">{{ editOrder?.utmCampaign || '-' }}</div>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="text-gray-600">GCLID</div>
+                  <div class="flex items-start justify-end gap-2">
+                    <div class="font-mono text-right break-all">{{ editOrder?.gclid || '-' }}</div>
+                    <button
+                      v-if="editOrder?.gclid"
+                      class="text-[11px] text-blue-700 hover:text-blue-900 whitespace-nowrap"
+                      type="button"
+                      @click.stop="copyToClipboard(editOrder?.gclid || '')"
+                    >
+                      {{ copiedText === editOrder?.gclid ? 'Copiado' : 'Copiar' }}
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="text-gray-600">Referrer</div>
+                  <div class="font-mono text-right break-all">{{ editOrder?.referrer || '-' }}</div>
+                </div>
+                <div class="flex items-start justify-between gap-3">
+                  <div class="text-gray-600">Landing page</div>
+                  <div class="font-mono text-right break-all">{{ editOrder?.landingPage || '-' }}</div>
+                </div>
+              </div>
+            </div>
+
             <div>
               <label class="block font-medium mb-2">Status</label>
               <select v-model="editStatus" class="w-full border rounded-lg p-3">
@@ -411,6 +455,16 @@ type OrderDto = {
   id: string
   numero: number
   status: string
+  trafficSourceType?: string | null
+  utmSource?: string | null
+  utmMedium?: string | null
+  utmCampaign?: string | null
+  utmTerm?: string | null
+  utmContent?: string | null
+  gclid?: string | null
+  fbclid?: string | null
+  referrer?: string | null
+  landingPage?: string | null
   criadoEm: string
   pagoEm: string | null
   emailEnviadoEm: string | null

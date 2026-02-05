@@ -460,6 +460,43 @@ useHead(() => ({
   link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/checkout` }] : []
 }))
 
+const utmSource = computed(() => (route.query.utm_source ? String(route.query.utm_source) : undefined))
+const utmMedium = computed(() => (route.query.utm_medium ? String(route.query.utm_medium) : undefined))
+const utmCampaign = computed(() => (route.query.utm_campaign ? String(route.query.utm_campaign) : undefined))
+const utmTerm = computed(() => (route.query.utm_term ? String(route.query.utm_term) : undefined))
+const utmContent = computed(() => (route.query.utm_content ? String(route.query.utm_content) : undefined))
+const gclid = computed(() => (route.query.gclid ? String(route.query.gclid) : undefined))
+const fbclid = computed(() => (route.query.fbclid ? String(route.query.fbclid) : undefined))
+
+const referrer = ref<string | undefined>(undefined)
+const landingPage = ref<string | undefined>(undefined)
+
+onMounted(() => {
+  try {
+    referrer.value = document?.referrer ? String(document.referrer) : undefined
+  } catch {
+    referrer.value = undefined
+  }
+
+  try {
+    landingPage.value = window?.location?.href ? String(window.location.href) : undefined
+  } catch {
+    landingPage.value = undefined
+  }
+})
+
+const attributionPayload = computed(() => ({
+  utm_source: utmSource.value || undefined,
+  utm_medium: utmMedium.value || undefined,
+  utm_campaign: utmCampaign.value || undefined,
+  utm_term: utmTerm.value || undefined,
+  utm_content: utmContent.value || undefined,
+  gclid: gclid.value || undefined,
+  fbclid: fbclid.value || undefined,
+  referrer: referrer.value || undefined,
+  landingPage: landingPage.value || undefined
+}))
+
 const slug = computed(() => String(route.query.product || ''))
 
 const { data } = await useFetch(
@@ -860,6 +897,7 @@ async function payWithCard() {
         produtoId: product.value.id,
         email: customerEmail.value,
         couponCode: appliedCoupon.value?.code || null,
+        ...attributionPayload.value,
         token: cardData.token,
         payment_method_id: cardData.paymentMethodId,
         issuer_id: cardData.issuerId,
@@ -941,7 +979,8 @@ async function goToPix() {
         nome: nome.value,
         whatsapp: whatsapp.value,
         cpf: cpf.value,
-        couponCode: appliedCoupon.value?.code || null
+        couponCode: appliedCoupon.value?.code || null,
+        ...attributionPayload.value
       }
     })
 

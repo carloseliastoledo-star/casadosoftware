@@ -158,6 +158,16 @@ model Order {
   numero              Int      @unique @default(autoincrement())
   status              String
   storeSlug            String?
+  trafficSourceType   String?
+  utmSource           String?
+  utmMedium           String?
+  utmCampaign         String?
+  utmTerm             String?
+  utmContent          String?
+  gclid               String?
+  fbclid              String?
+  referrer            String?  @db.Text
+  landingPage         String?  @db.Text
   currency            String?
   countryCode         String?
   produtoId            String

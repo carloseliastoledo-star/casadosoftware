@@ -23,6 +23,30 @@ export default defineEventHandler(async (event) => {
   const identificationType = String(body?.identification?.type || 'CPF')
   const identificationNumber = String(body?.identification?.number || '')
 
+  const utmSource = body?.utm_source ? String(body.utm_source) : undefined
+  const utmMedium = body?.utm_medium ? String(body.utm_medium) : undefined
+  const utmCampaign = body?.utm_campaign ? String(body.utm_campaign) : undefined
+  const utmTerm = body?.utm_term ? String(body.utm_term) : undefined
+  const utmContent = body?.utm_content ? String(body.utm_content) : undefined
+  const gclid = body?.gclid ? String(body.gclid) : undefined
+  const fbclid = body?.fbclid ? String(body.fbclid) : undefined
+  const referrer = body?.referrer ? String(body.referrer) : undefined
+  const landingPage = body?.landingPage ? String(body.landingPage) : undefined
+
+  function inferTrafficSourceType(): string {
+    const medium = String(utmMedium || '').trim().toLowerCase()
+    if (gclid || medium === 'cpc' || medium === 'ppc' || medium === 'paid' || medium === 'paidsearch') return 'cpc'
+    if (medium === 'organic') return 'organic'
+    const ref = String(referrer || '').trim().toLowerCase()
+    if (!ref) return 'direct'
+    if (ref.includes('google.') || ref.includes('bing.') || ref.includes('yahoo.') || ref.includes('duckduckgo.') || ref.includes('yandex.')) {
+      return 'organic'
+    }
+    return 'referral'
+  }
+
+  const trafficSourceType = inferTrafficSourceType()
+
   if (!produtoId) throw createError({ statusCode: 400, statusMessage: 'produtoId obrigatório' })
   if (!email || !email.includes('@')) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
 
@@ -111,6 +135,16 @@ export default defineEventHandler(async (event) => {
       data: {
         status: 'PENDING',
         storeSlug,
+        trafficSourceType,
+        utmSource: utmSource || null,
+        utmMedium: utmMedium || null,
+        utmCampaign: utmCampaign || null,
+        utmTerm: utmTerm || null,
+        utmContent: utmContent || null,
+        gclid: gclid || null,
+        fbclid: fbclid || null,
+        referrer: referrer || null,
+        landingPage: landingPage || null,
         produtoId: produto.id,
         customerId: customer.id,
         cupomId: coupon?.id || null,
