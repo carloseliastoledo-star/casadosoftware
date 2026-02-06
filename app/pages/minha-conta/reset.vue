@@ -68,7 +68,9 @@ async function submit() {
 
     await navigateTo('/minha-conta')
   } catch (err: any) {
-    error.value = err?.data?.statusMessage || 'Não foi possível redefinir a senha'
+    const status = err?.statusCode || err?.response?.status
+    const msg = err?.data?.statusMessage || err?.statusMessage || err?.message
+    error.value = status ? `[${status}] ${msg || 'Não foi possível redefinir a senha'}` : msg || 'Não foi possível redefinir a senha'
   } finally {
     loading.value = false
   }
