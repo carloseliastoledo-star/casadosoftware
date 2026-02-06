@@ -29,19 +29,35 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!ctx.storeSlug) {
+    console.warn('[customer-forgot] storeSlug ausente', { email })
     return { ok: true }
   }
+
+  console.info('[customer-forgot] request', {
+    email,
+    storeSlug: ctx.storeSlug,
+    includeLegacy: ctx.includeLegacy
+  })
 
   const customer = await prisma.customer.findFirst({
     where: whereForStore({ email }, ctx) as any,
     select: { id: true, email: true }
   })
   if (!customer) {
+    console.warn('[customer-forgot] customer não encontrado', {
+      email,
+      storeSlug: ctx.storeSlug,
+      includeLegacy: ctx.includeLegacy
+    })
     return { ok: true }
   }
 
   const secret = process.env.CUSTOMER_RESET_SECRET || process.env.CUSTOMER_SESSION_SECRET || ''
   if (!secret) {
+    console.error('[customer-forgot] secret ausente', {
+      email,
+      storeSlug: ctx.storeSlug
+    })
     return { ok: true }
   }
 
@@ -52,6 +68,12 @@ export default defineEventHandler(async (event) => {
   await (prisma as any).customer.update({
     where: { id: customer.id },
     data: { passwordResetTokenHash: tokenHash, passwordResetExpiresAt: expiresAt }
+  })
+
+  console.info('[customer-forgot] token gravado', {
+    customerId: customer.id,
+    storeSlug: ctx.storeSlug,
+    expiresAt: expiresAt.toISOString()
   })
 
   const baseUrl = getBaseUrl(event)

@@ -37,6 +37,12 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 500, statusMessage: 'Configuração de segurança ausente' })
     }
 
+    console.info('[customer-reset] request', {
+      storeSlug: ctx.storeSlug,
+      includeLegacy: ctx.includeLegacy,
+      secretsCount: secrets.length
+    })
+
     if (!ctx.storeSlug) {
       throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
     }
@@ -77,6 +83,10 @@ export default defineEventHandler(async (event) => {
       })
 
       if (tokenAnyStore) {
+        console.warn('[customer-reset] token encontrado em outra loja', {
+          storeSlug: ctx.storeSlug,
+          tokenStoreSlug: tokenAnyStore.storeSlug
+        })
         const foundSlug = tokenAnyStore.storeSlug ? String(tokenAnyStore.storeSlug) : 'legacy'
         throw createError({
           statusCode: 400,
@@ -84,6 +94,9 @@ export default defineEventHandler(async (event) => {
         })
       }
 
+      console.warn('[customer-reset] token não encontrado/expirado', {
+        storeSlug: ctx.storeSlug
+      })
       throw createError({ statusCode: 400, statusMessage: 'Token inválido ou expirado' })
     }
 
