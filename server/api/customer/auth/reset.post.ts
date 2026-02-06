@@ -13,8 +13,8 @@ export default defineEventHandler(async (event) => {
   const { storeSlug } = getStoreContext()
   const body = await readBody(event)
 
-  const token = String(body?.token || '')
-  const password = String(body?.password || '')
+  const token = String(body?.token || '').trim()
+  const password = String(body?.password || '').trim()
 
   if (!token) {
     throw createError({ statusCode: 400, statusMessage: 'Token inválido' })
