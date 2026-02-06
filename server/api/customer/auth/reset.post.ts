@@ -28,8 +28,12 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'Senha deve ter pelo menos 6 caracteres' })
     }
 
-    const secret = process.env.CUSTOMER_RESET_SECRET || process.env.CUSTOMER_SESSION_SECRET || ''
-    if (!secret) {
+    const secrets = [process.env.CUSTOMER_RESET_SECRET, process.env.CUSTOMER_SESSION_SECRET]
+      .map((s) => String(s || '').trim())
+      .filter(Boolean)
+      .filter((value, index, arr) => arr.indexOf(value) === index)
+
+    if (!secrets.length) {
       throw createError({ statusCode: 500, statusMessage: 'Configuração de segurança ausente' })
     }
 
@@ -49,13 +53,13 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 500, statusMessage: 'Falha interna: setCustomerSession inválido' })
     }
 
-    const tokenHash = hashToken(token, secret)
+    const tokenHashes = secrets.map((s) => hashToken(token, s))
     const now = new Date()
 
     const customer = await (prisma as any).customer.findFirst({
       where: whereForStore(
         {
-          passwordResetTokenHash: tokenHash,
+          passwordResetTokenHash: { in: tokenHashes },
           passwordResetExpiresAt: { gt: now }
         },
         ctx
@@ -66,7 +70,7 @@ export default defineEventHandler(async (event) => {
     if (!customer) {
       const tokenAnyStore = await (prisma as any).customer.findFirst({
         where: {
-          passwordResetTokenHash: tokenHash,
+          passwordResetTokenHash: { in: tokenHashes },
           passwordResetExpiresAt: { gt: now }
         },
         select: { storeSlug: true }
