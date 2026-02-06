@@ -80,11 +80,12 @@ export default defineEventHandler(async (event) => {
 
     return { ok: true }
   } catch (err: any) {
-    if (err?.statusCode) {
+    const statusCode = Number(err?.statusCode || 500)
+    if (statusCode >= 400 && statusCode < 500) {
       throw err
     }
 
-    const message = err?.message ? String(err.message) : String(err)
+    const message = err?.statusMessage || (err?.message ? String(err.message) : String(err))
     throw createError({
       statusCode: 500,
       statusMessage: `Erro interno ao redefinir senha (${RESET_HANDLER_VERSION}): ${message}`
