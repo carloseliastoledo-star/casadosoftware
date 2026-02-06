@@ -33,6 +33,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
   }
 
+  if (typeof hashPassword !== 'function') {
+    throw createError({ statusCode: 500, statusMessage: 'Falha interna: hashPassword inválido' })
+  }
+
+  if (!prisma || typeof (prisma as any).customer?.findFirst !== 'function') {
+    throw createError({ statusCode: 500, statusMessage: 'Falha interna: prisma.customer inválido' })
+  }
+
+  if (typeof setCustomerSession !== 'function') {
+    throw createError({ statusCode: 500, statusMessage: 'Falha interna: setCustomerSession inválido' })
+  }
+
   const tokenHash = hashToken(token, secret)
   const now = new Date()
 
