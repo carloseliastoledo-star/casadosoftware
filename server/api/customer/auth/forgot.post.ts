@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody } from 'h3'
 import crypto from 'crypto'
-import prisma from '../../../db/prisma.js'
-import { sendMail } from '../../../utils/mailer.js'
+import prisma from '../../../db/prisma'
+import { sendMail } from '../../../utils/mailer'
 import { getStoreContext } from '../../../utils/store'
 
 function hashToken(token: string, secret: string) {

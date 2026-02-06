@@ -1,8 +1,8 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import crypto from 'crypto'
-import prisma from '../../../db/prisma.js'
-import { hashPassword } from '../../../utils/password.js'
-import { setCustomerSession } from '../../../utils/customerSession.js'
+import prisma from '../../../db/prisma'
+import { hashPassword } from '../../../utils/password'
+import { setCustomerSession } from '../../../utils/customerSession'
 import { getStoreContext } from '../../../utils/store'
 
 function hashToken(token: string, secret: string) {
