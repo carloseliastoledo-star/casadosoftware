@@ -64,6 +64,22 @@ export default defineEventHandler(async (event) => {
     })
 
     if (!customer) {
+      const tokenAnyStore = await (prisma as any).customer.findFirst({
+        where: {
+          passwordResetTokenHash: tokenHash,
+          passwordResetExpiresAt: { gt: now }
+        },
+        select: { storeSlug: true }
+      })
+
+      if (tokenAnyStore) {
+        const foundSlug = tokenAnyStore.storeSlug ? String(tokenAnyStore.storeSlug) : 'legacy'
+        throw createError({
+          statusCode: 400,
+          statusMessage: `Token pertence a outra loja (STORE_SLUG atual: ${ctx.storeSlug}; token: ${foundSlug})`
+        })
+      }
+
       throw createError({ statusCode: 400, statusMessage: 'Token inválido ou expirado' })
     }
 
