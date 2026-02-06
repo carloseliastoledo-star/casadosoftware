@@ -10,69 +10,83 @@ function hashToken(token: string, secret: string) {
 }
 
 export default defineEventHandler(async (event) => {
-  const { storeSlug } = getStoreContext()
-  const body = await readBody(event)
+  const RESET_HANDLER_VERSION = 'reset-v2'
 
-  const token = String(body?.token || '').trim()
-  const password = String(body?.password || '').trim()
+  try {
+    const { storeSlug } = getStoreContext()
+    const body = await readBody(event)
 
-  if (!token) {
-    throw createError({ statusCode: 400, statusMessage: 'Token inválido' })
-  }
+    const token = String(body?.token || '').trim()
+    const password = String(body?.password || '').trim()
 
-  if (!password || password.length < 6) {
-    throw createError({ statusCode: 400, statusMessage: 'Senha deve ter pelo menos 6 caracteres' })
-  }
-
-  const secret = process.env.CUSTOMER_RESET_SECRET || process.env.CUSTOMER_SESSION_SECRET || ''
-  if (!secret) {
-    throw createError({ statusCode: 500, statusMessage: 'Configuração de segurança ausente' })
-  }
-
-  if (!storeSlug) {
-    throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
-  }
-
-  if (typeof hashPassword !== 'function') {
-    throw createError({ statusCode: 500, statusMessage: 'Falha interna: hashPassword inválido' })
-  }
-
-  if (!prisma || typeof (prisma as any).customer?.findFirst !== 'function') {
-    throw createError({ statusCode: 500, statusMessage: 'Falha interna: prisma.customer inválido' })
-  }
-
-  if (typeof setCustomerSession !== 'function') {
-    throw createError({ statusCode: 500, statusMessage: 'Falha interna: setCustomerSession inválido' })
-  }
-
-  const tokenHash = hashToken(token, secret)
-  const now = new Date()
-
-  const customer = await (prisma as any).customer.findFirst({
-    where: {
-      passwordResetTokenHash: tokenHash,
-      passwordResetExpiresAt: { gt: now },
-      storeSlug
-    },
-    select: { id: true, email: true }
-  })
-
-  if (!customer) {
-    throw createError({ statusCode: 400, statusMessage: 'Token inválido ou expirado' })
-  }
-
-  const passwordHash = hashPassword(password)
-
-  await (prisma as any).customer.update({
-    where: { id: customer.id },
-    data: {
-      passwordHash,
-      passwordResetTokenHash: null,
-      passwordResetExpiresAt: null
+    if (!token) {
+      throw createError({ statusCode: 400, statusMessage: 'Token inválido' })
     }
-  })
 
-  setCustomerSession(event, { customerId: customer.id, email: customer.email })
+    if (!password || password.length < 6) {
+      throw createError({ statusCode: 400, statusMessage: 'Senha deve ter pelo menos 6 caracteres' })
+    }
 
-  return { ok: true }
+    const secret = process.env.CUSTOMER_RESET_SECRET || process.env.CUSTOMER_SESSION_SECRET || ''
+    if (!secret) {
+      throw createError({ statusCode: 500, statusMessage: 'Configuração de segurança ausente' })
+    }
+
+    if (!storeSlug) {
+      throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
+    }
+
+    if (typeof hashPassword !== 'function') {
+      throw createError({ statusCode: 500, statusMessage: 'Falha interna: hashPassword inválido' })
+    }
+
+    if (!prisma || typeof (prisma as any).customer?.findFirst !== 'function') {
+      throw createError({ statusCode: 500, statusMessage: 'Falha interna: prisma.customer inválido' })
+    }
+
+    if (typeof setCustomerSession !== 'function') {
+      throw createError({ statusCode: 500, statusMessage: 'Falha interna: setCustomerSession inválido' })
+    }
+
+    const tokenHash = hashToken(token, secret)
+    const now = new Date()
+
+    const customer = await (prisma as any).customer.findFirst({
+      where: {
+        passwordResetTokenHash: tokenHash,
+        passwordResetExpiresAt: { gt: now },
+        storeSlug
+      },
+      select: { id: true, email: true }
+    })
+
+    if (!customer) {
+      throw createError({ statusCode: 400, statusMessage: 'Token inválido ou expirado' })
+    }
+
+    const passwordHash = hashPassword(password)
+
+    await (prisma as any).customer.update({
+      where: { id: customer.id },
+      data: {
+        passwordHash,
+        passwordResetTokenHash: null,
+        passwordResetExpiresAt: null
+      }
+    })
+
+    setCustomerSession(event, { customerId: customer.id, email: customer.email })
+
+    return { ok: true }
+  } catch (err: any) {
+    if (err?.statusCode) {
+      throw err
+    }
+
+    const message = err?.message ? String(err.message) : String(err)
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Erro interno ao redefinir senha (${RESET_HANDLER_VERSION}): ${message}`
+    })
+  }
 })
