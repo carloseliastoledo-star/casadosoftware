@@ -88,6 +88,14 @@ export default defineEventHandler(async (event) => {
         select: { storeSlug: true }
       })
 
+      const tokenExpiredAnyStore = await (prisma as any).customer.findFirst({
+        where: {
+          passwordResetTokenHash: { in: tokenHashes },
+          passwordResetExpiresAt: { lte: now }
+        },
+        select: { storeSlug: true }
+      })
+
       if (tokenAnyStore) {
         console.warn('[customer-reset] token encontrado em outra loja', {
           storeSlug: ctx.storeSlug,
@@ -97,6 +105,17 @@ export default defineEventHandler(async (event) => {
         throw createError({
           statusCode: 400,
           statusMessage: `Token pertence a outra loja (STORE_SLUG atual: ${ctx.storeSlug}; token: ${foundSlug})`
+        })
+      }
+
+      if (tokenExpiredAnyStore) {
+        console.warn('[customer-reset] token expirado', {
+          storeSlug: ctx.storeSlug,
+          tokenStoreSlug: tokenExpiredAnyStore.storeSlug
+        })
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Token expirado. Solicite um novo link de redefinição.'
         })
       }
 
