@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
     const whatsapp = body?.whatsapp ? String(body.whatsapp).trim() : null
     const cpf = body?.cpf ? String(body.cpf).trim() : null
 
-    console.info('[customer-register] request', { email, storeSlug })
+    console.warn('[customer-register] request', { email, storeSlug })
 
     if (!email || !email.includes('@')) {
       throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
 
     setCustomerSession(event, { customerId: customer.id, email: customer.email })
 
-    console.info('[customer-register] ok', { customerId: customer.id, storeSlug })
+    console.warn('[customer-register] ok', { customerId: customer.id, storeSlug })
 
     return { ok: true, customer }
   } catch (err: any) {
