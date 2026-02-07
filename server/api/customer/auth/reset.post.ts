@@ -119,6 +119,11 @@ export default defineEventHandler(async (event) => {
 
     setCustomerSession(event, { customerId: customer.id, email: customer.email })
 
+    console.warn('[customer-reset] ok', {
+      customerId: customer.id,
+      storeSlug: ctx.storeSlug
+    })
+
     return { ok: true }
   } catch (err: any) {
     const statusCode = Number(err?.statusCode || 500)
