@@ -1,5 +1,5 @@
 import { defineEventHandler, createError, type H3Event } from 'h3'
-import { getCustomerSession } from '../utils/customerSession.js'
+import { getCustomerSession } from '../utils/customerSession'
 
 export default defineEventHandler((event: H3Event) => {
   const path = event.path || ''
