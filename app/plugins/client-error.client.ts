@@ -1,13 +1,25 @@
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
   const send = (payload: any) => {
+    const body = {
+      ...payload,
+      href: window.location.href,
+      userAgent: navigator.userAgent
+    }
+
+    try {
+      if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(body)], { type: 'application/json' })
+        navigator.sendBeacon('/api/client-error', blob)
+        return
+      }
+    } catch {
+      // ignore
+    }
+
     try {
       $fetch('/api/client-error', {
         method: 'POST',
-        body: {
-          ...payload,
-          href: window.location.href,
-          userAgent: navigator.userAgent
-        }
+        body
       }).catch(() => undefined)
     } catch {
       // ignore
@@ -41,4 +53,39 @@ export default defineNuxtPlugin(() => {
       // ignore
     }
   })
+
+  nuxtApp.hook('app:error', (err: any) => {
+    try {
+      send({
+        type: 'nuxt:app:error',
+        message: String(err?.message || err || ''),
+        stack: String(err?.stack || '')
+      })
+    } catch {
+      // ignore
+    }
+  })
+
+  try {
+    const vueApp = (nuxtApp as any)?.vueApp
+    if (vueApp?.config) {
+      const prev = vueApp.config.errorHandler
+      vueApp.config.errorHandler = (err: any, instance: any, info: any) => {
+        try {
+          send({
+            type: 'vue:errorHandler',
+            message: String(err?.message || err || ''),
+            info: String(info || ''),
+            stack: String(err?.stack || '')
+          })
+        } catch {
+          // ignore
+        }
+
+        if (typeof prev === 'function') return prev(err, instance, info)
+      }
+    }
+  } catch {
+    // ignore
+  }
 })
