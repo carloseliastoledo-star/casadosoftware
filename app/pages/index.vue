@@ -66,16 +66,21 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
-watchEffect(() => {
-  setPageLayout(isLicencasDigitais.value ? 'eletrokeys' : 'default')
+const applyCasaSeo = computed(() => {
+  if (storeSlug.value && storeSlug.value !== 'casadosoftware') return false
+  if (isCasaDoSoftware.value) return true
+  if (process.server && !normalizedHost.value) return true
+  return false
 })
 
-useSeoMeta(() => {
-  if (!isCasaDoSoftware.value) return {}
+watchEffect(() => {
+  setPageLayout((isLicencasDigitais.value ? 'eletrokeys' : 'default') as any)
+})
 
+if (applyCasaSeo.value) {
   const ogImage = '/logo-casa-do-software.png'
 
-  return {
+  useSeoMeta({
     title: CASA_HOME_TITLE,
     description: CASA_HOME_DESCRIPTION,
     ogTitle: CASA_HOME_TITLE,
@@ -85,11 +90,11 @@ useSeoMeta(() => {
     twitterTitle: CASA_HOME_TITLE,
     twitterDescription: CASA_HOME_DESCRIPTION,
     twitterImage: ogImage
-  }
-})
+  })
+}
 
 useHead(() => {
-  if (!isCasaDoSoftware.value) return {}
+  if (!applyCasaSeo.value) return {}
 
   let siteUrl = ''
   try {
@@ -122,6 +127,7 @@ useHead(() => {
   }
 
   return {
+    link: siteUrl ? [{ rel: 'canonical', href: `${siteUrl}/` }] : [],
     script: [
       {
         type: 'application/ld+json',
