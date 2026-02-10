@@ -57,6 +57,8 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo, useFetch } from '#imports'
+
 definePageMeta({ middleware: ['customer'] })
 
 type OrderDto = {
@@ -69,7 +71,7 @@ type OrderDto = {
   licencas: { id: string; chave: string; status: string }[]
 }
 
-const { data, pending, error, refresh } = await useFetch<{ ok: true; orders: OrderDto[] }>('/api/customer/orders', {
+const { data, pending, error, refresh } = useFetch<{ ok: true; orders: OrderDto[] }>('/api/customer/orders', {
   server: false
 })
 
