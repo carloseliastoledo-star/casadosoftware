@@ -18,9 +18,9 @@ definePageMeta({ ssr: true })
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
 
-const CASA_HOME_TITLE = 'Licenças de Software Originais com Entrega Imediata | Casa do Software'
+const CASA_HOME_TITLE = 'Licenças Originais Windows e Office | Casa do Software'
 const CASA_HOME_DESCRIPTION =
-  'Compre Windows, Office e Antivírus 100% originais com ativação imediata e suporte vitalício. Entrega rápida e pagamento seguro. Confira!'
+  'Compre licenças digitais originais Windows 10, 11 e Office com entrega imediata e suporte técnico.'
 
 const host = computed(() => {
   if (process.server) {
@@ -31,13 +31,17 @@ const host = computed(() => {
       // ignore
     }
 
-    const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<
-      string,
-      string | undefined
-    >
-    const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
-    const first = String(raw).split(',')[0]?.trim()
-    return String(first || '').toLowerCase()
+    try {
+      const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<
+        string,
+        string | undefined
+      >
+      const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
+      const first = String(raw).split(',')[0]?.trim()
+      return String(first || '').toLowerCase()
+    } catch {
+      return ''
+    }
   }
 
   return String(window.location.host || '').toLowerCase()
@@ -68,13 +72,62 @@ watchEffect(() => {
 
 useSeoMeta(() => {
   if (!isCasaDoSoftware.value) return {}
+
+  const ogImage = '/logo-casa-do-software.png'
+
   return {
     title: CASA_HOME_TITLE,
     description: CASA_HOME_DESCRIPTION,
     ogTitle: CASA_HOME_TITLE,
     ogDescription: CASA_HOME_DESCRIPTION,
+    ogImage,
+    ogType: 'website',
     twitterTitle: CASA_HOME_TITLE,
-    twitterDescription: CASA_HOME_DESCRIPTION
+    twitterDescription: CASA_HOME_DESCRIPTION,
+    twitterImage: ogImage
+  }
+})
+
+useHead(() => {
+  if (!isCasaDoSoftware.value) return {}
+
+  let siteUrl = ''
+  try {
+    const url = useRequestURL()
+    siteUrl = String(url?.origin || '')
+  } catch {
+    // ignore
+  }
+
+  if (!siteUrl) {
+    const h = String(normalizedHost.value || '').trim()
+    if (h) siteUrl = `https://${h}`
+  }
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        name: 'Casa do Software',
+        url: siteUrl || undefined,
+        logo: siteUrl ? `${siteUrl}/logo-casa-do-software.png` : '/logo-casa-do-software.png'
+      },
+      {
+        '@type': 'WebSite',
+        name: 'Casa do Software',
+        url: siteUrl || undefined
+      }
+    ]
+  }
+
+  return {
+    script: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify(jsonLd)
+      }
+    ]
   }
 })
 

@@ -9,7 +9,7 @@
           </div>
 
           <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
-            Licenças digitais originais de Windows e Office
+            Licenças Originais Windows 10, 11 e Office | Casa do Software
           </h1>
 
           <p class="text-gray-600 text-lg leading-relaxed">
