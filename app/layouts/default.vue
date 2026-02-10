@@ -201,7 +201,7 @@
               {{ t.whatsappPrefix }} {{ whatsappLabel }}
             </a>
           </p>
-          <p class="mt-2 text-xs text-gray-500">
+          <p v-if="!isLicencasDigitais" class="mt-2 text-xs text-gray-500">
             Eletrokeys LTDA — CNPJ 44.694.365/0001-48
           </p>
         </div>
@@ -209,7 +209,7 @@
 
       <div class="text-center text-xs text-gray-500 py-4 border-t">
         © {{ new Date().getFullYear() }} {{ siteName }} — {{ t.rightsReserved }}
-        <div class="mt-2 max-w-4xl mx-auto">
+        <div v-if="!isLicencasDigitais" class="mt-2 max-w-4xl mx-auto">
           {{ t.footerDisclaimer1 }}
           {{ t.footerDisclaimer2 }}
         </div>
@@ -221,6 +221,30 @@
 
 <script setup lang="ts">
 const { siteName, logoPath, supportEmail, topbarText, topbarLink, whatsappNumber } = useSiteBranding()
+
+const config = useRuntimeConfig()
+
+const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
+
+const normalizedHost = computed(() => {
+  if (import.meta.server) {
+    try {
+      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
+      const raw = headers?.['x-forwarded-host'] || headers?.host || ''
+      const first = String(raw).split(',')[0]?.trim()
+      return String(first || '').toLowerCase()
+    } catch {
+      return ''
+    }
+  }
+
+  return String(window.location.host || '').toLowerCase()
+})
+
+const isLicencasDigitais = computed(() => {
+  if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
+  return storeSlug.value === 'licencasdigitais'
+})
 
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()

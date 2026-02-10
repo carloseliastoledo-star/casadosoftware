@@ -457,7 +457,6 @@
 
         <div class="mt-8 pt-8 border-t border-border/50 text-center">
           <p class="text-muted-foreground text-sm">© {{ new Date().getFullYear() }} Licenças Digitais. Todos os direitos reservados.</p>
-          <p class="text-muted-foreground/60 text-xs mt-2">Comercialização exclusiva de licenças de software legalizadas.</p>
         </div>
       </div>
     </footer>
