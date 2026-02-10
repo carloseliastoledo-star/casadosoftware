@@ -264,16 +264,6 @@ const canonicalUrl = computed(() => {
   return baseUrl ? `${baseUrl}/produto/${s}` : ''
 })
 
-const absoluteImageUrl = computed(() => {
-  const raw = String(safeImage.value || '').trim()
-  if (!raw) return ''
-  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw
-  const origin = String(baseUrl || '').trim()
-  if (!origin) return raw
-  if (!raw.startsWith('/')) return `${origin}/${raw}`
-  return `${origin}${raw}`
-})
-
 const { data, pending, error } = await useFetch(
   () => `/api/products/${slug}`,
   { server: true }
@@ -440,6 +430,16 @@ const safeImage = computed(() => {
   }
 
   return image
+})
+
+const absoluteImageUrl = computed(() => {
+  const raw = String(safeImage.value || '').trim()
+  if (!raw) return ''
+  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw
+  const origin = String(baseUrl || '').trim()
+  if (!origin) return raw
+  if (!raw.startsWith('/')) return `${origin}/${raw}`
+  return `${origin}${raw}`
 })
 
 function onImageError(e: Event) {
