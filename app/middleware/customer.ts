@@ -1,6 +1,6 @@
-import { navigateTo, useNuxtApp } from '#app'
+import { navigateTo } from '#app'
 
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(async (to) => {
   if (!to.path.startsWith('/minha-conta')) return
 
   if (to.path === '/minha-conta/login') return
@@ -8,10 +8,11 @@ export default defineNuxtRouteMiddleware((to) => {
   if (to.path === '/minha-conta/reset') return
 
   if (import.meta.client) {
-    const { $fetch } = useNuxtApp()
-
-    return $fetch('/api/customer/auth/me')
-      .then(() => undefined)
-      .catch(() => navigateTo('/minha-conta/login'))
+    try {
+      await $fetch('/api/customer/auth/me')
+      return
+    } catch {
+      return navigateTo('/minha-conta/login')
+    }
   }
 })
