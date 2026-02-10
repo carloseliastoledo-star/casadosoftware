@@ -168,13 +168,18 @@
         <div>
           <h3 class="font-semibold text-gray-800 mb-2">{{ siteName }}</h3>
           <p>
-            {{ t.footerDescription }}
+            {{ footerDescriptionText }}
           </p>
         </div>
 
         <div>
-          <h3 class="font-semibold text-gray-800 mb-2">{{ t.footerLinksTitle }}</h3>
-          <ul class="space-y-2">
+          <h3 class="font-semibold text-gray-800 mb-2">{{ footerLinksTitleText }}</h3>
+          <ul v-if="isLicencasDigitais" class="space-y-2">
+            <li v-for="l in footerInstitutionalLinks" :key="l.to">
+              <NuxtLink :to="l.to" class="hover:text-blue-600">{{ l.label }}</NuxtLink>
+            </li>
+          </ul>
+          <ul v-else class="space-y-2">
             <li><NuxtLink to="/produtos" class="hover:text-blue-600">{{ t.footerProducts }}</NuxtLink></li>
             <li><NuxtLink to="/tutoriais" class="hover:text-blue-600">{{ t.footerTutorials }}</NuxtLink></li>
             <li><NuxtLink to="/blog" class="hover:text-blue-600">{{ t.footerBlog }}</NuxtLink></li>
@@ -412,6 +417,26 @@ const t = computed(() => {
     footerDisclaimer1: `${safeSiteName.value} (Eletrokeys LTDA) é uma empresa independente registrada no Microsoft Partner Network.`,
     footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
+})
+
+const footerDescriptionText = computed(() => {
+  if (isLicencasDigitais.value) return 'Informações institucionais e canais oficiais de atendimento.'
+  return t.value.footerDescription
+})
+
+const footerLinksTitleText = computed(() => {
+  if (isLicencasDigitais.value) return 'Institucional'
+  return t.value.footerLinksTitle
+})
+
+const footerInstitutionalLinks = computed(() => {
+  return [
+    { label: 'Sobre', to: '/quem-somos' },
+    { label: 'Contato', to: '/quem-somos' },
+    { label: 'Privacidade', to: '/privacidade' },
+    { label: 'Termos', to: '/termos' },
+    { label: 'Aviso legal', to: '/termos' }
+  ]
 })
 
 function submitSearch() {
