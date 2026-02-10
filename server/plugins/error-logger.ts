@@ -1,6 +1,24 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 
 export default defineNitroPlugin((nitroApp: any) => {
+  nitroApp.hooks.hook('afterResponse', (event: any) => {
+    try {
+      const statusCode = Number(event?.node?.res?.statusCode || 0)
+      if (!statusCode || statusCode < 500) return
+
+      const url = event?.node?.req?.url
+      const statusMessage = event?.node?.res?.statusMessage
+
+      console.error('[nitro][5xx]', {
+        url,
+        statusCode,
+        statusMessage
+      })
+    } catch {
+      // ignore
+    }
+  })
+
   nitroApp.hooks.hook('error', (error: any, { event }: { event?: any }) => {
     try {
       const url = event?.node?.req?.url
