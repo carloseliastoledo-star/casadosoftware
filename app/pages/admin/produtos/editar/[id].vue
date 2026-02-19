@@ -32,6 +32,9 @@ const form = reactive({
 const uploadLoading = ref(false)
 const uploadError = ref('')
 
+const saving = ref(false)
+const saveError = ref('')
+
 const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaDto[] }>('/api/admin/categorias', {
   server: false
 })
@@ -111,12 +114,25 @@ async function uploadImagem(event) {
 }
 
 async function salvar() {
-  await $fetch(`/api/admin/produtos/${id}`, {
-    method: 'PUT',
-    body: form
-  })
+  saveError.value = ''
+  saving.value = true
+  try {
+    await $fetch(`/api/admin/produtos/${id}`, {
+      method: 'PUT',
+      body: form
+    })
 
-  navigateTo('/admin/produtos')
+    navigateTo('/admin/produtos')
+  } catch (err: any) {
+    const status = err?.status || err?.response?.status || err?.data?.statusCode
+    if (status === 401) {
+      await navigateTo('/admin/login')
+      return
+    }
+    saveError.value = err?.data?.statusMessage || err?.message || 'Não foi possível salvar'
+  } finally {
+    saving.value = false
+  }
 }
 </script>
 
@@ -290,10 +306,13 @@ async function salvar() {
 
         <button
           @click="salvar"
-          class="w-full bg-blue-600 text-white py-2 rounded"
+          :disabled="saving"
+          class="w-full bg-blue-600 text-white py-2 rounded disabled:opacity-60"
         >
-          Salvar alterações
+          {{ saving ? 'Salvando...' : 'Salvar alterações' }}
         </button>
+
+        <div v-if="saveError" class="text-xs text-red-600">{{ saveError }}</div>
       </div>
     </div>
   </div>

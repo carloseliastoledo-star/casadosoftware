@@ -479,7 +479,8 @@ useSeoMeta(() => {
 })
 
 const safeDescriptionHtml = computed(() => {
-  if (isCasaDoSoftware.value && isOffice365FiveLicenses.value) {
+  const raw = String((safeProduct.value as any)?.descricao || '').trim()
+  if (isCasaDoSoftware.value && isOffice365FiveLicenses.value && !raw) {
     const content = `
 <h2>Licença Office 365 Original Microsoft (Entrega Digital)</h2>
 <p>Tenha acesso ao pacote Office 365 original com os principais aplicativos da Microsoft para produtividade no dia a dia. Com a licença Office 365, você utiliza ferramentas como Word, Excel, PowerPoint, Outlook e OneNote, sempre com atualizações durante o período da assinatura.</p>
@@ -558,8 +559,6 @@ const safeDescriptionHtml = computed(() => {
       USE_PROFILES: { html: true }
     })
   }
-
-  const raw = String((safeProduct.value as any)?.descricao || '').trim()
   if (!raw) return ''
 
   const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)

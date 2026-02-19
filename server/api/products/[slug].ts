@@ -1,6 +1,6 @@
 import prisma from '#root/server/db/prisma'
 import { getDefaultProductDescription } from '#root/server/utils/productDescriptionTemplate'
-import { createError, getQuery } from 'h3'
+import { createError, getQuery, setHeader } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
 import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
@@ -47,6 +47,10 @@ function normalizeImageUrl(input: unknown): string | null {
 }
 
 export default defineEventHandler(async (event) => {
+  setHeader(event, 'cache-control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0')
+  setHeader(event, 'pragma', 'no-cache')
+  setHeader(event, 'expires', '0')
+
   const rawSlug = event.context.params?.slug
 
   const { storeSlug } = getStoreContext()

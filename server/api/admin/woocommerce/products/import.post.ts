@@ -165,6 +165,15 @@ async function upsertProdutoByWoo(input: {
 }) {
   const baseSlug = input.slug
 
+  const existingByWoo = await prisma.produto.findUnique({
+    where: { wcProductId: input.wcProductId },
+    select: { id: true, descricao: true }
+  })
+
+  const existingDescricao = typeof existingByWoo?.descricao === 'string' ? existingByWoo?.descricao.trim() : ''
+  const shouldKeepExistingDescricao = Boolean(existingDescricao)
+  const descricaoForUpdate = shouldKeepExistingDescricao ? existingByWoo?.descricao : input.descricao
+
   const makeProdutoData = (slug: string) => ({
     wcProductId: input.wcProductId,
     nome: input.nome,
@@ -206,6 +215,7 @@ async function upsertProdutoByWoo(input: {
       },
       update: {
         ...makeProdutoData(baseSlug),
+        descricao: descricaoForUpdate,
         ...makeCategoriasRelation()
       },
       select: { id: true }
