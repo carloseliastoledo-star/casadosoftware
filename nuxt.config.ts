@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        { rel: 'icon', type: 'image/png', href: process.env.SITE_LOGO_PATH || '/logo.png' },
+        { rel: 'icon', href: process.env.SITE_LOGO_PATH || '/logo.png' },
         { rel: 'apple-touch-icon', href: process.env.SITE_LOGO_PATH || '/logo.png' },
         { rel: 'manifest', href: '/api/site.webmanifest' }
       ],
