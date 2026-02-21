@@ -62,7 +62,7 @@
             </a>
           </p>
           <p class="mt-3 text-xs text-gray-500">
-            Eletrokeys LTDA — CNPJ 44.694.365/0001-48
+            MERCADO SOFTWARES LTDA — CNPJ 60.292.316/0001-26
           </p>
         </div>
       </div>

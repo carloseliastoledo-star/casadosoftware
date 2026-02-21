@@ -1,5 +1,5 @@
 <template>
-  <div class="eletrokeys-theme min-h-screen bg-[#070b14] text-white bg-background overflow-x-hidden">
+  <div class="min-h-screen bg-[#070b14] text-white bg-background overflow-x-hidden">
     <header
       class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       :class="isScrolled ? 'bg-background/90 backdrop-blur-xl border-b border-border/50 shadow-lg' : 'bg-transparent'"
@@ -246,15 +246,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Razão Social</p>
-                <p class="text-foreground font-semibold">Eletrokeys LTDA</p>
+                <p class="text-foreground font-semibold">MERCADO SOFTWARES LTDA</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">CNPJ</p>
-                <p class="text-foreground font-semibold">44.694.356/0001-48</p>
+                <p class="text-foreground font-semibold">60.292.316/0001-26</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Localização</p>
-                <p class="text-foreground font-semibold">São Paulo - SP</p>
+                <p class="text-foreground font-semibold">Itupeva - SP</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Atuação</p>
@@ -397,8 +397,8 @@
               Soluções em conectividade e tecnologia. Oferecemos licenças de software, suporte técnico e serviços digitais.
             </p>
             <div class="space-y-1 text-sm text-muted-foreground">
-              <p><span class="text-foreground font-medium">Razão Social:</span> Eletrokeys LTDA</p>
-              <p><span class="text-foreground font-medium">CNPJ:</span> 44.694.356/0001-48</p>
+              <p><span class="text-foreground font-medium">Razão Social:</span> MERCADO SOFTWARES LTDA</p>
+              <p><span class="text-foreground font-medium">CNPJ:</span> 60.292.316/0001-26</p>
             </div>
           </div>
 

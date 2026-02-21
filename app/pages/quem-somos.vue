@@ -12,8 +12,11 @@
       <div class="rounded-xl border bg-white p-5">
         <h2 class="text-xl font-bold text-gray-900">{{ t.companyDataTitle }}</h2>
         <div class="mt-3 space-y-1 text-sm text-gray-700">
-          <p><span class="font-semibold">{{ t.companyLabel }}</span> Eletrokeys LTDA</p>
-          <p><span class="font-semibold">{{ t.companyTaxIdLabel }}</span> 44.694.365/0001-48</p>
+          <p><span class="font-semibold">{{ t.companyLabel }}</span> MERCADO SOFTWARES LTDA</p>
+          <p><span class="font-semibold">{{ t.companyTaxIdLabel }}</span> 60.292.316/0001-26</p>
+          <p><span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808</p>
+          <p><span class="font-semibold">Telefone/Whatsapp:</span> +55 11 91069-1485</p>
+          <p><span class="font-semibold">E-mail:</span> sac@mercadosoftwares.com.br</p>
         </div>
       </div>
 
@@ -51,8 +54,8 @@ const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 
 const safeSiteName = computed(() => {
-  const n = String(siteName.value || '').trim()
-  return n || 'Licenças Digitais'
+  const n = String(siteName || '').trim()
+  return n || 'Mercado Softwares'
 })
 
 const t = computed(() => {
@@ -91,9 +94,9 @@ const t = computed(() => {
   }
 
   return {
-    title: 'Texto Institucional – Eletrokeys / Licenças Digitais',
+    title: 'Quem somos',
     intro:
-      'A Eletrokeys LTDA é uma empresa brasileira especializada em licenças digitais originais de software e soluções em tecnologia. Atuamos com foco em transparência, legalidade e suporte ao cliente, oferecendo orientações claras sobre ativação e utilização de softwares licenciados.',
+      'A Mercado Softwares LTDA é uma empresa brasileira especializada em licenças digitais e soluções em tecnologia. Atuamos com foco em transparência, legalidade e suporte ao cliente, oferecendo orientações claras sobre ativação e utilização de softwares licenciados.',
     companyDataTitle: 'Sobre a Empresa',
     companyLabel: 'Empresa:',
     companyTaxIdLabel: 'CNPJ:',
@@ -111,62 +114,18 @@ const t = computed(() => {
 })
 
 const mailtoSupport = computed(() => {
-  const email = String(supportEmail.value || '').trim()
+  const email = String(supportEmail || '').trim()
   return email ? `mailto:${email}` : 'mailto:'
 })
 
-useSeoMeta(() => {
-  const title = `${t.value.title} | ${safeSiteName.value}`
-  const description = ''
-
-  const host = (() => {
-    if (process.server) {
-      try {
-        const url = useRequestURL()
-        if (url?.host) return String(url.host).toLowerCase()
-      } catch {
-        // ignore
-      }
-      const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>
-      const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
-      const first = String(raw).split(',')[0]?.trim()
-      return String(first || '').toLowerCase()
-    }
-    return String(window.location.host || '').toLowerCase()
-  })()
-
-  const normalizedHost = String(host || '')
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//, '')
-    .replace(/\/.*/, '')
-    .replace(/:\d+$/, '')
-    .replace(/^www\./, '')
-    .replace(/\.$/, '')
-
-  if (normalizedHost.includes('casadosoftware.com.br')) {
-    const casaTitle = 'Casa do Software – Licenças Originais com Suporte Especializado'
-    const casaDesc =
-      'Somos especialistas em licenças de software originais com entrega imediata e suporte dedicado. Compra segura e atendimento rápido.'
-
-    return {
-      title: casaTitle,
-      description: casaDesc,
-      ogTitle: casaTitle,
-      ogDescription: casaDesc,
-      twitterTitle: casaTitle,
-      twitterDescription: casaDesc
-    }
-  }
-
-  return {
-    title,
-    description,
-    ogTitle: title,
-    ogDescription: description,
-    twitterTitle: title,
-    twitterDescription: description
-  }
+const seoTitle = computed(() => `${t.value.title} | ${safeSiteName.value}`)
+useSeoMeta({
+  title: seoTitle,
+  description: '',
+  ogTitle: seoTitle,
+  ogDescription: '',
+  twitterTitle: seoTitle,
+  twitterDescription: ''
 })
 
 useHead(() => ({

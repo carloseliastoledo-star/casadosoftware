@@ -106,7 +106,7 @@
             >
               Ver Contato
             </NuxtLink>
-            <div class="mt-4 text-xs text-white/70">Eletrokeys LTDA — CNPJ 44.694.365/0001-48</div>
+            <div class="mt-4 text-xs text-white/70">MERCADO SOFTWARES LTDA — CNPJ 60.292.316/0001-26</div>
           </div>
         </div>
       </div>
@@ -162,7 +162,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'blank' })
+definePageMeta({ layout: 'blank' as any })
 
 useHead({
   script: [
@@ -171,14 +171,14 @@ useHead({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "Eletrokeys LTDA",
-        "url": "https://licencasdigitais.com.br",
-        "logo": "https://licencasdigitais.com.br/logo-licencasdigitais.png",
-        "description": "Empresa especializada em licenças digitais originais, ativação legal e suporte ao cliente.",
+        "name": "MERCADO SOFTWARES LTDA",
+        "url": "https://www.mercadosoftwares.com.br",
+        "logo": "https://www.mercadosoftwares.com.br/logo-mercadosoftwares.svg",
+        "description": "Empresa especializada em licenças digitais e suporte ao cliente.",
         "contactPoint": [
           {
             "@type": "ContactPoint",
-            "telephone": "+55-11-00000-0000",
+            "telephone": "+55 11 91069-1485",
             "contactType": "customer support",
             "areaServed": "BR",
             "availableLanguage": "Portuguese"
@@ -186,6 +186,10 @@ useHead({
         ],
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "Rua Almerinda Barão Passoni Vila Aparecida",
+          "addressLocality": "Itupeva",
+          "addressRegion": "SP",
+          "postalCode": "13298808",
           "addressCountry": "BR"
         },
         "sameAs": [

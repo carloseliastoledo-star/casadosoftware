@@ -206,18 +206,20 @@
               {{ t.whatsappPrefix }} {{ whatsappLabel }}
             </a>
           </p>
-          <p v-if="!isLicencasDigitais" class="mt-2 text-xs text-gray-500">
-            Eletrokeys LTDA — CNPJ 44.694.365/0001-48
-          </p>
+          <div class="mt-4 text-xs text-gray-500 space-y-1">
+            <p><span class="font-semibold">Razão Social:</span> MERCADO SOFTWARES LTDA</p>
+            <p><span class="font-semibold">CNPJ:</span> 60.292.316/0001-26</p>
+            <p>
+              <span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808
+            </p>
+            <p><span class="font-semibold">Telefone/Whatsapp:</span> +55 11 91069-1485</p>
+            <p><span class="font-semibold">E-mail:</span> sac@mercadosoftwares.com.br</p>
+          </div>
         </div>
       </div>
 
       <div class="text-center text-xs text-gray-500 py-4 border-t">
         © {{ new Date().getFullYear() }} {{ siteName }} — {{ t.rightsReserved }}
-        <div v-if="!isLicencasDigitais" class="mt-2 max-w-4xl mx-auto">
-          {{ t.footerDisclaimer1 }}
-          {{ t.footerDisclaimer2 }}
-        </div>
       </div>
     </footer>
 
@@ -355,7 +357,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Fast and specialized support',
       footerIntlSupport: 'International support in Portuguese, Spanish and English',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: `${safeSiteName.value} (Eletrokeys LTDA) is an independent company registered in the Microsoft Partner Network.`,
+      footerDisclaimer1: `${safeSiteName.value} (MERCADO SOFTWARES LTDA) is an independent company.`,
       footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
@@ -385,7 +387,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Atención rápida y especializada',
       footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: `${safeSiteName.value} (Eletrokeys LTDA) es una empresa independiente registrada en Microsoft Partner Network.`,
+      footerDisclaimer1: `${safeSiteName.value} (MERCADO SOFTWARES LTDA) es una empresa independiente.`,
       footerDisclaimer2: 'No estamos afiliados a Microsoft.'
     }
   }
@@ -414,7 +416,7 @@ const t = computed(() => {
     footerSupportSubtitle: 'Atendimento rápido e especializado',
     footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',
     whatsappPrefix: 'WhatsApp:',
-    footerDisclaimer1: `${safeSiteName.value} (Eletrokeys LTDA) é uma empresa independente registrada no Microsoft Partner Network.`,
+    footerDisclaimer1: `${safeSiteName.value} (MERCADO SOFTWARES LTDA) é uma empresa independente.`,
     footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
 })

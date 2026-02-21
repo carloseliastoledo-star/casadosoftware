@@ -69,5 +69,5 @@
 </template>
 
 <script setup>
-definePageMeta({ layout: 'blank' })
+definePageMeta({ layout: 'blank' as any })
 </script>

@@ -44,7 +44,7 @@
           <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
         </p>
         <p class="text-sm">
-          Eletrokeys LTDA — CNPJ 44.694.365/0001-48.
+          MERCADO SOFTWARES LTDA — CNPJ 60.292.316/0001-26.
         </p>
       </div>
 
@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'blank' })
+definePageMeta({ layout: 'blank' as any })
 
 const { supportEmail, siteName } = useSiteBranding()
 const intl = useIntlContext()

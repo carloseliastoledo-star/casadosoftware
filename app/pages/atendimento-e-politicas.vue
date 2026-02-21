@@ -51,6 +51,18 @@
                   <div class="text-xs font-semibold text-gray-600 uppercase">WhatsApp</div>
                   <div class="mt-1 text-sm text-gray-900 break-all">{{ whatsappLabel }}</div>
                 </div>
+                <div class="rounded-xl border bg-gray-50 p-4">
+                  <div class="text-xs font-semibold text-gray-600 uppercase">Dados da empresa</div>
+                  <div class="mt-1 text-sm text-gray-900 space-y-1">
+                    <div><span class="font-semibold">Razão Social:</span> MERCADO SOFTWARES LTDA</div>
+                    <div><span class="font-semibold">CNPJ:</span> 60.292.316/0001-26</div>
+                    <div>
+                      <span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808
+                    </div>
+                    <div><span class="font-semibold">Telefone/Whatsapp:</span> +55 11 91069-1485</div>
+                    <div><span class="font-semibold">E-mail:</span> sac@mercadosoftwares.com.br</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -126,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'blank' })
+definePageMeta({ layout: 'blank' as any })
 
 const { supportEmail, whatsappNumber, siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()

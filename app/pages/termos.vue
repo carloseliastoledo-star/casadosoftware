@@ -40,7 +40,7 @@
       <div class="rounded-xl border bg-white p-5 space-y-3">
         <h2 class="text-xl font-bold text-gray-900">{{ t.section5Title }}</h2>
         <p class="text-sm">
-          Eletrokeys LTDA — CNPJ 44.694.365/0001-48.
+          MERCADO SOFTWARES LTDA — CNPJ 60.292.316/0001-26.
         </p>
       </div>
 
@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'blank' })
+definePageMeta({ layout: 'blank' as any })
 
 const { siteName } = useSiteBranding()
 const intl = useIntlContext()

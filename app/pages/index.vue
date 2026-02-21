@@ -76,7 +76,7 @@ const applyCasaSeo = computed(() => {
 })
 
 watchEffect(() => {
-  setPageLayout((isLicencasDigitais.value ? 'eletrokeys' : 'default') as any)
+  setPageLayout('default' as any)
 })
 
 if (applyCasaSeo.value) {
