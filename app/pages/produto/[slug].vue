@@ -571,7 +571,7 @@ const safeDescriptionHtml = computed(() => {
     // Consider HTML "simple" when it only uses wrappers / line-break tags.
     // In this case we can safely convert it back to text lines and apply ##/### headings.
     const stripped = html
-      .replace(/<\s*br\s*\/?>/gi, '')
+      .replace(/<\s*br\b[^>]*>/gi, '')
       .replace(/<\/?\s*(p|div|span)\b[^>]*>/gi, '')
       .trim()
 
@@ -580,7 +580,7 @@ const safeDescriptionHtml = computed(() => {
 
   const htmlToTextLines = (html: string) => {
     return html
-      .replace(/<\s*br\s*\/?>/gi, '\n')
+      .replace(/<\s*br\b[^>]*>/gi, '\n')
       .replace(/<\s*\/\s*(p|div)\s*>/gi, '\n')
       .replace(/<\s*(p|div)\b[^>]*>/gi, '')
       .replace(/<\/?\s*span\b[^>]*>/gi, '')
@@ -611,8 +611,8 @@ const safeDescriptionHtml = computed(() => {
     )
 
     // Handle headings after line breaks (keeps the rest of the HTML intact).
-    out = out.replace(/(<\s*br\s*\/?>\s*)###\s*([^<\n\r]+)/gi, '$1<h3>$2</h3>')
-    out = out.replace(/(<\s*br\s*\/?>\s*)##\s*([^<\n\r]+)/gi, '$1<h2>$2</h2>')
+    out = out.replace(/(<\s*br\b[^>]*>\s*)###\s*([^<\n\r]+)/gi, '$1<h3>$2</h3>')
+    out = out.replace(/(<\s*br\b[^>]*>\s*)##\s*([^<\n\r]+)/gi, '$1<h2>$2</h2>')
 
     // Handle headings at the beginning of the HTML.
     out = out.replace(/^\s*###\s*([^<\n\r]+)/i, '<h3>$1</h3>')
@@ -645,7 +645,7 @@ const safeDescriptionHtml = computed(() => {
       return renderPlainText(htmlToTextLines(raw))
     }
 
-    if (isCasaDoSoftware.value && /(^|[\n\r]|<\s*br\s*\/?>)\s*##/i.test(raw)) {
+    if (isCasaDoSoftware.value && /(^|[\n\r]|<\s*br\b[^>]*>)\s*##/i.test(raw)) {
       return convertHeadingsInsideHtml(raw)
     }
 
