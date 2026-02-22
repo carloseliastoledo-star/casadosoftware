@@ -575,10 +575,10 @@ const safeDescriptionHtml = computed(() => {
     return lines
       .map((line) => {
         if (isCasaDoSoftware.value) {
-          const h3 = line.match(/^\s*###\s+(.+)\s*$/)
+          const h3 = line.match(/^\s*###\s*(.+)\s*$/)
           if (h3) return `<h3>${escapeHtml(h3[1] || '')}</h3>`
 
-          const h2 = line.match(/^\s*##\s+(.+)\s*$/)
+          const h2 = line.match(/^\s*##\s*(.+)\s*$/)
           if (h2) return `<h2>${escapeHtml(h2[1] || '')}</h2>`
         }
 
