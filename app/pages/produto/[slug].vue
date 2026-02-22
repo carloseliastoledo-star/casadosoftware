@@ -663,7 +663,7 @@ const safeDescriptionHtml = computed(() => {
       return renderPlainText(htmlToTextLines(raw))
     }
 
-    if (isCasaDoSoftware.value && /(^|[\n\r]|<\s*br\b[^>]*>)\s*##/i.test(raw)) {
+    if (isCasaDoSoftware.value && /##|###/.test(raw)) {
       return convertHeadingsInsideHtml(raw)
     }
 
