@@ -611,8 +611,15 @@ const safeDescriptionHtml = computed(() => {
     )
 
     // Handle headings after line breaks (keeps the rest of the HTML intact).
-    out = out.replace(/(<\s*br\b[^>]*>\s*)###\s*([^<\n\r]+)/gi, '$1<h3>$2</h3>')
-    out = out.replace(/(<\s*br\b[^>]*>\s*)##\s*([^<\n\r]+)/gi, '$1<h2>$2</h2>')
+    // Capture until the next <br ...> so the heading content may contain tags (e.g. <strong>).
+    out = out.replace(
+      /(<\s*br\b[^>]*>\s*)###\s*([\s\S]*?)(?=<\s*br\b[^>]*>|$)/gi,
+      '$1<h3>$2</h3>'
+    )
+    out = out.replace(
+      /(<\s*br\b[^>]*>\s*)##\s*([\s\S]*?)(?=<\s*br\b[^>]*>|$)/gi,
+      '$1<h2>$2</h2>'
+    )
 
     // Handle headings at the beginning of the HTML.
     out = out.replace(/^\s*###\s*([^<\n\r]+)/i, '<h3>$1</h3>')
