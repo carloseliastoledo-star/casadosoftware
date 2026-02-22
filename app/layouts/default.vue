@@ -256,7 +256,7 @@ const isLicencasDigitais = computed(() => {
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()
   if (!raw) return ''
-  if (raw.endsWith('.png')) return raw.replace(/\.png$/i, '.webp')
+  if (raw.endsWith('.webp')) return raw
   return ''
 })
 
