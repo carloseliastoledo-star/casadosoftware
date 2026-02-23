@@ -72,19 +72,19 @@
 
               <div class="hidden lg:block">
                 <div class="grid grid-cols-2 gap-3">
-                  <NuxtLink to="/categoria/windows" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                  <NuxtLink to="/categoria/windows" class="rounded-2xl bg-black/25 backdrop-blur-sm border border-white/20 p-4 hover:bg-black/35 transition">
                     <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
                     <div class="mt-2 text-lg font-extrabold text-white">Windows</div>
                   </NuxtLink>
-                  <NuxtLink to="/categoria/office" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                  <NuxtLink to="/categoria/office" class="rounded-2xl bg-black/25 backdrop-blur-sm border border-white/20 p-4 hover:bg-black/35 transition">
                     <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
                     <div class="mt-2 text-lg font-extrabold text-white">Office</div>
                   </NuxtLink>
-                  <NuxtLink to="/categoria/windows-server" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                  <NuxtLink to="/categoria/windows-server" class="rounded-2xl bg-black/25 backdrop-blur-sm border border-white/20 p-4 hover:bg-black/35 transition">
                     <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
                     <div class="mt-2 text-lg font-extrabold text-white">Windows Server</div>
                   </NuxtLink>
-                  <NuxtLink to="/categoria/autodesk" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                  <NuxtLink to="/categoria/autodesk" class="rounded-2xl bg-black/25 backdrop-blur-sm border border-white/20 p-4 hover:bg-black/35 transition">
                     <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
                     <div class="mt-2 text-lg font-extrabold text-white">Autodesk</div>
                   </NuxtLink>
