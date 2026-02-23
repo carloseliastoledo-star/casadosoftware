@@ -1,5 +1,53 @@
 <template>
-  <section class="bg-gray-100 min-h-screen py-12">
+  <section v-if="isLicencasDigitais" class="bg-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-6 pt-8 pb-12">
+      <div class="text-xs text-gray-500">
+        <NuxtLink to="/" class="hover:text-blue-600">Home</NuxtLink>
+        <span class="mx-2">/</span>
+        <span class="text-gray-700">{{ categoria?.nome || 'Category' }}</span>
+      </div>
+
+      <div class="mt-3 flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">{{ categoria?.nome || 'Category' }}</h1>
+          <div class="mt-1 text-sm text-gray-600">
+            {{ produtosCountText }}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="text-xs font-semibold text-gray-600">Sort</div>
+          <select
+            v-model="sort"
+            class="h-10 rounded-md border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
+            aria-label="Sort"
+          >
+            <option value="featured">Featured</option>
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div v-if="pending" class="text-center py-16 text-gray-500">
+        Loading...
+      </div>
+      <div v-else-if="error" class="text-center py-16 text-red-600">
+        Category not found.
+      </div>
+
+      <div v-else class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ProductCard
+          v-for="p in sortedProdutos"
+          :key="p.id + (p.imagem || p.image || '')"
+          :product="p"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section v-else class="bg-gray-100 min-h-screen py-12">
     <div class="max-w-7xl mx-auto px-6">
       <div class="mb-8">
         <h1 class="text-3xl font-extrabold text-gray-900">{{ categoria?.nome || 'Categoria' }}</h1>
@@ -68,12 +116,45 @@ const isCasaDoSoftware = computed(() => {
   return storeSlug.value === 'casadosoftware'
 })
 
+const isLicencasDigitais = computed(() => {
+  if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
+  return storeSlug.value === 'licencasdigitais'
+})
+
 const { data, pending, error } = await useFetch(() => `/api/categorias/${slug}`, {
   server: true
 })
 
 const categoria = computed(() => (data.value as any)?.categoria || null)
 const produtos = computed(() => (data.value as any)?.produtos || [])
+
+const sort = ref<'featured' | 'newest' | 'price_asc' | 'price_desc'>('featured')
+
+const produtosCountText = computed(() => {
+  const n = Array.isArray(produtos.value) ? produtos.value.length : 0
+  return `${n} item${n === 1 ? '' : 's'}`
+})
+
+const sortedProdutos = computed(() => {
+  const list = Array.isArray(produtos.value) ? [...produtos.value] : []
+  if (sort.value === 'newest') {
+    return list.sort((a: any, b: any) => {
+      const da = new Date(a?.createdAt || a?.criadoEm || 0).getTime()
+      const db = new Date(b?.createdAt || b?.criadoEm || 0).getTime()
+      return db - da
+    })
+  }
+
+  if (sort.value === 'price_asc') {
+    return list.sort((a: any, b: any) => Number(a?.price ?? a?.preco ?? 0) - Number(b?.price ?? b?.preco ?? 0))
+  }
+
+  if (sort.value === 'price_desc') {
+    return list.sort((a: any, b: any) => Number(b?.price ?? b?.preco ?? 0) - Number(a?.price ?? a?.preco ?? 0))
+  }
+
+  return list
+})
 
 const canonicalUrl = computed(() => {
   const s = categoria.value?.slug || slug
