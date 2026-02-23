@@ -5,8 +5,10 @@ type ClientIntl = {
   currencyLower: 'brl' | 'usd' | 'eur'
   isIntl: boolean
   host: string
+  countryCode: string
   setLanguage: (next: 'pt' | 'en' | 'es') => void
   setCurrency: (next: 'brl' | 'usd' | 'eur') => void
+  setCountry: (next: string) => void
 }
 
 function normalizeLanguage(input: unknown): 'pt' | 'en' | 'es' | null {
@@ -57,6 +59,9 @@ export function useIntlContext() {
 
   const langCookie = useCookie<string | null>('ld_lang', { sameSite: 'lax', path: '/' })
   const currencyCookie = useCookie<string | null>('ld_currency', { sameSite: 'lax', path: '/' })
+  const countryCookie = useCookie<string | null>('ld_country', { sameSite: 'lax', path: '/' })
+
+  const countryCode = computed(() => String(countryCookie.value || '').trim().toUpperCase())
 
   const language = computed<ClientIntl['language']>(() => {
     const c = normalizeLanguage(langCookie.value)
@@ -101,11 +106,16 @@ export function useIntlContext() {
     currency,
     currencyLower,
     isIntl,
+    countryCode,
     setLanguage: (next) => {
       langCookie.value = next
     },
     setCurrency: (next) => {
       currencyCookie.value = next
+    },
+    setCountry: (next) => {
+      const v = String(next || '').trim().toUpperCase()
+      countryCookie.value = v || null
     }
   }
 }

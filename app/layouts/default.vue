@@ -124,6 +124,22 @@
             <div class="hidden md:flex items-center gap-2">
               <select
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
+                :value="intl.countryCode || 'AUTO'"
+                aria-label="Country"
+                @change="onCountryChange"
+              >
+                <option value="AUTO">AUTO</option>
+                <option value="BR">BR</option>
+                <option value="US">US</option>
+                <option value="GB">UK</option>
+                <option value="ES">ES</option>
+                <option value="PT">PT</option>
+                <option value="DE">DE</option>
+                <option value="FR">FR</option>
+              </select>
+
+              <select
+                class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
                 :value="intl.language"
                 aria-label="Language"
                 @change="onLangChange"
@@ -546,6 +562,62 @@ function onCurrencyChange(e: Event) {
     intl.setCurrency(next)
     if (!process.server) window.location.reload()
   }
+}
+
+function onCountryChange(e: Event) {
+  const next = String((e.target as HTMLSelectElement)?.value || '').trim().toUpperCase()
+  if (next === 'AUTO') {
+    intl.setCountry('')
+    if (!process.server) window.location.reload()
+    return
+  }
+
+  intl.setCountry(next)
+
+  const eur = new Set([
+    'AT',
+    'BE',
+    'BG',
+    'HR',
+    'CY',
+    'CZ',
+    'DK',
+    'EE',
+    'FI',
+    'FR',
+    'DE',
+    'GR',
+    'HU',
+    'IE',
+    'IT',
+    'LV',
+    'LT',
+    'LU',
+    'MT',
+    'NL',
+    'PL',
+    'PT',
+    'RO',
+    'SK',
+    'SI',
+    'ES',
+    'SE',
+    'NO',
+    'IS',
+    'LI',
+    'CH',
+    'GB'
+  ])
+
+  if (next === 'BR') intl.setCurrency('brl')
+  else if (eur.has(next)) intl.setCurrency('eur')
+  else intl.setCurrency('usd')
+
+  if (next === 'ES') intl.setLanguage('es')
+  else if (next === 'US' || next === 'GB') intl.setLanguage('en')
+  else if (next === 'BR' || next === 'PT') intl.setLanguage('pt')
+
+  if (!process.server) window.location.reload()
 }
 
 function menuIcon(label: string) {
