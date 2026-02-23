@@ -246,11 +246,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Razão Social</p>
-                <p class="text-foreground font-semibold">MERCADO SOFTWARES LTDA</p>
+                <p class="text-foreground font-semibold">ELETROKEYS LTDA</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">CNPJ</p>
-                <p class="text-foreground font-semibold">60.292.316/0001-26</p>
+                <p class="text-foreground font-semibold">44.694.356/0001-48</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Localização</p>
@@ -397,8 +397,8 @@
               Soluções em conectividade e tecnologia. Oferecemos licenças de software, suporte técnico e serviços digitais.
             </p>
             <div class="space-y-1 text-sm text-muted-foreground">
-              <p><span class="text-foreground font-medium">Razão Social:</span> MERCADO SOFTWARES LTDA</p>
-              <p><span class="text-foreground font-medium">CNPJ:</span> 60.292.316/0001-26</p>
+              <p><span class="text-foreground font-medium">Razão Social:</span> ELETROKEYS LTDA</p>
+              <p><span class="text-foreground font-medium">CNPJ:</span> 44.694.356/0001-48</p>
             </div>
           </div>
 

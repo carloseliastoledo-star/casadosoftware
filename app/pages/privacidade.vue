@@ -44,7 +44,7 @@
           <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
         </p>
         <p class="text-sm">
-          MERCADO SOFTWARES LTDA — CNPJ 60.292.316/0001-26.
+          ELETROKEYS LTDA — CNPJ 44.694.356/0001-48.
         </p>
       </div>
 

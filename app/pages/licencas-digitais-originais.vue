@@ -101,12 +101,12 @@
               Fale com nosso suporte para tirar dúvidas sobre ativação e instalação.
             </p>
             <NuxtLink
-              to="/quem-somos"
+              to="/atendimento-e-politicas"
               class="mt-5 inline-flex items-center justify-center w-full bg-white text-gray-900 font-extrabold px-5 py-3 rounded-xl hover:bg-gray-100 transition"
             >
               Ver Contato
             </NuxtLink>
-            <div class="mt-4 text-xs text-white/70">MERCADO SOFTWARES LTDA — CNPJ 60.292.316/0001-26</div>
+            <div class="mt-4 text-xs text-white/70">ELETROKEYS LTDA — CNPJ 44.694.356/0001-48</div>
           </div>
         </div>
       </div>
@@ -171,7 +171,7 @@ useHead({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "MERCADO SOFTWARES LTDA",
+        "name": "ELETROKEYS LTDA",
         "url": "https://www.mercadosoftwares.com.br",
         "logo": "https://www.mercadosoftwares.com.br/logo-mercadosoftwares.png",
         "description": "Empresa especializada em licenças digitais e suporte ao cliente.",

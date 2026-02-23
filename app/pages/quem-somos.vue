@@ -12,8 +12,8 @@
       <div class="rounded-xl border bg-white p-5">
         <h2 class="text-xl font-bold text-gray-900">{{ t.companyDataTitle }}</h2>
         <div class="mt-3 space-y-1 text-sm text-gray-700">
-          <p><span class="font-semibold">{{ t.companyLabel }}</span> MERCADO SOFTWARES LTDA</p>
-          <p><span class="font-semibold">{{ t.companyTaxIdLabel }}</span> 60.292.316/0001-26</p>
+          <p><span class="font-semibold">{{ t.companyLabel }}</span> ELETROKEYS LTDA</p>
+          <p><span class="font-semibold">{{ t.companyTaxIdLabel }}</span> 44.694.356/0001-48</p>
           <p><span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808</p>
           <p><span class="font-semibold">Telefone/Whatsapp:</span> +55 11 91069-1485</p>
           <p><span class="font-semibold">E-mail:</span> sac@mercadosoftwares.com.br</p>
@@ -96,7 +96,7 @@ const t = computed(() => {
   return {
     title: 'Quem somos',
     intro:
-      'A Mercado Softwares LTDA é uma empresa brasileira especializada em licenças digitais e soluções em tecnologia. Atuamos com foco em transparência, legalidade e suporte ao cliente, oferecendo orientações claras sobre ativação e utilização de softwares licenciados.',
+      'A Eletrokeys LTDA é uma empresa brasileira especializada em licenças digitais e soluções em tecnologia. Atuamos com foco em transparência, legalidade e suporte ao cliente, oferecendo orientações claras sobre ativação e utilização de softwares licenciados.',
     companyDataTitle: 'Sobre a Empresa',
     companyLabel: 'Empresa:',
     companyTaxIdLabel: 'CNPJ:',

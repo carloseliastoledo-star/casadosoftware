@@ -54,8 +54,8 @@
                 <div class="rounded-xl border bg-gray-50 p-4">
                   <div class="text-xs font-semibold text-gray-600 uppercase">Dados da empresa</div>
                   <div class="mt-1 text-sm text-gray-900 space-y-1">
-                    <div><span class="font-semibold">Razão Social:</span> MERCADO SOFTWARES LTDA</div>
-                    <div><span class="font-semibold">CNPJ:</span> 60.292.316/0001-26</div>
+                    <div><span class="font-semibold">Razão Social:</span> ELETROKEYS LTDA</div>
+                    <div><span class="font-semibold">CNPJ:</span> 44.694.356/0001-48</div>
                     <div>
                       <span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808
                     </div>
