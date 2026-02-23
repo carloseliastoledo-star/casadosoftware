@@ -158,6 +158,64 @@
               </div>
             </div>
           </div>
+
+          <div class="mt-16">
+            <div class="text-center">
+              <h2 class="text-4xl md:text-5xl font-light text-slate-700">Releases</h2>
+            </div>
+
+            <div class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              <ProductCard
+                v-for="product in releases"
+                :key="String(product.id) + '-release'"
+                :product="product"
+              />
+            </div>
+          </div>
+
+          <div class="mt-16">
+            <div class="max-w-5xl mx-auto">
+              <div class="rounded-2xl overflow-hidden border bg-black">
+                <div class="relative w-full" style="padding-top: 56.25%">
+                  <iframe
+                    class="absolute inset-0 w-full h-full"
+                    src="https://www.youtube.com/embed/RUhFQxk4mV0"
+                    title="Introducing Windows 11"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-16 bg-white border rounded-2xl">
+            <div class="max-w-7xl mx-auto px-6 py-12">
+              <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 text-center">
+                <div>
+                  <div class="mx-auto w-14 h-14 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center text-2xl">✉</div>
+                  <div class="mt-4 font-extrabold text-sm tracking-widest text-gray-900">E-MAILING</div>
+                  <div class="mt-2 text-sm text-gray-500">Immediate shipping, delivery time up to 90 minutes.</div>
+                </div>
+                <div>
+                  <div class="mx-auto w-14 h-14 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center text-2xl">🛒</div>
+                  <div class="mt-4 font-extrabold text-sm tracking-widest text-gray-900">MONITORED ORDER</div>
+                  <div class="mt-2 text-sm text-gray-500">Receive your order in the comfort of your own home with delivery digital e-mail.</div>
+                </div>
+                <div>
+                  <div class="mx-auto w-14 h-14 rounded-full bg-cyan-100 text-cyan-700 flex items-center justify-center text-2xl">🎧</div>
+                  <div class="mt-4 font-extrabold text-sm tracking-widest text-gray-900">NEED ASSISTANCE?</div>
+                  <div class="mt-2 text-sm text-gray-500">High-quality support team available 24/7.</div>
+                </div>
+                <div>
+                  <div class="mx-auto w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">🔒</div>
+                  <div class="mt-4 font-extrabold text-sm tracking-widest text-gray-900">SECURE PURCHASE</div>
+                  <div class="mt-2 text-sm text-gray-500">100% secure technology, site protected with SSL Certificate.</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div v-else class="rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-800 overflow-hidden border border-black/10 shadow-sm">
@@ -587,6 +645,10 @@ const { data, pending, error } = await useFetch<any[]>('/api/products/best-selle
 })
 
 const products = computed(() => (data.value as any[]) || [])
+
+const releases = computed(() => {
+  return products.value.slice(0, 4)
+})
 
 const bestSellersRow = ref<HTMLElement | null>(null)
 

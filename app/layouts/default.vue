@@ -248,66 +248,61 @@
     </main>
 
     <!-- FOOTER -->
-    <footer v-if="isLicencasDigitais" class="bg-slate-950 text-slate-200 mt-20">
-      <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-4 gap-10 text-sm">
+    <footer v-if="isLicencasDigitais" class="bg-[#f2f4f3] text-gray-700 mt-20">
+      <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-5 gap-12 text-sm">
         <div class="md:col-span-1">
           <img src="/licencasdigitais-gvg/logo-footer.svg" :alt="siteName" class="h-9 w-auto" loading="lazy" decoding="async" />
-          <p class="mt-4 text-slate-300">
-            {{ footerDescriptionText }}
-          </p>
-          <div class="mt-5 text-xs text-slate-400 space-y-1">
-            <p><span class="font-semibold text-slate-200">Razão Social:</span> {{ companyLegalName }}</p>
-            <p><span class="font-semibold text-slate-200">CNPJ:</span> {{ companyCnpj }}</p>
-            <p><span class="font-semibold text-slate-200">Endereço:</span> {{ companyAddress }}</p>
+          <div class="mt-6 flex items-center gap-4 text-gray-500">
+            <a href="#" aria-label="Facebook" class="hover:text-gray-700">f</a>
+            <a href="#" aria-label="Instagram" class="hover:text-gray-700">◎</a>
+          </div>
+          <div class="mt-6 text-xs text-gray-400">© {{ new Date().getFullYear() }} H12 Themes</div>
+        </div>
+
+        <div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">CALL CENTER AND POLICY</div>
+          <div class="mt-4 space-y-2 text-gray-600">
+            <div>
+              <span class="font-semibold text-gray-700">Email:</span>
+              <span class="ml-1">service@gvgmall.com</span>
+            </div>
+            <NuxtLink to="/reembolso" class="block hover:underline">Policys of Refunds and Exchange</NuxtLink>
+            <NuxtLink to="/privacidade" class="block hover:underline">Privacy Policy</NuxtLink>
+            <NuxtLink to="/termos" class="block hover:underline">Terms of Service</NuxtLink>
+            <NuxtLink to="/privacidade" class="block hover:underline">Privacy and Safety</NuxtLink>
+            <NuxtLink to="/quem-somos" class="block hover:underline">Legal Notice</NuxtLink>
           </div>
         </div>
 
         <div>
-          <div class="text-xs font-extrabold tracking-widest text-slate-400">INSTITUCIONAL</div>
-          <ul class="mt-4 space-y-2">
-            <li v-for="l in footerInstitutionalLinks" :key="l.to">
-              <NuxtLink :to="l.to" class="hover:text-white">{{ l.label }}</NuxtLink>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <div class="text-xs font-extrabold tracking-widest text-slate-400">CATEGORIAS</div>
-          <ul class="mt-4 space-y-2">
-            <li><NuxtLink to="/categoria/windows" class="hover:text-white">Windows</NuxtLink></li>
-            <li><NuxtLink to="/categoria/windows-server" class="hover:text-white">Windows Server</NuxtLink></li>
-            <li><NuxtLink to="/categoria/office" class="hover:text-white">Office</NuxtLink></li>
-            <li><NuxtLink to="/categoria/corel" class="hover:text-white">Corel</NuxtLink></li>
-            <li><NuxtLink to="/categoria/autodesk" class="hover:text-white">Autodesk</NuxtLink></li>
-          </ul>
-        </div>
-
-        <div>
-          <div class="text-xs font-extrabold tracking-widest text-slate-400">SUPORTE</div>
-          <div class="mt-4 space-y-2 text-slate-300">
-            <div class="font-semibold text-slate-200">{{ t.footerSupportTitle }}</div>
-            <div>{{ t.footerSupportSubtitle }}</div>
-            <div>{{ t.footerIntlSupport }}</div>
-            <div v-if="supportEmail" class="font-semibold text-slate-200">{{ supportEmail }}</div>
-            <div v-if="whatsappHref" class="font-semibold text-slate-200">
-              <a class="hover:underline" :href="whatsappHref" target="_blank" rel="noopener noreferrer">
-                {{ t.whatsappPrefix }} {{ whatsappLabel }}
-              </a>
-            </div>
-            <div class="pt-2 text-xs text-slate-400 space-y-1">
-              <p><span class="font-semibold text-slate-200">Telefone/Whatsapp:</span> {{ companyPhone }}</p>
-              <p><span class="font-semibold text-slate-200">E-mail:</span> {{ companyEmail }}</p>
-            </div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">WORKING HOURS</div>
+          <div class="mt-4 space-y-2 text-gray-600">
+            <div>Monday-Friday: 08AM - 10PM</div>
+            <div>Saturday: 10AM - 05PM</div>
+            <div>Sunday: 10AM - 05PM</div>
           </div>
         </div>
-      </div>
 
-      <div class="border-t border-white/10">
-        <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-          <div>© {{ new Date().getFullYear() }} {{ siteName }} — {{ t.rightsReserved }}</div>
-          <div class="flex items-center gap-4">
-            <NuxtLink to="/privacidade" class="hover:text-white">{{ t.footerPrivacy }}</NuxtLink>
-            <NuxtLink to="/termos" class="hover:text-white">{{ t.footerTerms }}</NuxtLink>
+        <div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">OUR ADRESS</div>
+          <div class="mt-4 space-y-2 text-gray-600">
+            <div>2880 W Oakland Park Blvd.</div>
+            <div>Florida - USA</div>
+            <div>20037, United States</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">WE ACCEPT</div>
+          <div class="mt-4 grid grid-cols-4 gap-3">
+            <div class="h-6 rounded bg-white border" />
+            <div class="h-6 rounded bg-white border" />
+            <div class="h-6 rounded bg-white border" />
+            <div class="h-6 rounded bg-white border" />
+            <div class="h-6 rounded bg-white border" />
+            <div class="h-6 rounded bg-white border" />
+            <div class="h-6 rounded bg-white border" />
+            <div class="h-6 rounded bg-white border" />
           </div>
         </div>
       </div>
