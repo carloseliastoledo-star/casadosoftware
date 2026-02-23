@@ -62,7 +62,7 @@
             </a>
           </p>
           <p class="mt-3 text-xs text-gray-500">
-            MERCADO SOFTWARES LTDA — CNPJ 60.292.316/0001-26
+            {{ companyLegalName }} — CNPJ {{ companyCnpj }}
           </p>
         </div>
       </div>
@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-const { siteName, logoPath, supportEmail, whatsappNumber } = useSiteBranding()
+const { siteName, logoPath, supportEmail, whatsappNumber, companyLegalName, companyCnpj } = useSiteBranding()
 
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()

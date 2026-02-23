@@ -14,13 +14,25 @@ export function useSiteBranding() {
   const topbarLink = String(config.public.topbarLink || '').trim() || ''
   const whatsappNumber = String(config.public.whatsappNumber || '').trim() || ''
 
+  const companyLegalName = String((config.public as any).companyLegalName || '').trim() || 'MERCADO SOFTWARES LTDA'
+  const companyCnpj = String((config.public as any).companyCnpj || '').trim() || '60.292.316/0001-26'
+  const companyAddress = String((config.public as any).companyAddress || '').trim() ||
+    'Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808'
+  const companyPhone = String((config.public as any).companyPhone || '').trim() || '+55 11 91069-1485'
+  const companyEmail = String((config.public as any).companyEmail || '').trim() || 'sac@mercadosoftwares.com.br'
+
   return {
     siteName,
     logoPath,
     supportEmail,
     topbarText,
     topbarLink,
-    whatsappNumber
+    whatsappNumber,
+    companyLegalName,
+    companyCnpj,
+    companyAddress,
+    companyPhone,
+    companyEmail
   }
 }
 

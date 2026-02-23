@@ -207,13 +207,13 @@
             </a>
           </p>
           <div class="mt-4 text-xs text-gray-500 space-y-1">
-            <p><span class="font-semibold">Razão Social:</span> MERCADO SOFTWARES LTDA</p>
-            <p><span class="font-semibold">CNPJ:</span> 60.292.316/0001-26</p>
+            <p><span class="font-semibold">Razão Social:</span> {{ companyLegalName }}</p>
+            <p><span class="font-semibold">CNPJ:</span> {{ companyCnpj }}</p>
             <p>
-              <span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808
+              <span class="font-semibold">Endereço:</span> {{ companyAddress }}
             </p>
-            <p><span class="font-semibold">Telefone/Whatsapp:</span> +55 11 91069-1485</p>
-            <p><span class="font-semibold">E-mail:</span> sac@mercadosoftwares.com.br</p>
+            <p><span class="font-semibold">Telefone/Whatsapp:</span> {{ companyPhone }}</p>
+            <p><span class="font-semibold">E-mail:</span> {{ companyEmail }}</p>
           </div>
         </div>
       </div>
@@ -227,7 +227,19 @@
 </template>
 
 <script setup lang="ts">
-const { siteName, logoPath, supportEmail, topbarText, topbarLink, whatsappNumber } = useSiteBranding()
+const {
+  siteName,
+  logoPath,
+  supportEmail,
+  topbarText,
+  topbarLink,
+  whatsappNumber,
+  companyLegalName,
+  companyCnpj,
+  companyAddress,
+  companyPhone,
+  companyEmail
+} = useSiteBranding()
 
 const config = useRuntimeConfig()
 
