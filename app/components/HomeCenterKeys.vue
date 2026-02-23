@@ -57,7 +57,7 @@
                     </p>
                     <div class="mt-6">
                       <NuxtLink
-                        to="/produtos"
+                        to="/produto/microsoft-office-365-vitalicio-microsoft-windows-11-pro-1-licenca"
                         class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white text-gray-900 font-semibold border border-black/10 hover:bg-gray-50"
                       >
                         Buy Now
