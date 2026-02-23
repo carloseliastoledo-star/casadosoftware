@@ -32,8 +32,8 @@
 
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
               <picture>
-                <source v-if="logoWebpPath" :srcset="logoWebpPath" type="image/webp" />
-                <img :src="logoPath" :alt="siteName" class="h-12 md:h-14 w-auto" />
+                <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
+                <img :src="effectiveLogoPath" :alt="siteName" class="h-12 md:h-14 w-auto" />
               </picture>
               <span class="hidden sm:block text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
                 {{ siteName }}
@@ -106,8 +106,8 @@
         <div class="h-20 flex items-center justify-between gap-6">
           <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
             <picture>
-              <source v-if="logoWebpPath" :srcset="logoWebpPath" type="image/webp" />
-              <img :src="logoPath" :alt="siteName" class="h-10 md:h-12 w-auto" />
+              <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
+              <img :src="effectiveLogoPath" :alt="siteName" class="h-10 md:h-12 w-auto" />
             </picture>
           </NuxtLink>
 
@@ -193,8 +193,8 @@
         <div class="px-5 py-4 border-b flex items-center justify-between">
           <div class="flex items-center gap-3">
             <picture>
-              <source v-if="logoWebpPath" :srcset="logoWebpPath" type="image/webp" />
-              <img :src="logoPath" :alt="siteName" class="h-12 w-auto" />
+              <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
+              <img :src="effectiveLogoPath" :alt="siteName" class="h-12 w-auto" />
             </picture>
             <div class="font-extrabold text-gray-900">{{ siteName }}</div>
           </div>
@@ -353,6 +353,18 @@ const isLicencasDigitais = computed(() => {
 
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()
+  if (!raw) return ''
+  if (raw.endsWith('.webp')) return raw
+  return ''
+})
+
+const effectiveLogoPath = computed(() => {
+  if (isLicencasDigitais.value) return '/licencasdigitais-gvg/logo.png'
+  return String(logoPath || '').trim() || '/logo-mercadosoftwares.png'
+})
+
+const effectiveLogoWebpPath = computed(() => {
+  const raw = String(effectiveLogoPath.value || '').trim()
   if (!raw) return ''
   if (raw.endsWith('.webp')) return raw
   return ''

@@ -4,8 +4,20 @@
       <div class="max-w-7xl mx-auto px-6 pt-8 pb-10">
         <div
           v-if="isLicencasDigitais"
-          class="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 overflow-hidden border border-black/10 shadow-sm"
+          class="relative rounded-3xl overflow-hidden border border-black/10 shadow-sm"
         >
+          <div class="absolute inset-0">
+            <img
+              src="/licencasdigitais-gvg/hero.png"
+              alt=""
+              class="h-full w-full object-cover"
+              loading="eager"
+              decoding="async"
+              fetchpriority="high"
+            />
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/75 to-slate-900/40" />
+          </div>
+
           <div class="px-6 py-10 md:px-12 md:py-12">
             <div class="grid lg:grid-cols-2 gap-8 items-center">
               <div>
@@ -55,8 +67,16 @@
                 </div>
               </div>
 
-              <div class="hidden lg:block">
-                <div class="grid grid-cols-2 gap-3">
+              <div class="hidden lg:block relative">
+                <img
+                  src="/licencasdigitais-gvg/hero-woman.png"
+                  alt=""
+                  class="w-full max-w-[520px] ml-auto object-contain"
+                  loading="eager"
+                  decoding="async"
+                />
+
+                <div class="absolute top-6 left-0 right-0 grid grid-cols-2 gap-3 max-w-[420px]">
                   <NuxtLink to="/categoria/windows" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
                     <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
                     <div class="mt-2 text-lg font-extrabold text-white">Windows</div>
@@ -77,6 +97,18 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div v-if="isLicencasDigitais" class="mt-6">
+          <NuxtLink to="/produtos" class="block overflow-hidden rounded-2xl border bg-white hover:shadow-sm transition">
+            <img
+              src="/licencasdigitais-gvg/promo.png"
+              alt=""
+              class="w-full h-auto"
+              loading="lazy"
+              decoding="async"
+            />
+          </NuxtLink>
         </div>
 
         <div v-else class="rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-800 overflow-hidden border border-black/10 shadow-sm">
