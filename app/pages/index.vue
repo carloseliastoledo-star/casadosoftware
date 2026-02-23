@@ -1,6 +1,6 @@
 <template>
   <HomeCasaSoftware v-if="isCasaDoSoftware" />
-  <HomeLicencasDigitais v-else-if="isLicencasDigitais" />
+  <HomeCenterKeys v-else-if="isLicencasDigitais" :only-best-sellers="true" />
   <HomeCenterKeys v-else :only-best-sellers="false" />
 
   <div v-if="debugHost" class="fixed bottom-3 left-3 z-[9999] max-w-[92vw] rounded-lg bg-black/70 text-white text-xs p-3">
