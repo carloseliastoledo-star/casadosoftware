@@ -8,8 +8,10 @@ export default defineEventHandler(async (event) => {
 
   const { storeSlug } = getStoreContext()
 
+  const prismaAny = prisma as any
+
   if (!storeSlug) {
-    const existing = await prisma.siteSettings.findFirst({
+    const existing = await prismaAny.siteSettings.findFirst({
       select: {
         id: true,
         googleAnalyticsId: true,
@@ -18,13 +20,15 @@ export default defineEventHandler(async (event) => {
         headHtml: true,
         bodyOpenHtml: true,
         bodyCloseHtml: true,
-        homeBestSellerSlugs: true
+        homeBestSellerSlugs: true,
+        homeVideoUrl: true,
+        footerPolicyLinks: true
       }
     })
 
     if (existing) return { ok: true, settings: existing }
 
-    const created = await prisma.siteSettings.create({
+    const created = await prismaAny.siteSettings.create({
       data: {},
       select: {
         id: true,
@@ -34,14 +38,16 @@ export default defineEventHandler(async (event) => {
         headHtml: true,
         bodyOpenHtml: true,
         bodyCloseHtml: true,
-        homeBestSellerSlugs: true
+        homeBestSellerSlugs: true,
+        homeVideoUrl: true,
+        footerPolicyLinks: true
       }
     })
 
     return { ok: true, settings: created }
   }
 
-  const existing = await (prisma as any).siteSettings.findFirst({
+  const existing = await prismaAny.siteSettings.findFirst({
     where: { storeSlug },
     select: {
       id: true,
@@ -51,13 +57,15 @@ export default defineEventHandler(async (event) => {
       headHtml: true,
       bodyOpenHtml: true,
       bodyCloseHtml: true,
-      homeBestSellerSlugs: true
+      homeBestSellerSlugs: true,
+      homeVideoUrl: true,
+      footerPolicyLinks: true
     }
   })
 
   if (existing) return { ok: true, settings: existing }
 
-  const legacy = await (prisma as any).siteSettings.findFirst({
+  const legacy = await prismaAny.siteSettings.findFirst({
     where: { storeSlug: null },
     select: {
       googleAnalyticsId: true,
@@ -66,11 +74,13 @@ export default defineEventHandler(async (event) => {
       headHtml: true,
       bodyOpenHtml: true,
       bodyCloseHtml: true,
-      homeBestSellerSlugs: true
+      homeBestSellerSlugs: true,
+      homeVideoUrl: true,
+      footerPolicyLinks: true
     }
   })
 
-  const created = await (prisma as any).siteSettings.create({
+  const created = await prismaAny.siteSettings.create({
     data: {
       storeSlug,
       ...(legacy || {})
@@ -83,7 +93,9 @@ export default defineEventHandler(async (event) => {
       headHtml: true,
       bodyOpenHtml: true,
       bodyCloseHtml: true,
-      homeBestSellerSlugs: true
+      homeBestSellerSlugs: true,
+      homeVideoUrl: true,
+      footerPolicyLinks: true
     }
   })
 

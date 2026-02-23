@@ -8,6 +8,8 @@ export default defineEventHandler(async (event) => {
 
   const { storeSlug } = getStoreContext()
 
+  const prismaAny = prisma as any
+
   const body = await readBody(event)
 
   const headHtml = body?.headHtml === null || body?.headHtml === undefined
@@ -38,6 +40,14 @@ export default defineEventHandler(async (event) => {
     ? null
     : String(body.homeBestSellerSlugs)
 
+  const homeVideoUrl = body?.homeVideoUrl === null || body?.homeVideoUrl === undefined
+    ? null
+    : String(body.homeVideoUrl)
+
+  const footerPolicyLinks = body?.footerPolicyLinks === null || body?.footerPolicyLinks === undefined
+    ? null
+    : String(body.footerPolicyLinks)
+
   if (googleAdsConversionId && googleAdsConversionId.length > 64) {
     throw createError({ statusCode: 400, statusMessage: 'googleAdsConversionId inválido' })
   }
@@ -66,13 +76,21 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'homeBestSellerSlugs muito grande' })
   }
 
+  if (homeVideoUrl && homeVideoUrl.length > 20000) {
+    throw createError({ statusCode: 400, statusMessage: 'homeVideoUrl muito grande' })
+  }
+
+  if (footerPolicyLinks && footerPolicyLinks.length > 20000) {
+    throw createError({ statusCode: 400, statusMessage: 'footerPolicyLinks muito grande' })
+  }
+
   if (!storeSlug) {
-    const existing = await prisma.siteSettings.findFirst({
+    const existing = await prismaAny.siteSettings.findFirst({
       select: { id: true }
     })
 
     const settings = existing
-      ? await prisma.siteSettings.update({
+      ? await prismaAny.siteSettings.update({
           where: { id: existing.id },
           data: {
             googleAnalyticsId: googleAnalyticsId || null,
@@ -81,7 +99,9 @@ export default defineEventHandler(async (event) => {
             headHtml,
             bodyOpenHtml,
             bodyCloseHtml,
-            homeBestSellerSlugs
+            homeBestSellerSlugs,
+            homeVideoUrl,
+            footerPolicyLinks
           },
           select: {
             id: true,
@@ -91,10 +111,12 @@ export default defineEventHandler(async (event) => {
             headHtml: true,
             bodyOpenHtml: true,
             bodyCloseHtml: true,
-            homeBestSellerSlugs: true
+            homeBestSellerSlugs: true,
+            homeVideoUrl: true,
+            footerPolicyLinks: true
           }
         })
-      : await prisma.siteSettings.create({
+      : await prismaAny.siteSettings.create({
           data: {
             googleAnalyticsId: googleAnalyticsId || null,
             googleAdsConversionId: googleAdsConversionId || null,
@@ -102,7 +124,9 @@ export default defineEventHandler(async (event) => {
             headHtml,
             bodyOpenHtml,
             bodyCloseHtml,
-            homeBestSellerSlugs
+            homeBestSellerSlugs,
+            homeVideoUrl,
+            footerPolicyLinks
           },
           select: {
             id: true,
@@ -112,20 +136,22 @@ export default defineEventHandler(async (event) => {
             headHtml: true,
             bodyOpenHtml: true,
             bodyCloseHtml: true,
-            homeBestSellerSlugs: true
+            homeBestSellerSlugs: true,
+            homeVideoUrl: true,
+            footerPolicyLinks: true
           }
         })
 
     return { ok: true, settings }
   }
 
-  const existing = await prisma.siteSettings.findFirst({
+  const existing = await prismaAny.siteSettings.findFirst({
     where: { storeSlug },
     select: { id: true }
   })
 
   const settings = existing
-    ? await prisma.siteSettings.update({
+    ? await prismaAny.siteSettings.update({
         where: { id: existing.id },
         data: {
           googleAnalyticsId: googleAnalyticsId || null,
@@ -134,7 +160,9 @@ export default defineEventHandler(async (event) => {
           headHtml,
           bodyOpenHtml,
           bodyCloseHtml,
-          homeBestSellerSlugs
+          homeBestSellerSlugs,
+          homeVideoUrl,
+          footerPolicyLinks
         },
         select: {
           id: true,
@@ -144,10 +172,12 @@ export default defineEventHandler(async (event) => {
           headHtml: true,
           bodyOpenHtml: true,
           bodyCloseHtml: true,
-          homeBestSellerSlugs: true
+          homeBestSellerSlugs: true,
+          homeVideoUrl: true,
+          footerPolicyLinks: true
         }
       })
-    : await prisma.siteSettings.create({
+    : await prismaAny.siteSettings.create({
         data: {
           storeSlug,
           googleAnalyticsId: googleAnalyticsId || null,
@@ -156,7 +186,9 @@ export default defineEventHandler(async (event) => {
           headHtml,
           bodyOpenHtml,
           bodyCloseHtml,
-          homeBestSellerSlugs
+          homeBestSellerSlugs,
+          homeVideoUrl,
+          footerPolicyLinks
         },
         select: {
           id: true,
@@ -166,7 +198,9 @@ export default defineEventHandler(async (event) => {
           headHtml: true,
           bodyOpenHtml: true,
           bodyCloseHtml: true,
-          homeBestSellerSlugs: true
+          homeBestSellerSlugs: true,
+          homeVideoUrl: true,
+          footerPolicyLinks: true
         }
       })
 

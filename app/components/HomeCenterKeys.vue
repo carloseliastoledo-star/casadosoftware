@@ -179,7 +179,7 @@
                 <div class="relative w-full" style="padding-top: 56.25%">
                   <iframe
                     class="absolute inset-0 w-full h-full"
-                    src="https://www.youtube.com/embed/RUhFQxk4mV0"
+                    :src="homeVideoEmbedUrl"
                     title="Introducing Windows 11"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -644,6 +644,8 @@ const { data, pending, error } = await useFetch<any[]>('/api/products/best-selle
   server: true
 })
 
+const { data: siteSettings } = await useFetch('/api/site-settings', { server: true })
+
 const products = computed(() => (data.value as any[]) || [])
 
 const releases = computed(() => {
@@ -651,6 +653,29 @@ const releases = computed(() => {
 })
 
 const bestSellersRow = ref<HTMLElement | null>(null)
+
+const homeVideoEmbedUrl = computed(() => {
+  const raw = String((siteSettings.value as any)?.settings?.homeVideoUrl || '').trim()
+  if (!raw) return 'https://www.youtube.com/embed/RUhFQxk4mV0'
+
+  try {
+    const url = new URL(raw)
+    if (url.hostname.includes('youtu.be')) {
+      const id = url.pathname.replace(/^\//, '').trim()
+      if (id) return `https://www.youtube.com/embed/${encodeURIComponent(id)}`
+    }
+
+    if (url.hostname.includes('youtube.com')) {
+      const id = url.searchParams.get('v') || ''
+      if (id) return `https://www.youtube.com/embed/${encodeURIComponent(id)}`
+      if (url.pathname.startsWith('/embed/')) return raw
+    }
+  } catch {
+    // ignore
+  }
+
+  return raw
+})
 
 function scrollBestSellers(direction: 1 | -1) {
   const el = bestSellersRow.value

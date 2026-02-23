@@ -8,7 +8,9 @@ const form = reactive({
   headHtml: '',
   bodyOpenHtml: '',
   bodyCloseHtml: '',
-  homeBestSellerSlugs: ''
+  homeBestSellerSlugs: '',
+  homeVideoUrl: '',
+  footerPolicyLinks: ''
 })
 
 const loading = ref(true)
@@ -31,6 +33,8 @@ onMounted(async () => {
     form.bodyOpenHtml = s.bodyOpenHtml ?? ''
     form.bodyCloseHtml = s.bodyCloseHtml ?? ''
     form.homeBestSellerSlugs = s.homeBestSellerSlugs ?? ''
+    form.homeVideoUrl = s.homeVideoUrl ?? ''
+    form.footerPolicyLinks = s.footerPolicyLinks ?? ''
   } catch (err: any) {
     errorMsg.value = err?.data?.statusMessage || err?.message || 'Erro ao carregar configurações'
   } finally {
@@ -53,7 +57,9 @@ async function salvar() {
         headHtml: form.headHtml,
         bodyOpenHtml: form.bodyOpenHtml,
         bodyCloseHtml: form.bodyCloseHtml,
-        homeBestSellerSlugs: form.homeBestSellerSlugs
+        homeBestSellerSlugs: form.homeBestSellerSlugs,
+        homeVideoUrl: form.homeVideoUrl,
+        footerPolicyLinks: form.footerPolicyLinks
       }
     })
     message.value = 'Configurações salvas com sucesso.'
@@ -112,6 +118,25 @@ async function salvar() {
           class="w-full border p-2 rounded font-mono text-xs"
           rows="4"
           placeholder="Opcional: informe os slugs dos produtos (um por linha ou separados por vírgula) para aparecerem na Home. Se vazio, o sistema calcula automaticamente pelos pedidos PAID."
+        />
+      </div>
+
+      <div class="pt-4 border-t">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Home - Link do vídeo (YouTube)</label>
+        <input
+          v-model="form.homeVideoUrl"
+          class="w-full border p-2 rounded"
+          placeholder="Ex: https://www.youtube.com/watch?v=XXXXXXXXXXX"
+        />
+      </div>
+
+      <div class="pt-4 border-t">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Rodapé - Links (CALL CENTER AND POLICY) (JSON)</label>
+        <textarea
+          v-model="form.footerPolicyLinks"
+          class="w-full border p-2 rounded font-mono text-xs"
+          rows="8"
+          placeholder='Ex: [{"label":"Privacy Policy","to":"/privacidade"},{"label":"Terms of Service","to":"/termos"}]'
         />
       </div>
 

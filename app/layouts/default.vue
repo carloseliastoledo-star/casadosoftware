@@ -266,11 +266,23 @@
               <span class="font-semibold text-gray-700">Email:</span>
               <span class="ml-1">service@gvgmall.com</span>
             </div>
-            <NuxtLink to="/reembolso" class="block hover:underline">Policys of Refunds and Exchange</NuxtLink>
-            <NuxtLink to="/privacidade" class="block hover:underline">Privacy Policy</NuxtLink>
-            <NuxtLink to="/termos" class="block hover:underline">Terms of Service</NuxtLink>
-            <NuxtLink to="/privacidade" class="block hover:underline">Privacy and Safety</NuxtLink>
-            <NuxtLink to="/quem-somos" class="block hover:underline">Legal Notice</NuxtLink>
+            <template v-if="footerPolicyLinksParsed.length">
+              <NuxtLink
+                v-for="l in footerPolicyLinksParsed"
+                :key="l.label + l.to"
+                :to="l.to"
+                class="block hover:underline"
+              >
+                {{ l.label }}
+              </NuxtLink>
+            </template>
+            <template v-else>
+              <NuxtLink to="/reembolso" class="block hover:underline">Policys of Refunds and Exchange</NuxtLink>
+              <NuxtLink to="/privacidade" class="block hover:underline">Privacy Policy</NuxtLink>
+              <NuxtLink to="/termos" class="block hover:underline">Terms of Service</NuxtLink>
+              <NuxtLink to="/privacidade" class="block hover:underline">Privacy and Safety</NuxtLink>
+              <NuxtLink to="/quem-somos" class="block hover:underline">Legal Notice</NuxtLink>
+            </template>
           </div>
         </div>
 
@@ -482,6 +494,8 @@ type CategoriaLinkDto = {
 
 const { cart } = useCart()
 
+const { data: siteSettings } = await useFetch('/api/site-settings', { server: true })
+
 const { data } = await useFetch<{ ok: true; paginas: PaginaLinkDto[] }>('/api/paginas', {
   server: true
 })
@@ -508,6 +522,23 @@ const mainMenu = computed(() => {
 })
 
 const cartCount = computed(() => (cart.value || []).length)
+
+type FooterPolicyLinkDto = { label: string; to: string }
+
+const footerPolicyLinksParsed = computed<FooterPolicyLinkDto[]>(() => {
+  const raw = String((siteSettings.value as any)?.settings?.footerPolicyLinks || '').trim()
+  if (!raw) return []
+
+  try {
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .map((it: any) => ({ label: String(it?.label || '').trim(), to: String(it?.to || '').trim() }))
+      .filter((it) => it.label && it.to)
+  } catch {
+    return []
+  }
+})
 
 const t = computed(() => {
   if (intl.language.value === 'en') {
