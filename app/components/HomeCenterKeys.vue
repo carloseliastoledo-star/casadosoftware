@@ -2,7 +2,84 @@
   <section class="bg-gray-50">
     <div class="bg-white border-b">
       <div class="max-w-7xl mx-auto px-6 pt-8 pb-10">
-        <div class="rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-800 overflow-hidden border border-black/10 shadow-sm">
+        <div
+          v-if="isLicencasDigitais"
+          class="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 overflow-hidden border border-black/10 shadow-sm"
+        >
+          <div class="px-6 py-10 md:px-12 md:py-12">
+            <div class="grid lg:grid-cols-2 gap-8 items-center">
+              <div>
+                <div class="inline-flex items-center gap-2 text-[11px] font-extrabold tracking-widest text-amber-200 bg-amber-500/15 border border-amber-500/20 px-3 py-1 rounded-full">
+                  {{ t.heroBadge }}
+                </div>
+                <h1 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tight text-white">
+                  {{ t.heroTitle }}
+                  <span class="block text-cyan-200">{{ t.heroSubtitle }}</span>
+                </h1>
+                <p class="mt-4 text-white/80 text-sm md:text-base leading-relaxed">
+                  {{ t.heroDescription }}
+                </p>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                  <NuxtLink
+                    to="/produtos"
+                    class="bg-amber-400 hover:bg-amber-300 text-neutral-950 font-extrabold px-6 py-3 rounded-xl transition text-center"
+                  >
+                    {{ t.heroPrimaryCta }}
+                  </NuxtLink>
+                  <NuxtLink
+                    to="/checkout"
+                    class="bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold px-6 py-3 rounded-xl transition text-center"
+                  >
+                    Comprar agora
+                  </NuxtLink>
+                </div>
+
+                <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-white/85">
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-300">✔</span>
+                    Immediate shipping
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-300">✔</span>
+                    Monitored order
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-300">✔</span>
+                    Need assistance?
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-300">✔</span>
+                    Secure purchase
+                  </div>
+                </div>
+              </div>
+
+              <div class="hidden lg:block">
+                <div class="grid grid-cols-2 gap-3">
+                  <NuxtLink to="/categoria/windows" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                    <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
+                    <div class="mt-2 text-lg font-extrabold text-white">Windows</div>
+                  </NuxtLink>
+                  <NuxtLink to="/categoria/office" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                    <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
+                    <div class="mt-2 text-lg font-extrabold text-white">Office</div>
+                  </NuxtLink>
+                  <NuxtLink to="/categoria/windows-server" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                    <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
+                    <div class="mt-2 text-lg font-extrabold text-white">Windows Server</div>
+                  </NuxtLink>
+                  <NuxtLink to="/categoria/autodesk" class="rounded-2xl bg-white/10 border border-white/10 p-4 hover:bg-white/15 transition">
+                    <div class="text-xs font-extrabold tracking-widest text-white/70">CATEGORY</div>
+                    <div class="mt-2 text-lg font-extrabold text-white">Autodesk</div>
+                  </NuxtLink>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-800 overflow-hidden border border-black/10 shadow-sm">
           <div class="px-6 py-10 md:px-12 md:py-14">
             <div class="max-w-2xl">
               <div class="inline-flex items-center gap-2 text-[11px] font-extrabold tracking-widest text-orange-200 bg-orange-500/15 border border-orange-500/20 px-3 py-1 rounded-full">
@@ -350,6 +427,62 @@ const onlyBestSellers = computed(() => Boolean(props.onlyBestSellers))
 
 const intl = useIntlContext()
 
+const config = useRuntimeConfig()
+const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
+
+const host = computed(() => {
+  if (process.server) {
+    try {
+      const url = useRequestURL()
+      if (url?.host) return String(url.host).toLowerCase()
+    } catch {
+      // ignore
+    }
+
+    try {
+      const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<
+        string,
+        string | undefined
+      >
+      const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
+      const first = String(raw).split(',')[0]?.trim()
+      return String(first || '').toLowerCase()
+    } catch {
+      return ''
+    }
+  }
+
+  return String(window.location.host || '').toLowerCase()
+})
+
+const normalizedHost = computed(() => {
+  const h0 = String(host.value || '').trim().toLowerCase()
+  const h1 = h0.replace(/^https?:\/\//, '')
+  const h2 = h1.replace(/\/.*/, '')
+  const h3 = h2.replace(/:\d+$/, '')
+  const h4 = h3.replace(/^www\./, '')
+  return h4.replace(/\.$/, '')
+})
+
+const isLicencasDigitais = computed(() => {
+  if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
+  return storeSlug.value === 'licencasdigitais'
+})
+
+const { data, pending, error } = await useFetch<any[]>('/api/products/best-sellers', {
+  server: true
+})
+
+const products = computed(() => (data.value as any[]) || [])
+
+const {
+  data: categoriasData,
+  pending: categoriasPending,
+  error: categoriasError
+} = await useFetch<{ ok: true; categorias: any[] }>('/api/categorias', {
+  server: true
+})
+
 const t = computed(() => {
   if (intl.language.value === 'en') {
     return {
@@ -594,24 +727,6 @@ const vitrines = computed(() => {
     }
   ]
 })
-
-const baseUrl = useSiteUrl()
-
-useHead(() => ({
-  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/` }] : []
-}))
-
-const { data, pending, error } = await useFetch('/api/products/best-sellers', {
-  server: true
-})
-
-type CategoriaDto = { id: string; nome: string; slug: string }
-
-const { data: categoriasData, pending: categoriasPending, error: categoriasError } = await useFetch<{ ok: true; categorias: CategoriaDto[] }>('/api/categorias', {
-  server: true
-})
-
-const products = computed(() => data.value || [])
 
 const categorias = computed(() => categoriasData.value?.categorias || [])
 const categoriasHome = computed(() => categorias.value.slice(0, 12))
