@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
 
-    <div v-if="topbarText" class="bg-blue-600 text-white text-xs">
+    <div v-if="topbarText && !isLicencasDigitais" class="bg-blue-600 text-white text-xs">
       <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
         <a
           v-if="topbarLink"
@@ -13,6 +13,13 @@
           {{ topbarText }}
         </a>
         <span v-else>{{ topbarText }}</span>
+      </div>
+    </div>
+
+    <div v-if="isLicencasDigitais" class="bg-white text-[11px] text-gray-600 border-b">
+      <div class="max-w-7xl mx-auto px-6 h-9 flex items-center">
+        <span class="mr-2" aria-hidden="true">📍</span>
+        <span>19th Ave New York, NY 95822, USA</span>
       </div>
     </div>
 
