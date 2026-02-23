@@ -136,7 +136,14 @@ async function salvar() {
           v-model="form.footerPolicyLinks"
           class="w-full border p-2 rounded font-mono text-xs"
           rows="8"
-          placeholder='Ex: [{"label":"Privacy Policy","to":"/privacidade"},{"label":"Terms of Service","to":"/termos"}]'
+          placeholder='Aceita JSON ou 1 por linha.
+
+JSON:
+[{"label":"Privacy Policy","to":"/privacidade"},{"label":"Terms of Service","to":"/termos"}]
+
+Linhas:
+Privacy Policy | /privacidade
+Terms of Service | /termos'
         />
       </div>
 

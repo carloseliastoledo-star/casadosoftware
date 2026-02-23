@@ -543,7 +543,24 @@ const footerPolicyLinksParsed = computed<FooterPolicyLinkDto[]>(() => {
       .map((it: any) => ({ label: String(it?.label || '').trim(), to: String(it?.to || '').trim() }))
       .filter((it) => it.label && it.to)
   } catch {
-    return []
+    // Fallback: one per line => "Label | /path" or "Label: /path"
+    return raw
+      .split(/\r?\n/g)
+      .map((line) => String(line || '').trim())
+      .filter(Boolean)
+      .map((line) => {
+        const parts = line.includes('|')
+          ? line.split('|')
+          : line.includes(':')
+            ? line.split(':')
+            : line.split(',')
+
+        const label = String(parts[0] || '').trim()
+        const toRaw = String(parts.slice(1).join(':') || '').trim()
+        const to = toRaw && !toRaw.startsWith('/') ? `/${toRaw}` : toRaw
+        return { label, to }
+      })
+      .filter((it) => it.label && it.to)
   }
 })
 
