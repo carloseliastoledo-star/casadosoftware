@@ -442,6 +442,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useIntlContext } from '#imports'
+import { trackBeginCheckout } from '~/services/analytics'
 
 const intl = useIntlContext()
 
@@ -455,6 +456,37 @@ const baseUrl = useSiteUrl()
 useSeoMeta({
   title: `Checkout | ${siteName}`
 })
+
+const beginCheckoutTracked = ref(false)
+
+watch(
+  () => product.value,
+  (p) => {
+    if (!import.meta.client) return
+    if (beginCheckoutTracked.value) return
+    if (!p) return
+
+    beginCheckoutTracked.value = true
+
+    try {
+      trackBeginCheckout({
+        currency: String((p as any)?.currency || 'BRL'),
+        total: Number((p as any)?.price ?? (p as any)?.preco ?? 0),
+        items: [
+          {
+            item_id: String((p as any)?.id || ''),
+            item_name: String((p as any)?.nome || (p as any)?.name || ''),
+            price: Number((p as any)?.price ?? (p as any)?.preco ?? 0),
+            quantity: 1
+          }
+        ]
+      })
+    } catch {
+      // ignore
+    }
+  },
+  { immediate: true }
+)
 
 useHead(() => ({
   meta: [{ name: 'robots', content: 'noindex,nofollow' }],

@@ -39,6 +39,7 @@ export default defineNuxtConfig({
       topbarText: process.env.SITE_TOPBAR_TEXT || '',
       topbarLink: process.env.SITE_TOPBAR_LINK || '',
       mercadopagoPublicKey: process.env.MERCADOPAGO_PUBLIC_KEY || '',
+      gaId: process.env.GA_ID || '',
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || '',
       googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID || '',
       googleAdsConversionLabel: process.env.GOOGLE_ADS_CONVERSION_LABEL || '',

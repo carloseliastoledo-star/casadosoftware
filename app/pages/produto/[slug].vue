@@ -213,6 +213,7 @@
 <script setup lang="ts">
 import { useIntlContext } from '#imports'
 import DOMPurify from 'isomorphic-dompurify'
+import { trackViewItem } from '~/services/analytics'
 
 definePageMeta({ ssr: true })
 
@@ -342,6 +343,25 @@ const canonicalUrl = computed(() => {
 const { data, pending, error } = await useFetch(
   () => `/api/products/${slug}`,
   { server: true }
+)
+
+const viewItemTracked = ref(false)
+
+watch(
+  () => safeProduct.value,
+  (p) => {
+    if (!import.meta.client) return
+    if (viewItemTracked.value) return
+    if (!p || !(p as any).id) return
+    viewItemTracked.value = true
+
+    try {
+      trackViewItem(p)
+    } catch {
+      // ignore
+    }
+  },
+  { immediate: true }
 )
 
 const safeProduct = computed(() => {

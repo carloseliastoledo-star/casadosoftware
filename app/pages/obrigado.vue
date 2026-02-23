@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const config = useRuntimeConfig()
+import { trackPurchase } from '~/services/analytics'
 
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
@@ -71,6 +72,34 @@ onMounted(async () => {
   }
 
   gtag('event', 'conversion', payload)
+
+  try {
+    const oid = String(orderId.value || '').trim()
+    if (!oid) return
+
+    const purchaseKey = `ga4_purchase_tracked_${oid}`
+    try {
+      if (typeof window !== 'undefined' && window.localStorage?.getItem(purchaseKey)) return
+    } catch {
+      // ignore
+    }
+
+    const res: any = await $fetch(`/api/pedido/${encodeURIComponent(oid)}`)
+    const order = res?.order
+    const status = String(order?.status || '').toUpperCase()
+
+    if (status === 'PAID') {
+      trackPurchase(order)
+
+      try {
+        if (typeof window !== 'undefined') window.localStorage?.setItem(purchaseKey, '1')
+      } catch {
+        // ignore
+      }
+    }
+  } catch {
+    // ignore
+  }
 })
 </script>
 
