@@ -94,7 +94,7 @@
           </div>
         </div>
 
-        <div v-if="isLicencasDigitais" class="mt-6">
+        <div v-if="isLicencasDigitais && !onlyBestSellers" class="mt-6">
           <NuxtLink to="/produtos" class="block overflow-hidden rounded-2xl border bg-white hover:shadow-sm transition">
             <img
               src="/licencasdigitais-gvg/promo.png"
@@ -104,6 +104,60 @@
               decoding="async"
             />
           </NuxtLink>
+        </div>
+
+        <div v-if="isLicencasDigitais && onlyBestSellers" class="mt-10">
+          <div class="flex items-center justify-between gap-6 flex-wrap">
+            <div>
+              <div class="inline-flex items-end gap-3">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">{{ t.bestSellersTitle }}</h2>
+                <span class="hidden md:block h-[3px] w-16 bg-blue-600 rounded-full mb-1" />
+              </div>
+            </div>
+            <NuxtLink to="/produtos" class="text-sm font-semibold text-gray-800 hover:underline">
+              {{ t.viewAll }}
+            </NuxtLink>
+          </div>
+
+          <div v-if="pending" class="text-center py-16 text-gray-500">
+            {{ t.loadingProducts }}
+          </div>
+
+          <div v-else-if="error" class="text-center py-16 text-red-600">
+            {{ t.errorProducts }}
+          </div>
+
+          <div v-else class="mt-8 relative">
+            <button
+              type="button"
+              class="hidden md:inline-flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white border shadow-sm hover:bg-gray-50"
+              aria-label="Previous"
+              @click="scrollBestSellers(-1)"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              class="hidden md:inline-flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white border shadow-sm hover:bg-gray-50"
+              aria-label="Next"
+              @click="scrollBestSellers(1)"
+            >
+              ›
+            </button>
+
+            <div
+              ref="bestSellersRow"
+              class="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-2 px-2"
+            >
+              <div
+                v-for="product in products"
+                :key="product.id + (product.imagem || product.image || '')"
+                class="snap-start shrink-0 w-[280px] sm:w-[320px] lg:w-[320px]"
+              >
+                <ProductCard :product="product" />
+              </div>
+            </div>
+          </div>
         </div>
 
         <div v-else class="rounded-3xl bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-800 overflow-hidden border border-black/10 shadow-sm">
@@ -261,7 +315,7 @@
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 py-12">
+    <div v-if="!onlyBestSellers" class="max-w-7xl mx-auto px-6 py-12">
       <div class="flex items-center justify-between gap-6 flex-wrap">
         <div>
           <div class="inline-flex items-end gap-3">
