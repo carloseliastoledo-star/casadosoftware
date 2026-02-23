@@ -1,9 +1,9 @@
 <template>
-  <section class="bg-gray-100 min-h-screen py-12">
-    <div class="max-w-6xl mx-auto px-6">
+  <section :class="sectionClass">
+    <div :class="containerClass">
 
       <!-- Breadcrumb -->
-      <div class="text-sm text-gray-500 mb-6">
+      <div :class="breadcrumbClass">
         <NuxtLink to="/" class="hover:underline">{{ t.home }}</NuxtLink>
         <span class="mx-2">/</span>
         <NuxtLink to="/produtos" class="hover:underline">{{ t.products }}</NuxtLink>
@@ -12,7 +12,7 @@
       </div>
 
       <!-- Título -->
-      <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-8">
+      <h1 :class="titleClass">
         {{ pageH1 }}
       </h1>
 
@@ -29,11 +29,11 @@
       <!-- Card principal -->
       <div
         v-else
-        class="bg-white rounded-2xl shadow p-8 grid lg:grid-cols-2 gap-10"
+        :class="mainCardClass"
       >
 
         <!-- Imagem -->
-        <div class="flex items-center justify-center">
+        <div :class="imageWrapClass">
           <img
             :src="safeImage"
             :alt="safeProduct.nome"
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Coluna compra -->
-        <div class="space-y-6">
+        <div :class="buyColumnClass">
           <div v-if="safeProduct.descricaoCurta" class="text-gray-600">
             {{ safeProduct.descricaoCurta }}
           </div>
@@ -106,7 +106,7 @@
             <button
               type="button"
               @click="buyNow"
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-4 rounded-xl transition"
+              :class="buyButtonClass"
             >
               {{ t.buy }}
             </button>
@@ -150,7 +150,7 @@
       <!-- BLOCO AZUL TUTORIAL -->
       <div
         v-if="data && safeProduct.tutorialTitulo"
-        class="mt-12 border border-blue-500 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-blue-50"
+        :class="tutorialCardClass"
       >
         <div class="flex items-center gap-5">
           <div class="bg-blue-600 text-white p-4 rounded-xl text-xl">
@@ -178,7 +178,7 @@
       <!-- DESCRIÇÃO DETALHADA -->
       <div
         v-if="data"
-        class="bg-white rounded-2xl shadow mt-12 p-8 space-y-10"
+        :class="descriptionCardClass"
       >
         <section>
           <h2 class="text-2xl font-bold mb-3">
@@ -194,7 +194,7 @@
 
       <div
         v-if="data"
-        class="bg-white rounded-2xl shadow mt-8 p-8"
+        :class="whyPriceCardClass"
       >
         <h2 class="text-2xl font-bold mb-3">Por que nosso preço é mais acessível?</h2>
         <p class="text-gray-700 leading-relaxed">
@@ -257,6 +257,63 @@ const normalizedHost = computed(() => {
 const isCasaDoSoftware = computed(() => {
   if (normalizedHost.value.includes('casadosoftware.com.br')) return true
   return storeSlug.value === 'casadosoftware'
+})
+
+const isLicencasDigitais = computed(() => {
+  if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
+  return storeSlug.value === 'licencasdigitais'
+})
+
+const sectionClass = computed(() => {
+  return isLicencasDigitais.value ? 'bg-white min-h-screen' : 'bg-gray-100 min-h-screen py-12'
+})
+
+const containerClass = computed(() => {
+  return isLicencasDigitais.value ? 'max-w-7xl mx-auto px-6 pt-8 pb-12' : 'max-w-6xl mx-auto px-6'
+})
+
+const breadcrumbClass = computed(() => {
+  return isLicencasDigitais.value ? 'text-xs text-gray-500 mb-5' : 'text-sm text-gray-500 mb-6'
+})
+
+const titleClass = computed(() => {
+  return isLicencasDigitais.value
+    ? 'text-2xl md:text-3xl font-extrabold text-gray-900 mb-6'
+    : 'text-3xl md:text-4xl font-extrabold text-gray-900 mb-8'
+})
+
+const mainCardClass = computed(() => {
+  return isLicencasDigitais.value
+    ? 'bg-white border rounded-2xl p-6 md:p-8 grid lg:grid-cols-2 gap-10'
+    : 'bg-white rounded-2xl shadow p-8 grid lg:grid-cols-2 gap-10'
+})
+
+const imageWrapClass = computed(() => {
+  return isLicencasDigitais.value ? 'flex items-center justify-center bg-gray-50 border rounded-2xl p-6' : 'flex items-center justify-center'
+})
+
+const buyColumnClass = computed(() => {
+  return isLicencasDigitais.value ? 'space-y-6 lg:pl-2' : 'space-y-6'
+})
+
+const buyButtonClass = computed(() => {
+  return isLicencasDigitais.value
+    ? 'w-full bg-blue-600 hover:bg-blue-700 text-white text-base font-bold py-3.5 rounded-md transition'
+    : 'w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-4 rounded-xl transition'
+})
+
+const tutorialCardClass = computed(() => {
+  return isLicencasDigitais.value
+    ? 'mt-10 border border-blue-200 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-blue-50'
+    : 'mt-12 border border-blue-500 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-blue-50'
+})
+
+const descriptionCardClass = computed(() => {
+  return isLicencasDigitais.value ? 'bg-white border rounded-2xl mt-10 p-6 md:p-8 space-y-10' : 'bg-white rounded-2xl shadow mt-12 p-8 space-y-10'
+})
+
+const whyPriceCardClass = computed(() => {
+  return isLicencasDigitais.value ? 'bg-white border rounded-2xl mt-8 p-6 md:p-8' : 'bg-white rounded-2xl shadow mt-8 p-8'
 })
 
 const route = useRoute()
