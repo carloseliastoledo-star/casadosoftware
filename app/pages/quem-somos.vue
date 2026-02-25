@@ -12,11 +12,11 @@
       <div class="rounded-xl border bg-white p-5">
         <h2 class="text-xl font-bold text-gray-900">{{ t.companyDataTitle }}</h2>
         <div class="mt-3 space-y-1 text-sm text-gray-700">
-          <p><span class="font-semibold">{{ t.companyLabel }}</span> {{ companyLegalName }}</p>
-          <p><span class="font-semibold">{{ t.companyTaxIdLabel }}</span> {{ companyCnpj }}</p>
-          <p><span class="font-semibold">Endereço:</span> {{ companyAddress }}</p>
-          <p><span class="font-semibold">Telefone/Whatsapp:</span> {{ companyPhone }}</p>
-          <p><span class="font-semibold">E-mail:</span> {{ companyEmail }}</p>
+          <p><span class="font-semibold">{{ t.companyLabel }}</span> ELETROKEYS LTDA</p>
+          <p><span class="font-semibold">{{ t.companyTaxIdLabel }}</span> 44.694.356/0001-48</p>
+          <p><span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808</p>
+          <p><span class="font-semibold">Telefone/Whatsapp:</span> +55 11 91069-1485</p>
+          <p><span class="font-semibold">E-mail:</span> sac@mercadosoftwares.com.br</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-const { siteName, supportEmail, companyLegalName, companyCnpj, companyAddress, companyPhone, companyEmail } = useSiteBranding()
+const { siteName, supportEmail } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 

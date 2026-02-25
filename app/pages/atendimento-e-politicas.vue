@@ -54,13 +54,13 @@
                 <div class="rounded-xl border bg-gray-50 p-4">
                   <div class="text-xs font-semibold text-gray-600 uppercase">Dados da empresa</div>
                   <div class="mt-1 text-sm text-gray-900 space-y-1">
-                    <div><span class="font-semibold">Razão Social:</span> {{ companyLegalName }}</div>
-                    <div><span class="font-semibold">CNPJ:</span> {{ companyCnpj }}</div>
+                    <div><span class="font-semibold">Razão Social:</span> ELETROKEYS LTDA</div>
+                    <div><span class="font-semibold">CNPJ:</span> 44.694.356/0001-48</div>
                     <div>
-                      <span class="font-semibold">Endereço:</span> {{ companyAddress }}
+                      <span class="font-semibold">Endereço:</span> Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808
                     </div>
-                    <div><span class="font-semibold">Telefone/Whatsapp:</span> {{ companyPhone }}</div>
-                    <div><span class="font-semibold">E-mail:</span> {{ companyEmail }}</div>
+                    <div><span class="font-semibold">Telefone/Whatsapp:</span> +55 11 91069-1485</div>
+                    <div><span class="font-semibold">E-mail:</span> sac@mercadosoftwares.com.br</div>
                   </div>
                 </div>
               </div>
@@ -140,7 +140,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
 
-const { supportEmail, whatsappNumber, siteName, companyLegalName, companyCnpj, companyAddress, companyPhone, companyEmail } = useSiteBranding()
+const { supportEmail, whatsappNumber, siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
 
 const updatedAt = new Date().toLocaleDateString('pt-BR')
