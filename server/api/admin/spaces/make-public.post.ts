@@ -88,12 +88,19 @@ export default defineEventHandler(async (event) => {
         prefix
       })
 
+      const code = err?.Code || err?.code
+      const httpStatusCode = err?.$metadata?.httpStatusCode
+
       throw createError({
         statusCode: 500,
         statusMessage:
           err?.message
-            ? `Falha ao aplicar Bucket Policy no Spaces: ${err.message}`
-            : 'Falha ao aplicar Bucket Policy no Spaces'
+            ? `Falha ao aplicar Bucket Policy no Spaces: ${err.message} (code=${code || 'n/a'} http=${httpStatusCode || 'n/a'})`
+            : `Falha ao aplicar Bucket Policy no Spaces (code=${code || 'n/a'} http=${httpStatusCode || 'n/a'})`,
+        data: {
+          code,
+          httpStatusCode
+        }
       })
     }
   }
@@ -160,12 +167,19 @@ export default defineEventHandler(async (event) => {
       prefix
     })
 
+    const code = err?.Code || err?.code
+    const httpStatusCode = err?.$metadata?.httpStatusCode
+
     throw createError({
       statusCode: 500,
       statusMessage:
         err?.message
-          ? `Falha ao atualizar ACL no Spaces: ${err.message}`
-          : 'Falha ao atualizar ACL no Spaces. Tente modo policy: { mode: "policy" }'
+          ? `Falha ao atualizar ACL no Spaces: ${err.message} (code=${code || 'n/a'} http=${httpStatusCode || 'n/a'})`
+          : `Falha ao atualizar ACL no Spaces. Tente modo policy: { mode: "policy" } (code=${code || 'n/a'} http=${httpStatusCode || 'n/a'})`,
+      data: {
+        code,
+        httpStatusCode
+      }
     })
   }
 })
