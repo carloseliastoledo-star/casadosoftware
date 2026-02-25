@@ -1,6 +1,46 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 
 export default defineNitroPlugin((nitroApp: any) => {
+  try {
+    console.log('[nitro][plugin]', 'error-logger loaded')
+  } catch {
+    // ignore
+  }
+
+  try {
+    process.on('unhandledRejection', (reason: any) => {
+      try {
+        const payload = {
+          type: 'unhandledRejection',
+          reason: reason instanceof Error
+            ? { name: reason.name, message: reason.message, stack: reason.stack }
+            : reason
+        }
+        console.error('[nitro][process]', JSON.stringify(payload))
+        console.log('[nitro][process]', JSON.stringify(payload))
+      } catch {
+        console.error('[nitro][process]', 'unhandledRejection')
+      }
+    })
+
+    process.on('uncaughtException', (err: any) => {
+      try {
+        const payload = {
+          type: 'uncaughtException',
+          error: err instanceof Error
+            ? { name: err.name, message: err.message, stack: err.stack }
+            : err
+        }
+        console.error('[nitro][process]', JSON.stringify(payload))
+        console.log('[nitro][process]', JSON.stringify(payload))
+      } catch {
+        console.error('[nitro][process]', 'uncaughtException')
+      }
+    })
+  } catch {
+    // ignore
+  }
+
   nitroApp.hooks.hook('afterResponse', (event: any) => {
     try {
       const statusCode = Number(event?.node?.res?.statusCode || 0)
