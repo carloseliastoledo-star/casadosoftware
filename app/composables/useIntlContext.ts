@@ -1,14 +1,28 @@
 type ClientIntl = {
-  language: 'pt'
-  locale: 'pt-BR'
+  language: 'pt' | 'en' | 'es' | 'fr' | 'it'
+  locale: 'pt-BR' | 'en-US' | 'es-ES' | 'fr-FR' | 'it-IT'
   currency: 'BRL' | 'USD' | 'EUR'
   currencyLower: 'brl' | 'usd' | 'eur'
   isIntl: boolean
   host: string
   countryCode: string
-  setLanguage: (next: 'pt') => void
+  setLanguage: (next: ClientIntl['language']) => void
   setCurrency: (next: 'brl' | 'usd' | 'eur') => void
   setCountry: (next: string) => void
+}
+
+function normalizeLanguage(input: unknown): ClientIntl['language'] {
+  const v = String(input || '').trim().toLowerCase()
+  if (v === 'en' || v === 'es' || v === 'fr' || v === 'it') return v
+  return 'pt'
+}
+
+function languageToLocale(lang: ClientIntl['language']): ClientIntl['locale'] {
+  if (lang === 'en') return 'en-US'
+  if (lang === 'es') return 'es-ES'
+  if (lang === 'fr') return 'fr-FR'
+  if (lang === 'it') return 'it-IT'
+  return 'pt-BR'
 }
 
 function normalizeCurrency(input: unknown): 'brl' | 'usd' | 'eur' | null {
@@ -44,9 +58,9 @@ export function useIntlContext() {
 
   const countryCode = computed(() => String(countryCookie.value || '').trim().toUpperCase())
 
-  const language = computed<ClientIntl['language']>(() => 'pt')
+  const language = computed<ClientIntl['language']>(() => normalizeLanguage(langCookie.value))
 
-  const locale = computed<ClientIntl['locale']>(() => 'pt-BR')
+  const locale = computed<ClientIntl['locale']>(() => languageToLocale(language.value))
 
   const currencyLower = computed<ClientIntl['currencyLower']>(() => {
     const country = String(countryCode.value || '').trim().toUpperCase()
@@ -109,13 +123,13 @@ export function useIntlContext() {
     currencyLower,
     isIntl,
     countryCode,
-    setLanguage: (next) => {
-      langCookie.value = next
+    setLanguage: (next: ClientIntl['language']) => {
+      langCookie.value = normalizeLanguage(next)
     },
-    setCurrency: (next) => {
+    setCurrency: (next: 'brl' | 'usd' | 'eur') => {
       currencyCookie.value = next
     },
-    setCountry: (next) => {
+    setCountry: (next: string) => {
       const v = String(next || '').trim().toUpperCase()
       countryCookie.value = v || null
     }
