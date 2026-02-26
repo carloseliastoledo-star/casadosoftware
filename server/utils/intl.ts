@@ -110,9 +110,21 @@ function readCountryCode(event?: H3Event): string {
 
 function readHost(event?: H3Event): string {
   if (!event) return ''
-  const raw = String(getRequestHeader(event, 'x-forwarded-host') || getRequestHeader(event, 'host') || '')
-  const first = raw.split(',')[0]?.trim() || ''
-  return first.toLowerCase()
+
+  const rawForwarded = String(getRequestHeader(event, 'x-forwarded-host') || '').trim()
+  const rawHost = String(getRequestHeader(event, 'host') || '').trim()
+
+  const candidates = [rawForwarded, rawHost]
+    .filter(Boolean)
+    .flatMap((v) => v.split(',').map((p) => p.trim()))
+    .filter(Boolean)
+    .map((v) => v.toLowerCase())
+
+  if (!candidates.length) return ''
+
+  const publicDomain = 'casadosoftware.com.br'
+  const preferred = candidates.find((h) => h.includes(publicDomain))
+  return (preferred || candidates[0] || '').toLowerCase()
 }
 
 function isSubdomainModeEnabled(): boolean {
