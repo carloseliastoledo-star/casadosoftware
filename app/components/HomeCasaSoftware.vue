@@ -195,9 +195,21 @@
 </template>
 
 <script setup lang="ts">
-const { data, pending, error } = await useFetch('/api/products/best-sellers', {
-  server: true
-})
+const { data, pending, error } = await useAsyncData(
+  'best-sellers',
+  async () => {
+    try {
+      return await $fetch('/api/products/best-sellers')
+    } catch (err) {
+      console.error('[home][best-sellers] failed', err)
+      return []
+    }
+  },
+  {
+    server: true,
+    default: () => []
+  }
+)
 
-const products = computed(() => data.value || [])
+const products = computed(() => (Array.isArray(data.value) ? data.value : []))
 </script>
