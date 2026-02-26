@@ -614,11 +614,16 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
+const forwardedHeaders = import.meta.server
+  ? useRequestHeaders(['host', 'x-forwarded-host'])
+  : undefined
+
 const { data, pending, error } = await useFetch<any[]>('/api/products/best-sellers', {
-  server: true
+  server: true,
+  headers: forwardedHeaders as any
 })
 
-const { data: siteSettings } = await useFetch('/api/site-settings', { server: true })
+const { data: siteSettings } = await useFetch('/api/site-settings', { server: true, headers: forwardedHeaders as any })
 
 const products = computed(() => (data.value as any[]) || [])
 
@@ -663,7 +668,8 @@ const {
   pending: categoriasPending,
   error: categoriasError
 } = await useFetch<{ ok: true; categorias: any[] }>('/api/categorias', {
-  server: true
+  server: true,
+  headers: forwardedHeaders as any
 })
 
 const t = computed<Record<string, string>>(() => {
