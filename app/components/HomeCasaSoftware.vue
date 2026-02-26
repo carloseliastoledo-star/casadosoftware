@@ -196,19 +196,27 @@
 
 <script setup lang="ts">
 const forwardedHeaders = import.meta.server
-  ? useRequestHeaders(['host', 'x-forwarded-host'])
+  ? useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host'])
   : undefined
 
-const asyncKey = import.meta.server
-  ? `best-sellers:${String((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.host || '')}`
-  : 'best-sellers'
+const forwardedHost = import.meta.server
+  ? String((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.['x-original-host'] || (forwardedHeaders as any)?.host || '')
+  : ''
+
+const fetchHeaders = import.meta.server
+  ? ({
+      'x-forwarded-host': forwardedHost
+    } as Record<string, string>)
+  : undefined
+
+const asyncKey = import.meta.server ? `best-sellers:${forwardedHost}` : 'best-sellers'
 
 const { data, pending, error } = await useAsyncData(
   asyncKey,
   async () => {
     try {
       return await $fetch('/api/products/best-sellers', {
-        headers: forwardedHeaders as any
+        headers: fetchHeaders as any
       })
     } catch (err) {
       console.error('[home][best-sellers] failed', err)

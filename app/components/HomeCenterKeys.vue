@@ -615,15 +615,25 @@ const isLicencasDigitais = computed(() => {
 })
 
 const forwardedHeaders = import.meta.server
-  ? useRequestHeaders(['host', 'x-forwarded-host'])
+  ? useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host'])
+  : undefined
+
+const forwardedHost = import.meta.server
+  ? String((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.['x-original-host'] || (forwardedHeaders as any)?.host || '')
+  : ''
+
+const fetchHeaders = import.meta.server
+  ? ({
+      'x-forwarded-host': forwardedHost
+    } as Record<string, string>)
   : undefined
 
 const { data, pending, error } = await useFetch<any[]>('/api/products/best-sellers', {
   server: true,
-  headers: forwardedHeaders as any
+  headers: fetchHeaders as any
 })
 
-const { data: siteSettings } = await useFetch('/api/site-settings', { server: true, headers: forwardedHeaders as any })
+const { data: siteSettings } = await useFetch('/api/site-settings', { server: true, headers: fetchHeaders as any })
 
 const products = computed(() => (data.value as any[]) || [])
 
@@ -669,7 +679,7 @@ const {
   error: categoriasError
 } = await useFetch<{ ok: true; categorias: any[] }>('/api/categorias', {
   server: true,
-  headers: forwardedHeaders as any
+  headers: fetchHeaders as any
 })
 
 const t = computed<Record<string, string>>(() => {
