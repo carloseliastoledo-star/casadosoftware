@@ -120,8 +120,12 @@
         {{ $t('home.loading_products') }}
       </div>
 
-      <div v-else-if="error" class="text-center py-16 text-red-600">
+      <div v-else-if="hasError" class="text-center py-16 text-red-600">
         {{ $t('home.error_loading_products') }}
+      </div>
+
+      <div v-else-if="products.length === 0" class="text-center py-16 text-gray-500">
+        {{ $t('home.no_best_sellers') }}
       </div>
 
       <div v-else class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -211,7 +215,9 @@ const fetchHeaders = import.meta.server
 
 const asyncKey = import.meta.server ? `best-sellers:${forwardedHost}` : 'best-sellers'
 
-const { data, pending, error } = await useAsyncData(
+const bestSellersFailed = ref(false)
+
+const { data, pending, error: asyncError } = await useAsyncData(
   asyncKey,
   async () => {
     try {
@@ -219,6 +225,7 @@ const { data, pending, error } = await useAsyncData(
         headers: fetchHeaders as any
       })
     } catch (err) {
+      bestSellersFailed.value = true
       console.error('[home][best-sellers] failed', err)
       return []
     }
@@ -230,4 +237,5 @@ const { data, pending, error } = await useAsyncData(
 )
 
 const products = computed(() => (Array.isArray(data.value) ? data.value : []))
+const hasError = computed(() => Boolean(bestSellersFailed.value || asyncError.value))
 </script>
