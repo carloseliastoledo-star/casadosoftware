@@ -528,6 +528,7 @@ onMounted(() => {
   }
 
   router.beforeEach(() => {
+    if (reloadPending.value) return
     navOverlay.value = true
   })
 
@@ -838,11 +839,10 @@ function triggerReload() {
   } catch {
     // ignore
   }
-  reloadOverlay.value = true
 
   window.setTimeout(() => {
     window.location.reload()
-  }, 60)
+  }, 120)
 }
 
 function menuIcon(label: string) {

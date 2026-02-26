@@ -63,6 +63,9 @@ export function useIntlContext() {
   const locale = computed<ClientIntl['locale']>(() => languageToLocale(language.value))
 
   const currencyLower = computed<ClientIntl['currencyLower']>(() => {
+    const fromCookie = normalizeCurrency(currencyCookie.value)
+    if (fromCookie) return fromCookie
+
     const country = String(countryCode.value || '').trim().toUpperCase()
 
     if (country === 'BR') return 'brl'
@@ -100,9 +103,6 @@ export function useIntlContext() {
       if (eur.has(country)) return 'eur'
       return 'usd'
     }
-
-    const c = normalizeCurrency(currencyCookie.value)
-    if (c) return c
 
     return 'brl'
   })
