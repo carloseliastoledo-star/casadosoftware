@@ -105,8 +105,8 @@
     <div class="max-w-7xl mx-auto px-6 py-12">
       <div class="flex items-end justify-between gap-6 flex-wrap">
         <div>
-          <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.featured_products_title') }}</h2>
-          <p class="text-gray-600 mt-2">{{ $t('home.featured_products_subtitle') }}</p>
+          <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.best_sellers_title') }}</h2>
+          <p class="text-gray-600 mt-2">{{ $t('home.best_sellers_subtitle') }}</p>
         </div>
         <NuxtLink
           to="/produtos"
