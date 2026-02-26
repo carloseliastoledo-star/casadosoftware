@@ -804,6 +804,24 @@ function onCountryChange(e: Event) {
 
 function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
   intl.setLanguage(next)
+
+  // If user switches language to a non-PT locale, but still has BRL enforced
+  // (either by currency cookie or by country=BR), switch to an intl currency.
+  if (next !== 'pt') {
+    let shouldReload = false
+
+    if (intl.countryCode.value === 'BR') {
+      intl.setCountry('')
+      shouldReload = true
+    }
+
+    if (intl.currencyLower.value === 'brl') {
+      intl.setCurrency(next === 'en' ? 'usd' : 'eur')
+      shouldReload = true
+    }
+
+    if (shouldReload && !process.server) window.location.reload()
+  }
 }
 
 function menuIcon(label: string) {
