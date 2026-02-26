@@ -126,7 +126,7 @@ export function getIntlContext(event?: H3Event): IntlContext {
   const pathLang = detectLanguageFromPath(event)
   const headerCountry = readCountryCode(event)
   const inferredHostCountry = host.endsWith('.com.br') || host.includes('.com.br:') ? 'BR' : ''
-  const country = cookieCountry || headerCountry || inferredHostCountry
+  const country = cookieCountry || headerCountry || (cookieCurrency ? '' : inferredHostCountry)
 
   let language: 'pt' | 'en' | 'es' | 'it' | 'fr' = 'pt'
   let currency: 'brl' | 'usd' | 'eur' = 'brl'
@@ -144,12 +144,12 @@ export function getIntlContext(event?: H3Event): IntlContext {
   else if (isIt) language = 'it'
   else if (isFr) language = 'fr'
 
-  if (country) {
+  if (cookieCurrency) {
+    currency = cookieCurrency
+  } else if (country) {
     if (country === 'BR') currency = 'brl'
     else if (isEuropeanCountry(country)) currency = 'eur'
     else currency = 'usd'
-  } else if (cookieCurrency) {
-    currency = cookieCurrency
   } else {
     currency = language === 'pt' ? 'brl' : language === 'es' ? 'eur' : 'usd'
   }
