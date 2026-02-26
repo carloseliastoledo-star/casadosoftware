@@ -815,8 +815,20 @@ function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
       shouldReload = true
     }
 
+    // If country is set to an EUR-zone country, currencyLower is forced to EUR.
+    // When switching to EN, ensure we land on USD by moving the country to US.
+    if (next === 'en' && intl.currencyLower.value === 'eur') {
+      intl.setCountry('US')
+      shouldReload = true
+    }
+
     if (intl.currencyLower.value === 'brl') {
       intl.setCurrency(next === 'en' ? 'usd' : 'eur')
+      shouldReload = true
+    }
+
+    if (next === 'en' && intl.currencyLower.value !== 'usd') {
+      intl.setCurrency('usd')
       shouldReload = true
     }
 
