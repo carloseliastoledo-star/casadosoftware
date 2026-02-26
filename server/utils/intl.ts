@@ -155,23 +155,28 @@ export function getIntlContext(event?: H3Event): IntlContext {
   let language: 'pt' | 'en' | 'es' | 'it' | 'fr' = 'pt'
   let currency: 'brl' | 'usd' | 'eur' = 'brl'
 
-  if (subdomainMode && subdomainLanguage) {
+  if (subdomainLanguage) {
     language = subdomainLanguage
-  } else if (pathLang) language = pathLang
-  else if (cookieLang) language = cookieLang
-  else if (acceptLang) language = acceptLang
-  else if (subdomainLanguage) language = subdomainLanguage
-
-  if (cookieCurrency) {
-    currency = cookieCurrency
-  } else if (subdomainMode && (subdomainLanguage || language)) {
-    currency = defaultCurrencyForLanguage((subdomainLanguage || language) as any)
-  } else if (country) {
-    if (country === 'BR') currency = 'brl'
-    else if (isEuropeanCountry(country)) currency = 'eur'
-    else currency = 'usd'
+    currency = defaultCurrencyForLanguage(subdomainLanguage)
   } else {
-    currency = defaultCurrencyForLanguage(language)
+    if (subdomainMode && subdomainLanguage) {
+      language = subdomainLanguage
+    } else if (pathLang) language = pathLang
+    else if (cookieLang) language = cookieLang
+    else if (acceptLang) language = acceptLang
+    else if (subdomainLanguage) language = subdomainLanguage
+
+    if (cookieCurrency) {
+      currency = cookieCurrency
+    } else if (subdomainMode && (subdomainLanguage || language)) {
+      currency = defaultCurrencyForLanguage((subdomainLanguage || language) as any)
+    } else if (country) {
+      if (country === 'BR') currency = 'brl'
+      else if (isEuropeanCountry(country)) currency = 'eur'
+      else currency = 'usd'
+    } else {
+      currency = defaultCurrencyForLanguage(language)
+    }
   }
 
   const locale =

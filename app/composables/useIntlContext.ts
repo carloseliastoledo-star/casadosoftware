@@ -88,11 +88,15 @@ export function useIntlContext() {
   const locale = computed<ClientIntl['locale']>(() => languageToLocale(language.value))
 
   const currencyLower = computed<ClientIntl['currencyLower']>(() => {
+    const sub = detectSubdomainLanguage(host.value)
+    if (sub) {
+      return defaultCurrencyForLanguage(sub)
+    }
+
     const fromCookie = normalizeCurrency(currencyCookie.value)
     if (fromCookie) return fromCookie
 
-    const sub = detectSubdomainLanguage(host.value)
-    if (subdomainMode.value || sub) {
+    if (subdomainMode.value) {
       return defaultCurrencyForLanguage(language.value)
     }
 

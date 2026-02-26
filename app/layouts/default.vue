@@ -556,17 +556,6 @@ onMounted(() => {
   } catch {
     // ignore
   }
-
-  router.beforeEach(() => {
-    if (reloadPending.value) return
-    navOverlay.value = true
-  })
-
-  router.afterEach(() => {
-    window.setTimeout(() => {
-      navOverlay.value = false
-    }, 120)
-  })
 })
 
 const search = ref('')
