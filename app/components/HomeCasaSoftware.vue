@@ -195,11 +195,21 @@
 </template>
 
 <script setup lang="ts">
+const forwardedHeaders = import.meta.server
+  ? useRequestHeaders(['host', 'x-forwarded-host'])
+  : undefined
+
+const asyncKey = import.meta.server
+  ? `best-sellers:${String((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.host || '')}`
+  : 'best-sellers'
+
 const { data, pending, error } = await useAsyncData(
-  'best-sellers',
+  asyncKey,
   async () => {
     try {
-      return await $fetch('/api/products/best-sellers')
+      return await $fetch('/api/products/best-sellers', {
+        headers: forwardedHeaders as any
+      })
     } catch (err) {
       console.error('[home][best-sellers] failed', err)
       return []
