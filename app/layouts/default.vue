@@ -66,6 +66,19 @@
           </form>
 
           <div class="flex items-center gap-3">
+            <select
+              class="hidden md:block h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
+              :value="intl.language"
+              aria-label="Language"
+              @change="onLanguageChange"
+            >
+              <option value="pt">PT</option>
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+              <option value="fr">FR</option>
+              <option value="it">IT</option>
+            </select>
+
             <NuxtLink
               to="/minha-conta/login"
               class="hidden md:flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-blue-600"
@@ -757,6 +770,14 @@ function onCountryChange(e: Event) {
   else if (next === 'BR' || next === 'PT') intl.setLanguage('pt')
 
   if (!process.server) window.location.reload()
+}
+
+function onLanguageChange(e: Event) {
+  const next = String((e.target as HTMLSelectElement)?.value || '').trim().toLowerCase()
+  if (next === 'pt' || next === 'en' || next === 'es' || next === 'fr' || next === 'it') {
+    intl.setLanguage(next)
+    if (!process.server) window.location.reload()
+  }
 }
 
 function menuIcon(label: string) {
