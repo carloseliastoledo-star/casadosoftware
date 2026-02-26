@@ -68,7 +68,7 @@ function parseSlugs(raw: unknown): string[] {
 
 export default defineEventHandler(async (event) => {
   try {
-    const { storeSlug } = getStoreContext()
+    const { storeSlug } = getStoreContext(event)
 
     const intl = getIntlContext(event)
 
@@ -115,76 +115,7 @@ export default defineEventHandler(async (event) => {
       criadoEm: true
     } as const
 
-    if (manualSlugs.length > 0) {
-      const products = await (prisma as any).produto.findMany({
-        where: {
-          ativo: true,
-          slug: { in: manualSlugs }
-        },
-        select: productSelect
-      })
-
-      const bySlug = new Map(products.map((p: any) => [p.slug, p]))
-      const ordered = manualSlugs.map((slug: any) => bySlug.get(slug)).filter(Boolean) as typeof products
-
-      return ordered.map((p: any) => {
-        const override = (p as any).precosLoja?.[0] || null
-
-        const effective = resolveEffectivePrice({
-          requestedCurrency: intl.currency,
-          baseAmount: p.preco,
-          baseOldAmount: p.precoAntigo,
-          storeAmountOverride: override?.preco,
-          storeOldAmountOverride: override?.precoAntigo,
-          currencyRows: (p as any).precosMoeda || []
-        })
-
-        const effectivePrice = effective.amount
-        const effectiveOldPrice = effective.oldAmount
-
-        const translatedName = autoTranslateText(p.nome, { lang }) || p.nome
-        const translatedDescription = autoTranslateText(p.descricao, { lang }) || p.descricao
-        const translatedTutorialTitle = autoTranslateText(p.tutorialTitulo, { lang }) || p.tutorialTitulo
-        const translatedTutorialSubtitle = autoTranslateText(p.tutorialSubtitulo, { lang }) || p.tutorialSubtitulo
-
-        return {
-          id: p.id,
-          name: translatedName,
-          slug: p.slug,
-          description: translatedDescription,
-          cardItems: p.cardItems,
-          price: effectivePrice,
-          precoAntigo: effectiveOldPrice,
-          currency: effective.currency,
-          image: normalizeImageUrl(p.imagem),
-          categories: (p.produtoCategorias || []).map((pc: any) => pc.categoria?.slug).filter(Boolean),
-          tutorialTitle: translatedTutorialTitle,
-          tutorialSubtitle: translatedTutorialSubtitle,
-          createdAt: p.criadoEm
-        }
-      })
-    }
-
-    const grouped = await (prisma as any).order.groupBy({
-      by: ['produtoId'],
-      where: { status: 'PAID' },
-      _count: { produtoId: true },
-      orderBy: { _count: { produtoId: 'desc' } },
-      take: 8
-    })
-
-    const productIds = grouped.map((g: any) => g.produtoId)
-    if (productIds.length === 0) return []
-
-    const products = await (prisma as any).produto.findMany({
-      where: { ativo: true, id: { in: productIds } },
-      select: productSelect
-    })
-
-    const byId = new Map(products.map((p: any) => [p.id, p]))
-    const ordered = productIds.map((id: any) => byId.get(id)).filter(Boolean) as typeof products
-
-    return ordered.map((p: any) => {
+    const mapProduct = (p: any) => {
       const override = (p as any).precosLoja?.[0] || null
 
       const effective = resolveEffectivePrice({
@@ -219,7 +150,53 @@ export default defineEventHandler(async (event) => {
         tutorialSubtitle: translatedTutorialSubtitle,
         createdAt: p.criadoEm
       }
+    }
+
+    if (manualSlugs.length > 0) {
+      const products = await (prisma as any).produto.findMany({
+        where: {
+          ativo: true,
+          slug: { in: manualSlugs }
+        },
+        select: productSelect
+      })
+
+      const bySlug = new Map(products.map((p: any) => [p.slug, p]))
+      const ordered = manualSlugs.map((slug: any) => bySlug.get(slug)).filter(Boolean) as typeof products
+
+      if (ordered.length > 0) {
+        return ordered.map(mapProduct)
+      }
+    }
+
+    const grouped = await (prisma as any).order.groupBy({
+      by: ['produtoId'],
+      where: { status: 'PAID' },
+      _count: { produtoId: true },
+      orderBy: { _count: { produtoId: 'desc' } },
+      take: 8
     })
+
+    const productIds = grouped.map((g: any) => g.produtoId)
+    if (productIds.length === 0) {
+      const products = await (prisma as any).produto.findMany({
+        where: { ativo: true },
+        select: productSelect,
+        orderBy: { criadoEm: 'desc' },
+        take: 8
+      })
+      return (products || []).map(mapProduct)
+    }
+
+    const products = await (prisma as any).produto.findMany({
+      where: { ativo: true, id: { in: productIds } },
+      select: productSelect
+    })
+
+    const byId = new Map(products.map((p: any) => [p.id, p]))
+    const ordered = productIds.map((id: any) => byId.get(id)).filter(Boolean) as typeof products
+
+    return ordered.map(mapProduct)
   } catch (err: any) {
     console.error('GET /api/products/best-sellers failed', err)
     throw createError({
