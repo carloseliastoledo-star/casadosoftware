@@ -231,7 +231,13 @@ const fetchHeaders = import.meta.server
     } as Record<string, string>)
   : undefined
 
-const asyncKey = import.meta.server ? `best-sellers:${forwardedHost}` : 'best-sellers'
+const clientHost = !import.meta.server
+  ? pickPublicHost(typeof window !== 'undefined' ? window.location.host : '')
+  : ''
+
+const keyHost = import.meta.server ? forwardedHost : clientHost
+
+const asyncKey = `best-sellers:${keyHost || 'default'}`
 
 const bestSellersFailed = ref(false)
 
