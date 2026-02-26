@@ -73,47 +73,34 @@
           </form>
 
           <div class="flex items-center gap-3">
-            <div class="hidden md:flex items-center gap-1" aria-label="Language">
-              <button
-                type="button"
-                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
-                :class="intl.language.value === 'pt' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
-                @click="setLanguage('pt')"
+            <div class="hidden md:flex items-center gap-2">
+              <select
+                class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
+                :value="intl.countryCode || 'AUTO'"
+                aria-label="Country"
+                @change="onCountryChange"
               >
-                PT
-              </button>
-              <button
-                type="button"
-                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
-                :class="intl.language.value === 'en' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
-                @click="setLanguage('en')"
+                <option value="AUTO">AUTO</option>
+                <option value="BR">BR</option>
+                <option value="US">US</option>
+                <option value="GB">UK</option>
+                <option value="ES">ES</option>
+                <option value="PT">PT</option>
+                <option value="DE">DE</option>
+                <option value="FR">FR</option>
+                <option value="IT">IT</option>
+              </select>
+
+              <select
+                class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
+                :value="intl.currencyLower"
+                aria-label="Currency"
+                @change="onCurrencyChange"
               >
-                EN
-              </button>
-              <button
-                type="button"
-                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
-                :class="intl.language.value === 'es' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
-                @click="setLanguage('es')"
-              >
-                ES
-              </button>
-              <button
-                type="button"
-                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
-                :class="intl.language.value === 'fr' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
-                @click="setLanguage('fr')"
-              >
-                FR
-              </button>
-              <button
-                type="button"
-                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
-                :class="intl.language.value === 'it' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
-                @click="setLanguage('it')"
-              >
-                IT
-              </button>
+                <option value="usd">USD</option>
+                <option value="eur">EUR</option>
+                <option value="brl">BRL</option>
+              </select>
             </div>
 
             <NuxtLink
@@ -522,6 +509,8 @@ const mobileMenuOpen = ref(false)
 
 const reloadOverlay = ref(false)
 
+const reloadPending = ref(false)
+
 const navOverlay = ref(false)
 
 onMounted(() => {
@@ -842,82 +831,18 @@ function onCountryChange(e: Event) {
 
 function triggerReload() {
   if (process.server) return
+  if (reloadPending.value) return
+  reloadPending.value = true
   try {
     window.sessionStorage.setItem('reload_overlay', '1')
   } catch {
     // ignore
   }
   reloadOverlay.value = true
-  window.location.reload()
-}
 
-function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
-  intl.setLanguage(next)
-
-  if (next === 'pt') {
-    let shouldReload = false
-
-    if (intl.currencyLower.value !== 'brl') {
-      intl.setCurrency('brl')
-      shouldReload = true
-    }
-
-    if (intl.countryCode.value !== 'BR') {
-      intl.setCountry('BR')
-      shouldReload = true
-    }
-
-    if (shouldReload) triggerReload()
-    return
-  }
-
-  if (next === 'es' || next === 'fr' || next === 'it') {
-    let shouldReload = false
-
-    const desiredCountry = next === 'it' ? 'IT' : next === 'fr' ? 'FR' : 'ES'
-    if (intl.countryCode.value !== desiredCountry) {
-      intl.setCountry(desiredCountry)
-      shouldReload = true
-    }
-
-    if (intl.currencyLower.value !== 'eur') {
-      intl.setCurrency('eur')
-      shouldReload = true
-    }
-
-    if (shouldReload) triggerReload()
-    return
-  }
-
-  // If user switches language to a non-PT locale, but still has BRL enforced
-  // (either by currency cookie or by country=BR), switch to an intl currency.
-  if (next !== 'pt') {
-    let shouldReload = false
-
-    if (intl.countryCode.value === 'BR') {
-      intl.setCountry('')
-      shouldReload = true
-    }
-
-    // If country is set to an EUR-zone country, currencyLower is forced to EUR.
-    // When switching to EN, ensure we land on USD by moving the country to US.
-    if (next === 'en' && intl.currencyLower.value === 'eur') {
-      intl.setCountry('US')
-      shouldReload = true
-    }
-
-    if (intl.currencyLower.value === 'brl') {
-      intl.setCurrency(next === 'en' ? 'usd' : 'eur')
-      shouldReload = true
-    }
-
-    if (next === 'en' && intl.currencyLower.value !== 'usd') {
-      intl.setCurrency('usd')
-      shouldReload = true
-    }
-
-    if (shouldReload) triggerReload()
-  }
+  window.setTimeout(() => {
+    window.location.reload()
+  }, 60)
 }
 
 function menuIcon(label: string) {
