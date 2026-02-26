@@ -203,8 +203,26 @@ const forwardedHeaders = import.meta.server
   ? useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host'])
   : undefined
 
+function normalizeHostValue(input: unknown) {
+  const raw = String(input || '').trim().toLowerCase()
+  if (!raw) return ''
+  const noProto = raw.replace(/^https?:\/\//, '')
+  const noPath = noProto.replace(/\/.*/, '')
+  const noPort = noPath.replace(/:\d+$/, '')
+  return noPort.replace(/^www\./, '')
+}
+
+function pickPublicHost(input: unknown) {
+  const raw = String(input || '').trim()
+  if (!raw) return ''
+  const parts = raw.split(',').map((p) => normalizeHostValue(p)).filter(Boolean)
+  if (parts.length === 0) return ''
+  const preferred = parts.find((h) => h.includes('casadosoftware.com.br') || h.includes('licencasdigitais.com.br'))
+  return preferred || parts[0]!
+}
+
 const forwardedHost = import.meta.server
-  ? String((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.['x-original-host'] || (forwardedHeaders as any)?.host || '')
+  ? pickPublicHost((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.['x-original-host'] || (forwardedHeaders as any)?.host || '')
   : ''
 
 const fetchHeaders = import.meta.server
