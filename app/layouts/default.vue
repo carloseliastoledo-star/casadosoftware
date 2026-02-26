@@ -1,6 +1,13 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
 
+    <div v-if="reloadOverlay" class="fixed inset-0 z-[99999] bg-white flex items-center justify-center">
+      <div class="flex items-center gap-3 text-gray-700 font-semibold">
+        <div class="h-5 w-5 rounded-full border-2 border-gray-300 border-t-blue-600 animate-spin" />
+        <div>Carregando...</div>
+      </div>
+    </div>
+
     <div v-if="topbarText && !isLicencasDigitais" class="bg-blue-600 text-white text-xs">
       <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
         <a
@@ -511,6 +518,23 @@ const route = useRoute()
 
 const mobileMenuOpen = ref(false)
 
+const reloadOverlay = ref(false)
+
+onMounted(() => {
+  try {
+    const flag = window.sessionStorage.getItem('reload_overlay')
+    if (flag === '1') {
+      reloadOverlay.value = true
+      window.sessionStorage.removeItem('reload_overlay')
+      window.setTimeout(() => {
+        reloadOverlay.value = false
+      }, 900)
+    }
+  } catch {
+    // ignore
+  }
+})
+
 const search = ref('')
 
 watch(
@@ -740,7 +764,7 @@ function onCurrencyChange(e: Event) {
   const next = String((e.target as HTMLSelectElement)?.value || '').trim().toLowerCase()
   if (next === 'brl' || next === 'usd' || next === 'eur') {
     intl.setCurrency(next)
-    if (!process.server) window.location.reload()
+    triggerReload()
   }
 }
 
@@ -748,7 +772,7 @@ function onCountryChange(e: Event) {
   const next = String((e.target as HTMLSelectElement)?.value || '').trim().toUpperCase()
   if (next === 'AUTO') {
     intl.setCountry('')
-    if (!process.server) window.location.reload()
+    triggerReload()
     return
   }
 
@@ -799,7 +823,18 @@ function onCountryChange(e: Event) {
   else if (next === 'US' || next === 'GB') intl.setLanguage('en')
   else if (next === 'BR' || next === 'PT') intl.setLanguage('pt')
 
-  if (!process.server) window.location.reload()
+  triggerReload()
+}
+
+function triggerReload() {
+  if (process.server) return
+  try {
+    window.sessionStorage.setItem('reload_overlay', '1')
+  } catch {
+    // ignore
+  }
+  reloadOverlay.value = true
+  window.location.reload()
 }
 
 function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
@@ -832,7 +867,7 @@ function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
       shouldReload = true
     }
 
-    if (shouldReload && !process.server) window.location.reload()
+    if (shouldReload) triggerReload()
   }
 }
 
