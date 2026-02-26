@@ -17,9 +17,9 @@ function normalizeLang(input: unknown): Lang {
 function detectHost(): string {
   if (import.meta.server) {
     try {
-      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
-      const raw = headers?.['x-forwarded-host'] || headers?.host || ''
-      const first = String(raw).split(',')[0]?.trim()
+      const event = useRequestEvent()
+      const raw = String(event?.node?.req?.headers?.['x-forwarded-host'] || event?.node?.req?.headers?.host || '')
+      const first = raw.split(',')[0]?.trim() || ''
       return String(first || '').toLowerCase()
     } catch {
       return ''
