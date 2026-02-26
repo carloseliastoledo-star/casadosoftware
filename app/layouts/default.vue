@@ -840,6 +840,23 @@ function triggerReload() {
 function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
   intl.setLanguage(next)
 
+  if (next === 'pt') {
+    let shouldReload = false
+
+    if (intl.currencyLower.value !== 'brl') {
+      intl.setCurrency('brl')
+      shouldReload = true
+    }
+
+    if (intl.countryCode.value !== 'BR') {
+      intl.setCountry('BR')
+      shouldReload = true
+    }
+
+    if (shouldReload) triggerReload()
+    return
+  }
+
   // If user switches language to a non-PT locale, but still has BRL enforced
   // (either by currency cookie or by country=BR), switch to an intl currency.
   if (next !== 'pt') {
