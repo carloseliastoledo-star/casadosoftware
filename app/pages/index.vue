@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: true })
+definePageMeta({ ssr: false })
 
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
