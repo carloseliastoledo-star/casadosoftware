@@ -41,9 +41,8 @@ function detectSubdomainLanguage(host: string): Lang | null {
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
-  const subdomainMode = Boolean((config.public as any)?.intlSubdomainMode)
   const host = detectHost()
-  const subdomainLang = subdomainMode ? detectSubdomainLanguage(host) : null
+  const subdomainLang = detectSubdomainLanguage(host)
 
   const langCookie = useCookie<string | null>('ld_lang', { sameSite: 'lax', path: '/' })
 
@@ -69,7 +68,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     watch(
       () => langCookie.value,
       (next) => {
-        if (subdomainMode && subdomainLang) {
+        if (subdomainLang) {
           i18n.global.locale.value = subdomainLang
           return
         }
