@@ -243,6 +243,36 @@
         </div>
 
         <nav class="p-5 flex-1 overflow-y-auto">
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <select
+              class="h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
+              :value="intl.countryCode || 'AUTO'"
+              aria-label="Country"
+              @change="(e) => { onCountryChange(e); mobileMenuOpen = false }"
+            >
+              <option value="AUTO">AUTO</option>
+              <option value="BR">BR</option>
+              <option value="US">US</option>
+              <option value="GB">UK</option>
+              <option value="ES">ES</option>
+              <option value="PT">PT</option>
+              <option value="DE">DE</option>
+              <option value="FR">FR</option>
+              <option value="IT">IT</option>
+            </select>
+
+            <select
+              class="h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
+              :value="intl.currencyLower"
+              aria-label="Currency"
+              @change="(e) => { onCurrencyChange(e); mobileMenuOpen = false }"
+            >
+              <option value="usd">USD</option>
+              <option value="eur">EUR</option>
+              <option value="brl">BRL</option>
+            </select>
+          </div>
+
           <div class="space-y-1">
             <NuxtLink
               v-for="it in mainMenu"
