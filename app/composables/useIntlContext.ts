@@ -38,9 +38,20 @@ function detectHost(): string {
   if (import.meta.server) {
     try {
       const event = useRequestEvent()
-      const raw = String(event?.node?.req?.headers?.['x-forwarded-host'] || event?.node?.req?.headers?.host || '')
-      const first = raw.split(',')[0]?.trim() || ''
-      return String(first || '').toLowerCase()
+      const rawForwarded = String(event?.node?.req?.headers?.['x-forwarded-host'] || '').trim()
+      const rawHost = String(event?.node?.req?.headers?.host || '').trim()
+
+      const candidates = [rawForwarded, rawHost]
+        .filter(Boolean)
+        .flatMap((v) => String(v).split(',').map((p) => p.trim()))
+        .filter(Boolean)
+        .map((v) => String(v).toLowerCase())
+
+      if (!candidates.length) return ''
+
+      const publicDomain = 'casadosoftware.com.br'
+      const preferred = candidates.find((h) => h.includes(publicDomain))
+      return String(preferred || candidates[0] || '').toLowerCase()
     } catch {
       return ''
     }
