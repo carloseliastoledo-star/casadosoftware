@@ -14,13 +14,45 @@ function normalizeLang(input: unknown): Lang {
   return 'pt'
 }
 
+function detectHost(): string {
+  if (import.meta.server) {
+    try {
+      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
+      const raw = headers?.['x-forwarded-host'] || headers?.host || ''
+      const first = String(raw).split(',')[0]?.trim()
+      return String(first || '').toLowerCase()
+    } catch {
+      return ''
+    }
+  }
+  return String(window.location.host || '').toLowerCase()
+}
+
+function detectSubdomainLanguage(host: string): Lang | null {
+  const h = String(host || '').trim().toLowerCase()
+  if (!h) return null
+  if (h.startsWith('pt.')) return 'pt'
+  if (h.startsWith('en.')) return 'en'
+  if (h.startsWith('es.')) return 'es'
+  if (h.startsWith('fr.')) return 'fr'
+  if (h.startsWith('it.')) return 'it'
+  return null
+}
+
 export default defineNuxtPlugin((nuxtApp) => {
+  const config = useRuntimeConfig()
+  const subdomainMode = Boolean((config.public as any)?.intlSubdomainMode)
+  const host = detectHost()
+  const subdomainLang = subdomainMode ? detectSubdomainLanguage(host) : null
+
   const langCookie = useCookie<string | null>('ld_lang', { sameSite: 'lax', path: '/' })
+
+  const initialLang = subdomainLang || normalizeLang(langCookie.value)
 
   const i18n = createI18n({
     legacy: false,
     globalInjection: true,
-    locale: normalizeLang(langCookie.value),
+    locale: initialLang,
     fallbackLocale: 'pt',
     messages: {
       pt,
@@ -37,6 +69,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     watch(
       () => langCookie.value,
       (next) => {
+        if (subdomainMode && subdomainLang) {
+          i18n.global.locale.value = subdomainLang
+          return
+        }
         i18n.global.locale.value = normalizeLang(next)
       }
     )
