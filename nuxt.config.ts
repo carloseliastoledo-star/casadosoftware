@@ -51,6 +51,9 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   nitro: {
+    routeRules: {
+      '/': { ssr: false },
+    },
     publicAssets: [
       {
         baseURL: '/',
