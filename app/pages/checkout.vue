@@ -913,21 +913,32 @@ async function payWithCard() {
     }
 
     const cardData = await new Promise<any>((resolve, reject) => {
-      mpCardSubmitResolver = resolve
       try {
         mpCardForm.submit()
       } catch (e) {
-        mpCardSubmitResolver = null
         reject(e)
         return
       }
 
-      setTimeout(() => {
-        if (mpCardSubmitResolver) {
-          mpCardSubmitResolver = null
-          reject(new Error('Não foi possível validar o cartão. Tente novamente.'))
+      const startedAt = Date.now()
+      const interval = window.setInterval(() => {
+        const elapsed = Date.now() - startedAt
+        if (elapsed > 10000) {
+          window.clearInterval(interval)
+          reject(new Error('Não foi possível validar o cartão. Verifique os dados ou desative bloqueadores (AdBlock/Brave) e tente novamente.'))
+          return
         }
-      }, 10000)
+
+        try {
+          const data = mpCardForm?.getCardFormData?.()
+          if (data?.token) {
+            window.clearInterval(interval)
+            resolve(data)
+          }
+        } catch {
+          // ignore
+        }
+      }, 200)
     })
 
     if (!cardData?.token) {
