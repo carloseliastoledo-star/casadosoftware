@@ -66,18 +66,48 @@
           </form>
 
           <div class="flex items-center gap-3">
-            <select
-              class="hidden md:block h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
-              :value="intl.language"
-              aria-label="Language"
-              @change="onLanguageChange"
-            >
-              <option value="pt">PT</option>
-              <option value="en">EN</option>
-              <option value="es">ES</option>
-              <option value="fr">FR</option>
-              <option value="it">IT</option>
-            </select>
+            <div class="hidden md:flex items-center gap-1" aria-label="Language">
+              <button
+                type="button"
+                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
+                :class="intl.language.value === 'pt' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
+                @click="setLanguage('pt')"
+              >
+                PT
+              </button>
+              <button
+                type="button"
+                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
+                :class="intl.language.value === 'en' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
+                @click="setLanguage('en')"
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
+                :class="intl.language.value === 'es' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
+                @click="setLanguage('es')"
+              >
+                ES
+              </button>
+              <button
+                type="button"
+                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
+                :class="intl.language.value === 'fr' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
+                @click="setLanguage('fr')"
+              >
+                FR
+              </button>
+              <button
+                type="button"
+                class="h-8 px-2 rounded-md border text-[11px] font-extrabold"
+                :class="intl.language.value === 'it' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'"
+                @click="setLanguage('it')"
+              >
+                IT
+              </button>
+            </div>
 
             <NuxtLink
               to="/minha-conta/login"
@@ -772,12 +802,8 @@ function onCountryChange(e: Event) {
   if (!process.server) window.location.reload()
 }
 
-function onLanguageChange(e: Event) {
-  const next = String((e.target as HTMLSelectElement)?.value || '').trim().toLowerCase()
-  if (next === 'pt' || next === 'en' || next === 'es' || next === 'fr' || next === 'it') {
-    intl.setLanguage(next)
-    if (!process.server) window.location.reload()
-  }
+function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
+  intl.setLanguage(next)
 }
 
 function menuIcon(label: string) {
