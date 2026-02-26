@@ -115,8 +115,32 @@ function readHost(event?: H3Event): string {
   return first.toLowerCase()
 }
 
+function isSubdomainModeEnabled(): boolean {
+  return String(process.env.INTL_SUBDOMAIN_MODE || '').trim() === '1'
+}
+
+function detectSubdomainLanguage(host: string): 'pt' | 'en' | 'es' | 'it' | 'fr' | null {
+  const h = String(host || '').trim().toLowerCase()
+  if (!h) return null
+  if (h.startsWith('pt.')) return 'pt'
+  if (h.startsWith('en.')) return 'en'
+  if (h.startsWith('es.')) return 'es'
+  if (h.startsWith('it.')) return 'it'
+  if (h.startsWith('fr.')) return 'fr'
+  return null
+}
+
+function defaultCurrencyForLanguage(lang: 'pt' | 'en' | 'es' | 'it' | 'fr'): 'brl' | 'usd' | 'eur' {
+  if (lang === 'pt') return 'brl'
+  if (lang === 'en') return 'usd'
+  return 'eur'
+}
+
 export function getIntlContext(event?: H3Event): IntlContext {
   const host = readHost(event)
+
+  const subdomainMode = isSubdomainModeEnabled()
+  const subdomainLanguage = detectSubdomainLanguage(host)
 
   const cookieLang = normalizeLanguage(getCookie(event as any, 'ld_lang'))
   const cookieCurrency = normalizeCurrency(getCookie(event as any, 'ld_currency'))
@@ -131,27 +155,23 @@ export function getIntlContext(event?: H3Event): IntlContext {
   let language: 'pt' | 'en' | 'es' | 'it' | 'fr' = 'pt'
   let currency: 'brl' | 'usd' | 'eur' = 'brl'
 
-  const isEn = host.startsWith('en.')
-  const isEs = host.startsWith('es.')
-  const isIt = host.startsWith('it.')
-  const isFr = host.startsWith('fr.')
-
-  if (pathLang) language = pathLang
+  if (subdomainMode && subdomainLanguage) {
+    language = subdomainLanguage
+  } else if (pathLang) language = pathLang
   else if (cookieLang) language = cookieLang
   else if (acceptLang) language = acceptLang
-  else if (isEn) language = 'en'
-  else if (isEs) language = 'es'
-  else if (isIt) language = 'it'
-  else if (isFr) language = 'fr'
+  else if (subdomainLanguage) language = subdomainLanguage
 
   if (cookieCurrency) {
     currency = cookieCurrency
+  } else if (subdomainMode && (subdomainLanguage || language)) {
+    currency = defaultCurrencyForLanguage((subdomainLanguage || language) as any)
   } else if (country) {
     if (country === 'BR') currency = 'brl'
     else if (isEuropeanCountry(country)) currency = 'eur'
     else currency = 'usd'
   } else {
-    currency = language === 'pt' ? 'brl' : language === 'es' ? 'eur' : 'usd'
+    currency = defaultCurrencyForLanguage(language)
   }
 
   const locale =

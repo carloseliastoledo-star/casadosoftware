@@ -25,6 +25,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      intlSubdomainMode: String(process.env.INTL_SUBDOMAIN_MODE || '').trim() === '1',
       storeSlug: process.env.STORE_SLUG || '',
       siteUrl: process.env.SITE_URL || '',
       siteName: process.env.SITE_NAME || 'Site',

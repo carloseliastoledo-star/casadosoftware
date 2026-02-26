@@ -49,7 +49,26 @@ function detectHost(): string {
   return String(window.location.host || '').toLowerCase()
 }
 
+function detectSubdomainLanguage(host: string): ClientIntl['language'] | null {
+  const h = String(host || '').trim().toLowerCase()
+  if (!h) return null
+  if (h.startsWith('pt.')) return 'pt'
+  if (h.startsWith('en.')) return 'en'
+  if (h.startsWith('es.')) return 'es'
+  if (h.startsWith('fr.')) return 'fr'
+  if (h.startsWith('it.')) return 'it'
+  return null
+}
+
+function defaultCurrencyForLanguage(lang: ClientIntl['language']): 'brl' | 'usd' | 'eur' {
+  if (lang === 'pt') return 'brl'
+  if (lang === 'en') return 'usd'
+  return 'eur'
+}
+
 export function useIntlContext() {
+  const config = useRuntimeConfig()
+  const subdomainMode = computed(() => Boolean((config.public as any)?.intlSubdomainMode))
   const host = computed(() => detectHost())
 
   const langCookie = useCookie<string | null>('ld_lang', { sameSite: 'lax', path: '/' })
@@ -58,13 +77,25 @@ export function useIntlContext() {
 
   const countryCode = computed(() => String(countryCookie.value || '').trim().toUpperCase())
 
-  const language = computed<ClientIntl['language']>(() => normalizeLanguage(langCookie.value))
+  const language = computed<ClientIntl['language']>(() => {
+    const cookie = String(langCookie.value || '').trim()
+    if (cookie) return normalizeLanguage(cookie)
+    if (subdomainMode.value) {
+      const sub = detectSubdomainLanguage(host.value)
+      if (sub) return sub
+    }
+    return 'pt'
+  })
 
   const locale = computed<ClientIntl['locale']>(() => languageToLocale(language.value))
 
   const currencyLower = computed<ClientIntl['currencyLower']>(() => {
     const fromCookie = normalizeCurrency(currencyCookie.value)
     if (fromCookie) return fromCookie
+
+    if (subdomainMode.value) {
+      return defaultCurrencyForLanguage(language.value)
+    }
 
     const country = String(countryCode.value || '').trim().toUpperCase()
 
