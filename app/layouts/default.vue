@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
 
-    <div v-if="reloadOverlay" class="fixed inset-0 z-[99999] bg-white flex items-center justify-center">
+    <div v-if="reloadOverlay || navOverlay" class="fixed inset-0 z-[99999] bg-white flex items-center justify-center">
       <div class="flex items-center gap-3 text-gray-700 font-semibold">
         <div class="h-5 w-5 rounded-full border-2 border-gray-300 border-t-blue-600 animate-spin" />
         <div>Carregando...</div>
@@ -516,9 +516,13 @@ const intl = useIntlContext()
 
 const route = useRoute()
 
+const router = useRouter()
+
 const mobileMenuOpen = ref(false)
 
 const reloadOverlay = ref(false)
+
+const navOverlay = ref(false)
 
 onMounted(() => {
   try {
@@ -533,6 +537,16 @@ onMounted(() => {
   } catch {
     // ignore
   }
+
+  router.beforeEach(() => {
+    navOverlay.value = true
+  })
+
+  router.afterEach(() => {
+    window.setTimeout(() => {
+      navOverlay.value = false
+    }, 120)
+  })
 })
 
 const search = ref('')
@@ -850,6 +864,24 @@ function setLanguage(next: 'pt' | 'en' | 'es' | 'fr' | 'it') {
 
     if (intl.countryCode.value !== 'BR') {
       intl.setCountry('BR')
+      shouldReload = true
+    }
+
+    if (shouldReload) triggerReload()
+    return
+  }
+
+  if (next === 'es' || next === 'fr' || next === 'it') {
+    let shouldReload = false
+
+    const desiredCountry = next === 'it' ? 'IT' : next === 'fr' ? 'FR' : 'ES'
+    if (intl.countryCode.value !== desiredCountry) {
+      intl.setCountry(desiredCountry)
+      shouldReload = true
+    }
+
+    if (intl.currencyLower.value !== 'eur') {
+      intl.setCurrency('eur')
       shouldReload = true
     }
 
