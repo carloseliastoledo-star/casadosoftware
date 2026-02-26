@@ -580,6 +580,8 @@ const acceptedTerms = ref(false)
 const finalizeLoading = ref(false)
 const finalizeError = ref('')
 
+const intlError = ref('')
+
 const intlCountryCode = ref(String(intl.countryCode.value || '').trim().toUpperCase())
 const intlCurrency = ref<'usd' | 'eur'>(
   (String(intl.currencyLower.value || 'usd').toLowerCase() === 'eur' ? 'eur' : 'usd') as any
