@@ -29,6 +29,8 @@ function getOriginForLang(lang: string) {
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
   setHeader(event, 'X-Content-Type-Options', 'nosniff')
+  setHeader(event, 'Cache-Control', 'no-store, max-age=0')
+  setHeader(event, 'CDN-Cache-Control', 'no-store')
 
   const reqUrl = getRequestURL(event)
   const base = String(reqUrl.origin || '').replace(/\/$/, '')
