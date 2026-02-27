@@ -28,6 +28,7 @@ function getOriginForLang(lang: string) {
 
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
+  setHeader(event, 'X-Content-Type-Options', 'nosniff')
 
   const reqUrl = getRequestURL(event)
   const base = String(reqUrl.origin || '').replace(/\/$/, '')
@@ -73,23 +74,29 @@ export default defineEventHandler(async (event) => {
 
   const body = urls
     .map((u) => {
-      const lastmod = u.lastmod ? `<lastmod>${escXml(u.lastmod)}</lastmod>` : ''
+      const lastmod = u.lastmod ? `    <lastmod>${escXml(u.lastmod)}</lastmod>\n` : ''
 
       const alternates = ['pt-BR', 'en', 'es', 'fr', 'de']
         .map((l) => {
           const href = `${getOriginForLang(l)}${u.path}`
-          return `<xhtml:link rel="alternate" hreflang="${escXml(l)}" href="${escXml(href)}"/>`
+          return `    <xhtml:link rel="alternate" hreflang="${escXml(l)}" href="${escXml(href)}"/>\n`
         })
         .join('')
 
-      return `<url><loc>${escXml(u.loc)}</loc>${alternates}${lastmod}</url>`
+      return (
+        `  <url>\n` +
+        `    <loc>${escXml(u.loc)}</loc>\n` +
+        alternates +
+        lastmod +
+        `  </url>\n`
+      )
     })
     .join('')
 
   return (
-    `<?xml version="1.0" encoding="UTF-8"?>` +
-    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">` +
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +
     body +
-    `</urlset>`
+    `</urlset>\n`
   )
 })
