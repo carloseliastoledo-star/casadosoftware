@@ -29,12 +29,11 @@ export default defineEventHandler(async (event) => {
   }
 
   if (!ctx.storeSlug) {
-    console.warn('[customer-forgot] storeSlug ausente', { email })
+    console.warn('[customer-forgot] storeSlug ausente')
     return { ok: true }
   }
 
   console.info('[customer-forgot] request', {
-    email,
     storeSlug: ctx.storeSlug,
     includeLegacy: ctx.includeLegacy
   })
@@ -45,7 +44,6 @@ export default defineEventHandler(async (event) => {
   })
   if (!customer) {
     console.warn('[customer-forgot] customer não encontrado', {
-      email,
       storeSlug: ctx.storeSlug,
       includeLegacy: ctx.includeLegacy
     })
@@ -55,7 +53,6 @@ export default defineEventHandler(async (event) => {
   const secret = String(process.env.CUSTOMER_RESET_SECRET || process.env.CUSTOMER_SESSION_SECRET || '').trim()
   if (!secret) {
     console.error('[customer-forgot] secret ausente', {
-      email,
       storeSlug: ctx.storeSlug
     })
     return { ok: true }

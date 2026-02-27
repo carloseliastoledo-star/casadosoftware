@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
     const whatsapp = body?.whatsapp ? String(body.whatsapp).trim() : null
     const cpf = body?.cpf ? String(body.cpf).trim() : null
 
-    console.warn('[customer-register] request', { email, storeSlug })
+    console.warn('[customer-register] request', { storeSlug })
 
     if (!email || !email.includes('@')) {
       throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
