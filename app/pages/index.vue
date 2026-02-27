@@ -106,8 +106,13 @@ useHead(() => {
     try {
       const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
       const rawHost = headers['x-forwarded-host'] || headers.host || 'casadosoftware.com.br'
-      const normalizedHost = String(rawHost).split(',')[0]?.trim()
-      if (normalizedHost) siteUrl = `https://${normalizedHost}`
+      const normalizedHost = rawHost.split(',')[0].trim()
+
+      const protocol =
+        (useRequestHeaders(['x-forwarded-proto']) as Record<string, string | undefined>)['x-forwarded-proto'] ||
+        'https'
+
+      siteUrl = `${protocol}://${normalizedHost}`
     } catch {
       // ignore
     }
@@ -144,12 +149,19 @@ useJsonLd(
     if (!applyCasaSeo.value) return null
 
     let origin = ''
+    let jsonLdHost = normalizedHost.value
     if (process.server) {
       try {
         const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
         const rawHost = headers['x-forwarded-host'] || headers.host || 'casadosoftware.com.br'
-        const normalized = String(rawHost).split(',')[0]?.trim()
-        if (normalized) origin = `https://${normalized}`
+        const normalizedHost = rawHost.split(',')[0].trim()
+
+        const protocol =
+          (useRequestHeaders(['x-forwarded-proto']) as Record<string, string | undefined>)['x-forwarded-proto'] ||
+          'https'
+
+        origin = `${protocol}://${normalizedHost}`
+        jsonLdHost = normalizedHost
       } catch {
         // ignore
       }
@@ -159,9 +171,15 @@ useJsonLd(
       } catch {
         // ignore
       }
+
+      try {
+        jsonLdHost = String(window.location.host || '').toLowerCase()
+      } catch {
+        // ignore
+      }
     }
 
-    return getCasaHomeJsonLdBundle({ host: normalizedHost.value, origin })
+    return getCasaHomeJsonLdBundle({ host: jsonLdHost, origin })
   },
   'jsonld-casa-home'
 )
