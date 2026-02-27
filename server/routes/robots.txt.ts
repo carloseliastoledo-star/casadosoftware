@@ -10,8 +10,6 @@ export default defineEventHandler((event) => {
 
   return (
     'User-agent: *\n' +
-    'Disallow: /admin\n' +
-    'Disallow: /api\n' +
     'Allow: /\n' +
     '\n' +
     `Sitemap: ${origin}/sitemap.xml\n`
