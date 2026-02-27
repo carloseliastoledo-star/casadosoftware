@@ -997,9 +997,15 @@ async function finalizeCheckout() {
       return
     }
 
-    if (!customerEmail.value || !customerEmail.value.includes('@')) {
+    const normalizedEmail = String(customerEmail.value || '').trim()
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
+    if (!isValidEmail) {
       finalizeError.value = 'Informe um e-mail válido.'
       return
+    }
+
+    if (normalizedEmail !== customerEmail.value) {
+      customerEmail.value = normalizedEmail
     }
 
     if (!cpf.value) {

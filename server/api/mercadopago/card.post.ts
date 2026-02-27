@@ -81,8 +81,10 @@ export default defineEventHandler(async (event) => {
 
   const trafficSourceType = inferTrafficSourceType()
 
+  const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim())
+
   if (!produtoId) throw createError({ statusCode: 400, statusMessage: 'produtoId obrigatório' })
-  if (!email || !email.includes('@')) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
+  if (!isValidEmail(email)) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
 
   if (!token) throw createError({ statusCode: 400, statusMessage: 'token obrigatório' })
   if (!paymentMethodId) throw createError({ statusCode: 400, statusMessage: 'payment_method_id obrigatório' })
