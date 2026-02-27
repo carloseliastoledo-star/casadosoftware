@@ -2,10 +2,10 @@ type CasaLang = 'pt-BR' | 'en' | 'es' | 'fr' | 'de'
 
 function getLangFromOrigin(origin: string): CasaLang {
   const o = String(origin || '').toLowerCase()
-  if (o.includes('://en.')) return 'en'
-  if (o.includes('://es.')) return 'es'
-  if (o.includes('://fr.')) return 'fr'
-  if (o.includes('://de.')) return 'de'
+  if (o.includes('en.')) return 'en'
+  if (o.includes('es.')) return 'es'
+  if (o.includes('fr.')) return 'fr'
+  if (o.includes('de.')) return 'de'
   return 'pt-BR'
 }
 
@@ -198,7 +198,7 @@ export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: strin
   const host = String(params?.host || '')
 
   let origin = params?.origin ? String(params.origin) : ''
-  if (!origin) {
+  if (process.server) {
     try {
       const url = useRequestURL()
       origin = String(url.origin || '')
@@ -207,8 +207,28 @@ export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: strin
     }
   }
 
-  const baseUrl = origin ? String(origin).trim().replace(/\/+$/, '') : getBaseUrl(getLangFromHost(host))
-  const lang = origin ? getLangFromOrigin(baseUrl) : getLangFromHost(host)
+  if (!origin && typeof window !== 'undefined') {
+    try {
+      origin = String(window.location.origin || '')
+    } catch {
+      // ignore
+    }
+  }
+
+  const safeOrigin = origin ? String(origin).trim().replace(/\/+$/, '') : ''
+
+  const lang = safeOrigin
+    ? getLangFromOrigin(safeOrigin)
+    : getLangFromHost(host)
+
+  const productsPath =
+    lang === 'en' ? '/products' :
+      lang === 'es' ? '/productos' :
+        lang === 'fr' ? '/produits' :
+          lang === 'de' ? '/produkte' :
+            '/produtos'
+
+  const baseUrl = safeOrigin || getBaseUrl(lang)
   const logo = `${baseUrl}/logo-casa-do-software.png`
 
   const org = {
@@ -229,7 +249,7 @@ export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: strin
     inLanguage: lang,
     potentialAction: {
       '@type': 'SearchAction',
-      target: `${baseUrl}${getSearchPath(lang)}?search={search_term_string}`,
+      target: `${baseUrl}${productsPath}?search={search_term_string}`,
       'query-input': 'required name=search_term_string'
     }
   }
