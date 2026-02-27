@@ -44,7 +44,7 @@
           <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
         </p>
         <p class="text-sm">
-          ELETROKEYS LTDA — CNPJ 44.694.356/0001-48.
+          {{ companyLegalName }} — CNPJ {{ companyCnpj }}.
         </p>
       </div>
 
@@ -60,7 +60,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
 
-const { supportEmail, siteName } = useSiteBranding()
+const { supportEmail, siteName, companyLegalName, companyCnpj } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 

@@ -106,7 +106,7 @@
             >
               Ver Contato
             </NuxtLink>
-            <div class="mt-4 text-xs text-white/70">ELETROKEYS LTDA — CNPJ 44.694.356/0001-48</div>
+            <div class="mt-4 text-xs text-white/70">{{ companyLegalName }} — CNPJ {{ companyCnpj }}</div>
           </div>
         </div>
       </div>
@@ -164,6 +164,22 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
 
+const { siteName, logoPath, companyLegalName, companyCnpj, companyAddress, companyPhone } = useSiteBranding()
+const baseUrl = useSiteUrl()
+
+const safeBaseUrl = computed(() => String(baseUrl || '').trim().replace(/\/$/, ''))
+const safeLogo = computed(() => {
+  const raw = String(logoPath || '').trim()
+  if (!raw) return ''
+  if (!safeBaseUrl.value) return raw
+  return raw.startsWith('http') ? raw : `${safeBaseUrl.value}${raw.startsWith('/') ? '' : '/'}${raw}`
+})
+
+const safeOrgUrl = computed(() => safeBaseUrl.value || '')
+
+const safeStreet = computed(() => String(companyAddress || '').trim())
+const safePhone = computed(() => String(companyPhone || '').trim())
+
 useHead({
   script: [
     {
@@ -171,14 +187,14 @@ useHead({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "ELETROKEYS LTDA",
-        "url": "https://www.mercadosoftwares.com.br",
-        "logo": "https://www.mercadosoftwares.com.br/logo-mercadosoftwares.png",
+        "name": companyLegalName || siteName,
+        "url": safeOrgUrl.value || undefined,
+        "logo": safeLogo.value || undefined,
         "description": "Empresa especializada em licenças digitais e suporte ao cliente.",
         "contactPoint": [
           {
             "@type": "ContactPoint",
-            "telephone": "+55 11 91069-1485",
+            "telephone": safePhone.value || undefined,
             "contactType": "customer support",
             "areaServed": "BR",
             "availableLanguage": "Portuguese"
@@ -186,10 +202,7 @@ useHead({
         ],
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Rua Almerinda Barão Passoni Vila Aparecida",
-          "addressLocality": "Itupeva",
-          "addressRegion": "SP",
-          "postalCode": "13298808",
+          "streetAddress": safeStreet.value || undefined,
           "addressCountry": "BR"
         },
         "sameAs": [

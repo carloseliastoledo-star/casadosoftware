@@ -272,7 +272,7 @@
           <div class="mt-4 space-y-2 text-gray-600">
             <div>
               <span class="font-semibold text-gray-700">Email:</span>
-              <span class="ml-1">service@gvgmallglobal.com</span>
+              <span class="ml-1">{{ companyEmail || supportEmail }}</span>
             </div>
             <template v-if="footerLinksFromPages.length">
               <NuxtLink
@@ -316,9 +316,7 @@
         <div>
           <div class="font-extrabold tracking-widest text-xs text-sky-600">OUR ADRESS</div>
           <div class="mt-4 space-y-2 text-gray-600">
-            <div>2880 W Oakland Park Blvd.</div>
-            <div>Florida - USA</div>
-            <div>20037, United States</div>
+            <div>{{ companyAddress }}</div>
           </div>
         </div>
 
@@ -611,7 +609,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Fast and specialized support',
       footerIntlSupport: 'International support in Portuguese, Spanish and English',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) is an independent company.` : `${safeSiteName.value} (ELETROKEYS LTDA) is an independent company.`,
+      footerDisclaimer1: `${safeSiteName.value} (${companyLegalName}) is an independent company.`,
       footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
@@ -641,7 +639,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Atención rápida y especializada',
       footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) es una empresa independiente.` : `${safeSiteName.value} (ELETROKEYS LTDA) es una empresa independiente.`,
+      footerDisclaimer1: `${safeSiteName.value} (${companyLegalName}) es una empresa independiente.`,
       footerDisclaimer2: 'No estamos afiliados a Microsoft.'
     }
   }
@@ -670,7 +668,7 @@ const t = computed(() => {
     footerSupportSubtitle: 'Atendimento rápido e especializado',
     footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',
     whatsappPrefix: 'WhatsApp:',
-    footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) é uma empresa independente.` : `${safeSiteName.value} (ELETROKEYS LTDA) é uma empresa independente.`,
+    footerDisclaimer1: `${safeSiteName.value} (${companyLegalName}) é uma empresa independente.`,
     footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
 })

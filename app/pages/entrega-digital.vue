@@ -34,7 +34,7 @@
       </div>
 
       <p class="text-sm text-gray-600">
-        ELETROKEYS LTDA — CNPJ 44.694.356/0001-48.
+        {{ companyLegalName }} — CNPJ {{ companyCnpj }}.
       </p>
         </div>
       </div>
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-const { supportEmail, siteName } = useSiteBranding()
+const { supportEmail, siteName, companyLegalName, companyCnpj } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 

@@ -246,15 +246,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Razão Social</p>
-                <p class="text-foreground font-semibold">ELETROKEYS LTDA</p>
+                <p class="text-foreground font-semibold">{{ companyLegalName }}</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">CNPJ</p>
-                <p class="text-foreground font-semibold">44.694.356/0001-48</p>
+                <p class="text-foreground font-semibold">{{ companyCnpj }}</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Localização</p>
-                <p class="text-foreground font-semibold">Itupeva - SP</p>
+                <p class="text-foreground font-semibold">{{ companyAddress }}</p>
               </div>
               <div>
                 <p class="text-muted-foreground text-sm mb-1">Atuação</p>
@@ -397,8 +397,8 @@
               Soluções em conectividade e tecnologia. Oferecemos licenças de software, suporte técnico e serviços digitais.
             </p>
             <div class="space-y-1 text-sm text-muted-foreground">
-              <p><span class="text-foreground font-medium">Razão Social:</span> ELETROKEYS LTDA</p>
-              <p><span class="text-foreground font-medium">CNPJ:</span> 44.694.356/0001-48</p>
+              <p><span class="text-foreground font-medium">Razão Social:</span> {{ companyLegalName }}</p>
+              <p><span class="text-foreground font-medium">CNPJ:</span> {{ companyCnpj }}</p>
             </div>
           </div>
 
@@ -438,7 +438,7 @@
           <div class="flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="text-center md:text-left">
               <p class="text-muted-foreground text-sm">
-                <span class="text-foreground font-medium">Endereço:</span> AV PAULISTA, 1471 - Conj. 1110, Sala - Bela Vista, São Paulo - SP, CEP: 01311-927
+                <span class="text-foreground font-medium">Endereço:</span> {{ companyAddress }}
               </p>
             </div>
             <button
@@ -465,6 +465,8 @@
 
 <script setup lang="ts">
 import { defineComponent } from 'vue'
+
+const { companyLegalName, companyCnpj, companyAddress } = useSiteBranding()
 
 const navLinks = [
   { href: '#inicio', label: 'Início' },
