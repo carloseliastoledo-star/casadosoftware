@@ -1,4 +1,4 @@
-import { defineEventHandler, setHeader, getRequestURL } from 'h3'
+import { defineEventHandler, setHeader, getRequestURL, send } from 'h3'
 
 function escXml(s: string): string {
   return s
@@ -93,10 +93,11 @@ export default defineEventHandler(async (event) => {
     })
     .join('')
 
-  return (
+  const xml =
     `<?xml version="1.0" encoding="UTF-8"?>\n` +
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +
     body +
     `</urlset>\n`
-  )
+
+  return send(event, xml)
 })
