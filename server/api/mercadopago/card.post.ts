@@ -21,6 +21,18 @@ function formatMpError(err: any) {
   }
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timeoutId: NodeJS.Timeout | null = null
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(createError({ statusCode: 504, statusMessage: `Timeout (${label})` }))
+    }, ms)
+  })
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId)
+  }) as Promise<T>
+}
+
 export default defineEventHandler(async (event) => {
   const country = String(getCookie(event, 'ld_country') || '').trim().toUpperCase()
   if (country && country !== 'BR') {
@@ -202,31 +214,38 @@ export default defineEventHandler(async (event) => {
 
   let result: any
   try {
-    result = await payment.create({
-      body: {
-        transaction_amount: transactionAmount,
-        description: produto.nome,
-        token,
-        installments,
-        payment_method_id: paymentMethodId,
-        issuer_id: Number.isFinite(issuerIdNumber as number) ? (issuerIdNumber as number) : undefined,
-        payer: {
-          email,
-          identification: {
-            type: identificationType,
-            number: identificationNumber
-          }
-        },
-        metadata: {
-          orderId: order.id,
-          produtoId: produto.id,
-          couponCode: coupon?.code || null,
-          couponPercent: coupon?.percent || null
-        },
-        external_reference: order.id
-      }
-    })
+    result = await withTimeout(
+      payment.create({
+        body: {
+          transaction_amount: transactionAmount,
+          description: produto.nome,
+          token,
+          installments,
+          payment_method_id: paymentMethodId,
+          issuer_id: Number.isFinite(issuerIdNumber as number) ? (issuerIdNumber as number) : undefined,
+          payer: {
+            email,
+            identification: {
+              type: identificationType,
+              number: identificationNumber
+            }
+          },
+          metadata: {
+            orderId: order.id,
+            produtoId: produto.id,
+            couponCode: coupon?.code || null,
+            couponPercent: coupon?.percent || null
+          },
+          external_reference: order.id
+        }
+      }),
+      15000,
+      'Mercado Pago payment.create'
+    )
   } catch (err: any) {
+    if (err?.statusCode === 504) {
+      throw createError({ statusCode: 504, statusMessage: 'Timeout ao comunicar com Mercado Pago. Tente novamente.' })
+    }
     const formatted = formatMpError(err)
     throw createError({
       statusCode: 502,
