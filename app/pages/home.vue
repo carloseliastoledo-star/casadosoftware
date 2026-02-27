@@ -14,9 +14,35 @@ const storeSlug = computed(() => String((config.public as any)?.storeSlug || '')
 
 const baseUrl = useSiteUrl()
 
-const CASA_HOME_TITLE = 'Licenças Originais Windows e Office | Casa do Software'
-const CASA_HOME_DESCRIPTION =
-  'Compre licenças digitais originais Windows 10, 11 e Office com entrega imediata e suporte técnico.'
+const reqHostname = computed(() => {
+  if (process.server) {
+    try {
+      const url = useRequestURL()
+      return String(url.hostname || '').toLowerCase()
+    } catch {
+      return ''
+    }
+  }
+  try {
+    return String(window.location.hostname || '').toLowerCase()
+  } catch {
+    return ''
+  }
+})
+
+const isEN = computed(() => reqHostname.value.startsWith('en.'))
+
+const CASA_HOME_TITLE = computed(() =>
+  isEN.value
+    ? 'Original Windows and Office Licenses | Casa do Software'
+    : 'Licenças Originais Windows e Office | Casa do Software'
+)
+
+const CASA_HOME_DESCRIPTION = computed(() =>
+  isEN.value
+    ? 'Buy genuine Windows 10, 11 and Office licenses with instant delivery and expert support.'
+    : 'Compre licenças digitais originais Windows 10, 11 e Office com entrega imediata e suporte técnico.'
+)
 
 const host = computed(() => {
   if (process.server) {
@@ -73,14 +99,14 @@ if (applyCasaSeo.value) {
   const ogImage = '/logo-casa-do-software.png'
 
   useSeoMeta({
-    title: CASA_HOME_TITLE,
-    description: CASA_HOME_DESCRIPTION,
-    ogTitle: CASA_HOME_TITLE,
-    ogDescription: CASA_HOME_DESCRIPTION,
+    title: CASA_HOME_TITLE.value,
+    description: CASA_HOME_DESCRIPTION.value,
+    ogTitle: CASA_HOME_TITLE.value,
+    ogDescription: CASA_HOME_DESCRIPTION.value,
     ogImage,
     ogType: 'website',
-    twitterTitle: CASA_HOME_TITLE,
-    twitterDescription: CASA_HOME_DESCRIPTION,
+    twitterTitle: CASA_HOME_TITLE.value,
+    twitterDescription: CASA_HOME_DESCRIPTION.value,
     twitterImage: ogImage
   })
 }
@@ -134,7 +160,7 @@ useJsonLd(
       try {
         const url = useRequestURL()
         origin = String(url.origin || '').trim()
-        jsonLdHost = String(url.host || normalizedHost.value || '').trim().toLowerCase()
+        jsonLdHost = String(url.hostname || normalizedHost.value || '').trim().toLowerCase()
       } catch {
         // ignore
       }
@@ -146,7 +172,7 @@ useJsonLd(
       }
 
       try {
-        jsonLdHost = String(window.location.host || '').toLowerCase()
+        jsonLdHost = String(window.location.hostname || '').toLowerCase()
       } catch {
         // ignore
       }
