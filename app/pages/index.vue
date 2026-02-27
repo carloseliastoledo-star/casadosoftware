@@ -27,6 +27,17 @@ const CASA_HOME_TITLE = 'Licenças Originais Windows e Office | Casa do Software
 const CASA_HOME_DESCRIPTION =
   'Compre licenças digitais originais Windows 10, 11 e Office com entrega imediata e suporte técnico.'
 
+const url = useRequestURL()
+
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: url.origin + '/'
+    }
+  ]
+})
+
 const host = computed(() => {
   if (process.server) {
     try {
@@ -101,24 +112,6 @@ if (applyCasaSeo.value) {
 useHead(() => {
   if (!applyCasaSeo.value) return {}
 
-  let canonicalBase = ''
-  if (process.server) {
-    try {
-      const url = useRequestURL()
-      canonicalBase = String(url?.origin || '').trim()
-    } catch {
-      // ignore
-    }
-  } else {
-    try {
-      canonicalBase = String(window.location.origin || '').trim()
-    } catch {
-      // ignore
-    }
-  }
-
-  canonicalBase = canonicalBase.replace(/\/+$/, '')
-
   const alternates = [
     { hreflang: 'pt-BR', href: 'https://casadosoftware.com.br/' },
     { hreflang: 'en', href: 'https://en.casadosoftware.com.br/' },
@@ -130,7 +123,6 @@ useHead(() => {
 
   return {
     link: [
-      ...(canonicalBase ? [{ rel: 'canonical', href: `${canonicalBase}/` }] : []),
       ...alternates.map((a) => ({ rel: 'alternate', hreflang: a.hreflang, href: a.href }))
     ],
     script: []
