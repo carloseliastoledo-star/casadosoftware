@@ -4,6 +4,23 @@ import { getMpPayment } from '../../utils/mercadopago.js'
 import { processMercadoPagoPayment } from '../../utils/mercadopagoWebhook.js'
 import { getStoreContext } from '../../utils/store'
 
+function formatMpError(err: any) {
+  const status = err?.status ?? err?.statusCode
+  const message = String(err?.message || err?.name || '').trim()
+  const apiMessage = String(err?.cause?.[0]?.description || err?.cause?.[0]?.message || '').trim()
+  const apiError = String(err?.cause?.[0]?.code || err?.error || '').trim()
+  const detail = apiMessage || message
+
+  const meta: string[] = []
+  if (typeof status === 'number') meta.push(`http=${status}`)
+  if (apiError) meta.push(`code=${apiError}`)
+
+  return {
+    detail,
+    meta: meta.length ? ` (${meta.join(' ')})` : ''
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const country = String(getCookie(event, 'ld_country') || '').trim().toUpperCase()
   if (country && country !== 'BR') {
@@ -83,117 +100,139 @@ export default defineEventHandler(async (event) => {
 
   const round2 = (n: number) => Math.round(n * 100) / 100
 
-  const { order, coupon } = await (prisma as any).$transaction(async (tx: any) => {
-    const customer = await tx.customer.upsert({
-      where: { email_storeSlug: { email, storeSlug } },
-      create: { email, storeSlug },
-      update: {}
-    })
+  let order: any
+  let coupon: { id: string; code: string; percent: number } | null = null
 
-    let coupon: { id: string; code: string; percent: number } | null = null
-    const normalizedCode = String(couponCode || '').trim().toUpperCase()
-    if (normalizedCode) {
-      const c = await tx.cupom.findUnique({
-        where: { code: normalizedCode },
-        select: {
-          id: true,
-          code: true,
-          percent: true,
-          active: true,
-          startsAt: true,
-          expiresAt: true,
-          maxUses: true,
-          usedCount: true
+  try {
+    const trx = await (prisma as any).$transaction(async (tx: any) => {
+      const customer = await tx.customer.upsert({
+        where: { email_storeSlug: { email, storeSlug } },
+        create: { email, storeSlug },
+        update: {}
+      })
+
+      let couponLocal: { id: string; code: string; percent: number } | null = null
+      const normalizedCode = String(couponCode || '').trim().toUpperCase()
+      if (normalizedCode) {
+        const c = await tx.cupom.findUnique({
+          where: { code: normalizedCode },
+          select: {
+            id: true,
+            code: true,
+            percent: true,
+            active: true,
+            startsAt: true,
+            expiresAt: true,
+            maxUses: true,
+            usedCount: true
+          }
+        })
+
+        if (!c) throw createError({ statusCode: 404, statusMessage: 'Cupom inválido' })
+        if (!c.active) throw createError({ statusCode: 400, statusMessage: 'Cupom inativo' })
+        const now = new Date()
+        if (c.startsAt && c.startsAt > now) throw createError({ statusCode: 400, statusMessage: 'Cupom ainda não está válido' })
+        if (c.expiresAt && c.expiresAt < now) throw createError({ statusCode: 400, statusMessage: 'Cupom expirado' })
+        if (c.maxUses !== null && c.maxUses !== undefined && c.usedCount >= c.maxUses) {
+          throw createError({ statusCode: 400, statusMessage: 'Cupom esgotado' })
+        }
+        const percent = Number(c.percent)
+        if (!Number.isFinite(percent) || percent <= 0 || percent > 100) {
+          throw createError({ statusCode: 400, statusMessage: 'Cupom inválido' })
+        }
+
+        couponLocal = { id: c.id, code: c.code, percent }
+      }
+
+      const subtotalAmount = round2(Number(effectivePrice))
+      const pixDiscountPercent = 0
+      const pixDiscountAmount = 0
+      const couponDiscountAmount = couponLocal ? round2(subtotalAmount * (couponLocal.percent / 100)) : 0
+      const totalAmount = Math.max(0, round2(subtotalAmount - pixDiscountAmount - couponDiscountAmount))
+
+      if (couponLocal) {
+        await tx.cupom.update({
+          where: { id: couponLocal.id },
+          data: { usedCount: { increment: 1 } }
+        })
+      }
+
+      const orderLocal = await tx.order.create({
+        data: {
+          status: 'PENDING',
+          storeSlug,
+          trafficSourceType,
+          utmSource: utmSource || null,
+          utmMedium: utmMedium || null,
+          utmCampaign: utmCampaign || null,
+          utmTerm: utmTerm || null,
+          utmContent: utmContent || null,
+          gclid: gclid || null,
+          fbclid: fbclid || null,
+          referrer: referrer || null,
+          landingPage: landingPage || null,
+          produtoId: produto.id,
+          customerId: customer.id,
+          cupomId: couponLocal?.id || null,
+          subtotalAmount,
+          pixDiscountPercent,
+          pixDiscountAmount,
+          couponCode: couponLocal?.code || null,
+          couponPercent: couponLocal?.percent || null,
+          couponDiscountAmount: couponLocal ? couponDiscountAmount : null,
+          totalAmount
         }
       })
 
-      if (!c) throw createError({ statusCode: 404, statusMessage: 'Cupom inválido' })
-      if (!c.active) throw createError({ statusCode: 400, statusMessage: 'Cupom inativo' })
-      const now = new Date()
-      if (c.startsAt && c.startsAt > now) throw createError({ statusCode: 400, statusMessage: 'Cupom ainda não está válido' })
-      if (c.expiresAt && c.expiresAt < now) throw createError({ statusCode: 400, statusMessage: 'Cupom expirado' })
-      if (c.maxUses !== null && c.maxUses !== undefined && c.usedCount >= c.maxUses) {
-        throw createError({ statusCode: 400, statusMessage: 'Cupom esgotado' })
-      }
-      const percent = Number(c.percent)
-      if (!Number.isFinite(percent) || percent <= 0 || percent > 100) {
-        throw createError({ statusCode: 400, statusMessage: 'Cupom inválido' })
-      }
-
-      coupon = { id: c.id, code: c.code, percent }
-    }
-
-    const subtotalAmount = round2(Number(effectivePrice))
-    const pixDiscountPercent = 0
-    const pixDiscountAmount = 0
-    const couponDiscountAmount = coupon ? round2(subtotalAmount * (coupon.percent / 100)) : 0
-    const totalAmount = Math.max(0, round2(subtotalAmount - pixDiscountAmount - couponDiscountAmount))
-
-    if (coupon) {
-      await tx.cupom.update({
-        where: { id: coupon.id },
-        data: { usedCount: { increment: 1 } }
-      })
-    }
-
-    const order = await tx.order.create({
-      data: {
-        status: 'PENDING',
-        storeSlug,
-        trafficSourceType,
-        utmSource: utmSource || null,
-        utmMedium: utmMedium || null,
-        utmCampaign: utmCampaign || null,
-        utmTerm: utmTerm || null,
-        utmContent: utmContent || null,
-        gclid: gclid || null,
-        fbclid: fbclid || null,
-        referrer: referrer || null,
-        landingPage: landingPage || null,
-        produtoId: produto.id,
-        customerId: customer.id,
-        cupomId: coupon?.id || null,
-        subtotalAmount,
-        pixDiscountPercent,
-        pixDiscountAmount,
-        couponCode: coupon?.code || null,
-        couponPercent: coupon?.percent || null,
-        couponDiscountAmount: coupon ? couponDiscountAmount : null,
-        totalAmount
-      }
+      return { order: orderLocal, coupon: couponLocal }
     })
 
-    return { order, coupon }
-  })
+    order = trx.order
+    coupon = trx.coupon
+  } catch (err: any) {
+    if (err?.statusCode && err?.statusMessage) {
+      throw err
+    }
+    throw createError({ statusCode: 500, statusMessage: err?.message || 'Falha ao criar pedido' })
+  }
 
   const payment = getMpPayment()
 
   const transactionAmount = Number(order.totalAmount ?? Number(effectivePrice))
 
-  const result = await payment.create({
-    body: {
-      transaction_amount: transactionAmount,
-      description: produto.nome,
-      token,
-      installments,
-      payment_method_id: paymentMethodId,
-      issuer_id: Number.isFinite(issuerIdNumber as number) ? (issuerIdNumber as number) : undefined,
-      payer: {
-        email,
-        identification: {
-          type: identificationType,
-          number: identificationNumber
-        }
-      },
-      metadata: {
-        orderId: order.id,
-        produtoId: produto.id,
-        couponCode: coupon?.code || null,
-        couponPercent: coupon?.percent || null
-      },
-      external_reference: order.id
-    }
-  })
+  let result: any
+  try {
+    result = await payment.create({
+      body: {
+        transaction_amount: transactionAmount,
+        description: produto.nome,
+        token,
+        installments,
+        payment_method_id: paymentMethodId,
+        issuer_id: Number.isFinite(issuerIdNumber as number) ? (issuerIdNumber as number) : undefined,
+        payer: {
+          email,
+          identification: {
+            type: identificationType,
+            number: identificationNumber
+          }
+        },
+        metadata: {
+          orderId: order.id,
+          produtoId: produto.id,
+          couponCode: coupon?.code || null,
+          couponPercent: coupon?.percent || null
+        },
+        external_reference: order.id
+      }
+    })
+  } catch (err: any) {
+    const formatted = formatMpError(err)
+    throw createError({
+      statusCode: 502,
+      statusMessage: formatted.detail ? `Mercado Pago error: ${formatted.detail}${formatted.meta}` : 'Mercado Pago error'
+    })
+  }
 
   const mpPaymentId = String((result as any)?.id || '')
   if (!mpPaymentId) {
