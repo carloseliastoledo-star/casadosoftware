@@ -101,30 +101,23 @@ if (applyCasaSeo.value) {
 useHead(() => {
   if (!applyCasaSeo.value) return {}
 
-  let siteUrl = ''
+  let canonicalBase = ''
   if (process.server) {
     try {
-      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
-      const rawHost = headers['x-forwarded-host'] || headers.host || 'casadosoftware.com.br'
-      const normalizedHost = rawHost.split(',')[0].trim()
-
-      const protocol =
-        (useRequestHeaders(['x-forwarded-proto']) as Record<string, string | undefined>)['x-forwarded-proto'] ||
-        'https'
-
-      siteUrl = `${protocol}://${normalizedHost}`
+      const url = useRequestURL()
+      canonicalBase = String(url?.origin || '').trim()
     } catch {
       // ignore
     }
   } else {
     try {
-      siteUrl = String(window.location.origin || '')
+      canonicalBase = String(window.location.origin || '').trim()
     } catch {
       // ignore
     }
   }
 
-  const canonicalBase = String(siteUrl || baseUrl || '').trim().replace(/\/+$/, '')
+  canonicalBase = canonicalBase.replace(/\/+$/, '')
 
   const alternates = [
     { hreflang: 'pt-BR', href: 'https://casadosoftware.com.br/' },
@@ -152,16 +145,9 @@ useJsonLd(
     let jsonLdHost = normalizedHost.value
     if (process.server) {
       try {
-        const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
-        const rawHost = headers['x-forwarded-host'] || headers.host || 'casadosoftware.com.br'
-        const normalizedHost = rawHost.split(',')[0].trim()
-
-        const protocol =
-          (useRequestHeaders(['x-forwarded-proto']) as Record<string, string | undefined>)['x-forwarded-proto'] ||
-          'https'
-
-        origin = `${protocol}://${normalizedHost}`
-        jsonLdHost = normalizedHost
+        const url = useRequestURL()
+        origin = String(url?.origin || '').trim()
+        jsonLdHost = String(url?.host || normalizedHost.value || '').trim().toLowerCase()
       } catch {
         // ignore
       }

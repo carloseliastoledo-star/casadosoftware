@@ -1,5 +1,14 @@
 type CasaLang = 'pt-BR' | 'en' | 'es' | 'fr' | 'de'
 
+function getLangFromOrigin(origin: string): CasaLang {
+  const o = String(origin || '').toLowerCase()
+  if (o.includes('://en.')) return 'en'
+  if (o.includes('://es.')) return 'es'
+  if (o.includes('://fr.')) return 'fr'
+  if (o.includes('://de.')) return 'de'
+  return 'pt-BR'
+}
+
 function normalizeHost(host: string) {
   const h0 = String(host || '').trim().toLowerCase()
   const h1 = h0.replace(/^https?:\/\//, '')
@@ -187,9 +196,19 @@ function getFaq(lang: CasaLang) {
 
 export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: string }) {
   const host = String(params?.host || '')
-  const lang = getLangFromHost(host)
 
-  const baseUrl = params?.origin ? String(params.origin).trim().replace(/\/+$/, '') : getBaseUrl(lang)
+  let origin = params?.origin ? String(params.origin) : ''
+  if (!origin) {
+    try {
+      const url = useRequestURL()
+      origin = String(url.origin || '')
+    } catch {
+      // ignore
+    }
+  }
+
+  const baseUrl = origin ? String(origin).trim().replace(/\/+$/, '') : getBaseUrl(getLangFromHost(host))
+  const lang = origin ? getLangFromOrigin(baseUrl) : getLangFromHost(host)
   const logo = `${baseUrl}/logo-casa-do-software.png`
 
   const org = {
