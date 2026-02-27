@@ -6,6 +6,9 @@
 <script setup lang="ts">
 definePageMeta({ ssr: true })
 
+import { useJsonLd } from '~/composables/useJsonLd'
+import { getCasaHomeJsonLdBundle } from '~/services/casaJsonLd'
+
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
 
@@ -100,31 +103,29 @@ useHead(() => {
 
   const canonicalBase = String(baseUrl || siteUrl || '').trim().replace(/\/+$/, '')
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'Organization',
-        name: 'Casa do Software',
-        url: siteUrl || undefined,
-        logo: siteUrl ? `${siteUrl}/logo-casa-do-software.png` : '/logo-casa-do-software.png'
-      },
-      {
-        '@type': 'WebSite',
-        name: 'Casa do Software',
-        url: siteUrl || undefined
-      }
-    ]
-  }
-
   return {
     link: canonicalBase ? [{ rel: 'canonical', href: `${canonicalBase}/` }] : [],
-    script: [
-      {
-        type: 'application/ld+json',
-        children: JSON.stringify(jsonLd)
-      }
-    ]
+    script: []
   }
 })
+
+useJsonLd(
+  () => {
+    if (!applyCasaSeo.value) return null
+
+    let origin = ''
+    try {
+      const url = useRequestURL()
+      origin = String(url?.origin || '')
+    } catch {
+      // ignore
+    }
+
+    const normalized = String(normalizedHost.value || '').trim()
+    if (!origin && normalized) origin = `https://${normalized}`
+
+    return getCasaHomeJsonLdBundle({ host: normalizedHost.value, origin })
+  },
+  'jsonld-casa-home'
+)
 </script>
