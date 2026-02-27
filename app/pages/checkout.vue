@@ -280,15 +280,39 @@
                   <div class="grid grid-cols-3 gap-3">
                     <div>
                       <label class="block text-xs font-semibold text-gray-700 mb-1">Mês</label>
-                      <input id="form-cardExpirationMonth" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                      <input
+                        id="form-cardExpirationMonth"
+                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        maxlength="2"
+                        placeholder="MM"
+                        autocomplete="cc-exp-month"
+                      />
                     </div>
                     <div>
                       <label class="block text-xs font-semibold text-gray-700 mb-1">Ano</label>
-                      <input id="form-cardExpirationYear" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                      <input
+                        id="form-cardExpirationYear"
+                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        maxlength="4"
+                        placeholder="AAAA"
+                        autocomplete="cc-exp-year"
+                      />
                     </div>
                     <div>
                       <label class="block text-xs font-semibold text-gray-700 mb-1">CVV</label>
-                      <input id="form-securityCode" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                      <input
+                        id="form-securityCode"
+                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        maxlength="4"
+                        placeholder="CVV"
+                        autocomplete="cc-csc"
+                      />
                     </div>
                   </div>
 
