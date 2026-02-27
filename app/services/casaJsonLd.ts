@@ -1,14 +1,5 @@
 type CasaLang = 'pt-BR' | 'en' | 'es' | 'fr' | 'de'
 
-function getLangFromOrigin(origin: string): CasaLang {
-  const o = String(origin || '').toLowerCase()
-  if (o.includes('en.')) return 'en'
-  if (o.includes('es.')) return 'es'
-  if (o.includes('fr.')) return 'fr'
-  if (o.includes('de.')) return 'de'
-  return 'pt-BR'
-}
-
 function normalizeHost(host: string) {
   const h0 = String(host || '').trim().toLowerCase()
   const h1 = h0.replace(/^https?:\/\//, '')
@@ -197,38 +188,51 @@ function getFaq(lang: CasaLang) {
 export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: string }) {
   const host = String(params?.host || '')
 
-  let origin = params?.origin ? String(params.origin) : ''
+  let origin = ''
+  let lang: CasaLang = 'pt-BR'
+  let productsPath = '/produtos'
+
   if (process.server) {
-    try {
-      const url = useRequestURL()
-      origin = String(url.origin || '')
-    } catch {
-      // ignore
+    const url = useRequestURL()
+    origin = url.origin
+
+    const host = url.hostname
+
+    lang =
+      host.startsWith('en.') ? 'en' :
+        host.startsWith('es.') ? 'es' :
+          host.startsWith('fr.') ? 'fr' :
+            host.startsWith('de.') ? 'de' :
+              'pt-BR'
+
+    productsPath =
+      lang === 'en' ? '/products' :
+        lang === 'es' ? '/productos' :
+          lang === 'fr' ? '/produits' :
+            lang === 'de' ? '/produkte' :
+              '/produtos'
+  } else {
+    origin = params?.origin ? String(params.origin) : ''
+    if (!origin && typeof window !== 'undefined') {
+      try {
+        origin = String(window.location.origin || '')
+      } catch {
+        // ignore
+      }
     }
+
+    const safeOrigin = origin ? String(origin).trim().replace(/\/+$/, '') : ''
+    lang = safeOrigin ? getLangFromHost(safeOrigin) : getLangFromHost(host)
+
+    productsPath =
+      lang === 'en' ? '/products' :
+        lang === 'es' ? '/productos' :
+          lang === 'fr' ? '/produits' :
+            lang === 'de' ? '/produkte' :
+              '/produtos'
   }
 
-  if (!origin && typeof window !== 'undefined') {
-    try {
-      origin = String(window.location.origin || '')
-    } catch {
-      // ignore
-    }
-  }
-
-  const safeOrigin = origin ? String(origin).trim().replace(/\/+$/, '') : ''
-
-  const lang = safeOrigin
-    ? getLangFromOrigin(safeOrigin)
-    : getLangFromHost(host)
-
-  const productsPath =
-    lang === 'en' ? '/products' :
-      lang === 'es' ? '/productos' :
-        lang === 'fr' ? '/produits' :
-          lang === 'de' ? '/produkte' :
-            '/produtos'
-
-  const baseUrl = safeOrigin || getBaseUrl(lang)
+  const baseUrl = String(origin || '').trim().replace(/\/+$/, '') || getBaseUrl(lang)
   const logo = `${baseUrl}/logo-casa-do-software.png`
 
   const org = {
