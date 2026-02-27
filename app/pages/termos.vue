@@ -40,7 +40,7 @@
       <div class="rounded-xl border bg-white p-5 space-y-3">
         <h2 class="text-xl font-bold text-gray-900">{{ t.section5Title }}</h2>
         <p class="text-sm">
-          {{ companyLegalName }} — CNPJ {{ companyCnpj }}.
+          {{ companyLegalName }} — {{ companyEmail }} — {{ companyAddress }}.
         </p>
       </div>
 
@@ -56,7 +56,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
 
-const { siteName, companyLegalName, companyCnpj } = useSiteBranding()
+const { siteName, companyLegalName, companyAddress, companyEmail } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 

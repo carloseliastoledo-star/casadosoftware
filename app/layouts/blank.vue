@@ -61,21 +61,24 @@
               WhatsApp: {{ whatsappLabel }}
             </a>
           </p>
+          <p class="mt-3 text-sm text-gray-500">
+            {{ safeSiteName }}
+          </p>
           <p class="mt-3 text-xs text-gray-500">
-            {{ companyLegalName }} — CNPJ {{ companyCnpj }}
+            {{ companyLegalName }}
           </p>
         </div>
       </div>
 
       <div class="text-center text-xs text-gray-500 py-4 border-t">
-        © {{ new Date().getFullYear() }} {{ siteName }} — Todos os direitos reservados.
+        {{ new Date().getFullYear() }} {{ siteName }} — Todos os direitos reservados.
       </div>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-const { siteName, logoPath, supportEmail, whatsappNumber, companyLegalName, companyCnpj } = useSiteBranding()
+const { siteName, logoPath, supportEmail, whatsappNumber, companyLegalName } = useSiteBranding()
 
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()

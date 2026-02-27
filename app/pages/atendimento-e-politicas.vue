@@ -55,7 +55,6 @@
                   <div class="text-xs font-semibold text-gray-600 uppercase">Dados da empresa</div>
                   <div class="mt-1 text-sm text-gray-900 space-y-1">
                     <div><span class="font-semibold">Razão Social:</span> {{ companyLegalName }}</div>
-                    <div><span class="font-semibold">CNPJ:</span> {{ companyCnpj }}</div>
                     <div>
                       <span class="font-semibold">Endereço:</span> {{ companyAddress }}
                     </div>
@@ -140,7 +139,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
 
-const { supportEmail, whatsappNumber, siteName, companyLegalName, companyCnpj, companyAddress, companyPhone, companyEmail } = useSiteBranding()
+const { supportEmail, whatsappNumber, siteName, companyLegalName, companyAddress, companyPhone, companyEmail } = useSiteBranding()
 const baseUrl = useSiteUrl()
 
 const updatedAt = new Date().toLocaleDateString('pt-BR')

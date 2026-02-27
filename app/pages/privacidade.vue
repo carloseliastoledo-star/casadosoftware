@@ -44,7 +44,7 @@
           <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
         </p>
         <p class="text-sm">
-          {{ companyLegalName }} — CNPJ {{ companyCnpj }}.
+          {{ companyLegalName }} — {{ companyEmail }} — {{ companyAddress }}.
         </p>
       </div>
 
@@ -60,7 +60,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
 
-const { supportEmail, siteName, companyLegalName, companyCnpj } = useSiteBranding()
+const { supportEmail, siteName, companyLegalName, companyAddress, companyEmail } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 

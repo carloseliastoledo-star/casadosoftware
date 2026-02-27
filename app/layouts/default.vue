@@ -390,7 +390,6 @@
           </p>
           <div class="mt-4 text-xs text-gray-500 space-y-1">
             <p><span class="font-semibold">Razão Social:</span> {{ companyLegalName }}</p>
-            <p><span class="font-semibold">CNPJ:</span> {{ companyCnpj }}</p>
             <p>
               <span class="font-semibold">Endereço:</span> {{ companyAddress }}
             </p>
@@ -417,7 +416,6 @@ const {
   topbarLink,
   whatsappNumber,
   companyLegalName,
-  companyCnpj,
   companyAddress,
   companyPhone,
   companyEmail

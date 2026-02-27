@@ -106,7 +106,7 @@
             >
               Ver Contato
             </NuxtLink>
-            <div class="mt-4 text-xs text-white/70">{{ companyLegalName }} — CNPJ {{ companyCnpj }}</div>
+            <div class="mt-4 text-xs text-white/70">{{ companyLegalName }}</div>
           </div>
         </div>
       </div>
@@ -164,7 +164,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
 
-const { siteName, logoPath, companyLegalName, companyCnpj, companyAddress, companyPhone } = useSiteBranding()
+const { siteName, logoPath, companyLegalName, companyAddress, companyPhone } = useSiteBranding()
 const baseUrl = useSiteUrl()
 
 const safeBaseUrl = computed(() => String(baseUrl || '').trim().replace(/\/$/, ''))

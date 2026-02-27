@@ -249,10 +249,6 @@
                 <p class="text-foreground font-semibold">{{ companyLegalName }}</p>
               </div>
               <div>
-                <p class="text-muted-foreground text-sm mb-1">CNPJ</p>
-                <p class="text-foreground font-semibold">{{ companyCnpj }}</p>
-              </div>
-              <div>
                 <p class="text-muted-foreground text-sm mb-1">Localização</p>
                 <p class="text-foreground font-semibold">{{ companyAddress }}</p>
               </div>
@@ -398,7 +394,6 @@
             </p>
             <div class="space-y-1 text-sm text-muted-foreground">
               <p><span class="text-foreground font-medium">Razão Social:</span> {{ companyLegalName }}</p>
-              <p><span class="text-foreground font-medium">CNPJ:</span> {{ companyCnpj }}</p>
             </div>
           </div>
 
@@ -466,7 +461,7 @@
 <script setup lang="ts">
 import { defineComponent } from 'vue'
 
-const { companyLegalName, companyCnpj, companyAddress } = useSiteBranding()
+const { companyLegalName, companyAddress } = useSiteBranding()
 
 const navLinks = [
   { href: '#inicio', label: 'Início' },

@@ -34,7 +34,7 @@
       </div>
 
       <p class="text-sm text-gray-600">
-        {{ companyLegalName }} — CNPJ {{ companyCnpj }}.
+        {{ companyLegalName }} — {{ companyEmail }} — {{ companyAddress }}.
       </p>
         </div>
       </div>
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-const { supportEmail, siteName, companyLegalName, companyCnpj } = useSiteBranding()
+const { supportEmail, siteName, companyLegalName, companyAddress, companyEmail } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 

@@ -13,7 +13,6 @@
         <h2 class="text-xl font-bold text-gray-900">{{ t.companyDataTitle }}</h2>
         <div class="mt-3 space-y-1 text-sm text-gray-700">
           <p><span class="font-semibold">{{ t.companyLabel }}</span> {{ companyLegalName }}</p>
-          <p><span class="font-semibold">{{ t.companyTaxIdLabel }}</span> {{ companyCnpj }}</p>
           <p><span class="font-semibold">Endereço:</span> {{ companyAddress }}</p>
           <p><span class="font-semibold">Telefone/Whatsapp:</span> {{ companyPhone }}</p>
           <p><span class="font-semibold">E-mail:</span> {{ companyEmail }}</p>
@@ -49,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-const { siteName, supportEmail, companyLegalName, companyCnpj, companyAddress, companyPhone, companyEmail } = useSiteBranding()
+const { siteName, supportEmail, companyLegalName, companyAddress, companyPhone, companyEmail } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 
@@ -65,26 +64,25 @@ const t = computed(() => {
       intro: `${safeSiteName.value} is an online store focused on selling digital products and software licenses, with delivery and support.`,
       companyDataTitle: 'Company details',
       companyLabel: 'Company:',
-      companyTaxIdLabel: 'Tax ID:',
       contactTitle: 'Contact and support',
       emailLabel: 'Email:',
       supportHoursLabel: 'Support:',
-      supportHoursBody: 'business hours.',
+      supportHoursBody: 'during business hours.',
       productsTitle: 'About the products',
-      productsP1: 'The products available on this website are digital. Delivery can happen by email and/or through the customer area, as described on each product page.',
-      productsP2: 'Brands and product names mentioned belong to their respective owners.'
+      productsP1: 'The products available on this website are digital. Delivery may occur by email and/or through the customer area, as described on each product page.',
+      productsP2: 'The mentioned brands and product names belong to their respective owners.'
     }
   }
 
   if (intl.language.value === 'es') {
     return {
       title: 'Quiénes somos',
-      intro: `${safeSiteName.value} es una tienda online enfocada en la venta de productos digitales y licencias de software, con entrega y suporte.`,
-      companyDataTitle: 'Datos de la empresa',
+      intro:
+        'Somos una empresa especializada en licencias digitales y soluciones tecnológicas. Trabajamos con enfoque en transparencia, legalidad y soporte al cliente, ofreciendo orientación clara sobre activación y uso de software con licencia.',
+      companyDataTitle: 'Sobre la empresa',
       companyLabel: 'Empresa:',
-      companyTaxIdLabel: 'CIF/CNPJ:',
-      contactTitle: 'Contacto y soporte',
-      emailLabel: 'Correo:',
+      contactTitle: 'Forma de atención',
+      emailLabel: 'Email:',
       supportHoursLabel: 'Atención:',
       supportHoursBody: 'en horario comercial.',
       productsTitle: 'Sobre los productos',
@@ -99,7 +97,6 @@ const t = computed(() => {
       `${safeSiteName.value} é uma empresa brasileira especializada em licenças digitais e soluções em tecnologia. Atuamos com foco em transparência, legalidade e suporte ao cliente, oferecendo orientações claras sobre ativação e utilização de softwares licenciados.`,
     companyDataTitle: 'Sobre a Empresa',
     companyLabel: 'Empresa:',
-    companyTaxIdLabel: 'CNPJ:',
     contactTitle: 'Forma de Atendimento',
     emailLabel: 'E-mail:',
     supportHoursLabel: 'Atendimento:',
