@@ -3,12 +3,17 @@ export function useJsonLd(getSchema: () => any, key = 'jsonld') {
     const schema = getSchema?.()
     if (!schema) return {}
 
+    const json = JSON.stringify(schema)
+
     return {
+      __dangerouslyDisableSanitizersByTagID: {
+        [key]: ['innerHTML']
+      },
       script: [
         {
           key,
           type: 'application/ld+json',
-          children: JSON.stringify(schema)
+          innerHTML: json
         }
       ]
     }

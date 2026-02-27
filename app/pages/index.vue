@@ -114,10 +114,22 @@ useHead(() => {
     if (h) siteUrl = `https://${h}`
   }
 
-  const canonicalBase = String(baseUrl || siteUrl || '').trim().replace(/\/+$/, '')
+  const canonicalBase = String(siteUrl || baseUrl || '').trim().replace(/\/+$/, '')
+
+  const alternates = [
+    { hreflang: 'pt-BR', href: 'https://casadosoftware.com.br/' },
+    { hreflang: 'en', href: 'https://en.casadosoftware.com.br/' },
+    { hreflang: 'es', href: 'https://es.casadosoftware.com.br/' },
+    { hreflang: 'fr', href: 'https://fr.casadosoftware.com.br/' },
+    { hreflang: 'de', href: 'https://de.casadosoftware.com.br/' },
+    { hreflang: 'x-default', href: 'https://casadosoftware.com.br/' }
+  ]
 
   return {
-    link: canonicalBase ? [{ rel: 'canonical', href: `${canonicalBase}/` }] : [],
+    link: [
+      ...(canonicalBase ? [{ rel: 'canonical', href: `${canonicalBase}/` }] : []),
+      ...alternates.map((a) => ({ rel: 'alternate', hreflang: a.hreflang, href: a.href }))
+    ],
     script: []
   }
 })
