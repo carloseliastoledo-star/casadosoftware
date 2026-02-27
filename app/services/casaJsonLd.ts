@@ -187,52 +187,25 @@ function getFaq(lang: CasaLang) {
 
 export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: string }) {
   const host = String(params?.host || '')
+  const originParam = params?.origin ? String(params.origin) : ''
 
-  let origin = ''
-  let lang: CasaLang = 'pt-BR'
-  let productsPath = '/produtos'
+  const baseUrl = String(originParam || '').trim().replace(/\/+$/, '') || getBaseUrl(getLangFromHost(host))
+  const hostname = normalizeHost(host || baseUrl)
 
-  if (process.server) {
-    const url = useRequestURL()
-    origin = url.origin
+  const lang: CasaLang =
+    hostname.startsWith('en.') ? 'en' :
+      hostname.startsWith('es.') ? 'es' :
+        hostname.startsWith('fr.') ? 'fr' :
+          hostname.startsWith('de.') ? 'de' :
+            'pt-BR'
 
-    const host = url.hostname
+  const productsPath =
+    lang === 'en' ? '/products' :
+      lang === 'es' ? '/productos' :
+        lang === 'fr' ? '/produits' :
+          lang === 'de' ? '/produkte' :
+            '/produtos'
 
-    lang =
-      host.startsWith('en.') ? 'en' :
-        host.startsWith('es.') ? 'es' :
-          host.startsWith('fr.') ? 'fr' :
-            host.startsWith('de.') ? 'de' :
-              'pt-BR'
-
-    productsPath =
-      lang === 'en' ? '/products' :
-        lang === 'es' ? '/productos' :
-          lang === 'fr' ? '/produits' :
-            lang === 'de' ? '/produkte' :
-              '/produtos'
-  } else {
-    origin = params?.origin ? String(params.origin) : ''
-    if (!origin && typeof window !== 'undefined') {
-      try {
-        origin = String(window.location.origin || '')
-      } catch {
-        // ignore
-      }
-    }
-
-    const safeOrigin = origin ? String(origin).trim().replace(/\/+$/, '') : ''
-    lang = safeOrigin ? getLangFromHost(safeOrigin) : getLangFromHost(host)
-
-    productsPath =
-      lang === 'en' ? '/products' :
-        lang === 'es' ? '/productos' :
-          lang === 'fr' ? '/produits' :
-            lang === 'de' ? '/produkte' :
-              '/produtos'
-  }
-
-  const baseUrl = String(origin || '').trim().replace(/\/+$/, '') || getBaseUrl(lang)
   const logo = `${baseUrl}/logo-casa-do-software.png`
 
   const org = {
