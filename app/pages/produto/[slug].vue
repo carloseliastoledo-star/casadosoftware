@@ -335,8 +335,11 @@ const baseUrl = useSiteUrl()
 
 const canonicalUrl = computed(() => {
   const s = String(slug || '').trim()
-  if (!s) return baseUrl ? `${baseUrl}/` : ''
-  return baseUrl ? `${baseUrl}/produto/${s}` : ''
+  const origin = String(baseUrl || '').trim().replace(/\/$/, '')
+  const hardOrigin = 'https://gvgmallglobal.com'
+  const finalOrigin = origin || hardOrigin
+  if (!s) return finalOrigin ? `${finalOrigin}/` : ''
+  return finalOrigin ? `${finalOrigin}/produto/${s}` : ''
 })
 
 const { data, pending, error } = await useFetch(
@@ -514,10 +517,14 @@ useHead(() => {
     link,
     script: [
       {
+        id: 'ld-json',
         type: 'application/ld+json',
         innerHTML: JSON.stringify(jsonLd)
       }
-    ]
+    ],
+    __dangerouslyDisableSanitizersByTagID: {
+      'ld-json': ['innerHTML']
+    }
   }
 })
 

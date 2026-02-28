@@ -193,7 +193,14 @@ const pageDescription = computed(() => {
 
 useSeoMeta({
   title: pageTitle,
-  description: pageDescription
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogType: 'website',
+  ogUrl: canonicalUrl,
+  twitterTitle: pageTitle,
+  twitterDescription: pageDescription,
+  twitterCard: 'summary_large_image'
 })
 
 useHead(() => ({

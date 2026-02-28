@@ -423,6 +423,61 @@ const {
 
 const config = useRuntimeConfig()
 
+const siteOrigin = computed(() => {
+  if (import.meta.server) {
+    try {
+      const url = useRequestURL()
+      return String(url?.origin || '').replace(/\/$/, '')
+    } catch {
+      return ''
+    }
+  }
+
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return String(window.location.origin).replace(/\/$/, '')
+  }
+
+  return ''
+})
+
+useHead(() => {
+  const origin = siteOrigin.value
+
+  const logo = origin ? `${origin}/licencasdigitais-gvg/logo.png` : 'https://gvgmallglobal.com/licencasdigitais-gvg/logo.png'
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        name: 'GVGMall Global',
+        url: origin || 'https://gvgmallglobal.com',
+        logo
+      },
+      {
+        '@type': 'WebSite',
+        name: 'GVGMall Global',
+        url: origin || 'https://gvgmallglobal.com'
+      }
+    ]
+  }
+
+  return {
+    htmlAttrs: { lang: 'en' },
+    meta: [{ name: 'theme-color', content: '#2563eb' }],
+    script: [
+      {
+        id: 'ld-org-website',
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(jsonLd)
+      }
+    ],
+    __dangerouslyDisableSanitizersByTagID: {
+      'ld-org-website': ['innerHTML']
+    }
+  }
+})
+
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
 
 const normalizedHost = computed(() => {

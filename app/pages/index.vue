@@ -75,6 +75,23 @@ const applyCasaSeo = computed(() => {
   return false
 })
 
+const applyGvgSeo = computed(() => {
+  if (applyCasaSeo.value) return false
+  return true
+})
+
+useHead(() => {
+  if (!applyGvgSeo.value) return {}
+
+  return {
+    link: [
+      { rel: 'canonical', href: 'https://gvgmallglobal.com/' },
+      { rel: 'alternate', hreflang: 'en', href: 'https://gvgmallglobal.com/' },
+      { rel: 'alternate', hreflang: 'x-default', href: 'https://gvgmallglobal.com/' }
+    ]
+  }
+})
+
 watchEffect(() => {
   setPageLayout('default' as any)
 })
@@ -92,6 +109,18 @@ if (applyCasaSeo.value) {
     twitterTitle: CASA_HOME_TITLE,
     twitterDescription: CASA_HOME_DESCRIPTION,
     twitterImage: ogImage
+  })
+}
+
+if (applyGvgSeo.value) {
+  useSeoMeta({
+    title: 'GVGMall Global – Buy Original Windows and Office Licenses',
+    description: 'Buy genuine Windows, Office and digital software licenses with instant delivery and secure payment.',
+    ogTitle: 'GVGMall Global – Digital Software Store',
+    ogDescription: 'Instant delivery of original Windows and Office licenses.',
+    ogType: 'website',
+    ogUrl: 'https://gvgmallglobal.com/',
+    twitterCard: 'summary_large_image'
   })
 }
 
