@@ -365,11 +365,11 @@ const safeProduct = computed(() => {
   const descricaoCurtaFromDb =
     (p as any).descricaoCurta ?? (p as any).shortDescription ?? (p as any).descricao_resumo ?? (p as any).resumo ?? ''
 
-  const descricaoCurtaBase = String(descricaoCurtaFromDb || descricaoBase || '')
+  const descricaoCurtaRaw = String(descricaoCurtaFromDb || '')
     .replace(/\s+/g, ' ')
     .trim()
 
-  const descricaoCurta = descricaoCurtaBase.length > 220 ? `${descricaoCurtaBase.slice(0, 220)}...` : descricaoCurtaBase
+  const descricaoCurta = descricaoCurtaRaw.length > 220 ? `${descricaoCurtaRaw.slice(0, 220)}...` : descricaoCurtaRaw
   const descricaoLonga = String(descricaoBase || descricaoCurta || '').trim()
 
   return {
@@ -515,7 +515,7 @@ useHead(() => {
     script: [
       {
         type: 'application/ld+json',
-        children: JSON.stringify(jsonLd)
+        innerHTML: JSON.stringify(jsonLd)
       }
     ]
   }
@@ -523,13 +523,20 @@ useHead(() => {
 
 const seoMetaTitle = computed(() => seoTitle.value)
 const seoMetaDescription = computed(() => seoDescription.value)
+const seoMetaImage = computed(() => absoluteImageUrl.value || undefined)
+const seoMetaUrl = computed(() => canonicalUrl.value || undefined)
 useSeoMeta({
   title: seoMetaTitle,
   description: seoMetaDescription,
   ogTitle: seoMetaTitle,
   ogDescription: seoMetaDescription,
+  ogType: 'product',
+  ogUrl: seoMetaUrl,
+  ogImage: seoMetaImage,
   twitterTitle: seoMetaTitle,
-  twitterDescription: seoMetaDescription
+  twitterDescription: seoMetaDescription,
+  twitterCard: 'summary_large_image',
+  twitterImage: seoMetaImage
 })
 
 const safeDescriptionHtml = computed(() => {
