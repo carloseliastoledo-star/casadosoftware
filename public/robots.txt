@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /admin
 Disallow: /api
 Allow: /
-Sitemap: /sitemap.xml
+Sitemap: https://gvgmallglobal.com/sitemap.xml

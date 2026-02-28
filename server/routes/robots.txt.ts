@@ -4,7 +4,7 @@ export default defineEventHandler((event) => {
   setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
 
   const reqUrl = getRequestURL(event)
-  const base = (String(process.env.SITE_URL || '').trim() || reqUrl.origin).replace(/\/$/, '')
+  const base = String(reqUrl.origin || '').trim().replace(/\/$/, '')
 
   return [
     'User-agent: *',

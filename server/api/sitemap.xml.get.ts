@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
 
   const reqUrl = getRequestURL(event)
-  const base = (String(process.env.SITE_URL || '').trim() || reqUrl.origin).replace(/\/$/, '')
+  const base = String(reqUrl.origin || '').trim().replace(/\/$/, '')
 
   const urls: { loc: string; lastmod?: string }[] = []
   urls.push({ loc: `${base}/`, lastmod: new Date().toISOString().slice(0, 10) })
