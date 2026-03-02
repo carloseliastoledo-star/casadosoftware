@@ -71,7 +71,7 @@ export default defineNuxtConfig({
       }
     ],
     lazy: true,
-    langDir: 'app/locales/',
+    langDir: 'locales/',
     detectBrowserLanguage: false
   },
 
