@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useIntlContext } from '#imports'
 
+const localePath = useLocalePath()
+
 const intl = useIntlContext()
 
 interface Product {
@@ -245,13 +247,13 @@ const includedItems = computed(() => {
 function buyNow(event: Event) {
   event.preventDefault()
   event.stopPropagation()
-  navigateTo({ path: '/checkout', query: { product: props.product.slug } })
+  navigateTo({ path: localePath('/checkout'), query: { product: props.product.slug } })
 }
 </script>
 
 <template>
   <NuxtLink
-    :to="`/produto/${product.slug}`"
+    :to="localePath(`/produto/${product.slug}`)"
     class="bg-white rounded-xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
   >
     <!-- Imagem -->

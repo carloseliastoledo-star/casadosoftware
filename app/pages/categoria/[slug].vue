@@ -2,40 +2,36 @@
   <section v-if="isLicencasDigitais" class="bg-white min-h-screen">
     <div class="max-w-7xl mx-auto px-6 pt-8 pb-12">
       <div class="text-xs text-gray-500">
-        <NuxtLink to="/" class="hover:text-blue-600">Home</NuxtLink>
+        <NuxtLink :to="localePath('/')" class="hover:text-blue-600">{{ t('home') }}</NuxtLink>
         <span class="mx-2">/</span>
-        <span class="text-gray-700">{{ categoria?.nome || 'Category' }}</span>
+        <span class="text-gray-700">{{ categoria?.nome || t('category') }}</span>
       </div>
 
       <div class="mt-3 flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">{{ categoria?.nome || 'Category' }}</h1>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">{{ categoria?.nome || t('category') }}</h1>
           <div class="mt-1 text-sm text-gray-600">
             {{ produtosCountText }}
           </div>
         </div>
 
         <div class="flex items-center gap-2">
-          <div class="text-xs font-semibold text-gray-600">Sort</div>
+          <div class="text-xs font-semibold text-gray-600">{{ t('sort') }}</div>
           <select
             v-model="sort"
             class="h-10 rounded-md border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
             aria-label="Sort"
           >
-            <option value="featured">Featured</option>
-            <option value="newest">Newest</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
+            <option value="featured">{{ t('sort_featured') }}</option>
+            <option value="newest">{{ t('sort_newest') }}</option>
+            <option value="price_asc">{{ t('sort_price_asc') }}</option>
+            <option value="price_desc">{{ t('sort_price_desc') }}</option>
           </select>
         </div>
       </div>
 
-      <div v-if="pending" class="text-center py-16 text-gray-500">
-        Loading...
-      </div>
-      <div v-else-if="error" class="text-center py-16 text-red-600">
-        Category not found.
-      </div>
+      <div v-if="pending" class="text-center py-16 text-gray-500">{{ t('loading') }}</div>
+      <div v-else-if="error" class="text-center py-16 text-red-600">{{ t('category_not_found') }}</div>
 
       <div v-else class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <ProductCard
@@ -74,6 +70,9 @@
 
 <script setup lang="ts">
 import ProductCard from '~/components/ProductCard.vue'
+
+const { locale, t } = useI18n()
+const localePath = useLocalePath()
 
 const route = useRoute()
 const slug = String(route.params.slug || '')
@@ -122,7 +121,8 @@ const isLicencasDigitais = computed(() => {
 })
 
 const { data, pending, error } = await useFetch(() => `/api/categorias/${slug}`, {
-  server: true
+  server: true,
+  headers: { 'x-locale': String(locale.value || 'en') }
 })
 
 const categoria = computed(() => (data.value as any)?.categoria || null)
@@ -160,7 +160,9 @@ const canonicalUrl = computed(() => {
   const s = categoria.value?.slug || slug
   if (!s) return ''
   if (!baseUrl) return ''
-  return `${baseUrl}/categoria/${s}`
+  const origin = String(baseUrl || '').trim().replace(/\/$/, '')
+  const prefix = locale.value === 'en' ? '' : `/${locale.value}`
+  return `${origin}${prefix}/categoria/${s}/`
 })
 
 const pageTitle = computed(() => {

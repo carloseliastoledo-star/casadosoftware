@@ -13,11 +13,22 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
 
   const reqUrl = getRequestURL(event)
-  const base = String(reqUrl.origin || '').trim().replace(/\/$/, '')
+  const { public: publicConfig } = useRuntimeConfig()
+  const configuredBase = String((publicConfig as any)?.siteUrl || '').trim().replace(/\/$/, '')
+  const requestBase = String(reqUrl.origin || '').trim().replace(/\/$/, '')
+  const base = configuredBase || requestBase
+
+  const localePrefixes = [
+    { code: 'en', prefix: '' },
+    { code: 'pt', prefix: '/pt' },
+    { code: 'es', prefix: '/es' }
+  ]
 
   const urls: { loc: string; lastmod?: string }[] = []
-  urls.push({ loc: `${base}/`, lastmod: new Date().toISOString().slice(0, 10) })
-  urls.push({ loc: `${base}/produtos` })
+  for (const l of localePrefixes) {
+    urls.push({ loc: `${base}${l.prefix}/`, lastmod: new Date().toISOString().slice(0, 10) })
+    urls.push({ loc: `${base}${l.prefix}/produtos/` })
+  }
 
   try {
     const { default: prisma } = await import('#root/server/db/prisma')
@@ -29,18 +40,26 @@ export default defineEventHandler(async (event) => {
         orderBy: { criadoEm: 'desc' }
       }),
       prisma.categoria.findMany({
+        where: { ativo: true },
         select: { slug: true }
       })
     ])
 
     for (const c of categorias) {
       if (!c.slug) continue
-      urls.push({ loc: `${base}/categoria/${c.slug}` })
+      for (const l of localePrefixes) {
+        urls.push({ loc: `${base}${l.prefix}/categoria/${c.slug}/` })
+      }
     }
 
     for (const p of produtos) {
       if (!p.slug) continue
-      urls.push({ loc: `${base}/produto/${p.slug}`, lastmod: p.criadoEm ? new Date(p.criadoEm).toISOString().slice(0, 10) : undefined })
+      for (const l of localePrefixes) {
+        urls.push({
+          loc: `${base}${l.prefix}/produto/${p.slug}/`,
+          lastmod: p.criadoEm ? new Date(p.criadoEm).toISOString().slice(0, 10) : undefined
+        })
+      }
     }
   } catch {
     // sem banco: retorna sitemap mínimo (não quebra com 500)

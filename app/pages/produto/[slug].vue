@@ -216,6 +216,8 @@ import DOMPurify from 'isomorphic-dompurify'
 
 definePageMeta({ ssr: true })
 
+const { locale } = useI18n()
+
 const intl = useIntlContext()
 
 const { siteName } = useSiteBranding()
@@ -338,8 +340,9 @@ const canonicalUrl = computed(() => {
   const origin = String(baseUrl || '').trim().replace(/\/$/, '')
   const hardOrigin = 'https://gvgmallglobal.com'
   const finalOrigin = origin || hardOrigin
+  const prefix = locale.value === 'en' ? '' : `/${locale.value}`
   if (!s) return finalOrigin ? `${finalOrigin}/` : ''
-  return finalOrigin ? `${finalOrigin}/produto/${s}` : ''
+  return finalOrigin ? `${finalOrigin}${prefix}/produto/${s}` : ''
 })
 
 const { data, pending, error } = await useFetch(

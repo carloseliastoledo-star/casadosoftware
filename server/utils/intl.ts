@@ -102,8 +102,48 @@ function readHost(event?: H3Event): string {
   return first.toLowerCase()
 }
 
+function detectLanguageFromHeader(event?: H3Event): 'pt' | 'en' | 'es' | null {
+  if (!event) return null
+  const raw = String(getRequestHeader(event, 'x-locale') || getRequestHeader(event, 'x-language') || '').trim()
+  return normalizeLanguage(raw)
+}
+
+function detectLanguageFromReferer(event?: H3Event): 'pt' | 'en' | 'es' | null {
+  if (!event) return null
+  const ref = String(getRequestHeader(event, 'referer') || '').trim().toLowerCase()
+  if (!ref) return null
+
+  try {
+    const url = new URL(ref)
+    const pathname = String(url.pathname || '').toLowerCase()
+    if (pathname === '/pt' || pathname.startsWith('/pt/')) return 'pt'
+    if (pathname === '/es' || pathname.startsWith('/es/')) return 'es'
+    if (pathname === '/en' || pathname.startsWith('/en/')) return 'en'
+    return null
+  } catch {
+    if (ref.includes('/pt/') || ref.endsWith('/pt')) return 'pt'
+    if (ref.includes('/es/') || ref.endsWith('/es')) return 'es'
+    if (ref.includes('/en/') || ref.endsWith('/en')) return 'en'
+    return null
+  }
+}
+
+function detectLanguageFromPath(event?: H3Event): 'pt' | 'en' | 'es' | null {
+  if (!event) return null
+  const url = String((event as any)?.node?.req?.url || '').trim().toLowerCase()
+  if (!url) return null
+  if (url === '/pt' || url.startsWith('/pt/')) return 'pt'
+  if (url === '/es' || url.startsWith('/es/')) return 'es'
+  if (url === '/en' || url.startsWith('/en/')) return 'en'
+  return null
+}
+
 export function getIntlContext(event?: H3Event): IntlContext {
   const host = readHost(event)
+
+  const headerLang = detectLanguageFromHeader(event)
+  const refererLang = detectLanguageFromReferer(event)
+  const pathLang = detectLanguageFromPath(event)
 
   const cookieLang = normalizeLanguage(getCookie(event as any, 'ld_lang'))
   const cookieCurrency = normalizeCurrency(getCookie(event as any, 'ld_currency'))
@@ -118,7 +158,10 @@ export function getIntlContext(event?: H3Event): IntlContext {
   const isEn = host.startsWith('en.')
   const isEs = host.startsWith('es.')
 
-  if (cookieLang) language = cookieLang
+  if (headerLang) language = headerLang
+  else if (refererLang) language = refererLang
+  else if (pathLang) language = pathLang
+  else if (cookieLang) language = cookieLang
   else if (acceptLang) language = acceptLang
   else if (isEn) language = 'en'
   else if (isEs) language = 'es'

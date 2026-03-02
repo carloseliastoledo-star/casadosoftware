@@ -1,8 +1,13 @@
 export function useSiteBranding() {
   const config = useRuntimeConfig()
 
-  const defaultSiteName = 'Mercado Softwares'
-  const defaultLogoPath = '/logo-mercadosoftwares.png'
+  const storeSlug = String((config.public as any)?.storeSlug || '').trim()
+  const siteUrl = String((config.public as any)?.siteUrl || '').trim().toLowerCase()
+
+  const isGvgMallGlobal = storeSlug === 'licencasdigitais' || siteUrl.includes('gvgmallglobal.com')
+
+  const defaultSiteName = isGvgMallGlobal ? 'GVGMall Global' : 'Mercado Softwares'
+  const defaultLogoPath = isGvgMallGlobal ? '/licencasdigitais-gvg/logo.png' : '/logo-mercadosoftwares.png'
 
   const rawName = String((config.public as any)?.siteName || '').trim()
   const siteName = rawName && rawName !== 'Site' ? rawName : defaultSiteName
@@ -13,8 +18,6 @@ export function useSiteBranding() {
   const topbarText = String(config.public.topbarText || '').trim() || ''
   const topbarLink = String(config.public.topbarLink || '').trim() || ''
   const whatsappNumber = String(config.public.whatsappNumber || '').trim() || ''
-
-  const storeSlug = String((config.public as any)?.storeSlug || '').trim()
 
   const companyLegalName = String((config.public as any).companyLegalName || '').trim() || (storeSlug === 'licencasdigitais' ? 'GVGMALL' : 'ELETROKEYS LTDA')
   const companyCnpj = String((config.public as any).companyCnpj || '').trim() || (storeSlug === 'licencasdigitais' ? '' : '44.694.356/0001-48')

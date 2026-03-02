@@ -119,12 +119,12 @@
           </NuxtLink>
 
           <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-gray-800">
-            <NuxtLink to="/categoria/windows" class="hover:text-blue-600">Windows</NuxtLink>
-            <NuxtLink to="/categoria/windows-server" class="hover:text-blue-600">Windows Server</NuxtLink>
-            <NuxtLink to="/categoria/office" class="hover:text-blue-600">Office</NuxtLink>
-            <NuxtLink to="/categoria/corel" class="hover:text-blue-600">Corel</NuxtLink>
-            <NuxtLink to="/categoria/autodesk" class="hover:text-blue-600">Autodesk</NuxtLink>
-            <NuxtLink to="/blog" class="hover:text-blue-600">Blog</NuxtLink>
+            <NuxtLink :to="localePath('/categoria/windows')" class="hover:text-blue-600">{{ t.navWindows }}</NuxtLink>
+            <NuxtLink :to="localePath('/categoria/windows-server')" class="hover:text-blue-600">{{ t.navWindowsServer }}</NuxtLink>
+            <NuxtLink :to="localePath('/categoria/office')" class="hover:text-blue-600">{{ t.navOffice }}</NuxtLink>
+            <NuxtLink :to="localePath('/categoria/corel')" class="hover:text-blue-600">{{ t.navCorel }}</NuxtLink>
+            <NuxtLink :to="localePath('/categoria/autodesk')" class="hover:text-blue-600">{{ t.navAutodesk }}</NuxtLink>
+            <NuxtLink :to="localePath('/blog')" class="hover:text-blue-600">{{ t.navBlog }}</NuxtLink>
           </nav>
 
           <div class="flex items-center gap-3">
@@ -268,10 +268,10 @@
         </div>
 
         <div>
-          <div class="font-extrabold tracking-widest text-xs text-sky-600">CALL CENTER AND POLICY</div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">{{ t.ldCallCenterPolicy }}</div>
           <div class="mt-4 space-y-2 text-gray-600">
             <div>
-              <span class="font-semibold text-gray-700">Email:</span>
+              <span class="font-semibold text-gray-700">{{ t.ldEmail }}:</span>
               <span class="ml-1">{{ companyEmail || supportEmail }}</span>
             </div>
             <template v-if="footerLinksFromPages.length">
@@ -295,33 +295,33 @@
               </NuxtLink>
             </template>
             <template v-else>
-              <NuxtLink to="/reembolso" class="block hover:underline">Policys of Refunds and Exchange</NuxtLink>
-              <NuxtLink to="/privacidade" class="block hover:underline">Privacy Policy</NuxtLink>
-              <NuxtLink to="/termos" class="block hover:underline">Terms of Service</NuxtLink>
-              <NuxtLink to="/privacidade" class="block hover:underline">Privacy and Safety</NuxtLink>
-              <NuxtLink to="/quem-somos" class="block hover:underline">Legal Notice</NuxtLink>
+              <NuxtLink :to="localePath('/reembolso')" class="block hover:underline">{{ t.footerRefundPolicy }}</NuxtLink>
+              <NuxtLink :to="localePath('/privacidade')" class="block hover:underline">{{ t.footerPrivacy }}</NuxtLink>
+              <NuxtLink :to="localePath('/termos')" class="block hover:underline">{{ t.footerTerms }}</NuxtLink>
+              <NuxtLink :to="localePath('/privacidade')" class="block hover:underline">{{ t.footerPrivacySafety }}</NuxtLink>
+              <NuxtLink :to="localePath('/quem-somos')" class="block hover:underline">{{ t.footerLegalNotice }}</NuxtLink>
             </template>
           </div>
         </div>
 
         <div>
-          <div class="font-extrabold tracking-widest text-xs text-sky-600">WORKING HOURS</div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">{{ t.ldWorkingHours }}</div>
           <div class="mt-4 space-y-2 text-gray-600">
-            <div>Monday-Friday: 08AM - 10PM</div>
-            <div>Saturday: 10AM - 05PM</div>
-            <div>Sunday: 10AM - 05PM</div>
+            <div>{{ t.ldWorkingHoursLine1 }}</div>
+            <div>{{ t.ldWorkingHoursLine2 }}</div>
+            <div>{{ t.ldWorkingHoursLine3 }}</div>
           </div>
         </div>
 
         <div>
-          <div class="font-extrabold tracking-widest text-xs text-sky-600">OUR ADRESS</div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">{{ t.ldOurAddress }}</div>
           <div class="mt-4 space-y-2 text-gray-600">
             <div>{{ companyAddress }}</div>
           </div>
         </div>
 
         <div>
-          <div class="font-extrabold tracking-widest text-xs text-sky-600">WE ACCEPT</div>
+          <div class="font-extrabold tracking-widest text-xs text-sky-600">{{ t.ldWeAccept }}</div>
           <div class="mt-4 grid grid-cols-4 gap-3">
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
               <img src="/licencasdigitais-gvg/payments/amex.svg" alt="American Express" class="h-full w-auto" loading="lazy" decoding="async" />
@@ -408,6 +408,10 @@
 </template>
 
 <script setup lang="ts">
+const { locale, locales } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
+const localePath = useLocalePath()
+
 const {
   siteName,
   logoPath,
@@ -423,14 +427,30 @@ const {
 
 const config = useRuntimeConfig()
 
+const route = useRoute()
+
+const requestUrl = import.meta.server ? useRequestURL() : null
+const requestHeaders = import.meta.server
+  ? (useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>)
+  : null
+
+const alternateLinks = ref<any[]>([])
+const xDefaultHrefRef = ref<string>('')
+
+const seoOrigin = computed(() => {
+  const configured = String((config.public as any)?.siteUrl || '').trim()
+  if (configured) return configured.replace(/\/$/, '')
+  return siteOrigin.value
+})
+
+function normalizeAlternateHref(origin: string, href: string) {
+  const abs = href.startsWith('http') ? href : `${origin}${href}`
+  return abs.replace(/\/pt$/, '/pt/').replace(/\/es$/, '/es/').replace(/\/$/, (m) => m)
+}
+
 const siteOrigin = computed(() => {
   if (import.meta.server) {
-    try {
-      const url = useRequestURL()
-      return String(url?.origin || '').replace(/\/$/, '')
-    } catch {
-      return ''
-    }
+    return String(requestUrl?.origin || '').replace(/\/$/, '')
   }
 
   if (typeof window !== 'undefined' && window.location?.origin) {
@@ -440,10 +460,48 @@ const siteOrigin = computed(() => {
   return ''
 })
 
+watchEffect(() => {
+  const origin = seoOrigin.value || 'https://gvgmallglobal.com'
+  const currentPath = route.path
+
+  const nextAlternates = (Array.isArray(locales.value) ? locales.value : [])
+    .map((l: any) => {
+      const code = String(l?.code || '').trim()
+      if (!code) return null
+
+      const href = switchLocalePath(code)
+      const iso = String(l?.iso || code).trim()
+
+      const abs = href
+        ? normalizeAlternateHref(origin, href)
+        : normalizeAlternateHref(origin, `${code === 'en' ? '' : `/${code}`}${currentPath}`)
+
+      return {
+        rel: 'alternate',
+        hreflang: iso,
+        href: abs
+      }
+    })
+    .filter(Boolean) as any[]
+
+  alternateLinks.value = nextAlternates
+
+  const xDefaultHref = switchLocalePath('en')
+    ? normalizeAlternateHref(origin, switchLocalePath('en') as any)
+    : normalizeAlternateHref(origin, currentPath)
+
+  xDefaultHrefRef.value = xDefaultHref
+})
+
 useHead(() => {
-  const origin = siteOrigin.value
+  const origin = seoOrigin.value
+  const localePrefix = locale.value === 'en' ? '' : `/${locale.value}`
+  const currentLocaleUrl = (origin || 'https://gvgmallglobal.com') + `${localePrefix}/`
 
   const logo = origin ? `${origin}/licencasdigitais-gvg/logo.png` : 'https://gvgmallglobal.com/licencasdigitais-gvg/logo.png'
+
+  const alternates = alternateLinks.value
+  const xDefaultHref = xDefaultHrefRef.value || `${origin || 'https://gvgmallglobal.com'}${route.path}`
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -457,14 +515,15 @@ useHead(() => {
       {
         '@type': 'WebSite',
         name: 'GVGMall Global',
-        url: origin || 'https://gvgmallglobal.com'
+        url: currentLocaleUrl
       }
     ]
   }
 
   return {
-    htmlAttrs: { lang: 'en' },
+    htmlAttrs: { lang: String(locale.value || 'en') },
     meta: [{ name: 'theme-color', content: '#2563eb' }],
+    link: [...alternates, { rel: 'alternate', hreflang: 'x-default', href: xDefaultHref }],
     script: [
       {
         id: 'ld-org-website',
@@ -482,17 +541,16 @@ const storeSlug = computed(() => String((config.public as any)?.storeSlug || '')
 
 const normalizedHost = computed(() => {
   if (import.meta.server) {
-    try {
-      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
-      const raw = headers?.['x-forwarded-host'] || headers?.host || ''
-      const first = String(raw).split(',')[0]?.trim()
-      return String(first || '').toLowerCase()
-    } catch {
-      return ''
-    }
+    const raw = requestHeaders?.['x-forwarded-host'] || requestHeaders?.host || ''
+    const first = String(raw).split(',')[0]?.trim()
+    return String(first || '').toLowerCase()
   }
 
-  return String(window.location.host || '').toLowerCase()
+  if (typeof window !== 'undefined') {
+    return String(window.location.host || '').toLowerCase()
+  }
+
+  return ''
 })
 
 const isLicencasDigitais = computed(() => {
@@ -526,7 +584,14 @@ const safeSiteName = computed(() => {
 
 const intl = useIntlContext()
 
-const route = useRoute()
+watchEffect(() => {
+  const next = String(locale.value || '').trim().toLowerCase()
+  if (next === 'pt' || next === 'en' || next === 'es') {
+    if (intl.language.value !== next) {
+      intl.setLanguage(next as any)
+    }
+  }
+})
 
 const mobileMenuOpen = ref(false)
 
@@ -647,6 +712,12 @@ const t = computed(() => {
       myAccount: 'My account',
       cart: 'Cart',
       goToCart: 'Go to cart',
+      navWindows: 'Windows',
+      navWindowsServer: 'Windows Server',
+      navOffice: 'Office',
+      navCorel: 'Corel',
+      navAutodesk: 'Autodesk',
+      navBlog: 'Blog',
       rightsReserved: 'All rights reserved.',
       footerDescription: 'Digital Windows and Office licenses with fast delivery after confirmation.',
       footerLinksTitle: 'Links',
@@ -658,6 +729,16 @@ const t = computed(() => {
       footerRefundPolicy: 'Refund policy',
       footerPrivacy: 'Privacy',
       footerTerms: 'Terms of use',
+      footerPrivacySafety: 'Privacy and Safety',
+      footerLegalNotice: 'Legal Notice',
+      ldCallCenterPolicy: 'CALL CENTER AND POLICY',
+      ldEmail: 'Email',
+      ldWorkingHours: 'WORKING HOURS',
+      ldWorkingHoursLine1: 'Monday-Friday: 08AM - 10PM',
+      ldWorkingHoursLine2: 'Saturday: 10AM - 05PM',
+      ldWorkingHoursLine3: 'Sunday: 10AM - 05PM',
+      ldOurAddress: 'OUR ADDRESS',
+      ldWeAccept: 'WE ACCEPT',
       footerSupportTitle: 'Support',
       footerSupportSubtitle: 'Fast and specialized support',
       footerIntlSupport: 'International support in Portuguese, Spanish and English',
@@ -677,6 +758,12 @@ const t = computed(() => {
       myAccount: 'Mi cuenta',
       cart: 'Carrito',
       goToCart: 'Ir al carrito',
+      navWindows: 'Windows',
+      navWindowsServer: 'Windows Server',
+      navOffice: 'Office',
+      navCorel: 'Corel',
+      navAutodesk: 'Autodesk',
+      navBlog: 'Blog',
       rightsReserved: 'Todos los derechos reservados.',
       footerDescription: 'Licencias digitales de Windows y Office con envío rápido tras la confirmación.',
       footerLinksTitle: 'Enlaces',
@@ -688,6 +775,16 @@ const t = computed(() => {
       footerRefundPolicy: 'Política de reembolso',
       footerPrivacy: 'Privacidad',
       footerTerms: 'Términos de uso',
+      footerPrivacySafety: 'Privacidad y seguridad',
+      footerLegalNotice: 'Aviso legal',
+      ldCallCenterPolicy: 'CENTRO DE ATENCIÓN Y POLÍTICAS',
+      ldEmail: 'Email',
+      ldWorkingHours: 'HORARIO DE ATENCIÓN',
+      ldWorkingHoursLine1: 'Lunes-Viernes: 08AM - 10PM',
+      ldWorkingHoursLine2: 'Sábado: 10AM - 05PM',
+      ldWorkingHoursLine3: 'Domingo: 10AM - 05PM',
+      ldOurAddress: 'DIRECCIÓN',
+      ldWeAccept: 'ACEPTAMOS',
       footerSupportTitle: 'Soporte',
       footerSupportSubtitle: 'Atención rápida y especializada',
       footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
@@ -706,6 +803,12 @@ const t = computed(() => {
     myAccount: 'Minha conta',
     cart: 'Carrinho',
     goToCart: 'Ir para o carrinho',
+    navWindows: 'Windows',
+    navWindowsServer: 'Windows Server',
+    navOffice: 'Office',
+    navCorel: 'Corel',
+    navAutodesk: 'Autodesk',
+    navBlog: 'Blog',
     rightsReserved: 'Todos os direitos reservados.',
     footerDescription: 'Licenças digitais de Windows e Office com envio imediato após confirmação.',
     footerLinksTitle: 'Links',
@@ -717,6 +820,16 @@ const t = computed(() => {
     footerRefundPolicy: 'Política de reembolso',
     footerPrivacy: 'Privacidade',
     footerTerms: 'Termos de uso',
+    footerPrivacySafety: 'Privacidade e segurança',
+    footerLegalNotice: 'Aviso legal',
+    ldCallCenterPolicy: 'CENTRAL DE ATENDIMENTO E POLÍTICAS',
+    ldEmail: 'Email',
+    ldWorkingHours: 'HORÁRIO DE ATENDIMENTO',
+    ldWorkingHoursLine1: 'Segunda-Sexta: 08AM - 10PM',
+    ldWorkingHoursLine2: 'Sábado: 10AM - 05PM',
+    ldWorkingHoursLine3: 'Domingo: 10AM - 05PM',
+    ldOurAddress: 'ENDEREÇO',
+    ldWeAccept: 'ACEITAMOS',
     footerSupportTitle: 'Suporte',
     footerSupportSubtitle: 'Atendimento rápido e especializado',
     footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',

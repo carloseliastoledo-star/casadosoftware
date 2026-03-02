@@ -575,21 +575,22 @@ const intl = useIntlContext()
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
 
+const requestUrl = import.meta.server ? useRequestURL() : null
+const requestHeaders = import.meta.server
+  ? (useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>)
+  : null
+
 const host = computed(() => {
-  if (process.server) {
+  if (import.meta.server) {
     try {
-      const url = useRequestURL()
-      if (url?.host) return String(url.host).toLowerCase()
+      if (requestUrl?.host) return String(requestUrl.host).toLowerCase()
     } catch {
       // ignore
     }
 
     try {
-      const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<
-        string,
-        string | undefined
-      >
-      const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
+      const raw =
+        requestHeaders?.['x-forwarded-host'] || requestHeaders?.['x-original-host'] || requestHeaders?.host || ''
       const first = String(raw).split(',')[0]?.trim()
       return String(first || '').toLowerCase()
     } catch {
@@ -597,7 +598,11 @@ const host = computed(() => {
     }
   }
 
-  return String(window.location.host || '').toLowerCase()
+  if (typeof window !== 'undefined') {
+    return String(window.location.host || '').toLowerCase()
+  }
+
+  return ''
 })
 
 const normalizedHost = computed(() => {

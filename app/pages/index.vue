@@ -15,30 +15,33 @@
 <script setup lang="ts">
 definePageMeta({ ssr: true })
 
+const { t, locale } = useI18n()
+
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
 
 const baseUrl = useSiteUrl()
+
+const requestUrl = import.meta.server ? useRequestURL() : null
+const requestHeaders = import.meta.server
+  ? (useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>)
+  : null
 
 const CASA_HOME_TITLE = 'Licenças Originais Windows e Office | Casa do Software'
 const CASA_HOME_DESCRIPTION =
   'Compre licenças digitais originais Windows 10, 11 e Office com entrega imediata e suporte técnico.'
 
 const host = computed(() => {
-  if (process.server) {
+  if (import.meta.server) {
     try {
-      const url = useRequestURL()
-      if (url?.host) return String(url.host).toLowerCase()
+      if (requestUrl?.host) return String(requestUrl.host).toLowerCase()
     } catch {
       // ignore
     }
 
     try {
-      const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<
-        string,
-        string | undefined
-      >
-      const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
+      const raw =
+        requestHeaders?.['x-forwarded-host'] || requestHeaders?.['x-original-host'] || requestHeaders?.host || ''
       const first = String(raw).split(',')[0]?.trim()
       return String(first || '').toLowerCase()
     } catch {
@@ -46,7 +49,11 @@ const host = computed(() => {
     }
   }
 
-  return String(window.location.host || '').toLowerCase()
+  if (typeof window !== 'undefined') {
+    return String(window.location.host || '').toLowerCase()
+  }
+
+  return ''
 })
 
 const normalizedHost = computed(() => {
@@ -71,7 +78,7 @@ const isLicencasDigitais = computed(() => {
 const applyCasaSeo = computed(() => {
   if (storeSlug.value && storeSlug.value !== 'casadosoftware') return false
   if (isCasaDoSoftware.value) return true
-  if (process.server && !normalizedHost.value) return true
+  if (import.meta.server && !normalizedHost.value) return true
   return false
 })
 
@@ -83,11 +90,11 @@ const applyGvgSeo = computed(() => {
 useHead(() => {
   if (!applyGvgSeo.value) return {}
 
+  const prefix = locale.value === 'en' ? '' : `/${locale.value}`
+
   return {
     link: [
-      { rel: 'canonical', href: 'https://gvgmallglobal.com/' },
-      { rel: 'alternate', hreflang: 'en', href: 'https://gvgmallglobal.com/' },
-      { rel: 'alternate', hreflang: 'x-default', href: 'https://gvgmallglobal.com/' }
+      { rel: 'canonical', href: `https://gvgmallglobal.com${prefix}/` }
     ]
   }
 })
@@ -114,12 +121,15 @@ if (applyCasaSeo.value) {
 
 if (applyGvgSeo.value) {
   useSeoMeta({
-    title: 'GVGMall Global – Buy Original Windows and Office Licenses',
-    description: 'Buy genuine Windows, Office and digital software licenses with instant delivery and secure payment.',
-    ogTitle: 'GVGMall Global – Digital Software Store',
-    ogDescription: 'Instant delivery of original Windows and Office licenses.',
+    title: () => t('home_title'),
+    description: () => t('home_description'),
+    ogTitle: () => t('home_title'),
+    ogDescription: () => t('home_description'),
     ogType: 'website',
-    ogUrl: 'https://gvgmallglobal.com/',
+    ogUrl: () => {
+      const prefix = locale.value === 'en' ? '' : `/${locale.value}`
+      return `https://gvgmallglobal.com${prefix}/`
+    },
     twitterCard: 'summary_large_image'
   })
 }
@@ -128,12 +138,7 @@ useHead(() => {
   if (!applyCasaSeo.value) return {}
 
   let siteUrl = ''
-  try {
-    const url = useRequestURL()
-    siteUrl = String(url?.origin || '')
-  } catch {
-    // ignore
-  }
+  siteUrl = String(requestUrl?.origin || '')
 
   if (!siteUrl) {
     const h = String(normalizedHost.value || '').trim()
@@ -171,7 +176,7 @@ useHead(() => {
 })
 
 const debugHost = computed(() => {
-  if (process.server) return false
+  if (import.meta.server) return false
   try {
     const params = new URLSearchParams(window.location.search)
     return params.get('debugHost') === '1'
