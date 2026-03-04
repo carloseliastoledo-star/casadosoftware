@@ -275,3 +275,28 @@ model SiteSettings {
   createdAt              DateTime @default(now()) @db.DateTime(0)
   updatedAt              DateTime @updatedAt @db.DateTime(0)
 }
+
+model Affiliate {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  code            String   @unique
+  commissionRate  Float    @default(0.25)
+  totalEarnings   Float    @default(0)
+  createdAt       DateTime @default(now())
+
+  commissions     AffiliateCommission[]
+}
+
+model AffiliateCommission {
+  id           Int      @id @default(autoincrement())
+  orderId      String
+  affiliateId  Int
+  amount       Float
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+
+  affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
+
+  @@index([affiliateId])
+}

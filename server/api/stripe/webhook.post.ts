@@ -34,6 +34,49 @@ export default defineEventHandler(async (event) => {
       const pi = stripeEvent.data.object as Stripe.PaymentIntent
       const orderId = String((pi.metadata as any)?.orderId || '').trim()
 
+      if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
+        try {
+          const affiliateCode = String((pi.metadata as any)?.affiliate || '').trim()
+          if (affiliateCode && orderId) {
+            const affiliate = await (prisma as any).affiliate.findUnique({
+              where: { code: affiliateCode },
+              select: { id: true, commissionRate: true }
+            })
+
+            if (affiliate) {
+              const existing = await (prisma as any).affiliateCommission.findFirst({
+                where: { orderId, affiliateId: affiliate.id },
+                select: { id: true }
+              })
+
+              if (!existing) {
+                const order = await (prisma as any).order.findUnique({
+                  where: { id: orderId },
+                  select: { totalAmount: true }
+                })
+
+                const totalAmount = Number((order as any)?.totalAmount ?? 0)
+                const commissionRate = Number((affiliate as any)?.commissionRate ?? 0)
+                const amount = Math.round(totalAmount * commissionRate * 100) / 100
+
+                if (amount > 0) {
+                  await (prisma as any).affiliateCommission.create({
+                    data: {
+                      orderId,
+                      affiliateId: affiliate.id,
+                      amount
+                    },
+                    select: { id: true }
+                  })
+                }
+              }
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+
       if (orderId) {
         await (prisma as any).order.update({
           where: { id: orderId },

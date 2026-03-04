@@ -57,6 +57,7 @@ export default defineEventHandler(async (event) => {
   const whatsapp = body?.whatsapp ? String(body.whatsapp).trim() : undefined
   const currencyRequested = String(body?.currency || '').trim().toLowerCase()
   const countryCode = body?.countryCode ? String(body.countryCode).trim().toUpperCase() : null
+  const affiliate = String(body?.affiliate || '').trim()
 
   if (!produtoId) {
     throw createError({ statusCode: 400, statusMessage: 'produtoId obrigatório' })
@@ -164,7 +165,8 @@ export default defineEventHandler(async (event) => {
           orderId: order.id,
           storeSlug,
           produtoId: produto.id,
-          countryCode: countryCode || ''
+          countryCode: countryCode || '',
+          affiliate: String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true' ? (affiliate || '') : ''
         }
       })
 

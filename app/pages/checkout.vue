@@ -694,6 +694,16 @@ async function ensureStripeElement() {
 
   intlError.value = ''
 
+  const affiliate = (() => {
+    if (!import.meta.client) return ''
+    if (!Boolean((config.public as any)?.affiliateEnabled)) return ''
+    try {
+      return String(window.localStorage.getItem('affiliate_ref') || '').trim()
+    } catch {
+      return ''
+    }
+  })()
+
   const res: any = await $fetch('/api/stripe/payment-intent', {
     method: 'POST',
     body: {
@@ -702,7 +712,8 @@ async function ensureStripeElement() {
       nome: nome.value,
       whatsapp: whatsapp.value,
       currency: intlCurrency.value,
-      countryCode: intlCountryCode.value || null
+      countryCode: intlCountryCode.value || null,
+      affiliate
     }
   })
 

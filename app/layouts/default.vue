@@ -558,6 +558,19 @@ onMounted(() => {
   }
 })
 
+onMounted(() => {
+  if (!import.meta.client) return
+  if (!Boolean((config.public as any)?.affiliateEnabled)) return
+
+  try {
+    const ref = String((route.query as any)?.ref || '').trim()
+    if (!ref) return
+    window.localStorage.setItem('affiliate_ref', ref)
+  } catch {
+    // ignore
+  }
+})
+
 const search = ref('')
 
 watch(
