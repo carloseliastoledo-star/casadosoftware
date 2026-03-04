@@ -16,7 +16,16 @@ export default defineEventHandler(async (event) => {
   const { public: publicConfig } = useRuntimeConfig()
   const configuredBase = String((publicConfig as any)?.siteUrl || '').trim().replace(/\/$/, '')
   const requestBase = String(reqUrl.origin || '').trim().replace(/\/$/, '')
-  const base = configuredBase || requestBase
+  let base = requestBase || configuredBase
+  try {
+    const reqHost = requestBase ? new URL(requestBase).host : ''
+    const cfgHost = configuredBase ? new URL(configuredBase).host : ''
+    if (reqHost && cfgHost && reqHost === cfgHost) {
+      base = configuredBase
+    }
+  } catch {
+    // ignore invalid URL parsing and keep best-effort base
+  }
 
   const localePrefixes = [
     { code: 'en', prefix: '' },
