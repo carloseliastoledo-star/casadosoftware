@@ -7,7 +7,12 @@ function splitPathAndQuery(url: string): { path: string; query: string } {
 }
 
 function detectHost(event: H3Event): string {
-  const raw = String(getRequestHeader(event, 'x-forwarded-host') || getRequestHeader(event, 'host') || '').trim()
+  const raw = String(
+    getRequestHeader(event, 'x-forwarded-host') ||
+      getRequestHeader(event, 'x-original-host') ||
+      getRequestHeader(event, 'host') ||
+      ''
+  ).trim()
   const first = raw.split(',')[0]?.trim() || ''
   return first.toLowerCase()
 }
