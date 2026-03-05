@@ -427,6 +427,7 @@
             <li><NuxtLink to="/tutoriais" class="hover:text-blue-600">{{ t.footerTutorials }}</NuxtLink></li>
             <li><NuxtLink to="/blog" class="hover:text-blue-600">{{ t.footerBlog }}</NuxtLink></li>
             <li><NuxtLink :to="affiliateMenuTo" class="hover:text-blue-600">{{ affiliateMenuLabel }}</NuxtLink></li>
+            <li v-if="showAffiliateSeoFooterLink"><NuxtLink to="/en/affiliate-program" class="hover:text-blue-600">Affiliate Program</NuxtLink></li>
             <li><NuxtLink to="/quem-somos" class="hover:text-blue-600">{{ t.footerAbout }}</NuxtLink></li>
             <li><NuxtLink to="/entrega-digital" class="hover:text-blue-600">{{ t.footerDigitalDelivery }}</NuxtLink></li>
             <li><NuxtLink to="/reembolso" class="hover:text-blue-600">{{ t.footerRefundPolicy }}</NuxtLink></li>
@@ -649,6 +650,10 @@ const affiliateMenuTo = computed(() => {
   if (lang === 'fr') return '/fr/programme-affiliation'
   if (lang === 'de') return '/de/partner-program'
   return '/pt/programa-afiliados'
+})
+
+const showAffiliateSeoFooterLink = computed(() => {
+  return detectLangForAffiliateMenu() === 'en'
 })
 
 const categoriasSet = computed(() => {
