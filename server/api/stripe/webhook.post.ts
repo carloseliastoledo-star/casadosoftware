@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
           const affiliateCode = String((pi.metadata as any)?.affiliate || '').trim()
           if (affiliateCode && orderId) {
             const affiliate = await (prisma as any).affiliate.findUnique({
-              where: { code: affiliateCode },
+              where: { refCode: affiliateCode },
               select: { id: true, commissionRate: true }
             })
 
@@ -66,6 +66,12 @@ export default defineEventHandler(async (event) => {
                       affiliateId: affiliate.id,
                       amount
                     },
+                    select: { id: true }
+                  })
+
+                  await (prisma as any).order.update({
+                    where: { id: orderId },
+                    data: { affiliateId: affiliate.id },
                     select: { id: true }
                   })
                 }

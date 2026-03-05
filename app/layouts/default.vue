@@ -570,7 +570,12 @@ onMounted(() => {
   try {
     const ref = String((route.query as any)?.ref || '').trim()
     if (!ref) return
-    window.localStorage.setItem('affiliate_ref', ref)
+    const affiliateCookie = useCookie('affiliate_ref', {
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: 'lax',
+      path: '/'
+    })
+    affiliateCookie.value = ref
   } catch {
     // ignore
   }

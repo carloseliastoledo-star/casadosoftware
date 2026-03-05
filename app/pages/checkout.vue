@@ -698,7 +698,8 @@ async function ensureStripeElement() {
     if (!import.meta.client) return ''
     if (!Boolean((config.public as any)?.affiliateEnabled)) return ''
     try {
-      return String(window.localStorage.getItem('affiliate_ref') || '').trim()
+      const c = useCookie<string | null>('affiliate_ref')
+      return String(c.value || '').trim()
     } catch {
       return ''
     }

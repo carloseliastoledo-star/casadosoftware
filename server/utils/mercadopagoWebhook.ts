@@ -29,6 +29,8 @@ export async function processMercadoPagoPayment(dataId: string) {
               produtoId: string
               customerId: string
               storeSlug: string | null
+              affiliateId: number | null
+              totalAmount: number | null
               emailEnviadoEm: Date | null
               telegramEnviadoEm: Date | null
             }
@@ -52,6 +54,8 @@ export async function processMercadoPagoPayment(dataId: string) {
               produtoId: true,
               customerId: true,
               storeSlug: true,
+              affiliateId: true,
+              totalAmount: true,
               emailEnviadoEm: true,
               telegramEnviadoEm: true
             }
@@ -65,6 +69,42 @@ export async function processMercadoPagoPayment(dataId: string) {
         }
 
         if (!order) return
+
+        if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
+          try {
+            const affiliateId = Number((order as any)?.affiliateId ?? 0)
+            if (affiliateId) {
+              const existing = await anyTx.affiliateCommission.findFirst({
+                where: { orderId: order.id, affiliateId },
+                select: { id: true }
+              })
+
+              if (!existing) {
+                const affiliate = await anyTx.affiliate.findUnique({
+                  where: { id: affiliateId },
+                  select: { commissionRate: true }
+                })
+
+                const totalAmount = Number((order as any)?.totalAmount ?? 0)
+                const commissionRate = Number((affiliate as any)?.commissionRate ?? 0)
+                const amount = Math.round(totalAmount * commissionRate * 100) / 100
+
+                if (amount > 0) {
+                  await anyTx.affiliateCommission.create({
+                    data: {
+                      orderId: order.id,
+                      affiliateId,
+                      amount
+                    },
+                    select: { id: true }
+                  })
+                }
+              }
+            }
+          } catch {
+            // ignore
+          }
+        }
 
         if (!order.telegramEnviadoEm) {
           const reservedAt = new Date()

@@ -178,6 +178,7 @@ model Order {
   numero              Int      @unique @default(autoincrement())
   status              String
   storeSlug            String?
+  affiliateId          Int?
   trafficSourceType   String?
   utmSource           String?
   utmMedium           String?
@@ -215,6 +216,8 @@ model Order {
   fulfillmentError     String?  @db.Text
   fulfillmentUpdatedAt DateTime? @db.DateTime(0)
   licencas             Licenca[]
+
+  affiliate            Affiliate? @relation(fields: [affiliateId], references: [id])
 }
 
 model Cupom {
@@ -280,11 +283,12 @@ model Affiliate {
   id              Int      @id @default(autoincrement())
   name            String
   email           String   @unique
-  code            String   @unique
+  refCode         String   @unique @map("code")
   commissionRate  Float    @default(0.25)
   totalEarnings   Float    @default(0)
   createdAt       DateTime @default(now())
 
+  orders          Order[]
   commissions     AffiliateCommission[]
 }
 

@@ -42,6 +42,8 @@ export default defineEventHandler(async (event) => {
   const { storeSlug } = getStoreContext(event)
   const body = await readBody(event)
 
+  const affiliateRef = String(getCookie(event, 'affiliate_ref') || '').trim()
+
   const produtoId = String(body?.produtoId || '')
   const email = String(body?.email || '').trim().toLowerCase()
 
@@ -119,6 +121,18 @@ export default defineEventHandler(async (event) => {
 
   try {
     const trx = await (prisma as any).$transaction(async (tx: any) => {
+      let affiliateId: number | null = null
+      if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
+        const code = String(affiliateRef || '').trim()
+        if (code) {
+          const found = await tx.affiliate.findUnique({
+            where: { refCode: code },
+            select: { id: true }
+          })
+          affiliateId = found?.id ?? null
+        }
+      }
+
       const customer = await tx.customer.upsert({
         where: { email_storeSlug: { email, storeSlug } },
         create: { email, storeSlug },
@@ -175,6 +189,7 @@ export default defineEventHandler(async (event) => {
         data: {
           status: 'PENDING',
           storeSlug,
+          affiliateId: affiliateId ?? null,
           trafficSourceType,
           utmSource: utmSource || null,
           utmMedium: utmMedium || null,

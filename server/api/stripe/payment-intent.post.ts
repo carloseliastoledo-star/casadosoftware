@@ -143,10 +143,23 @@ export default defineEventHandler(async (event) => {
       const subtotalAmount = round2(amountEffective)
       const totalAmount = subtotalAmount
 
+      let affiliateId: number | null = null
+      if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
+        const affiliateCode = String(affiliate || '').trim()
+        if (affiliateCode) {
+          const found = await anyTx.affiliate.findUnique({
+            where: { refCode: affiliateCode },
+            select: { id: true }
+          })
+          affiliateId = found?.id ?? null
+        }
+      }
+
       const order = await tx.order.create({
         data: {
           status: 'PENDING',
           storeSlug,
+          affiliateId: affiliateId ?? null,
           currency: currencyEffective,
           countryCode,
           produtoId: produto.id,
