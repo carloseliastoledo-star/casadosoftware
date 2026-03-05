@@ -196,40 +196,76 @@
       </div>
     </div>
 
-    <div class="bg-gray-50 border-t">
+    <div class="border-t bg-gradient-to-b from-blue-50 via-white to-white">
       <div class="max-w-7xl mx-auto px-6 py-14">
-        <div class="grid lg:grid-cols-2 gap-10 items-center">
-          <div>
-            <div class="text-sm font-semibold text-blue-700">{{ affiliateCtaKicker }}</div>
-            <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-gray-900">{{ affiliateCtaTitle }}</h2>
-            <p class="mt-3 text-gray-600 text-base leading-7">{{ affiliateCtaSubtitle }}</p>
+        <div class="relative overflow-hidden rounded-3xl border bg-white">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10" />
+          <div class="relative p-8 md:p-10">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+              <div>
+                <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
+                  {{ affiliateCtaKicker }}
+                  <span class="h-1 w-1 rounded-full bg-blue-400" aria-hidden="true" />
+                  <span class="text-blue-700">{{ affiliateCtaHighlight }}</span>
+                </div>
 
-            <div class="mt-6 flex flex-col sm:flex-row gap-3">
-              <NuxtLink
-                :to="affiliateLandingTo"
-                class="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 transition text-center"
-              >
-                {{ affiliateCtaButton }}
-              </NuxtLink>
+                <h2 class="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+                  {{ affiliateCtaTitle }}
+                </h2>
+
+                <p class="mt-3 text-gray-700 text-base leading-7">
+                  {{ affiliateCtaSubtitle }}
+                </p>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                  <NuxtLink
+                    :to="affiliateLandingTo"
+                    class="group inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 transition text-center shadow-sm hover:shadow"
+                  >
+                    <span>{{ affiliateCtaButton }}</span>
+                    <span class="ml-2 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                  </NuxtLink>
+
+                  <div class="hidden sm:flex items-center text-sm text-gray-600">
+                    <span class="font-semibold text-gray-900">{{ affiliateCtaNoFees }}</span>
+                    <span class="ml-1">{{ affiliateCtaStartToday }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-3xl border bg-gray-50 p-8">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="text-sm font-semibold text-gray-900">{{ affiliateCtaAudienceTitle }}</div>
+                  <div class="text-xs font-semibold text-blue-700 rounded-full bg-blue-100 px-3 py-1">{{ affiliateCtaWorldwide }}</div>
+                </div>
+
+                <ul class="mt-5 grid gap-3">
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience1 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience2 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience3 }}</span>
+                  </li>
+                </ul>
+
+                <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatCommissionLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">20%–30%</div>
+                  </div>
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatProductsLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">{{ affiliateCtaStatProductsValue }}</div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div class="bg-white border rounded-3xl p-8">
-            <div class="text-sm font-semibold text-gray-900">{{ affiliateCtaAudienceTitle }}</div>
-            <ul class="mt-4 grid gap-3">
-              <li class="flex items-center gap-3 text-gray-700">
-                <span aria-hidden="true">▶</span>
-                <span>{{ affiliateCtaAudience1 }}</span>
-              </li>
-              <li class="flex items-center gap-3 text-gray-700">
-                <span aria-hidden="true">▶</span>
-                <span>{{ affiliateCtaAudience2 }}</span>
-              </li>
-              <li class="flex items-center gap-3 text-gray-700">
-                <span aria-hidden="true">▶</span>
-                <span>{{ affiliateCtaAudience3 }}</span>
-              </li>
-            </ul>
           </div>
         </div>
       </div>
@@ -266,6 +302,69 @@ const affiliateCtaKicker = computed(() => {
   if (lang === 'fr') return 'Gagnez avec nous'
   if (lang === 'de') return 'Verdienen Sie mit uns'
   return 'Ganhe com a gente'
+})
+
+const affiliateCtaHighlight = computed(() => {
+  const lang = detectLangForAffiliateHome()
+  if (lang === 'en') return 'Up to 30%'
+  if (lang === 'es') return 'Hasta 30%'
+  if (lang === 'fr') return "Jusqu'à 30%"
+  if (lang === 'de') return 'Bis zu 30%'
+  return 'Até 30%'
+})
+
+const affiliateCtaNoFees = computed(() => {
+  const lang = detectLangForAffiliateHome()
+  if (lang === 'en') return 'No fees.'
+  if (lang === 'es') return 'Sin costos.'
+  if (lang === 'fr') return 'Sans frais.'
+  if (lang === 'de') return 'Keine Gebühren.'
+  return 'Sem taxas.'
+})
+
+const affiliateCtaStartToday = computed(() => {
+  const lang = detectLangForAffiliateHome()
+  if (lang === 'en') return 'Start promoting today.'
+  if (lang === 'es') return 'Empieza a promocionar hoy.'
+  if (lang === 'fr') return "Commencez à promouvoir aujourd'hui."
+  if (lang === 'de') return 'Starten Sie noch heute.'
+  return 'Comece hoje mesmo.'
+})
+
+const affiliateCtaWorldwide = computed(() => {
+  const lang = detectLangForAffiliateHome()
+  if (lang === 'en') return 'Worldwide'
+  if (lang === 'es') return 'Global'
+  if (lang === 'fr') return 'Mondial'
+  if (lang === 'de') return 'Weltweit'
+  return 'Global'
+})
+
+const affiliateCtaStatCommissionLabel = computed(() => {
+  const lang = detectLangForAffiliateHome()
+  if (lang === 'en') return 'Commission'
+  if (lang === 'es') return 'Comisión'
+  if (lang === 'fr') return 'Commission'
+  if (lang === 'de') return 'Provision'
+  return 'Comissão'
+})
+
+const affiliateCtaStatProductsLabel = computed(() => {
+  const lang = detectLangForAffiliateHome()
+  if (lang === 'en') return 'Products'
+  if (lang === 'es') return 'Productos'
+  if (lang === 'fr') return 'Produits'
+  if (lang === 'de') return 'Produkte'
+  return 'Produtos'
+})
+
+const affiliateCtaStatProductsValue = computed(() => {
+  const lang = detectLangForAffiliateHome()
+  if (lang === 'en') return 'Windows & Office'
+  if (lang === 'es') return 'Windows y Office'
+  if (lang === 'fr') return 'Windows et Office'
+  if (lang === 'de') return 'Windows & Office'
+  return 'Windows e Office'
 })
 
 const affiliateCtaTitle = computed(() => {
