@@ -14,7 +14,8 @@ export default defineEventHandler(async (event) => {
 
   const titulo = String(body?.titulo || '').trim()
   const slug = String(body?.slug || '').trim()
-  const featuredImage = body?.featuredImage != null ? String(body.featuredImage).trim() : null
+  const featuredImageRaw = body?.featuredImage != null ? String(body.featuredImage).trim() : ''
+  const featuredImage = featuredImageRaw ? featuredImageRaw : null
   const htmlRaw = body?.html != null ? String(body.html) : null
   const publicado = Boolean(body?.publicado)
 

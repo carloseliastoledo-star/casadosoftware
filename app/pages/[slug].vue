@@ -6,6 +6,15 @@
         <div v-else-if="error" class="text-sm text-red-600">Página não encontrada.</div>
 
         <div v-else>
+          <div v-if="post?.featuredImage" class="relative mb-6">
+            <img
+              :src="post.featuredImage"
+              :alt="post?.titulo || 'Imagem do post'"
+              class="w-full h-[220px] md:h-[340px] object-cover rounded-xl"
+              loading="lazy"
+            />
+          </div>
+
           <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ post?.titulo }}</h1>
           <p v-if="post?.atualizadoEm" class="text-xs text-gray-500 mt-2">
             Atualizado em {{ formatDate(post.atualizadoEm) }}
@@ -28,6 +37,7 @@ const slug = computed(() => String(route.params.slug || ''))
 type BlogPostDto = {
   titulo: string
   slug: string
+  featuredImage: string | null
   html: string | null
   atualizadoEm: string
 }

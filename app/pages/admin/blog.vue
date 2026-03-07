@@ -85,7 +85,17 @@
                 class="w-full border rounded-lg p-3 font-mono text-xs"
                 placeholder="/blog/windows11.jpg ou https://..."
               />
-              <p class="text-xs text-gray-500 mt-2">Usada no hero do post e nos cards do blog.</p>
+              <div class="mt-2 flex items-center justify-between gap-3">
+                <p class="text-xs text-gray-500">Usada no hero do post e nos cards do blog.</p>
+                <button
+                  type="button"
+                  class="text-xs text-red-600 hover:text-red-800"
+                  :disabled="modalLoading"
+                  @click="formFeaturedImage = ''"
+                >
+                  Remover imagem
+                </button>
+              </div>
             </div>
 
             <div>
