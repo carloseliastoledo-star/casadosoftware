@@ -281,6 +281,7 @@ model BlogPost {
   featuredImage String?
   excerpt      String?
   keyword      String?
+  autoSeo      Boolean  @default(false)
   html         String?  @db.Text
   publicado    Boolean  @default(false)
   criadoEm     DateTime @default(now()) @db.DateTime(0)

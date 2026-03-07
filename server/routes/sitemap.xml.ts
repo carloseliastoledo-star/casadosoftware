@@ -47,10 +47,12 @@ export default defineEventHandler(async (event) => {
             '/produtos'
   urls.push({ loc: `${base}${productsIndexPath}`, path: productsIndexPath })
 
+  urls.push({ loc: `${base}/blog`, path: '/blog' })
+
   try {
     const { default: prisma } = await import('#root/server/db/prisma')
 
-    const [produtos, categorias] = await Promise.all([
+    const [produtos, categorias, blogPosts] = await Promise.all([
       prisma.produto.findMany({
         where: { ativo: true },
         select: { slug: true, criadoEm: true },
@@ -58,6 +60,11 @@ export default defineEventHandler(async (event) => {
       }),
       prisma.categoria.findMany({
         select: { slug: true }
+      }),
+      (prisma as any).blogPost.findMany({
+        where: { publicado: true },
+        select: { slug: true, atualizadoEm: true },
+        orderBy: { atualizadoEm: 'desc' }
       })
     ])
 
@@ -69,6 +76,17 @@ export default defineEventHandler(async (event) => {
     for (const p of produtos) {
       if (!p.slug) continue
       urls.push({ loc: `${base}/produto/${p.slug}`, path: `/produto/${p.slug}`, lastmod: p.criadoEm ? new Date(p.criadoEm).toISOString().slice(0, 10) : undefined })
+    }
+
+    for (const b of blogPosts || []) {
+      const slug = String((b as any)?.slug || '').trim()
+      if (!slug) continue
+      const last = (b as any)?.atualizadoEm
+      urls.push({
+        loc: `${base}/blog/${slug}`,
+        path: `/blog/${slug}`,
+        lastmod: last ? new Date(last).toISOString().slice(0, 10) : undefined
+      })
     }
   } catch {
     // sem banco: retorna sitemap mínimo (não quebra com 500)

@@ -87,14 +87,8 @@ Inclua dicas práticas e explique de forma clara.`
 
 function appendProductCtaBlock(): string {
   return [
-    '<div class="bg-blue-50 border border-blue-100 rounded-xl p-5 mt-10">',
-    '<h2>Comprar licença com envio imediato</h2>',
-    '<p>Confira nossas opções recomendadas:</p>',
-    '<ul>',
-    '<li><a href="/produto/windows-11-pro">Windows 11 Pro</a></li>',
-    '<li><a href="/produto/office-365">Office 365</a></li>',
-    '</ul>',
-    '</div>'
+    '<hr/>',
+    '<p><strong>Compre licença original em:</strong> <a href="https://casadosoftware.com.br">https://casadosoftware.com.br</a></p>'
   ].join('')
 }
 
@@ -153,6 +147,7 @@ export default defineEventHandler(async (event) => {
       html: cleanedHtml,
       excerpt: excerpt || null,
       keyword,
+      autoSeo: true,
       publicado: publish
     },
     select: {
@@ -164,5 +159,5 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  return { ok: true, slug: post.slug, id: post.id }
+  return { ok: true, success: true, slug: post.slug, id: post.id }
 })

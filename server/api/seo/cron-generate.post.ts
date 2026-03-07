@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, createError } from 'h3'
+import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml.js'
 import { requireSeoOrAdmin } from '../../utils/seoAuth.js'
@@ -53,10 +53,10 @@ Estrutura:
 - título forte
 - introdução
 - passo a passo
-- perguntas frequentes
+- dúvidas frequentes
 - conclusão
 
-Inclua dicas práticas e explique de forma clara.`
+O artigo deve ser claro, otimizado para SEO e conter subtítulos.`
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -85,7 +85,7 @@ Inclua dicas práticas e explique de forma clara.`
   return content
 }
 
-function appendProductCtaBlock(): string {
+function appendCta(): string {
   return [
     '<hr/>',
     '<p><strong>Compre licença original em:</strong> <a href="https://casadosoftware.com.br">https://casadosoftware.com.br</a></p>'
@@ -107,85 +107,62 @@ async function createUniqueSlug(base: string) {
   return `${baseSlug}-${Date.now()}`
 }
 
-async function generateOne(params: { keyword: string; published: boolean; model: string; force: boolean }) {
-  const prismaAny = prisma as any
-
-  if (!params.force) {
-    const existing = await prismaAny.blogPost.findFirst({
-      where: { keyword: params.keyword },
-      select: { id: true, slug: true }
-    })
-    if (existing?.slug) {
-      return { skipped: true as const, ...existing }
-    }
-  }
-
-  const slug = await createUniqueSlug(params.keyword)
-
-  const rawHtml = await callOpenAIHtmlArticle({ keyword: params.keyword, model: params.model })
-  const withCta = `${rawHtml}\n${appendProductCtaBlock()}`
-
-  const cleanedHtml = sanitizeRichHtml(withCta, { allowIframes: true })
-  const excerpt = excerptFromHtml(cleanedHtml)
-
-  const post = await prismaAny.blogPost.create({
-    data: {
-      titulo: params.keyword,
-      slug,
-      html: cleanedHtml,
-      excerpt: excerpt || null,
-      keyword: params.keyword,
-      autoSeo: true,
-      publicado: params.published
-    },
-    select: {
-      id: true,
-      slug: true,
-      titulo: true,
-      publicado: true,
-      criadoEm: true
-    }
-  })
-
-  return { skipped: false as const, ...post }
-}
-
 export default defineEventHandler(async (event) => {
   requireSeoOrAdmin(event)
 
-  const body = await readBody(event)
-  const keywords = Array.isArray(body?.keywords) ? body.keywords : null
-  if (!keywords) throw createError({ statusCode: 400, statusMessage: 'keywords deve ser uma lista' })
+  const keywordsModule = await import('#root/data/keywords.json')
+  const keywords = (keywordsModule as any)?.default
 
-  const model = String(body?.model || 'gpt-4o-mini').trim() || 'gpt-4o-mini'
-  const published = body?.published === undefined ? true : Boolean(body?.published)
-  const force = Boolean(body?.force)
-
-  const cleaned = keywords
-    .map((k: any) => String(k || '').trim())
-    .filter((k: string) => Boolean(k))
-
-  if (cleaned.length > 10) {
-    throw createError({ statusCode: 400, statusMessage: 'Máximo de 10 keywords por chamada' })
+  if (!Array.isArray(keywords)) {
+    throw createError({ statusCode: 500, statusMessage: 'data/keywords.json inválido (esperado array)' })
   }
 
-  if (!cleaned.length) throw createError({ statusCode: 400, statusMessage: 'keywords vazia' })
+  const maxPerRun = 5
+  const model = String(process.env.OPENAI_MODEL || 'gpt-4o-mini').trim() || 'gpt-4o-mini'
 
-  const results: Array<{ keyword: string; ok: boolean; slug?: string; id?: string; skipped?: boolean; error?: string }> = []
+  const cleaned = keywords.map((k: any) => String(k || '').trim()).filter(Boolean)
+  if (!cleaned.length) return { ok: true, created: 0, skipped: 0 }
 
-  for (const keyword of cleaned) {
+  const prismaAny = prisma as any
+
+  // pick next keywords not yet generated
+  const existing = await prismaAny.blogPost.findMany({
+    where: { keyword: { in: cleaned } },
+    select: { keyword: true }
+  })
+  const existingSet = new Set((existing || []).map((p: any) => String(p?.keyword || '').trim()).filter(Boolean))
+
+  const queue = cleaned.filter((k: string) => !existingSet.has(k)).slice(0, maxPerRun)
+
+  let created = 0
+  let skipped = 0
+
+  for (const keyword of queue) {
     try {
-      const post = await generateOne({ keyword, published, model, force })
-      if ((post as any).skipped) {
-        results.push({ keyword, ok: true, slug: (post as any).slug, id: (post as any).id, skipped: true })
-      } else {
-        results.push({ keyword, ok: true, slug: (post as any).slug, id: (post as any).id })
-      }
-    } catch (err: any) {
-      results.push({ keyword, ok: false, error: err?.data?.statusMessage || err?.message || 'Erro ao gerar' })
+      const slug = await createUniqueSlug(keyword)
+      const rawHtml = await callOpenAIHtmlArticle({ keyword, model })
+      const withCta = `${rawHtml}\n${appendCta()}`
+      const cleanedHtml = sanitizeRichHtml(withCta, { allowIframes: true })
+      const excerpt = excerptFromHtml(cleanedHtml)
+
+      await prismaAny.blogPost.create({
+        data: {
+          titulo: keyword,
+          slug,
+          html: cleanedHtml,
+          excerpt: excerpt || null,
+          keyword,
+          autoSeo: true,
+          publicado: true
+        },
+        select: { id: true }
+      })
+
+      created++
+    } catch {
+      skipped++
     }
   }
 
-  const created = results.filter((r) => r.ok && !r.skipped).length
-  return { ok: true, success: true, created, results }
+  return { ok: true, created, skipped }
 })
