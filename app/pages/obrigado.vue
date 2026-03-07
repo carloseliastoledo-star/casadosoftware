@@ -155,7 +155,7 @@ onMounted(async () => {
             <div class="mt-2 text-gray-700">Torne-se afiliado.</div>
           </div>
           <NuxtLink
-            to="/affiliate/inscrever"
+            to="/partner-apply"
             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
             Quero me inscrever

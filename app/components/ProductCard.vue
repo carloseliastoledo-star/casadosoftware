@@ -100,6 +100,10 @@ const pixLabel = computed(() => {
 })
 
 const buyNowLabel = computed(() => {
+  if (intl.language.value === 'en') return 'Buy now'
+  if (intl.language.value === 'es') return 'Comprar ahora'
+  if (intl.language.value === 'it') return 'Acquista ora'
+  if (intl.language.value === 'fr') return 'Acheter maintenant'
   return 'Comprar agora'
 })
 
