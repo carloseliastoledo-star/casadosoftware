@@ -1,37 +1,23 @@
 <template>
   <section class="bg-gray-50 min-h-screen">
-    <div class="max-w-5xl mx-auto px-6 py-12">
+    <div class="max-w-6xl mx-auto px-6 py-12">
       <div class="flex items-start justify-between gap-6 flex-wrap">
         <div>
-          <h1 class="text-3xl font-extrabold text-gray-900">Affiliate Dashboard</h1>
-          <p class="mt-2 text-gray-600">
-            Enter your affiliate code to view performance and commissions.
-          </p>
+          <h1 class="text-3xl font-extrabold text-gray-900">Painel do Afiliado</h1>
+          <p class="mt-2 text-gray-600">Acompanhe vendas e comissões.</p>
         </div>
+        <button
+          type="button"
+          class="text-sm text-red-600 hover:underline"
+          @click="logout"
+        >
+          Sair
+        </button>
       </div>
 
-      <div class="mt-8 rounded-2xl border bg-white p-6">
-        <label class="block text-sm font-semibold text-gray-900">Affiliate code</label>
-        <div class="mt-2 flex flex-col sm:flex-row gap-3">
-          <input
-            v-model="code"
-            type="text"
-            autocomplete="off"
-            class="w-full rounded-lg border px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="Your code (e.g., ABC123)"
-          />
-          <button
-            type="button"
-            class="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 transition"
-            :disabled="loading"
-            @click="load"
-          >
-            {{ loading ? 'Loading…' : 'View dashboard' }}
-          </button>
-        </div>
+      <div v-if="error" class="mt-6 text-sm text-red-600">{{ error }}</div>
 
-        <p v-if="error" class="mt-3 text-sm text-red-600">{{ error }}</p>
-      </div>
+      <div v-if="loading" class="mt-6 text-sm text-gray-600">Carregando…</div>
 
       <div v-if="data" class="mt-8 space-y-6">
         <div class="rounded-2xl border bg-white p-6">
@@ -55,18 +41,26 @@
           </p>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-5">
+        <div class="grid md:grid-cols-3 gap-5">
           <div class="rounded-2xl border bg-white p-6">
             <div class="text-sm font-semibold text-gray-600">Total Sales</div>
             <div class="mt-2 text-3xl font-extrabold text-gray-900">{{ data.totals.totalSales }}</div>
+          </div>
+          <div class="rounded-2xl border bg-white p-6">
+            <div class="text-sm font-semibold text-gray-600">Total Revenue</div>
+            <div class="mt-2 text-3xl font-extrabold text-gray-900">{{ money(data.totals.totalRevenue) }}</div>
           </div>
           <div class="rounded-2xl border bg-white p-6">
             <div class="text-sm font-semibold text-gray-600">Total Commission</div>
             <div class="mt-2 text-3xl font-extrabold text-gray-900">{{ money(data.totals.totalCommission) }}</div>
           </div>
           <div class="rounded-2xl border bg-white p-6">
-            <div class="text-sm font-semibold text-gray-600">Pending Commission</div>
-            <div class="mt-2 text-3xl font-extrabold text-gray-900">{{ money(data.totals.pendingCommission) }}</div>
+            <div class="text-sm font-semibold text-gray-600">A receber (liberado)</div>
+            <div class="mt-2 text-3xl font-extrabold text-gray-900">{{ money(data.totals.availableCommission) }}</div>
+          </div>
+          <div class="rounded-2xl border bg-white p-6">
+            <div class="text-sm font-semibold text-gray-600">Bloqueado (garantia)</div>
+            <div class="mt-2 text-3xl font-extrabold text-gray-900">{{ money(data.totals.lockedCommission) }}</div>
           </div>
           <div class="rounded-2xl border bg-white p-6">
             <div class="text-sm font-semibold text-gray-600">Paid Commission</div>
@@ -87,27 +81,103 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="mt-10 text-xs text-gray-500">
-        This dashboard is a summary view. If you need payout assistance, contact support.
+        <div class="rounded-2xl border bg-white p-6 space-y-4">
+          <div class="text-sm font-semibold text-gray-900">Solicitar saque</div>
+          <div class="grid md:grid-cols-3 gap-3">
+            <input v-model="payoutAmount" class="border rounded p-3" placeholder="Valor" />
+            <input v-model="payoutNote" class="border rounded p-3 md:col-span-2" placeholder="Observação (opcional)" />
+          </div>
+          <button
+            type="button"
+            class="rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 disabled:opacity-60"
+            :disabled="payoutLoading"
+            @click="requestPayout"
+          >
+            {{ payoutLoading ? 'Enviando…' : 'Solicitar' }}
+          </button>
+          <div v-if="payoutError" class="text-sm text-red-600">{{ payoutError }}</div>
+          <div v-if="payoutOk" class="text-sm text-green-700">Solicitação enviada.</div>
+        </div>
+
+        <div class="rounded-2xl border bg-white p-6">
+          <div class="text-sm font-semibold text-gray-900">Últimas vendas</div>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="text-gray-600">
+                <tr>
+                  <th class="text-left py-2">Data</th>
+                  <th class="text-left py-2">Pedido</th>
+                  <th class="text-left py-2">Produto</th>
+                  <th class="text-left py-2">Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="o in sales" :key="o.id" class="border-t">
+                  <td class="py-2">{{ formatDate(o.pagoEm || o.criadoEm) }}</td>
+                  <td class="py-2 font-mono text-xs">#{{ o.numero }}</td>
+                  <td class="py-2">{{ o.produto?.nome }}</td>
+                  <td class="py-2">{{ money(o.totalAmount) }}</td>
+                </tr>
+                <tr v-if="!sales.length" class="border-t">
+                  <td class="py-3 text-gray-500" colspan="4">Nenhuma venda.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border bg-white p-6">
+          <div class="text-sm font-semibold text-gray-900">Comissões</div>
+          <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="text-gray-600">
+                <tr>
+                  <th class="text-left py-2">Data</th>
+                  <th class="text-left py-2">Pedido</th>
+                  <th class="text-left py-2">Valor</th>
+                  <th class="text-left py-2">Disponível em</th>
+                  <th class="text-left py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="c in commissions" :key="c.id" class="border-t">
+                  <td class="py-2">{{ formatDate(c.createdAt) }}</td>
+                  <td class="py-2 font-mono text-xs">{{ c.order?.numero ? `#${c.order.numero}` : c.orderId }}</td>
+                  <td class="py-2">{{ money(c.amount) }}</td>
+                  <td class="py-2">{{ c.availableAt ? formatDate(c.availableAt) : '-' }}</td>
+                  <td class="py-2">{{ c.status }}</td>
+                </tr>
+                <tr v-if="!commissions.length" class="border-t">
+                  <td class="py-3 text-gray-500" colspan="5">Nenhuma comissão.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-
-const code = ref(String((route.query as any)?.code || '').trim())
 const loading = ref(false)
 const error = ref('')
 const data = ref<any>(null)
 
+const sales = ref<any[]>([])
+const commissions = ref<any[]>([])
+
+const payoutAmount = ref('')
+const payoutNote = ref('')
+const payoutLoading = ref(false)
+const payoutError = ref('')
+const payoutOk = ref(false)
+
 function money(value: unknown) {
   const n = Number(value ?? 0)
   try {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n)
   } catch {
     return String(n)
   }
@@ -126,23 +196,52 @@ function formatDate(value: unknown) {
 async function load() {
   error.value = ''
   data.value = null
-
-  const c = String(code.value || '').trim()
-  if (!c) {
-    error.value = 'Please enter your affiliate code.'
-    return
-  }
+  sales.value = []
+  commissions.value = []
 
   loading.value = true
   try {
-    data.value = await $fetch('/api/affiliate/dashboard', {
-      method: 'GET',
-      query: { code: c }
-    })
+    data.value = await $fetch('/api/affiliate/dashboard')
+    const [salesRes, commRes] = await Promise.all([
+      $fetch('/api/affiliate/sales'),
+      $fetch('/api/affiliate/commissions')
+    ])
+    sales.value = (salesRes as any)?.orders || []
+    commissions.value = (commRes as any)?.commissions || []
   } catch (err: any) {
     error.value = err?.data?.statusMessage || err?.message || 'Failed to load dashboard.'
   } finally {
     loading.value = false
+  }
+}
+
+async function requestPayout() {
+  payoutError.value = ''
+  payoutOk.value = false
+  payoutLoading.value = true
+  try {
+    await $fetch('/api/affiliate/payouts', {
+      method: 'POST',
+      body: {
+        amount: payoutAmount.value,
+        note: payoutNote.value || null
+      }
+    })
+    payoutOk.value = true
+    payoutAmount.value = ''
+    payoutNote.value = ''
+  } catch (err: any) {
+    payoutError.value = err?.data?.statusMessage || err?.message || 'Falha ao solicitar saque'
+  } finally {
+    payoutLoading.value = false
+  }
+}
+
+async function logout() {
+  try {
+    await $fetch('/api/affiliate/auth/logout', { method: 'POST' })
+  } finally {
+    await navigateTo('/affiliate/login')
   }
 }
 
@@ -156,11 +255,5 @@ async function copyLink() {
   }
 }
 
-watch(
-  () => route.query.code,
-  (v) => {
-    const next = String(v || '').trim()
-    if (next && next !== code.value) code.value = next
-  }
-)
+await load()
 </script>

@@ -314,6 +314,10 @@ model Affiliate {
   name            String
   email           String   @unique
   refCode         String   @unique @map("code")
+  passwordHash    String?
+  inviteTokenHash String?
+  inviteExpiresAt DateTime?
+  isActive        Boolean  @default(false)
   commissionRate  Float    @default(0.25)
   totalEarnings   Float    @default(0)
   createdAt       DateTime @default(now())
@@ -321,6 +325,7 @@ model Affiliate {
   orders          Order[]
   commissions     AffiliateCommission[]
   marketplaceCommissions Commission[]
+  payoutRequests  AffiliatePayoutRequest[]
 }
 
 model AffiliateCommission {
@@ -329,9 +334,25 @@ model AffiliateCommission {
   affiliateId  Int
   amount       Float
   status       String   @default("pending")
+  availableAt  DateTime?
+  paidAt       DateTime?
   createdAt    DateTime @default(now())
 
   affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
+
+  @@index([affiliateId])
+}
+
+model AffiliatePayoutRequest {
+  id          Int      @id @default(autoincrement())
+  affiliateId Int
+  amount      Float
+  status      String   @default("requested")
+  note        String?  @db.Text
+  createdAt   DateTime @default(now()) @db.DateTime(0)
+  updatedAt   DateTime @updatedAt @db.DateTime(0)
+
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
 
   @@index([affiliateId])
 }

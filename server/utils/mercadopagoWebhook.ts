@@ -20,8 +20,14 @@ export async function processMercadoPagoPayment(dataId: string) {
     }
 
     if (status === 'approved') {
-      let telegramReservation: { orderId: string; reservedAt: Date } | null = null
-      let telegramPayload: { orderId: string; produtoNome: string; customerEmail: string } | null = null
+      type TelegramReservation = { orderId: string; reservedAt: Date }
+      type TelegramPayload = { orderId: string; produtoNome: string; customerEmail: string }
+
+      let telegramReservation: TelegramReservation | null = null
+      let telegramPayload: TelegramPayload | null = null
+
+      const paidAt = new Date()
+      const availableAt = new Date(paidAt.getTime() + 7 * 24 * 60 * 60 * 1000)
 
       await prisma.$transaction(async (tx) => {
         const anyTx: any = tx as any
@@ -43,7 +49,7 @@ export async function processMercadoPagoPayment(dataId: string) {
             where: { id: String(orderId) },
             data: {
               status: 'PAID',
-              pagoEm: new Date(),
+              pagoEm: paidAt,
               mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId),
               mercadoPagoPaymentTypeId: paymentTypeId ? String(paymentTypeId) : null,
               mercadoPagoPaymentMethodId: paymentMethodId ? String(paymentMethodId) : null,
@@ -96,7 +102,8 @@ export async function processMercadoPagoPayment(dataId: string) {
                     data: {
                       orderId: order.id,
                       affiliateId,
-                      amount
+                      amount,
+                      availableAt
                     },
                     select: { id: true }
                   })
@@ -252,18 +259,20 @@ export async function processMercadoPagoPayment(dataId: string) {
       })
 
       if (telegramReservation && telegramPayload) {
+        const payload: TelegramPayload = telegramPayload
+        const reservation: TelegramReservation = telegramReservation
         try {
           await sendTelegramMessage(
             `✅ Venda concluída\n` +
-              `Pedido: ${telegramPayload.orderId}\n` +
-              `Produto: ${telegramPayload.produtoNome}\n` +
-              `Cliente: ${telegramPayload.customerEmail}`
+              `Pedido: ${payload.orderId}\n` +
+              `Produto: ${payload.produtoNome}\n` +
+              `Cliente: ${payload.customerEmail}`
           )
         } catch (err) {
           console.log('[mp webhook] telegram send error', err)
           try {
             await prisma.order.updateMany({
-              where: { id: telegramReservation.orderId, telegramEnviadoEm: telegramReservation.reservedAt },
+              where: { id: reservation.orderId, telegramEnviadoEm: reservation.reservedAt },
               data: { telegramEnviadoEm: null }
             })
           } catch (revertErr) {

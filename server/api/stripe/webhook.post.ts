@@ -11,7 +11,7 @@ function getStripeClient() {
     throw createError({ statusCode: 500, statusMessage: 'STRIPE_SECRET_KEY não configurado' })
   }
   return new Stripe(key, {
-    apiVersion: '2023-10-16'
+    apiVersion: '2025-12-15.clover'
   })
 }
 
@@ -43,6 +43,9 @@ export default defineEventHandler(async (event) => {
       const pi = stripeEvent.data.object as Stripe.PaymentIntent
       const orderId = String((pi.metadata as any)?.orderId || '').trim()
 
+      const paidAt = new Date()
+      const availableAt = new Date(paidAt.getTime() + 7 * 24 * 60 * 60 * 1000)
+
       if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
         try {
           const affiliateCode = String((pi.metadata as any)?.affiliate || '').trim()
@@ -73,7 +76,8 @@ export default defineEventHandler(async (event) => {
                     data: {
                       orderId,
                       affiliateId: affiliate.id,
-                      amount
+                      amount,
+                      availableAt
                     },
                     select: { id: true }
                   })
@@ -97,7 +101,7 @@ export default defineEventHandler(async (event) => {
           where: { id: orderId },
           data: {
             status: 'PAID',
-            pagoEm: new Date(),
+            pagoEm: paidAt,
             stripePaymentIntentId: pi.id
           },
           select: { id: true }

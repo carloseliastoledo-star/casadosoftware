@@ -57,6 +57,14 @@
           📝 Blog
         </NuxtLink>
 
+        <NuxtLink to="/admin/afiliados" class="menu">
+          🤝 Afiliados
+        </NuxtLink>
+
+        <NuxtLink to="/admin/saques-afiliados" class="menu">
+          💸 Saques Afiliados
+        </NuxtLink>
+
         <NuxtLink to="/admin/configuracoes" class="menu">
           ⚙️ Configurações
         </NuxtLink>
