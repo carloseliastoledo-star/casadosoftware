@@ -310,6 +310,7 @@ async function onSubmit() {
     await $fetch('/api/partner-apply', {
       method: 'POST',
       body: {
+        lang: intl.language.value,
         name: form.name,
         email: form.email,
         website: form.website,

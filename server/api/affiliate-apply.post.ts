@@ -34,28 +34,49 @@ export default defineEventHandler(async (event) => {
   if (message.length > 2000) throw createError({ statusCode: 400, statusMessage: 'Mensagem muito longa' })
 
   const to = String(process.env.AFFILIATE_APPLICATION_TO || process.env.SMTP_FROM || '').trim()
-  if (!to || !to.includes('@')) {
-    throw createError({ statusCode: 500, statusMessage: 'Destino de e-mail não configurado' })
+
+  if (to && to.includes('@')) {
+    try {
+      await sendMail({
+        to,
+        subject: 'Nova inscrição de afiliado',
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+            <h2 style="margin: 0 0 12px;">Nova inscrição de afiliado</h2>
+            <p style="margin: 0 0 8px;"><strong>Nome:</strong> ${escapeHtml(name)}</p>
+            <p style="margin: 0 0 8px;"><strong>Email:</strong> ${escapeHtml(email)}</p>
+            <p style="margin: 0 0 8px;"><strong>WhatsApp:</strong> ${escapeHtml(whatsapp || '-')}</p>
+            <p style="margin: 0 0 8px;"><strong>Canal/Site:</strong> ${escapeHtml(channel || '-')}</p>
+            <p style="margin: 16px 0 8px;"><strong>Mensagem:</strong></p>
+            <div style="white-space: pre-wrap; background: #f3f4f6; padding: 12px; border-radius: 8px;">
+              ${escapeHtml(message || '-')}
+            </div>
+            <p style="margin: 16px 0 0; font-size: 12px; color: #6b7280;">Enviado via /affiliate/inscrever</p>
+          </div>
+        `.trim()
+      })
+    } catch {
+      // ignore
+    }
   }
 
-  await sendMail({
-    to,
-    subject: 'Nova inscrição de afiliado',
-    html: `
-      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
-        <h2 style="margin: 0 0 12px;">Nova inscrição de afiliado</h2>
-        <p style="margin: 0 0 8px;"><strong>Nome:</strong> ${escapeHtml(name)}</p>
-        <p style="margin: 0 0 8px;"><strong>Email:</strong> ${escapeHtml(email)}</p>
-        <p style="margin: 0 0 8px;"><strong>WhatsApp:</strong> ${escapeHtml(whatsapp || '-')}</p>
-        <p style="margin: 0 0 8px;"><strong>Canal/Site:</strong> ${escapeHtml(channel || '-')}</p>
-        <p style="margin: 16px 0 8px;"><strong>Mensagem:</strong></p>
-        <div style="white-space: pre-wrap; background: #f3f4f6; padding: 12px; border-radius: 8px;">
-          ${escapeHtml(message || '-')}
+  try {
+    await sendMail({
+      to: email,
+      subject: 'Recebemos sua inscrição no programa de afiliados',
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+          <h2 style="margin: 0 0 12px;">Inscrição recebida</h2>
+          <p style="margin: 0 0 8px;">Olá, ${escapeHtml(name)}!</p>
+          <p style="margin: 0 0 8px;">Recebemos sua inscrição no nosso programa de afiliados.</p>
+          <p style="margin: 0 0 8px;">Vamos analisar e entraremos em contato por e-mail.</p>
+          <p style="margin: 16px 0 0; font-size: 12px; color: #6b7280;">Casa do Software</p>
         </div>
-        <p style="margin: 16px 0 0; font-size: 12px; color: #6b7280;">Enviado via /affiliate/inscrever</p>
-      </div>
-    `.trim()
-  })
+      `.trim()
+    })
+  } catch {
+    // ignore
+  }
 
   return { ok: true }
 })

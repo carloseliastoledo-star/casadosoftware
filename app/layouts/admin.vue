@@ -61,6 +61,10 @@
           🤝 Afiliados
         </NuxtLink>
 
+        <NuxtLink to="/admin/inscricoes-afiliados" class="menu">
+          📨 Inscrições (Afiliados)
+        </NuxtLink>
+
         <NuxtLink to="/admin/saques-afiliados" class="menu">
           💸 Saques Afiliados
         </NuxtLink>
