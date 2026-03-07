@@ -91,7 +91,7 @@
                   type="button"
                   class="text-xs text-red-600 hover:text-red-800"
                   :disabled="modalLoading"
-                  @click="formFeaturedImage = ''"
+                  @click="removeFeaturedImage"
                 >
                   Remover imagem
                 </button>
@@ -388,10 +388,13 @@ async function saveModal() {
   modalError.value = ''
 
   try {
+    const featuredImageRaw = String(formFeaturedImage.value || '').trim()
+    const featuredImage = featuredImageRaw ? featuredImageRaw : null
+
     const payload = {
       titulo: formTitulo.value,
       slug: formSlug.value,
-      featuredImage: formFeaturedImage.value,
+      featuredImage,
       html: formHtml.value,
       publicado: formPublicado.value
     }
@@ -416,6 +419,10 @@ async function saveModal() {
   } finally {
     modalLoading.value = false
   }
+}
+
+function removeFeaturedImage() {
+  formFeaturedImage.value = ''
 }
 
 async function deletePost(p: BlogPostListItem) {
