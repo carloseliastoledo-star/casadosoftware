@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
         id: true,
         titulo: true,
         slug: true,
+        featuredImage: true,
         html: true,
         publicado: true,
         criadoEm: true,

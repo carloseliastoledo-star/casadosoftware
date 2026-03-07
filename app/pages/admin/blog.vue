@@ -78,6 +78,17 @@
             </div>
 
             <div>
+              <label class="block font-medium mb-2">Imagem destacada (URL)</label>
+              <input
+                v-model="formFeaturedImage"
+                type="text"
+                class="w-full border rounded-lg p-3 font-mono text-xs"
+                placeholder="/blog/windows11.jpg ou https://..."
+              />
+              <p class="text-xs text-gray-500 mt-2">Usada no hero do post e nos cards do blog.</p>
+            </div>
+
+            <div>
               <label class="block font-medium mb-2">Conteúdo</label>
 
               <div v-if="editor" class="border rounded-lg overflow-hidden">
@@ -177,6 +188,7 @@ type BlogPostDetail = {
   id: string
   titulo: string
   slug: string
+  featuredImage: string | null
   html: string | null
   publicado: boolean
   criadoEm: string
@@ -194,6 +206,7 @@ const editingId = ref<string | null>(null)
 
 const formTitulo = ref('')
 const formSlug = ref('')
+const formFeaturedImage = ref('')
 const formHtml = ref('')
 const formPublicado = ref(false)
 
@@ -254,6 +267,7 @@ function openCreate() {
   editingId.value = null
   formTitulo.value = ''
   formSlug.value = ''
+  formFeaturedImage.value = ''
   formHtml.value = ''
   formPublicado.value = false
   modalMessage.value = ''
@@ -271,6 +285,7 @@ async function openEdit(id: string) {
     const res = await $fetch<{ ok: true; post: BlogPostDetail }>(`/api/admin/blog/${id}`)
     formTitulo.value = res.post.titulo
     formSlug.value = res.post.slug
+    formFeaturedImage.value = res.post.featuredImage || ''
     formHtml.value = res.post.html || ''
     formPublicado.value = Boolean(res.post.publicado)
     setEditorHtml(formHtml.value)
@@ -297,6 +312,7 @@ async function saveModal() {
     const payload = {
       titulo: formTitulo.value,
       slug: formSlug.value,
+      featuredImage: formFeaturedImage.value,
       html: formHtml.value,
       publicado: formPublicado.value
     }

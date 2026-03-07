@@ -2,6 +2,7 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
 import DOMPurify from 'isomorphic-dompurify'
+import { sanitizeRichHtml } from '../../../utils/sanitizeRichHtml'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -10,24 +11,21 @@ export default defineEventHandler(async (event) => {
 
   const titulo = String(body?.titulo || '').trim()
   const slug = String(body?.slug || '').trim()
+  const featuredImage = body?.featuredImage != null ? String(body.featuredImage).trim() : null
   const htmlRaw = body?.html != null ? String(body.html) : null
   const publicado = Boolean(body?.publicado)
 
   if (!titulo) throw createError({ statusCode: 400, statusMessage: 'Título obrigatório' })
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Slug obrigatório' })
 
-  const html = htmlRaw
-    ? DOMPurify.sanitize(htmlRaw, {
-        USE_PROFILES: { html: true },
-        FORBID_ATTR: ['style', 'class', 'id', 'onerror', 'onclick', 'onload']
-      })
-    : null
+  const html = htmlRaw ? sanitizeRichHtml(htmlRaw, { allowIframes: true }) : null
 
   try {
     const post = await (prisma as any).blogPost.create({
       data: {
         titulo,
         slug,
+        featuredImage,
         html,
         publicado
       },
@@ -35,6 +33,7 @@ export default defineEventHandler(async (event) => {
         id: true,
         titulo: true,
         slug: true,
+        featuredImage: true,
         html: true,
         publicado: true,
         criadoEm: true,

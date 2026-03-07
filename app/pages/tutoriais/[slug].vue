@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DOMPurify from 'dompurify'
+import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml'
 
 definePageMeta({ ssr: false })
 
@@ -61,7 +61,7 @@ function escapeHtml(input: string) {
 
 function isSafeHref(url: string) {
   const u = String(url || '').trim()
-  return /^https?:\/\//i.test(u) || /^mailto:/i.test(u)
+  return /^https?:\/\//i.test(u) || /^mailto:/i.test(u) || u.startsWith('/')
 }
 
 function extractYouTubeId(url: string) {
@@ -141,6 +141,30 @@ function renderTutorialBlock(rawBlock: string) {
     if (ytId) return renderYouTubeEmbed(ytId)
   }
 
+  // Vimeo link alone on a line => embed
+  if (/^https?:\/\//i.test(block) && !/\s/.test(block)) {
+    const u = String(block)
+    const m = u.match(/^https?:\/\/(?:www\.)?vimeo\.com\/(\d{6,})/i)
+    if (m?.[1]) {
+      const id = String(m[1]).replace(/[^0-9]/g, '')
+      if (id) {
+        return `
+<div class="my-6 aspect-video w-full overflow-hidden rounded-lg bg-black/5">
+  <iframe
+    class="h-full w-full"
+    src="https://player.vimeo.com/video/${id}"
+    title="Vimeo video"
+    frameborder="0"
+    allow="autoplay; fullscreen; picture-in-picture"
+    allowfullscreen
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+</div>
+`.trim()
+      }
+    }
+  }
+
   // Image markdown alone => image
   const imageOnly = block.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/)
   if (imageOnly) {
@@ -185,11 +209,7 @@ const tutorialHtml = computed(() => {
   const fallback = `<p class="text-gray-500">${escapeHtml(t.value.noContent)}</p>`
   const content = html || fallback
 
-  return DOMPurify.sanitize(content, {
-    USE_PROFILES: { html: true },
-    ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'referrerpolicy']
-  })
+  return sanitizeRichHtml(content, { allowIframes: true })
 })
 </script>
 

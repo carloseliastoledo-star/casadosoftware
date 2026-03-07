@@ -2,6 +2,8 @@ import prisma from '../db/prisma'
 import { getMpAccessToken, getMpPayment } from './mercadopago.js'
 import { renderLicenseEmail, sendMail } from './mailer.js'
 import { sendTelegramMessage } from './telegram.js'
+import { sendGa4PurchaseForOrder } from './ga4.js'
+import { ensureMarketplaceCommissionForOrder } from './marketplaceCommission'
 
 export async function processMercadoPagoPayment(dataId: string) {
   try {
@@ -268,6 +270,18 @@ export async function processMercadoPagoPayment(dataId: string) {
             console.log('[mp webhook] telegram revert error', revertErr)
           }
         }
+      }
+
+      try {
+        await sendGa4PurchaseForOrder(String(orderId), 'mercadopago')
+      } catch {
+        // ignore
+      }
+
+      try {
+        await ensureMarketplaceCommissionForOrder(String(orderId))
+      } catch {
+        // ignore
       }
     } else if (status === 'rejected' || status === 'cancelled') {
       try {

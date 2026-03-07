@@ -7,18 +7,45 @@
       <div v-if="pending" class="mt-8 text-sm text-gray-600">Carregando...</div>
       <div v-else-if="error" class="mt-8 text-sm text-red-600">Não foi possível carregar o blog.</div>
 
-      <div v-else class="mt-8 space-y-4">
+      <div v-else class="mt-8">
         <div v-if="!posts.length" class="text-sm text-gray-600">Nenhum post publicado ainda.</div>
 
-        <NuxtLink
-          v-for="p in posts"
-          :key="p.slug"
-          :to="`/${p.slug}`"
-          class="block bg-white border border-gray-100 rounded-2xl p-6 hover:border-blue-200 hover:shadow-sm transition"
-        >
-          <div class="text-xl font-bold text-gray-900">{{ p.titulo }}</div>
-          <div class="text-xs text-gray-500 mt-2">Atualizado em {{ formatDate(p.atualizadoEm) }}</div>
-        </NuxtLink>
+        <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <article
+            v-for="p in posts"
+            :key="p.slug"
+            class="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-blue-200 hover:shadow-sm transition"
+          >
+            <NuxtLink :to="`/blog/${p.slug}`" class="block">
+              <div class="bg-gray-100">
+                <img
+                  v-if="p.featuredImage"
+                  :src="p.featuredImage"
+                  :alt="p.titulo"
+                  class="w-full h-44 object-cover"
+                  loading="lazy"
+                />
+                <div v-else class="w-full h-44" />
+              </div>
+
+              <div class="p-6">
+                <div class="text-lg font-bold text-gray-900 leading-snug">
+                  {{ p.titulo }}
+                </div>
+                <div v-if="p.descricao" class="text-sm text-gray-600 mt-3 line-clamp-3">
+                  {{ p.descricao }}
+                </div>
+                <div class="text-xs text-gray-500 mt-4">Atualizado em {{ formatDate(p.atualizadoEm) }}</div>
+
+                <div class="mt-5">
+                  <span class="inline-flex items-center justify-center rounded-xl bg-blue-600 text-white font-semibold px-4 py-2 hover:bg-blue-700 transition">
+                    Ler mais
+                  </span>
+                </div>
+              </div>
+            </NuxtLink>
+          </article>
+        </div>
       </div>
     </div>
   </section>
@@ -83,6 +110,8 @@ useSeoMeta(() => {
 type BlogPostListDto = {
   titulo: string
   slug: string
+  featuredImage: string | null
+  descricao: string
   criadoEm: string
   atualizadoEm: string
 }

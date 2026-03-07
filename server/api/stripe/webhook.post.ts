@@ -1,13 +1,22 @@
 import { defineEventHandler, readRawBody, getHeader, createError } from 'h3'
 import Stripe from 'stripe'
-import prisma from '#root/server/db/prisma'
-import { fulfillPaidOrder } from '#root/server/utils/orderFulfillment'
+import prisma from '../../db/prisma'
+import { fulfillPaidOrder } from '../../utils/orderFulfillment'
+import { sendGa4PurchaseForOrder } from '../../utils/ga4'
+import { ensureMarketplaceCommissionForOrder } from '../../utils/marketplaceCommission'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2023-10-16'
-})
+function getStripeClient() {
+  const key = String(process.env.STRIPE_SECRET_KEY || '').trim()
+  if (!key) {
+    throw createError({ statusCode: 500, statusMessage: 'STRIPE_SECRET_KEY não configurado' })
+  }
+  return new Stripe(key, {
+    apiVersion: '2023-10-16'
+  })
+}
 
 export default defineEventHandler(async (event) => {
+  const stripe = getStripeClient()
   const sig = getHeader(event, 'stripe-signature')
   if (!sig) {
     throw createError({ statusCode: 400, statusMessage: 'Missing Stripe signature' })
@@ -93,6 +102,18 @@ export default defineEventHandler(async (event) => {
           },
           select: { id: true }
         })
+
+        try {
+          await ensureMarketplaceCommissionForOrder(orderId)
+        } catch {
+          // ignore
+        }
+
+        try {
+          await sendGa4PurchaseForOrder(orderId, 'stripe')
+        } catch {
+          // ignore
+        }
 
         await fulfillPaidOrder(orderId)
       }
