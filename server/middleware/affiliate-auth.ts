@@ -6,6 +6,8 @@ export default defineEventHandler((event: H3Event) => {
 
   if (!path.startsWith('/api/affiliate')) return
 
+  if (path.startsWith('/api/affiliate-apply')) return
+
   if (path.startsWith('/api/affiliate/auth/login')) return
   if (path.startsWith('/api/affiliate/auth/logout')) return
   if (path.startsWith('/api/affiliate/auth/activate')) return
