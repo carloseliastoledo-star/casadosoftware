@@ -101,6 +101,30 @@
             <div>
               <label class="block font-medium mb-2">Conteúdo</label>
 
+              <div class="mb-3">
+                <div class="flex flex-col md:flex-row md:items-center gap-3">
+                  <select
+                    v-model="importPaginaId"
+                    class="w-full md:w-auto border rounded-lg p-2 text-sm"
+                    :disabled="modalLoading || importLoading"
+                  >
+                    <option value="">Copiar HTML de uma página...</option>
+                    <option v-for="p in paginas" :key="p.id" :value="p.id">
+                      {{ p.titulo }} (/paginas/{{ p.slug }})
+                    </option>
+                  </select>
+                  <button
+                    type="button"
+                    class="px-3 py-2 rounded-lg border text-sm bg-white disabled:opacity-50"
+                    :disabled="!importPaginaId || modalLoading || importLoading"
+                    @click="importarHtmlPagina"
+                  >
+                    {{ importLoading ? 'Copiando...' : 'Copiar HTML' }}
+                  </button>
+                </div>
+                <div v-if="importError" class="text-xs text-red-600 mt-2">{{ importError }}</div>
+              </div>
+
               <div v-if="editor" class="border rounded-lg overflow-hidden">
                 <div class="flex flex-wrap items-center gap-2 p-2 bg-gray-50 border-b">
                   <button type="button" class="px-2 py-1 rounded border text-sm" @click="toggleBold">B</button>
@@ -273,6 +297,27 @@ const modalLoading = ref(false)
 const modalMessage = ref('')
 const modalError = ref('')
 
+type PaginaListItem = {
+  id: string
+  titulo: string
+  slug: string
+}
+
+type PaginaDetail = {
+  id: string
+  conteudo: string | null
+}
+
+const { data: paginasData } = await useFetch<{ ok: true; paginas: PaginaListItem[] }>('/api/admin/paginas', {
+  server: false
+})
+
+const paginas = computed(() => paginasData.value?.paginas || [])
+
+const importPaginaId = ref('')
+const importLoading = ref(false)
+const importError = ref('')
+
 function openCreate() {
   editingId.value = null
   formTitulo.value = ''
@@ -282,6 +327,8 @@ function openCreate() {
   formPublicado.value = false
   modalMessage.value = ''
   modalError.value = ''
+  importPaginaId.value = ''
+  importError.value = ''
   showModal.value = true
 }
 
@@ -289,6 +336,8 @@ async function openEdit(id: string) {
   editingId.value = id
   modalMessage.value = ''
   modalError.value = ''
+  importPaginaId.value = ''
+  importError.value = ''
   showModal.value = true
 
   try {
@@ -301,6 +350,26 @@ async function openEdit(id: string) {
     setEditorHtml(formHtml.value)
   } catch (err: any) {
     modalError.value = err?.data?.statusMessage || 'Erro ao carregar post'
+  }
+}
+
+async function importarHtmlPagina() {
+  const id = String(importPaginaId.value || '').trim()
+  if (!id) return
+
+  importLoading.value = true
+  importError.value = ''
+
+  try {
+    const res = await $fetch<{ ok: true; pagina: PaginaDetail }>(`/api/admin/paginas/${id}`)
+    const html = String(res?.pagina?.conteudo || '')
+    formHtml.value = html
+    setEditorHtml(html)
+    importError.value = ''
+  } catch (err: any) {
+    importError.value = err?.data?.statusMessage || 'Erro ao copiar HTML da página'
+  } finally {
+    importLoading.value = false
   }
 }
 
