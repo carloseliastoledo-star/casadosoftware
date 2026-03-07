@@ -205,6 +205,22 @@
         </p>
       </div>
 
+      <div
+        v-if="data && affiliateEnabled"
+        class="mt-8 bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+      >
+        <div>
+          <div class="text-2xl font-extrabold text-gray-900">Ganhe dinheiro indicando este produto.</div>
+          <div class="mt-2 text-gray-700">Torne-se afiliado.</div>
+        </div>
+        <NuxtLink
+          to="/affiliate/login"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
+        >
+          Quero me inscrever
+        </NuxtLink>
+      </div>
+
     </div>
   </section>
 
@@ -223,6 +239,8 @@ const { siteName } = useSiteBranding()
 
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
+
+const affiliateEnabled = computed(() => Boolean((config.public as any)?.affiliateEnabled))
 
 const host = computed(() => {
   if (process.server) {

@@ -16,6 +16,8 @@ useHead(() => ({
 
 const { data: siteSettings } = await useFetch('/api/site-settings')
 
+const affiliateEnabled = computed(() => Boolean((config.public as any)?.affiliateEnabled))
+
 const orderId = computed(() => String(route.query.orderId || ''))
 const paymentId = computed(() => String(route.query.paymentId || ''))
 
@@ -141,6 +143,22 @@ onMounted(async () => {
           </NuxtLink>
           <NuxtLink to="/produtos" class="bg-white hover:bg-gray-50 text-gray-900 px-5 py-3 rounded-xl font-semibold border border-gray-200">
             Ver produtos
+          </NuxtLink>
+        </div>
+
+        <div
+          v-if="affiliateEnabled"
+          class="mt-10 bg-gray-50 rounded-2xl border border-gray-200 p-6 flex flex-col md:flex-row items-center justify-between gap-6"
+        >
+          <div>
+            <div class="text-xl font-extrabold text-gray-900">Indique este produto para amigos e ganhe comissão por cada venda.</div>
+            <div class="mt-2 text-gray-700">Torne-se afiliado.</div>
+          </div>
+          <NuxtLink
+            to="/affiliate/login"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
+          >
+            Quero me inscrever
           </NuxtLink>
         </div>
       </div>
