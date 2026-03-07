@@ -136,6 +136,7 @@ export default defineEventHandler(async (event) => {
 
   let created = 0
   let skipped = 0
+  const errors: Array<{ keyword: string; error: string }> = []
 
   for (const keyword of queue) {
     try {
@@ -159,10 +160,14 @@ export default defineEventHandler(async (event) => {
       })
 
       created++
-    } catch {
+    } catch (err: any) {
       skipped++
+      errors.push({
+        keyword,
+        error: String(err?.data?.statusMessage || err?.message || 'Erro ao gerar')
+      })
     }
   }
 
-  return { ok: true, created, skipped }
+  return { ok: true, created, skipped, errors }
 })
