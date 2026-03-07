@@ -279,6 +279,8 @@ model BlogPost {
   titulo       String
   slug         String   @unique
   featuredImage String?
+  excerpt      String?
+  keyword      String?
   html         String?  @db.Text
   publicado    Boolean  @default(false)
   criadoEm     DateTime @default(now()) @db.DateTime(0)
