@@ -2,6 +2,8 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml.js'
 import { requireSeoOrAdmin } from '../../utils/seoAuth.js'
+import { generateOpenAiImagePngBytes } from '../../utils/openaiImage.js'
+import { uploadPublicImageToSpaces } from '../../utils/spacesUpload.js'
 
 function toSlug(input: unknown): string {
   return String(input ?? '')
@@ -109,6 +111,21 @@ async function createUniqueSlug(base: string) {
   return `${baseSlug}-${Date.now()}`
 }
 
+async function maybeGenerateFeaturedImage(params: { keyword: string; slug: string; generate: boolean }) {
+  if (!params.generate) return null
+
+  try {
+    const prompt = `Crie uma imagem de capa (estilo ilustrativo, limpo e profissional) para um artigo sobre: ${params.keyword}. Sem texto, sem logotipos, sem marcas d'água.`
+    const bytes = await generateOpenAiImagePngBytes({ prompt, size: '1536x1024' })
+    const key = `uploads/blog/${params.slug}-${Date.now()}.png`
+    const url = await uploadPublicImageToSpaces({ data: bytes, contentType: 'image/png', key })
+    return url || null
+  } catch (err: any) {
+    console.error('[seo][generate-post] featured image failed', { message: err?.message, name: err?.name })
+    return null
+  }
+}
+
 export default defineEventHandler(async (event) => {
   requireSeoOrAdmin(event)
 
@@ -117,6 +134,7 @@ export default defineEventHandler(async (event) => {
   const publish = body?.published === undefined ? true : Boolean(body?.published)
   const model = String(body?.model || 'gpt-4o-mini').trim() || 'gpt-4o-mini'
   const force = Boolean(body?.force)
+  const generateImage = Boolean(body?.generateImage)
 
   if (!keyword) throw createError({ statusCode: 400, statusMessage: 'keyword obrigatório' })
 
@@ -134,6 +152,8 @@ export default defineEventHandler(async (event) => {
 
   const slug = await createUniqueSlug(keyword)
 
+  const featuredImage = await maybeGenerateFeaturedImage({ keyword, slug, generate: generateImage })
+
   const rawHtml = await callOpenAIHtmlArticle({ keyword, model })
   const withCta = `${rawHtml}\n${appendProductCtaBlock()}`
 
@@ -144,6 +164,7 @@ export default defineEventHandler(async (event) => {
     data: {
       titulo: keyword,
       slug,
+      featuredImage,
       html: cleanedHtml,
       excerpt: excerpt || null,
       keyword,

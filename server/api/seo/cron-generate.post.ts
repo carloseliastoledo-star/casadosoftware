@@ -1,7 +1,9 @@
-import { defineEventHandler, createError } from 'h3'
+import { defineEventHandler, createError, readBody } from 'h3'
 import prisma from '../../db/prisma.js'
 import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml.js'
 import { requireSeoOrAdmin } from '../../utils/seoAuth.js'
+import { generateOpenAiImagePngBytes } from '../../utils/openaiImage.js'
+import { uploadPublicImageToSpaces } from '../../utils/spacesUpload.js'
 
 function toSlug(input: unknown): string {
   return String(input ?? '')
@@ -107,8 +109,30 @@ async function createUniqueSlug(base: string) {
   return `${baseSlug}-${Date.now()}`
 }
 
+async function maybeGenerateFeaturedImage(params: { keyword: string; slug: string; generate: boolean }) {
+  if (!params.generate) return null
+
+  try {
+    const prompt = `Crie uma imagem de capa (estilo ilustrativo, limpo e profissional) para um artigo sobre: ${params.keyword}. Sem texto, sem logotipos, sem marcas d'água.`
+    const bytes = await generateOpenAiImagePngBytes({ prompt, size: '1536x1024' })
+    const key = `uploads/blog/${params.slug}-${Date.now()}.png`
+    const url = await uploadPublicImageToSpaces({ data: bytes, contentType: 'image/png', key })
+    return url || null
+  } catch (err: any) {
+    console.error('[seo][cron-generate] featured image failed', { message: err?.message, name: err?.name })
+    return null
+  }
+}
+
 export default defineEventHandler(async (event) => {
   requireSeoOrAdmin(event)
+
+  let body: any = null
+  try {
+    body = await readBody(event)
+  } catch {
+    body = null
+  }
 
   const keywordsModule = await import('#root/data/keywords.json')
   const keywords = (keywordsModule as any)?.default
@@ -119,6 +143,8 @@ export default defineEventHandler(async (event) => {
 
   const maxPerRun = 5
   const model = String(process.env.OPENAI_MODEL || 'gpt-4o-mini').trim() || 'gpt-4o-mini'
+  const generateImageEnv = String(process.env.SEO_GENERATE_IMAGES || '').trim() === '1'
+  const generateImage = body?.generateImage === undefined ? generateImageEnv : Boolean(body?.generateImage)
 
   const cleaned = keywords.map((k: any) => String(k || '').trim()).filter(Boolean)
   if (!cleaned.length) return { ok: true, created: 0, skipped: 0 }
@@ -141,6 +167,8 @@ export default defineEventHandler(async (event) => {
   for (const keyword of queue) {
     try {
       const slug = await createUniqueSlug(keyword)
+
+      const featuredImage = await maybeGenerateFeaturedImage({ keyword, slug, generate: generateImage })
       const rawHtml = await callOpenAIHtmlArticle({ keyword, model })
       const withCta = `${rawHtml}\n${appendCta()}`
       const cleanedHtml = sanitizeRichHtml(withCta, { allowIframes: true })
@@ -150,6 +178,7 @@ export default defineEventHandler(async (event) => {
         data: {
           titulo: keyword,
           slug,
+          featuredImage,
           html: cleanedHtml,
           excerpt: excerpt || null,
           keyword,

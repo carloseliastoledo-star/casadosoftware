@@ -2,6 +2,8 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml.js'
 import { requireSeoOrAdmin } from '../../utils/seoAuth.js'
+import { generateOpenAiImagePngBytes } from '../../utils/openaiImage.js'
+import { uploadPublicImageToSpaces } from '../../utils/spacesUpload.js'
 
 function toSlug(input: unknown): string {
   return String(input ?? '')
@@ -107,7 +109,22 @@ async function createUniqueSlug(base: string) {
   return `${baseSlug}-${Date.now()}`
 }
 
-async function generateOne(params: { keyword: string; published: boolean; model: string; force: boolean }) {
+async function maybeGenerateFeaturedImage(params: { keyword: string; slug: string; generate: boolean }) {
+  if (!params.generate) return null
+
+  try {
+    const prompt = `Crie uma imagem de capa (estilo ilustrativo, limpo e profissional) para um artigo sobre: ${params.keyword}. Sem texto, sem logotipos, sem marcas d'água.`
+    const bytes = await generateOpenAiImagePngBytes({ prompt, size: '1536x1024' })
+    const key = `uploads/blog/${params.slug}-${Date.now()}.png`
+    const url = await uploadPublicImageToSpaces({ data: bytes, contentType: 'image/png', key })
+    return url || null
+  } catch (err: any) {
+    console.error('[seo][generate-bulk] featured image failed', { message: err?.message, name: err?.name })
+    return null
+  }
+}
+
+async function generateOne(params: { keyword: string; published: boolean; model: string; force: boolean; generateImage: boolean }) {
   const prismaAny = prisma as any
 
   if (!params.force) {
@@ -122,6 +139,8 @@ async function generateOne(params: { keyword: string; published: boolean; model:
 
   const slug = await createUniqueSlug(params.keyword)
 
+  const featuredImage = await maybeGenerateFeaturedImage({ keyword: params.keyword, slug, generate: params.generateImage })
+
   const rawHtml = await callOpenAIHtmlArticle({ keyword: params.keyword, model: params.model })
   const withCta = `${rawHtml}\n${appendProductCtaBlock()}`
 
@@ -132,6 +151,7 @@ async function generateOne(params: { keyword: string; published: boolean; model:
     data: {
       titulo: params.keyword,
       slug,
+      featuredImage,
       html: cleanedHtml,
       excerpt: excerpt || null,
       keyword: params.keyword,
@@ -160,6 +180,7 @@ export default defineEventHandler(async (event) => {
   const model = String(body?.model || 'gpt-4o-mini').trim() || 'gpt-4o-mini'
   const published = body?.published === undefined ? true : Boolean(body?.published)
   const force = Boolean(body?.force)
+  const generateImage = Boolean(body?.generateImage)
 
   const cleaned = keywords
     .map((k: any) => String(k || '').trim())
@@ -175,7 +196,7 @@ export default defineEventHandler(async (event) => {
 
   for (const keyword of cleaned) {
     try {
-      const post = await generateOne({ keyword, published, model, force })
+      const post = await generateOne({ keyword, published, model, force, generateImage })
       if ((post as any).skipped) {
         results.push({ keyword, ok: true, slug: (post as any).slug, id: (post as any).id, skipped: true })
       } else {
