@@ -2,6 +2,16 @@ import { defineEventHandler } from 'h3'
 import prisma from '../../db/prisma.js'
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
 
+function firstImageFromHtml(html: unknown): string | null {
+  const raw = String(html ?? '')
+  if (!raw) return null
+
+  const match = raw.match(/<img\b[^>]*\bsrc\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i)
+  const src = (match?.[1] || match?.[2] || match?.[3] || '').trim()
+  if (!src) return null
+  return src
+}
+
 function stripHtml(input: unknown): string {
   const raw = String(input ?? '')
   return raw
@@ -39,7 +49,7 @@ export default defineEventHandler(async () => {
       ? posts.map((p: any) => ({
           titulo: p?.titulo,
           slug: p?.slug,
-          featuredImage: p?.featuredImage || null,
+          featuredImage: p?.featuredImage || firstImageFromHtml(decodeHtmlEntities(p?.html)) || null,
           descricao: excerptFromHtml(p?.html),
           criadoEm: p?.criadoEm,
           atualizadoEm: p?.atualizadoEm

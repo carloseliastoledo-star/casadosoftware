@@ -1,10 +1,20 @@
 import { navigateTo } from '#app'
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (!to.path.startsWith('/affiliate')) return
+  const rawPath = String(to.path || '')
+  const langs = ['pt', 'en', 'es', 'fr', 'it', 'de']
+  const parts = rawPath.split('/').filter(Boolean)
 
-  if (to.path === '/affiliate/login') return
-  if (to.path === '/affiliate/ativar') return
+  const maybeLang = parts[0] && langs.includes(parts[0]) ? parts[0] : null
+  const prefix = maybeLang ? `/${maybeLang}` : ''
+  const pathNoPrefix = maybeLang ? `/${parts.slice(1).join('/')}` : rawPath
+
+  if (!pathNoPrefix.startsWith('/affiliate')) return
+
+  const loginPath = `${prefix}/affiliate/login`
+  const activatePath = `${prefix}/affiliate/ativar`
+  if (rawPath === loginPath) return
+  if (rawPath === activatePath) return
 
   if (import.meta.server) {
     const headers = useRequestHeaders(['cookie'])
@@ -13,7 +23,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await requestFetch('/api/affiliate/me', { headers })
       return
     } catch {
-      return navigateTo('/affiliate/login')
+      return navigateTo(loginPath)
     }
   }
 
@@ -21,6 +31,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     await $fetch('/api/affiliate/me')
     return
   } catch {
-    return navigateTo('/affiliate/login')
+    return navigateTo(loginPath)
   }
 })

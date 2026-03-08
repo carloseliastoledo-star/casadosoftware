@@ -86,6 +86,51 @@ export default defineNuxtConfig({
         path: '/producto/:slug',
         file: productFile
       })
+
+      const blogIndexFile = resolve(__dirname, 'app/pages/blog/index.vue')
+      const blogSlugFile = resolve(__dirname, 'app/pages/blog/[slug].vue')
+      const blogLangPrefixes = ['pt', 'en', 'es', 'fr', 'it', 'de']
+
+      for (const lang of blogLangPrefixes) {
+        pages.push({
+          name: `${lang}-blog-index`,
+          path: `/${lang}/blog`,
+          file: blogIndexFile
+        })
+        pages.push({
+          name: `${lang}-blog-slug`,
+          path: `/${lang}/blog/:slug`,
+          file: blogSlugFile
+        })
+      }
+
+      const affiliateLoginFile = resolve(__dirname, 'app/pages/affiliate/login.vue')
+      const affiliateActivateFile = resolve(__dirname, 'app/pages/affiliate/ativar.vue')
+      const affiliateSubscribeFile = resolve(__dirname, 'app/pages/affiliate/inscrever.vue')
+      const affiliateDashboardFile = resolve(__dirname, 'app/pages/affiliate/dashboard.vue')
+
+      for (const lang of blogLangPrefixes) {
+        pages.push({
+          name: `${lang}-affiliate-login`,
+          path: `/${lang}/affiliate/login`,
+          file: affiliateLoginFile
+        })
+        pages.push({
+          name: `${lang}-affiliate-ativar`,
+          path: `/${lang}/affiliate/ativar`,
+          file: affiliateActivateFile
+        })
+        pages.push({
+          name: `${lang}-affiliate-inscrever`,
+          path: `/${lang}/affiliate/inscrever`,
+          file: affiliateSubscribeFile
+        })
+        pages.push({
+          name: `${lang}-affiliate-dashboard`,
+          path: `/${lang}/affiliate/dashboard`,
+          file: affiliateDashboardFile
+        })
+      }
     }
   }
 })

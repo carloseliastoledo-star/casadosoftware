@@ -1,8 +1,8 @@
 <template>
   <section class="bg-gray-50 min-h-screen py-12">
     <div class="max-w-5xl mx-auto px-6">
-      <div v-if="pending" class="text-sm text-gray-600">Carregando...</div>
-      <div v-else-if="error" class="text-sm text-red-600">Post não encontrado.</div>
+      <div v-if="pending" class="text-sm text-gray-600">{{ t('blog.loading') }}</div>
+      <div v-else-if="error" class="text-sm text-red-600">{{ t('blog.notFound') }}</div>
 
       <article v-else class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <div class="p-6 md:p-10">
@@ -12,7 +12,7 @@
               {{ post?.titulo }}
             </h1>
             <p v-if="post?.atualizadoEm" class="text-sm text-gray-500 mt-3">
-              Atualizado em {{ formatDate(post.atualizadoEm) }}
+              {{ t('blog.updatedAt') }} {{ formatDate(post.atualizadoEm) }}
             </p>
           </header>
 
@@ -31,14 +31,14 @@
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white">
               <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h2 class="text-lg md:text-xl font-bold">Quer comprar uma licença original com entrega automática?</h2>
-                  <p class="text-white/90 text-sm mt-1">Veja nossos produtos e ative em minutos.</p>
+                  <h2 class="text-lg md:text-xl font-bold">{{ t('blog.ctaTitle') }}</h2>
+                  <p class="text-white/90 text-sm mt-1">{{ t('blog.ctaBody') }}</p>
                 </div>
                 <NuxtLink
                   to="/produtos"
                   class="inline-flex items-center justify-center rounded-xl bg-white text-blue-700 font-semibold px-5 py-3 hover:bg-blue-50 transition"
                 >
-                  Ver produtos
+                  {{ t('blog.ctaButton') }}
                 </NuxtLink>
               </div>
             </div>
@@ -51,6 +51,8 @@
 
 <script setup lang="ts">
 import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml'
+
+const { t, locale } = useI18n()
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
@@ -86,7 +88,16 @@ useHead(() => {
 
 function formatDate(input: string) {
   try {
-    return new Date(input).toLocaleDateString('pt-BR')
+    const map: Record<string, string> = {
+      pt: 'pt-BR',
+      en: 'en-US',
+      es: 'es-ES',
+      fr: 'fr-FR',
+      it: 'it-IT',
+      de: 'de-DE'
+    }
+    const loc = map[String(locale.value || 'pt')] || 'pt-BR'
+    return new Date(input).toLocaleDateString(loc)
   } catch {
     return input
   }

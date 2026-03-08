@@ -44,5 +44,16 @@
   "home.step3_body": "Siga o passo a passo do tutorial do seu produto.",
   "home.help_need_help": "Precisa de ajuda?",
   "home.help_title": "Conte com suporte especializado",
-  "home.help_body": "Se tiver qualquer dúvida durante a ativação, nosso suporte pode orientar você."
+  "home.help_body": "Se tiver qualquer dúvida durante a ativação, nosso suporte pode orientar você.",
+  "blog.title": "Blog",
+  "blog.subtitle": "Novidades e tutoriais.",
+  "blog.loading": "Carregando...",
+  "blog.errorLoading": "Não foi possível carregar o blog.",
+  "blog.empty": "Nenhum post publicado ainda.",
+  "blog.updatedAt": "Atualizado em",
+  "blog.readMore": "Ler mais",
+  "blog.notFound": "Post não encontrado.",
+  "blog.ctaTitle": "Quer comprar uma licença original com entrega automática?",
+  "blog.ctaBody": "Veja nossos produtos e ative em minutos.",
+  "blog.ctaButton": "Ver produtos"
 }

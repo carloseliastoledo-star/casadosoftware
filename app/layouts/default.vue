@@ -161,7 +161,7 @@
             <NuxtLink to="/categoria/office" class="hover:text-blue-600">Office</NuxtLink>
             <NuxtLink to="/categoria/corel" class="hover:text-blue-600">Corel</NuxtLink>
             <NuxtLink to="/categoria/autodesk" class="hover:text-blue-600">Autodesk</NuxtLink>
-            <NuxtLink to="/blog" class="hover:text-blue-600">Blog</NuxtLink>
+            <NuxtLink :to="blogMenuTo" class="hover:text-blue-600">Blog</NuxtLink>
             <NuxtLink :to="affiliateMenuTo" class="hover:text-blue-600">{{ affiliateMenuLabel }}</NuxtLink>
           </nav>
 
@@ -425,7 +425,7 @@
           <ul class="space-y-2">
             <li><NuxtLink to="/produtos" class="hover:text-blue-600">{{ t.footerProducts }}</NuxtLink></li>
             <li><NuxtLink to="/tutoriais" class="hover:text-blue-600">{{ t.footerTutorials }}</NuxtLink></li>
-            <li><NuxtLink to="/blog" class="hover:text-blue-600">{{ t.footerBlog }}</NuxtLink></li>
+            <li><NuxtLink :to="blogMenuTo" class="hover:text-blue-600">{{ t.footerBlog }}</NuxtLink></li>
             <li><NuxtLink :to="affiliateMenuTo" class="hover:text-blue-600">{{ affiliateMenuLabel }}</NuxtLink></li>
             <li v-if="showAffiliateSeoFooterLink"><NuxtLink to="/en/affiliate-program" class="hover:text-blue-600">Affiliate Program</NuxtLink></li>
             <li><NuxtLink to="/quem-somos" class="hover:text-blue-600">{{ t.footerAbout }}</NuxtLink></li>
@@ -628,6 +628,16 @@ const { data: categoriasData } = await useFetch<{ ok: true; categorias: Categori
 
 const paginas = computed(() => data.value?.paginas || [])
 const categorias = computed(() => categoriasData.value?.categorias || [])
+
+const langPrefix = computed(() => {
+  const p = String(route?.path || '')
+  const langs = ['pt', 'en', 'es', 'fr', 'it', 'de']
+  const first = p.split('/').filter(Boolean)[0] || ''
+  if (first && langs.includes(first)) return `/${first}`
+  return ''
+})
+
+const blogMenuTo = computed(() => `${langPrefix.value}/blog`)
 
 function detectLangForAffiliateMenu() {
   const p = String(route?.path || '')
