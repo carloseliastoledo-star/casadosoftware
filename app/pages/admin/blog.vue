@@ -138,6 +138,15 @@
 
                   <div class="flex-1" />
 
+                  <button
+                    type="button"
+                    class="px-3 py-1 rounded border text-sm bg-white disabled:opacity-50"
+                    :disabled="uploadLoading"
+                    @click="toggleHtmlSource"
+                  >
+                    {{ showHtmlSource ? 'Editor' : 'HTML' }}
+                  </button>
+
                   <input ref="uploadInput" type="file" accept="image/*" class="hidden" @change="uploadImage" />
                   <button
                     type="button"
@@ -150,7 +159,14 @@
                 </div>
 
                 <div class="p-3 min-h-[240px]">
-                  <EditorContent :editor="editor" class="prose prose-sm max-w-none" />
+                  <textarea
+                    v-if="showHtmlSource"
+                    v-model="formHtml"
+                    rows="12"
+                    class="w-full border rounded-lg p-3 font-mono text-xs"
+                    placeholder="<p>Seu conteúdo aqui...</p>"
+                  />
+                  <EditorContent v-else :editor="editor" class="prose prose-sm max-w-none" />
                 </div>
               </div>
 
@@ -244,6 +260,8 @@ const formFeaturedImage = ref('')
 const formHtml = ref('')
 const formPublicado = ref(false)
 
+const showHtmlSource = ref(false)
+
 const uploadInput = ref<HTMLInputElement | null>(null)
 const uploadLoading = ref(false)
 const uploadError = ref('')
@@ -289,9 +307,17 @@ watch(
   (open) => {
     if (!open) return
     uploadError.value = ''
+    showHtmlSource.value = false
     setEditorHtml(formHtml.value)
   }
 )
+
+function toggleHtmlSource() {
+  showHtmlSource.value = !showHtmlSource.value
+  if (!showHtmlSource.value) {
+    setEditorHtml(formHtml.value)
+  }
+}
 
 const modalLoading = ref(false)
 const modalMessage = ref('')
