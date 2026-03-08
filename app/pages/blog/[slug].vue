@@ -17,8 +17,7 @@
           </header>
 
           <img
-            v-if="post?.featuredImage"
-            :src="post.featuredImage"
+            :src="post?.featuredImage || '/images/blog-default.svg'"
             :alt="post?.titulo || 'Imagem do post'"
             class="blog-featured-image"
             loading="lazy"

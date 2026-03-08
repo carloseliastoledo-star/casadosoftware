@@ -19,27 +19,11 @@
             <NuxtLink :to="`/blog/${p.slug}`" class="block">
               <div class="bg-gray-100">
                 <img
-                  v-if="p.featuredImage"
-                  :src="p.featuredImage"
+                  :src="p.featuredImage || '/images/blog-default.svg'"
                   :alt="p.titulo"
                   class="w-full h-44 object-cover"
                   loading="lazy"
                 />
-                <div
-                  v-else
-                  class="w-full h-44 bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center"
-                >
-                  <div class="text-center px-4">
-                    <div class="mx-auto w-10 h-10 rounded-xl bg-white/70 border border-blue-100 flex items-center justify-center">
-                      <svg viewBox="0 0 24 24" class="w-5 h-5 text-blue-700" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 2h9l3 3v17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/>
-                        <path d="M15 2v4a1 1 0 0 0 1 1h4" stroke="currentColor" stroke-width="1.7"/>
-                        <path d="M7 12h10M7 16h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                      </svg>
-                    </div>
-                    <div class="mt-2 text-xs font-semibold text-blue-900/80">Guia rápido</div>
-                  </div>
-                </div>
               </div>
 
               <div class="p-6">
