@@ -156,6 +156,15 @@
                   >
                     {{ uploadLoading ? 'Enviando...' : 'Enviar imagem' }}
                   </button>
+
+                  <button
+                    type="button"
+                    class="px-3 py-1 rounded border text-sm bg-white disabled:opacity-50"
+                    :disabled="uploadLoading || !editor || !editor.isActive('image')"
+                    @click="removeSelectedImage"
+                  >
+                    Remover imagem
+                  </button>
                 </div>
 
                 <div class="p-3 min-h-[240px]">
@@ -265,6 +274,8 @@ const showHtmlSource = ref(false)
 const uploadInput = ref<HTMLInputElement | null>(null)
 const uploadLoading = ref(false)
 const uploadError = ref('')
+
+const lastEditorSelection = ref<{ from: number; to: number } | null>(null)
 
 const editor = process.client
   ? useEditor({
@@ -491,7 +502,16 @@ async function uploadImage(event: Event) {
     if (!url) return
 
     const e: any = (editor as any).value
-    e?.chain().focus().setImage({ src: url }).run()
+    if (e) {
+      const sel = lastEditorSelection.value
+      if (sel?.from != null && sel?.to != null) {
+        e.chain().focus().setTextSelection(sel).run()
+      } else {
+        e.chain().focus().run()
+      }
+
+      e.chain().setImage({ src: url }).run()
+    }
   } catch (err: any) {
     uploadError.value = err?.data?.statusMessage || err?.message || 'Erro ao enviar imagem'
   } finally {
@@ -501,7 +521,26 @@ async function uploadImage(event: Event) {
 }
 
 function triggerUpload() {
+  const e: any = (editor as any).value
+  try {
+    const sel = e?.state?.selection
+    if (sel?.from != null && sel?.to != null) {
+      lastEditorSelection.value = { from: sel.from, to: sel.to }
+    } else {
+      lastEditorSelection.value = null
+    }
+  } catch {
+    lastEditorSelection.value = null
+  }
+
   uploadInput.value?.click()
+}
+
+function removeSelectedImage() {
+  const e: any = (editor as any).value
+  if (!e) return
+  // when an image is selected, it is a node selection; deleteNode is the most reliable
+  e.chain().focus().deleteNode('image').run()
 }
 
 function toggleBold() {
