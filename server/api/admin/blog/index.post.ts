@@ -3,6 +3,7 @@ import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
 import DOMPurify from 'isomorphic-dompurify'
 import { sanitizeRichHtml } from '../../../utils/sanitizeRichHtml'
+import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities.js'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -19,7 +20,8 @@ export default defineEventHandler(async (event) => {
   if (!titulo) throw createError({ statusCode: 400, statusMessage: 'Título obrigatório' })
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Slug obrigatório' })
 
-  const html = htmlRaw ? sanitizeRichHtml(htmlRaw, { allowIframes: true }) : null
+  const decodedHtmlRaw = htmlRaw ? decodeHtmlEntities(htmlRaw) : ''
+  const html = decodedHtmlRaw ? sanitizeRichHtml(decodedHtmlRaw, { allowIframes: true }) : null
 
   try {
     const post = await (prisma as any).blogPost.create({

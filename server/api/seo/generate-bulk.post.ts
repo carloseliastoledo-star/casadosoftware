@@ -4,6 +4,7 @@ import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml.js'
 import { requireSeoOrAdmin } from '../../utils/seoAuth.js'
 import { generateOpenAiImagePngBytes } from '../../utils/openaiImage.js'
 import { uploadPublicImageToSpaces } from '../../utils/spacesUpload.js'
+import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
 
 function toSlug(input: unknown): string {
   return String(input ?? '')
@@ -142,7 +143,8 @@ async function generateOne(params: { keyword: string; published: boolean; model:
   const featuredImage = await maybeGenerateFeaturedImage({ keyword: params.keyword, slug, generate: params.generateImage })
 
   const rawHtml = await callOpenAIHtmlArticle({ keyword: params.keyword, model: params.model })
-  const withCta = `${rawHtml}\n${appendProductCtaBlock()}`
+  const decodedRawHtml = decodeHtmlEntities(rawHtml)
+  const withCta = `${decodedRawHtml}\n${appendProductCtaBlock()}`
 
   const cleanedHtml = sanitizeRichHtml(withCta, { allowIframes: true })
   const excerpt = excerptFromHtml(cleanedHtml)

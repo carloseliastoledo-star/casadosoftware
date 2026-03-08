@@ -1,5 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
+import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
 
 export default defineEventHandler(async (event) => {
   const slug = String(event.context.params?.slug || '').trim()
@@ -32,6 +33,10 @@ export default defineEventHandler(async (event) => {
 
   if (!post || !post.publicado) {
     throw createError({ statusCode: 404, statusMessage: 'Post não encontrado' })
+  }
+
+  if (post?.html) {
+    post.html = decodeHtmlEntities(post.html)
   }
 
   return { ok: true, post }

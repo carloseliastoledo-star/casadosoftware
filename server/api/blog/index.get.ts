@@ -1,5 +1,6 @@
 import { defineEventHandler } from 'h3'
 import prisma from '../../db/prisma.js'
+import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
 
 function stripHtml(input: unknown): string {
   const raw = String(input ?? '')
@@ -12,7 +13,8 @@ function stripHtml(input: unknown): string {
 }
 
 function excerptFromHtml(html: unknown, maxLen = 160): string {
-  const txt = stripHtml(html)
+  const decoded = decodeHtmlEntities(html)
+  const txt = stripHtml(decoded)
   if (!txt) return ''
   if (txt.length <= maxLen) return txt
   return `${txt.slice(0, maxLen).trimEnd()}…`

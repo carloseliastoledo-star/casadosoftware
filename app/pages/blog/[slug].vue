@@ -27,7 +27,7 @@
           </header>
 
           <div class="mt-8">
-            <div class="blog-content prose prose-gray max-w-none" v-html="safePostHtml" />
+            <div class="blog-article blog-content" v-html="safePostHtml" />
           </div>
 
           <div class="mt-10 border-t pt-8">
