@@ -5,16 +5,6 @@
       <div v-else-if="error" class="text-sm text-red-600">Post não encontrado.</div>
 
       <article v-else class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div v-if="post?.featuredImage" class="relative">
-          <img
-            :src="post.featuredImage"
-            :alt="post?.titulo || 'Imagem do post'"
-            class="w-full h-[220px] md:h-[340px] object-cover"
-            loading="lazy"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-        </div>
-
         <div class="p-6 md:p-10">
           <header class="max-w-3xl">
             <p class="text-xs font-semibold tracking-wide text-blue-600 uppercase">Blog</p>
@@ -25,6 +15,14 @@
               Atualizado em {{ formatDate(post.atualizadoEm) }}
             </p>
           </header>
+
+          <img
+            v-if="post?.featuredImage"
+            :src="post.featuredImage"
+            :alt="post?.titulo || 'Imagem do post'"
+            class="blog-featured-image"
+            loading="lazy"
+          />
 
           <div class="mt-8">
             <div class="blog-article blog-content" v-html="safePostHtml" />
