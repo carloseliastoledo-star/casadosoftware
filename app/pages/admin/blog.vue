@@ -14,6 +14,80 @@
       </button>
     </div>
 
+    <div class="bg-white rounded shadow p-4 mb-6">
+      <div class="flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <div class="text-sm font-semibold text-gray-900">Gerar post automaticamente (SEO)</div>
+          <div class="text-xs text-gray-600 mt-1">Use uma keyword (1 post) ou várias keywords (1 por linha).</div>
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-2">Keyword (gerar 1 post)</label>
+          <input
+            v-model="seoKeyword"
+            type="text"
+            class="w-full border rounded-lg p-3"
+            placeholder="Ex: Como ativar Windows 10"
+            :disabled="seoLoading"
+          />
+          <div class="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+              :disabled="seoLoading || !seoKeyword.trim()"
+              @click="generateSeoOne"
+            >
+              {{ seoLoading ? 'Gerando...' : 'Gerar 1 post' }}
+            </button>
+            <div v-if="seoLastSlug" class="text-xs text-gray-600">
+              Último slug: <span class="font-mono">{{ seoLastSlug }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Keywords (gerar em lote)</label>
+          <textarea
+            v-model="seoBulkKeywords"
+            rows="4"
+            class="w-full border rounded-lg p-3 font-mono text-xs"
+            placeholder="Uma keyword por linha"
+            :disabled="seoLoading"
+          />
+          <div class="mt-3">
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
+              :disabled="seoLoading || !seoBulkKeywords.trim()"
+              @click="generateSeoBulk"
+            >
+              {{ seoLoading ? 'Gerando...' : 'Gerar em lote' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-5">
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input v-model="seoPublished" type="checkbox" class="h-4 w-4" :disabled="seoLoading" />
+          Publicar
+        </label>
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input v-model="seoForce" type="checkbox" class="h-4 w-4" :disabled="seoLoading" />
+          Forçar (regerar)
+        </label>
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input v-model="seoGenerateImage" type="checkbox" class="h-4 w-4" :disabled="seoLoading" />
+          Gerar imagem
+        </label>
+      </div>
+
+      <div v-if="seoError" class="mt-3 text-sm text-red-700 font-medium">{{ seoError }}</div>
+      <div v-if="seoResult" class="mt-3 text-xs text-gray-700 font-mono whitespace-pre-wrap">{{ seoResult }}</div>
+    </div>
+
     <div v-if="pending" class="text-gray-500">Carregando...</div>
     <div v-else-if="error" class="text-red-600">Não foi possível carregar os posts.</div>
 
@@ -259,6 +333,82 @@ const { data, pending, error, refresh } = await useFetch<{ ok: true; posts: Blog
 })
 
 const posts = computed(() => data.value?.posts || [])
+
+const seoKeyword = ref('')
+const seoBulkKeywords = ref('')
+const seoPublished = ref(true)
+const seoForce = ref(false)
+const seoGenerateImage = ref(false)
+const seoLoading = ref(false)
+const seoError = ref('')
+const seoResult = ref('')
+const seoLastSlug = ref('')
+
+function normalizeBulkKeywords(input: string): string[] {
+  return String(input || '')
+    .split(/\r?\n/g)
+    .map((k) => String(k || '').trim())
+    .filter(Boolean)
+}
+
+async function generateSeoOne() {
+  const keyword = String(seoKeyword.value || '').trim()
+  if (!keyword) return
+
+  seoLoading.value = true
+  seoError.value = ''
+  seoResult.value = ''
+  seoLastSlug.value = ''
+
+  try {
+    const res: any = await $fetch('/api/seo/generate-post', {
+      method: 'POST',
+      body: {
+        keyword,
+        published: Boolean(seoPublished.value),
+        force: Boolean(seoForce.value),
+        generateImage: Boolean(seoGenerateImage.value)
+      }
+    })
+
+    seoLastSlug.value = String(res?.slug || '')
+    seoResult.value = JSON.stringify(res, null, 2)
+    await refresh()
+  } catch (err: any) {
+    seoError.value = err?.data?.statusMessage || err?.message || 'Erro ao gerar post'
+  } finally {
+    seoLoading.value = false
+  }
+}
+
+async function generateSeoBulk() {
+  const keywords = normalizeBulkKeywords(seoBulkKeywords.value)
+  if (!keywords.length) return
+
+  seoLoading.value = true
+  seoError.value = ''
+  seoResult.value = ''
+  seoLastSlug.value = ''
+
+  try {
+    const res: any = await $fetch('/api/seo/generate-bulk', {
+      method: 'POST',
+      body: {
+        keywords,
+        published: Boolean(seoPublished.value),
+        force: Boolean(seoForce.value),
+        generateImage: Boolean(seoGenerateImage.value)
+      }
+    })
+
+    seoResult.value = JSON.stringify(res, null, 2)
+    await refresh()
+  } catch (err: any) {
+    seoError.value = err?.data?.statusMessage || err?.message || 'Erro ao gerar posts'
+  } finally {
+    seoLoading.value = false
+  }
+}
 
 const showModal = ref(false)
 const editingId = ref<string | null>(null)
@@ -539,7 +689,6 @@ function triggerUpload() {
 function removeSelectedImage() {
   const e: any = (editor as any).value
   if (!e) return
-  // when an image is selected, it is a node selection; deleteNode is the most reliable
   e.chain().focus().deleteNode('image').run()
 }
 
