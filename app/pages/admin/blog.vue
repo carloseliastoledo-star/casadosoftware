@@ -159,6 +159,29 @@
                 class="w-full border rounded-lg p-3 font-mono text-xs"
                 placeholder="/blog/windows11.jpg ou https://..."
               />
+              <div class="mt-3 flex items-center gap-3 flex-wrap">
+                <input ref="featuredUploadInput" type="file" accept="image/*" class="hidden" @change="uploadFeaturedImage" />
+                <button
+                  type="button"
+                  class="px-3 py-2 rounded-lg border text-sm bg-white disabled:opacity-50"
+                  :disabled="modalLoading || featuredUploadLoading"
+                  @click="triggerFeaturedUpload"
+                >
+                  {{ featuredUploadLoading ? 'Enviando...' : 'Enviar imagem' }}
+                </button>
+
+                <div v-if="featuredUploadError" class="text-xs text-red-600">{{ featuredUploadError }}</div>
+              </div>
+
+              <div v-if="formFeaturedImage" class="mt-3">
+                <img
+                  :src="formFeaturedImage"
+                  alt="Preview"
+                  class="w-full max-h-56 object-cover rounded-lg border"
+                  loading="lazy"
+                />
+              </div>
+
               <div class="mt-2 flex items-center justify-between gap-3">
                 <p class="text-xs text-gray-500">Usada no hero do post e nos cards do blog.</p>
                 <button
@@ -419,6 +442,10 @@ const formFeaturedImage = ref('')
 const formHtml = ref('')
 const formPublicado = ref(false)
 
+const featuredUploadInput = ref<HTMLInputElement | null>(null)
+const featuredUploadLoading = ref(false)
+const featuredUploadError = ref('')
+
 const showHtmlSource = ref(false)
 
 const uploadInput = ref<HTMLInputElement | null>(null)
@@ -610,6 +637,38 @@ async function saveModal() {
 
 function removeFeaturedImage() {
   formFeaturedImage.value = ''
+}
+
+function triggerFeaturedUpload() {
+  featuredUploadError.value = ''
+  featuredUploadInput.value?.click()
+}
+
+async function uploadFeaturedImage(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input?.files?.[0]
+  if (!file) return
+
+  featuredUploadLoading.value = true
+  featuredUploadError.value = ''
+
+  try {
+    const form = new FormData()
+    form.append('file', file)
+    const res: any = await $fetch('/api/admin/upload', {
+      method: 'POST',
+      body: form
+    })
+
+    const url = String(res?.url || '').trim()
+    if (!url) return
+    formFeaturedImage.value = url
+  } catch (err: any) {
+    featuredUploadError.value = err?.data?.statusMessage || err?.message || 'Erro ao enviar imagem'
+  } finally {
+    featuredUploadLoading.value = false
+    if (input) input.value = ''
+  }
 }
 
 async function deletePost(p: BlogPostListItem) {
