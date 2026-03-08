@@ -286,6 +286,24 @@ model BlogPost {
   publicado    Boolean  @default(false)
   criadoEm     DateTime @default(now()) @db.DateTime(0)
   atualizadoEm DateTime @updatedAt @db.DateTime(0)
+
+  translations BlogPostTranslation[]
+}
+
+model BlogPostTranslation {
+  id            String   @id @default(uuid())
+  postId        String
+  post          BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  lang          String
+  titulo        String
+  featuredImage String?
+  excerpt       String?
+  html          String?  @db.Text
+  criadoEm      DateTime @default(now()) @db.DateTime(0)
+  atualizadoEm  DateTime @updatedAt @db.DateTime(0)
+
+  @@unique([postId, lang])
+  @@index([lang])
 }
 
 model AdminUser {

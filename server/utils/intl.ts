@@ -2,13 +2,13 @@ import type { H3Event } from 'h3'
 import { getCookie, getRequestHeader } from 'h3'
 
 export type IntlContext = {
-  language: 'pt' | 'en' | 'es' | 'it' | 'fr'
-  locale: 'pt-BR' | 'en-US' | 'es-ES' | 'it-IT' | 'fr-FR'
+  language: 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de'
+  locale: 'pt-BR' | 'en-US' | 'es-ES' | 'it-IT' | 'fr-FR' | 'de-DE'
   currency: 'brl' | 'usd' | 'eur'
   host: string
 }
 
-function normalizeLanguage(input: unknown): 'pt' | 'en' | 'es' | 'it' | 'fr' | null {
+function normalizeLanguage(input: unknown): 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de' | null {
   const v = String(input || '').trim().toLowerCase()
   if (!v) return null
   if (v === 'pt' || v === 'pt-br' || v.startsWith('pt')) return 'pt'
@@ -16,6 +16,7 @@ function normalizeLanguage(input: unknown): 'pt' | 'en' | 'es' | 'it' | 'fr' | n
   if (v === 'es' || v === 'es-es' || v.startsWith('es')) return 'es'
   if (v === 'it' || v === 'it-it' || v.startsWith('it')) return 'it'
   if (v === 'fr' || v === 'fr-fr' || v.startsWith('fr')) return 'fr'
+  if (v === 'de' || v === 'de-de' || v.startsWith('de')) return 'de'
   return null
 }
 
@@ -28,7 +29,7 @@ function normalizeCurrency(input: unknown): 'brl' | 'usd' | 'eur' | null {
   return null
 }
 
-function detectLanguageFromAcceptLanguage(raw: unknown): 'pt' | 'en' | 'es' | 'it' | 'fr' | null {
+function detectLanguageFromAcceptLanguage(raw: unknown): 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de' | null {
   const s = String(raw || '').trim().toLowerCase()
   if (!s) return null
   const parts = s
@@ -43,7 +44,7 @@ function detectLanguageFromAcceptLanguage(raw: unknown): 'pt' | 'en' | 'es' | 'i
   return null
 }
 
-function detectLanguageFromPath(event?: H3Event): 'pt' | 'en' | 'es' | 'it' | 'fr' | null {
+function detectLanguageFromPath(event?: H3Event): 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de' | null {
   if (!event) return null
   const raw = String((event as any).path || (event as any).node?.req?.url || '')
   const pathname = raw.split('?')[0] || ''
@@ -51,6 +52,7 @@ function detectLanguageFromPath(event?: H3Event): 'pt' | 'en' | 'es' | 'it' | 'f
   if (pathname === '/es' || pathname.startsWith('/es/')) return 'es'
   if (pathname === '/it' || pathname.startsWith('/it/')) return 'it'
   if (pathname === '/fr' || pathname.startsWith('/fr/')) return 'fr'
+  if (pathname === '/de' || pathname.startsWith('/de/')) return 'de'
   return null
 }
 
@@ -131,7 +133,7 @@ function isSubdomainModeEnabled(): boolean {
   return String(process.env.INTL_SUBDOMAIN_MODE || '').trim() === '1'
 }
 
-function detectSubdomainLanguage(host: string): 'pt' | 'en' | 'es' | 'it' | 'fr' | null {
+function detectSubdomainLanguage(host: string): 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de' | null {
   const h = String(host || '').trim().toLowerCase()
   if (!h) return null
   if (h.startsWith('pt.')) return 'pt'
@@ -139,10 +141,11 @@ function detectSubdomainLanguage(host: string): 'pt' | 'en' | 'es' | 'it' | 'fr'
   if (h.startsWith('es.')) return 'es'
   if (h.startsWith('it.')) return 'it'
   if (h.startsWith('fr.')) return 'fr'
+  if (h.startsWith('de.')) return 'de'
   return null
 }
 
-function defaultCurrencyForLanguage(lang: 'pt' | 'en' | 'es' | 'it' | 'fr'): 'brl' | 'usd' | 'eur' {
+function defaultCurrencyForLanguage(lang: 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de'): 'brl' | 'usd' | 'eur' {
   if (lang === 'pt') return 'brl'
   if (lang === 'en') return 'usd'
   return 'eur'
@@ -164,7 +167,7 @@ export function getIntlContext(event?: H3Event): IntlContext {
   const inferredHostCountry = host.endsWith('.com.br') || host.includes('.com.br:') ? 'BR' : ''
   const country = cookieCountry || headerCountry || (cookieCurrency ? '' : inferredHostCountry)
 
-  let language: 'pt' | 'en' | 'es' | 'it' | 'fr' = 'pt'
+  let language: 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de' = 'pt'
   let currency: 'brl' | 'usd' | 'eur' = 'brl'
 
   if (subdomainLanguage) {
@@ -200,6 +203,8 @@ export function getIntlContext(event?: H3Event): IntlContext {
           ? 'it-IT'
           : language === 'fr'
             ? 'fr-FR'
+            : language === 'de'
+              ? 'de-DE'
             : 'pt-BR'
   return { language, locale, currency, host }
 }

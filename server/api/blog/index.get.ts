@@ -1,6 +1,7 @@
 import { defineEventHandler } from 'h3'
 import prisma from '../../db/prisma.js'
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
+import { getIntlContext } from '../../utils/intl'
 
 function firstImageFromHtml(html: unknown): string | null {
   const raw = String(html ?? '')
@@ -30,27 +31,64 @@ function excerptFromHtml(html: unknown, maxLen = 160): string {
   return `${txt.slice(0, maxLen).trimEnd()}…`
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
   try {
     const posts = await (prisma as any).blogPost.findMany({
       where: { publicado: true },
       orderBy: { criadoEm: 'desc' },
       select: {
+        id: true,
         titulo: true,
         slug: true,
         featuredImage: true,
+        excerpt: true,
         html: true,
         criadoEm: true,
-        atualizadoEm: true
+        atualizadoEm: true,
+        translations: {
+          select: {
+            lang: true,
+            titulo: true,
+            featuredImage: true,
+            excerpt: true,
+            html: true
+          }
+        }
       }
     })
 
+    const lang = String(getIntlContext(event).language || 'pt')
+
     const normalized = Array.isArray(posts)
       ? posts.map((p: any) => ({
-          titulo: p?.titulo,
+          titulo:
+            (Array.isArray(p?.translations)
+              ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
+              : null)?.titulo || p?.titulo,
           slug: p?.slug,
-          featuredImage: p?.featuredImage || firstImageFromHtml(decodeHtmlEntities(p?.html)) || null,
-          descricao: excerptFromHtml(p?.html),
+          featuredImage:
+            (Array.isArray(p?.translations)
+              ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
+              : null)?.featuredImage ||
+            p?.featuredImage ||
+            firstImageFromHtml(
+              decodeHtmlEntities(
+                (Array.isArray(p?.translations)
+                  ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
+                  : null)?.html || p?.html
+              )
+            ) ||
+            null,
+          descricao:
+            (Array.isArray(p?.translations)
+              ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
+              : null)?.excerpt ||
+            p?.excerpt ||
+            excerptFromHtml(
+              (Array.isArray(p?.translations)
+                ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
+                : null)?.html || p?.html
+            ),
           criadoEm: p?.criadoEm,
           atualizadoEm: p?.atualizadoEm
         }))

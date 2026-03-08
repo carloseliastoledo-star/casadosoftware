@@ -1,6 +1,7 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
+import { getIntlContext } from '../../utils/intl'
 
 export default defineEventHandler(async (event) => {
   const slug = String(event.context.params?.slug || '').trim()
@@ -11,13 +12,24 @@ export default defineEventHandler(async (event) => {
     post = await (prisma as any).blogPost.findUnique({
       where: { slug },
       select: {
+        id: true,
         titulo: true,
         slug: true,
         featuredImage: true,
+        excerpt: true,
         html: true,
         publicado: true,
         criadoEm: true,
-        atualizadoEm: true
+        atualizadoEm: true,
+        translations: {
+          select: {
+            lang: true,
+            titulo: true,
+            featuredImage: true,
+            excerpt: true,
+            html: true
+          }
+        }
       }
     })
   } catch (err: any) {
@@ -35,9 +47,24 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Post não encontrado' })
   }
 
-  if (post?.html) {
-    post.html = decodeHtmlEntities(post.html)
+  const lang = String(getIntlContext(event).language || 'pt')
+  const tr = Array.isArray(post?.translations)
+    ? post.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
+    : null
+
+  const normalized: any = {
+    titulo: tr?.titulo || post?.titulo,
+    slug: post?.slug,
+    featuredImage: tr?.featuredImage || post?.featuredImage || null,
+    excerpt: tr?.excerpt || post?.excerpt || null,
+    html: tr?.html || post?.html || null,
+    criadoEm: post?.criadoEm,
+    atualizadoEm: post?.atualizadoEm
   }
 
-  return { ok: true, post }
+  if (normalized?.html) {
+    normalized.html = decodeHtmlEntities(normalized.html)
+  }
+
+  return { ok: true, post: normalized }
 })
