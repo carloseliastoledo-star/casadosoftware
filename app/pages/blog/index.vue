@@ -1,129 +1,85 @@
 <template>
-  <section class="bg-gray-50 min-h-screen py-10 md:py-14">
-    <div class="max-w-6xl mx-auto px-6">
-      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-        <div>
-          <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">{{ t('blog.title') }}</h1>
-          <p class="text-sm text-gray-600 mt-2 max-w-2xl">{{ t('blog.subtitle') }}</p>
-        </div>
-        <NuxtLink
-          :to="`${langPrefix}/produtos`"
-          class="inline-flex items-center justify-center rounded-xl bg-blue-600 text-white font-semibold px-5 py-3 hover:bg-blue-700 transition"
-        >
-          {{ t('blog.ctaButton') }}
-        </NuxtLink>
+  <div class="bg-gray-50 min-h-screen">
+    <section class="bg-gradient-to-r from-blue-600 to-blue-500 text-white py-14 mb-10">
+      <div class="max-w-6xl mx-auto px-6 text-center">
+        <h1 class="text-4xl font-extrabold">Blog Casa do Software</h1>
+        <p class="mt-3 text-blue-100 text-lg">Guias, tutoriais e novidades sobre Windows, Office e licenças digitais.</p>
       </div>
+    </section>
 
-      <div v-if="pending" class="mt-8 text-sm text-gray-600">{{ t('blog.loading') }}</div>
-      <div v-else-if="error" class="mt-8 text-sm text-red-600">{{ t('blog.errorLoading') }}</div>
+    <section class="max-w-6xl mx-auto px-6 mb-12">
+      <h2 class="text-2xl font-bold mb-6">🔥 Artigos populares</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
+          <h3 class="font-bold">Windows OEM vs Retail</h3>
+          <p class="text-sm text-gray-600 mt-2">Entenda as diferenças entre as licenças Windows e qual escolher.</p>
+        </div>
+        <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
+          <h3 class="font-bold">Como ativar Windows 11</h3>
+          <p class="text-sm text-gray-600 mt-2">Aprenda a ativar o Windows 11 passo a passo.</p>
+        </div>
+        <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
+          <h3 class="font-bold">Office 365 vale a pena?</h3>
+          <p class="text-sm text-gray-600 mt-2">Descubra se o Office 365 compensa em 2026.</p>
+        </div>
+      </div>
+    </section>
 
-      <div v-else class="mt-8">
-        <div v-if="!posts.length" class="text-sm text-gray-600">{{ t('blog.empty') }}</div>
+    <section class="py-10 md:py-14">
+      <div class="max-w-6xl mx-auto px-6">
+        <div v-if="pending" class="text-sm text-gray-600">{{ t('blog.loading') }}</div>
+        <div v-else-if="error" class="text-sm text-red-600">{{ t('blog.errorLoading') }}</div>
 
-        <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          <div class="lg:col-span-8 space-y-6">
+        <div v-else>
+          <div v-if="!posts.length" class="text-sm text-gray-600">{{ t('blog.empty') }}</div>
+
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <article
-              v-if="featured"
-              class="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-blue-200 hover:shadow-sm transition"
+              v-for="post in posts"
+              :key="post.slug"
+              class="bg-white border border-gray-100 rounded-2xl overflow-hidden transition duration-300 hover:shadow-lg hover:-translate-y-1"
             >
-              <NuxtLink :to="`${langPrefix}/blog/${featured.slug}`" class="block">
+              <NuxtLink :to="`${langPrefix}/blog/${post.slug}`" class="block">
                 <div class="bg-gray-100">
                   <img
-                    :src="featured.featuredImage || '/images/blog-default.svg'"
-                    :alt="featured.titulo"
-                    class="w-full h-56 md:h-72 object-cover"
+                    :src="post.featuredImage || '/images/blog-default.svg'"
+                    :alt="post.titulo"
+                    class="w-full h-52 object-cover"
                     loading="lazy"
                   />
                 </div>
 
-                <div class="p-6 md:p-8">
-                  <div class="text-xs font-semibold tracking-wide text-blue-600 uppercase">Destaque</div>
-                  <div class="mt-2 text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight">
-                    {{ featured.titulo }}
-                  </div>
-                  <div v-if="featured.descricao" class="text-sm text-gray-600 mt-3 line-clamp-3">
-                    {{ featured.descricao }}
-                  </div>
-                  <div class="text-xs text-gray-500 mt-4">{{ t('blog.updatedAt') }} {{ formatDate(featured.atualizadoEm) }}</div>
+                <div class="p-6">
+                  <span class="text-xs font-semibold text-blue-600">{{ post.categoria || 'Tutorial' }}</span>
 
-                  <div class="mt-6">
-                    <span class="inline-flex items-center justify-center rounded-xl bg-blue-600 text-white font-semibold px-4 py-2 hover:bg-blue-700 transition">
-                      {{ t('blog.readMore') }}
+                  <h2 class="text-lg font-bold text-gray-900 mt-2 leading-snug">
+                    {{ post.titulo }}
+                  </h2>
+
+                  <p class="text-sm text-gray-600 mt-3 line-clamp-3">
+                    {{ post.descricao }}
+                  </p>
+
+                  <div class="flex items-center justify-between mt-4 text-xs text-gray-500">
+                    <span>{{ formatDate(post.atualizadoEm) }}</span>
+                    <span>5 min leitura</span>
+                  </div>
+
+                  <div class="mt-5">
+                    <span
+                      class="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white font-semibold px-4 py-2 hover:bg-blue-700 transition"
+                    >
+                      Ler artigo →
                     </span>
                   </div>
                 </div>
               </NuxtLink>
             </article>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <article
-                v-for="p in rest"
-                :key="p.slug"
-                class="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-blue-200 hover:shadow-sm transition"
-              >
-                <NuxtLink :to="`${langPrefix}/blog/${p.slug}`" class="block">
-                  <div class="bg-gray-100">
-                    <img
-                      :src="p.featuredImage || '/images/blog-default.svg'"
-                      :alt="p.titulo"
-                      class="w-full h-44 object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  <div class="p-6">
-                    <div class="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
-                      {{ p.titulo }}
-                    </div>
-                    <div v-if="p.descricao" class="text-sm text-gray-600 mt-3 line-clamp-3">
-                      {{ p.descricao }}
-                    </div>
-                    <div class="text-xs text-gray-500 mt-4">{{ t('blog.updatedAt') }} {{ formatDate(p.atualizadoEm) }}</div>
-
-                    <div class="mt-5">
-                      <span class="inline-flex items-center justify-center rounded-xl bg-blue-600 text-white font-semibold px-4 py-2 hover:bg-blue-700 transition">
-                        {{ t('blog.readMore') }}
-                      </span>
-                    </div>
-                  </div>
-                </NuxtLink>
-              </article>
-            </div>
           </div>
-
-          <aside class="lg:col-span-4 lg:sticky lg:top-6 space-y-5">
-            <div class="bg-white rounded-2xl border border-gray-100 p-5">
-              <div class="text-sm font-semibold text-gray-900">{{ t('blog.ctaTitle') }}</div>
-              <div class="text-xs text-gray-600 mt-1">{{ t('blog.ctaBody') }}</div>
-              <NuxtLink
-                :to="`${langPrefix}/produtos`"
-                class="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-blue-600 text-white font-semibold px-4 py-2.5 hover:bg-blue-700 transition"
-              >
-                {{ t('blog.ctaButton') }}
-              </NuxtLink>
-            </div>
-
-            <div v-if="posts.length" class="bg-white rounded-2xl border border-gray-100 p-5">
-              <div class="text-sm font-semibold text-gray-900">Posts recentes</div>
-              <div class="mt-3 space-y-3">
-                <NuxtLink
-                  v-for="p in posts.slice(0, 6)"
-                  :key="p.slug"
-                  :to="`${langPrefix}/blog/${p.slug}`"
-                  class="block group"
-                >
-                  <div class="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition line-clamp-2">
-                    {{ p.titulo }}
-                  </div>
-                  <div v-if="p.atualizadoEm" class="text-xs text-gray-500 mt-1">{{ formatDate(p.atualizadoEm) }}</div>
-                </NuxtLink>
-              </div>
-            </div>
-          </aside>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -156,7 +112,9 @@ const hreflangLinks = computed(() => {
   if (!origin) return [] as any[]
 
   const langs = ['pt', 'en', 'es', 'fr', 'it', 'de']
-  const rawPath = String(route.fullPath || '/').split('?')[0].split('#')[0]
+  const fullPath = typeof route.fullPath === 'string' ? route.fullPath : '/'
+  const noQuery = fullPath.split('?')[0] ?? '/'
+  const rawPath = (noQuery.split('#')[0] ?? '/') || '/'
   const parts = rawPath.split('/').filter(Boolean)
   const first = parts[0] || ''
   const baseParts = first && langs.includes(first) ? parts.slice(1) : parts
@@ -204,25 +162,16 @@ const isCasaDoSoftware = computed(() => {
   return storeSlug.value === 'casadosoftware'
 })
 
-useSeoMeta(() => {
-  if (isCasaDoSoftware.value) {
-    const title = 'Tutoriais de Ativação Windows e Office | Casa do Software'
-    const description =
-      'Aprenda a ativar Windows e Office legalmente com nossos guias passo a passo. Dicas, comparativos e suporte técnico.'
+const seoMeta = computed(() => ({
+  title: isCasaDoSoftware.value ? 'Blog Casa do Software' : `Blog - ${siteName}`,
+  description: isCasaDoSoftware.value ? 'Tutoriais, guias e novidades sobre Windows, Office e licenças digitais.' : '',
+  ogTitle: isCasaDoSoftware.value ? 'Blog Casa do Software' : `Blog - ${siteName}`,
+  ogDescription: isCasaDoSoftware.value ? 'Tutoriais, guias e novidades sobre Windows, Office e licenças digitais.' : '',
+  twitterTitle: isCasaDoSoftware.value ? 'Blog Casa do Software' : `Blog - ${siteName}`,
+  twitterDescription: isCasaDoSoftware.value ? 'Tutoriais, guias e novidades sobre Windows, Office e licenças digitais.' : ''
+}))
 
-    return {
-      title,
-      description,
-      ogTitle: title,
-      ogDescription: description,
-      twitterTitle: title,
-      twitterDescription: description
-    }
-  }
-
-  const title = `Blog - ${siteName}`
-  return { title }
-})
+useSeoMeta(() => seoMeta.value)
 
 useHead(() => {
   const links: any[] = []
@@ -237,6 +186,7 @@ type BlogPostListDto = {
   slug: string
   featuredImage: string | null
   descricao: string
+  categoria?: string | null
   criadoEm: string
   atualizadoEm: string
 }
