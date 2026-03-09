@@ -197,9 +197,6 @@ const { data, pending, error } = await useFetch<{ ok: true; posts: BlogPostListD
 
 const posts = computed(() => data.value?.posts || [])
 
-const featured = computed(() => posts.value[0] || null)
-const rest = computed(() => posts.value.slice(1))
-
 function formatDate(input: string) {
   try {
     const map: Record<string, string> = {
