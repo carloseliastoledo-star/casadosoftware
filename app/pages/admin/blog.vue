@@ -287,6 +287,79 @@
               <div v-if="uploadError" class="text-xs text-red-600 mt-2">{{ uploadError }}</div>
             </div>
 
+            <div v-if="editingId" class="border rounded-lg p-4">
+              <div class="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <div class="text-sm font-semibold text-gray-900">Traduções</div>
+                  <div class="text-xs text-gray-600 mt-1">Edite o título/HTML por idioma (fallback PT quando vazio).</div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <label class="text-xs text-gray-600">Idioma</label>
+                  <select
+                    v-model="translationLang"
+                    class="border rounded-lg p-2 text-sm"
+                    :disabled="translationLoading || translationSaving"
+                  >
+                    <option v-for="o in translationLangOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-2">Título (tradução)</label>
+                  <input v-model="translationTitulo" type="text" class="w-full border rounded-lg p-3" :disabled="translationLoading || translationSaving" />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium mb-2">Imagem destacada (URL)</label>
+                  <input
+                    v-model="translationFeaturedImage"
+                    type="text"
+                    class="w-full border rounded-lg p-3 font-mono text-xs"
+                    placeholder="/blog/post-en.jpg ou https://..."
+                    :disabled="translationLoading || translationSaving"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <label class="block text-sm font-medium mb-2">Excerpt (opcional)</label>
+                <input
+                  v-model="translationExcerpt"
+                  type="text"
+                  class="w-full border rounded-lg p-3"
+                  placeholder="Resumo curto (SEO)"
+                  :disabled="translationLoading || translationSaving"
+                />
+              </div>
+
+              <div class="mt-4">
+                <label class="block text-sm font-medium mb-2">HTML (tradução)</label>
+                <textarea
+                  v-model="translationHtml"
+                  rows="10"
+                  class="w-full border rounded-lg p-3 font-mono text-xs"
+                  placeholder="<p>Conteúdo traduzido...</p>"
+                  :disabled="translationLoading || translationSaving"
+                />
+              </div>
+
+              <div class="mt-4 flex items-center gap-3">
+                <button
+                  type="button"
+                  class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                  :disabled="translationLoading || translationSaving"
+                  @click="saveTranslation"
+                >
+                  {{ translationSaving ? 'Salvando...' : 'Salvar tradução' }}
+                </button>
+                <div v-if="translationMessage" class="text-sm text-green-700 font-medium">{{ translationMessage }}</div>
+                <div v-if="translationError" class="text-sm text-red-700 font-medium">{{ translationError }}</div>
+              </div>
+            </div>
+
             <div class="flex items-center gap-2">
               <input id="pub" v-model="formPublicado" type="checkbox" class="h-4 w-4" />
               <label for="pub" class="text-sm">Publicar no site</label>
@@ -511,6 +584,36 @@ const modalLoading = ref(false)
 const modalMessage = ref('')
 const modalError = ref('')
 
+type BlogPostTranslation = {
+  id: string
+  postId: string
+  lang: string
+  titulo: string
+  featuredImage: string | null
+  excerpt: string | null
+  html: string | null
+  criadoEm: string
+  atualizadoEm: string
+}
+
+const translationLangOptions = [
+  { value: 'en', label: 'EN' },
+  { value: 'es', label: 'ES' },
+  { value: 'fr', label: 'FR' },
+  { value: 'it', label: 'IT' },
+  { value: 'de', label: 'DE' }
+]
+
+const translationLang = ref<string>('en')
+const translationTitulo = ref('')
+const translationFeaturedImage = ref('')
+const translationExcerpt = ref('')
+const translationHtml = ref('')
+const translationLoading = ref(false)
+const translationSaving = ref(false)
+const translationError = ref('')
+const translationMessage = ref('')
+
 type PaginaListItem = {
   id: string
   titulo: string
@@ -552,6 +655,8 @@ async function openEdit(id: string) {
   modalError.value = ''
   importPaginaId.value = ''
   importError.value = ''
+  translationError.value = ''
+  translationMessage.value = ''
   showModal.value = true
 
   try {
@@ -562,8 +667,70 @@ async function openEdit(id: string) {
     formHtml.value = res.post.html || ''
     formPublicado.value = Boolean(res.post.publicado)
     setEditorHtml(formHtml.value)
+
+    await loadTranslation()
   } catch (err: any) {
     modalError.value = err?.data?.statusMessage || 'Erro ao carregar post'
+  }
+}
+
+watch(
+  () => translationLang.value,
+  async () => {
+    if (!editingId.value || !showModal.value) return
+    await loadTranslation()
+  }
+)
+
+async function loadTranslation() {
+  if (!editingId.value) return
+  translationLoading.value = true
+  translationError.value = ''
+  translationMessage.value = ''
+
+  try {
+    const lang = String(translationLang.value || '').trim().toLowerCase()
+    const res = await $fetch<{ ok: true; translation: BlogPostTranslation | null }>(
+      `/api/admin/blog/${editingId.value}/translations/${lang}`
+    )
+
+    translationTitulo.value = res.translation?.titulo || ''
+    translationFeaturedImage.value = res.translation?.featuredImage || ''
+    translationExcerpt.value = res.translation?.excerpt || ''
+    translationHtml.value = res.translation?.html || ''
+  } catch (err: any) {
+    translationError.value = err?.data?.statusMessage || 'Erro ao carregar tradução'
+  } finally {
+    translationLoading.value = false
+  }
+}
+
+async function saveTranslation() {
+  if (!editingId.value) return
+  translationSaving.value = true
+  translationError.value = ''
+  translationMessage.value = ''
+
+  try {
+    const lang = String(translationLang.value || '').trim().toLowerCase()
+    const featuredImageRaw = String(translationFeaturedImage.value || '').trim()
+    const excerptRaw = String(translationExcerpt.value || '').trim()
+
+    await $fetch(`/api/admin/blog/${editingId.value}/translations/${lang}`, {
+      method: 'PUT',
+      body: {
+        titulo: translationTitulo.value,
+        featuredImage: featuredImageRaw ? featuredImageRaw : null,
+        excerpt: excerptRaw ? excerptRaw : null,
+        html: translationHtml.value
+      }
+    })
+
+    translationMessage.value = 'Tradução salva com sucesso.'
+  } catch (err: any) {
+    translationError.value = err?.data?.statusMessage || 'Erro ao salvar tradução'
+  } finally {
+    translationSaving.value = false
   }
 }
 
