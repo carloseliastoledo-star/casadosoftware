@@ -13,6 +13,7 @@ function getLangFromHost(host: string) {
   const h = String(host || '').toLowerCase()
   if (h.startsWith('en.')) return 'en'
   if (h.startsWith('es.')) return 'es'
+  if (h.startsWith('it.')) return 'it'
   if (h.startsWith('fr.')) return 'fr'
   if (h.startsWith('de.')) return 'de'
   return 'pt-BR'
@@ -21,6 +22,7 @@ function getLangFromHost(host: string) {
 function getOriginForLang(lang: string) {
   if (lang === 'en') return 'https://en.casadosoftware.com.br'
   if (lang === 'es') return 'https://es.casadosoftware.com.br'
+  if (lang === 'it') return 'https://it.casadosoftware.com.br'
   if (lang === 'fr') return 'https://fr.casadosoftware.com.br'
   if (lang === 'de') return 'https://de.casadosoftware.com.br'
   return 'https://casadosoftware.com.br'
@@ -42,6 +44,7 @@ export default defineEventHandler(async (event) => {
   const productsIndexPath =
     lang === 'en' ? '/products' :
       lang === 'es' ? '/productos' :
+        lang === 'it' ? '/prodotti' :
         lang === 'fr' ? '/produits' :
           lang === 'de' ? '/produkte' :
             '/produtos'
@@ -96,7 +99,7 @@ export default defineEventHandler(async (event) => {
     .map((u) => {
       const lastmod = u.lastmod ? `    <lastmod>${escXml(u.lastmod)}</lastmod>\n` : ''
 
-      const alternates = ['pt-BR', 'en', 'es', 'fr', 'de']
+      const alternates = ['pt-BR', 'en', 'es', 'it', 'fr', 'de', 'x-default']
         .map((l) => {
           const href = `${getOriginForLang(l)}${u.path}`
           return `    <xhtml:link rel="alternate" hreflang="${escXml(l)}" href="${escXml(href)}"/>\n`
