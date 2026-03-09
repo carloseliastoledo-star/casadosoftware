@@ -3,7 +3,7 @@
 
     <!-- SIDEBAR -->
     <aside
-      class="w-64 bg-[#1d2327] text-gray-200 fixed inset-y-0 z-50 flex flex-col"
+      class="w-64 bg-[#1d2327] text-gray-200 fixed inset-y-0 z-50 flex flex-col min-h-0"
       :class="sidebarOpen ? 'block' : 'hidden md:block'"
     >
 
@@ -11,7 +11,7 @@
         {{ siteName }}
       </div>
 
-      <nav class="p-4 space-y-1 text-sm flex-1 overflow-y-auto">
+      <nav class="p-4 space-y-1 text-sm flex-1 overflow-y-auto min-h-0">
 
         <NuxtLink to="/admin" class="menu">
           📊 Dashboard
