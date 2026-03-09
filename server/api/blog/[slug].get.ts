@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
         slug: true,
         featuredImage: true,
         excerpt: true,
+        keyword: true,
         html: true,
         publicado: true,
         criadoEm: true,
@@ -57,6 +58,7 @@ export default defineEventHandler(async (event) => {
     slug: post?.slug,
     featuredImage: tr?.featuredImage || post?.featuredImage || null,
     excerpt: tr?.excerpt || post?.excerpt || null,
+    keyword: post?.keyword || null,
     html: tr?.html || post?.html || null,
     criadoEm: post?.criadoEm,
     atualizadoEm: post?.atualizadoEm

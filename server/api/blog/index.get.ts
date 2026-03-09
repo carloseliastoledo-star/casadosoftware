@@ -42,6 +42,7 @@ export default defineEventHandler(async (event) => {
         slug: true,
         featuredImage: true,
         excerpt: true,
+        keyword: true,
         html: true,
         criadoEm: true,
         atualizadoEm: true,
@@ -66,6 +67,7 @@ export default defineEventHandler(async (event) => {
               ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
               : null)?.titulo || p?.titulo,
           slug: p?.slug,
+          keyword: p?.keyword,
           featuredImage:
             (Array.isArray(p?.translations)
               ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)

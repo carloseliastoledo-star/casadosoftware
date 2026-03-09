@@ -200,6 +200,10 @@ line-height:1.8;
 color:#333;
 }
 
+.blog-content{
+  word-break: break-word;
+}
+
 .blog-article h1,
 .blog-content h1{
 font-size:42px;
@@ -229,6 +233,86 @@ margin-bottom:25px;
 .blog-article p,
 .blog-content p{
 margin-bottom:15px;
+}
+
+.blog-content :where(p){
+  margin-top: 0;
+}
+
+.blog-content :where(h2, h3){
+  scroll-margin-top: 96px;
+}
+
+.blog-content :where(ul){
+  padding-left: 22px;
+  margin: 20px 0;
+  list-style: disc;
+}
+
+.blog-content :where(ol){
+  list-style: decimal;
+}
+
+.blog-content :where(blockquote){
+  border-left: 4px solid #2563eb;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  margin: 22px 0;
+  color: #334155;
+}
+
+.blog-content :where(code){
+  background: #0b1220;
+  color: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.95em;
+}
+
+.blog-content :where(pre){
+  background: #0b1220;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin: 22px 0;
+}
+
+.blog-content :where(pre code){
+  background: transparent;
+  padding: 0;
+}
+
+.blog-content :where(table){
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.98em;
+}
+
+.blog-content :where(th, td){
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+}
+
+.blog-content :where(th){
+  background: #f9fafb;
+  font-weight: 700;
+}
+
+.blog-toc-link{
+  display:block;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  padding: 8px 0;
+  color:#374151;
+  border-left: 2px solid transparent;
+  padding-left: 10px;
+}
+
+.blog-toc-link:hover{
+  color:#1d4ed8;
 }
 
 .blog-article ol,
