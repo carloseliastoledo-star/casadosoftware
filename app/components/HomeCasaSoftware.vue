@@ -274,20 +274,10 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-
-function detectLangForAffiliateHome() {
-  const p = String(route?.path || '')
-  if (p === '/en' || p.startsWith('/en/')) return 'en'
-  if (p === '/es' || p.startsWith('/es/')) return 'es'
-  if (p === '/pt' || p.startsWith('/pt/')) return 'pt'
-  if (p === '/fr' || p.startsWith('/fr/')) return 'fr'
-  if (p === '/de' || p.startsWith('/de/')) return 'de'
-  return 'pt'
-}
+const intl = useIntlContext()
 
 const affiliateLandingTo = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return '/en/become-a-partner'
   if (lang === 'es') return '/es/programa-afiliados'
   if (lang === 'fr') return '/fr/programme-affiliation'
@@ -296,7 +286,7 @@ const affiliateLandingTo = computed(() => {
 })
 
 const affiliateCtaKicker = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Earn with us'
   if (lang === 'es') return 'Gana con nosotros'
   if (lang === 'fr') return 'Gagnez avec nous'
@@ -305,7 +295,7 @@ const affiliateCtaKicker = computed(() => {
 })
 
 const affiliateCtaHighlight = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Up to 30%'
   if (lang === 'es') return 'Hasta 30%'
   if (lang === 'fr') return "Jusqu'à 30%"
@@ -314,7 +304,7 @@ const affiliateCtaHighlight = computed(() => {
 })
 
 const affiliateCtaNoFees = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'No fees.'
   if (lang === 'es') return 'Sin costos.'
   if (lang === 'fr') return 'Sans frais.'
@@ -323,7 +313,7 @@ const affiliateCtaNoFees = computed(() => {
 })
 
 const affiliateCtaStartToday = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Start promoting today.'
   if (lang === 'es') return 'Empieza a promocionar hoy.'
   if (lang === 'fr') return "Commencez à promouvoir aujourd'hui."
@@ -332,7 +322,7 @@ const affiliateCtaStartToday = computed(() => {
 })
 
 const affiliateCtaWorldwide = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Worldwide'
   if (lang === 'es') return 'Global'
   if (lang === 'fr') return 'Mondial'
@@ -341,7 +331,7 @@ const affiliateCtaWorldwide = computed(() => {
 })
 
 const affiliateCtaStatCommissionLabel = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Commission'
   if (lang === 'es') return 'Comisión'
   if (lang === 'fr') return 'Commission'
@@ -350,7 +340,7 @@ const affiliateCtaStatCommissionLabel = computed(() => {
 })
 
 const affiliateCtaStatProductsLabel = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Products'
   if (lang === 'es') return 'Productos'
   if (lang === 'fr') return 'Produits'
@@ -359,7 +349,7 @@ const affiliateCtaStatProductsLabel = computed(() => {
 })
 
 const affiliateCtaStatProductsValue = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Windows & Office'
   if (lang === 'es') return 'Windows y Office'
   if (lang === 'fr') return 'Windows et Office'
@@ -368,7 +358,7 @@ const affiliateCtaStatProductsValue = computed(() => {
 })
 
 const affiliateCtaTitle = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Join our Partner Program'
   if (lang === 'es') return 'Únete a nuestro programa'
   if (lang === 'fr') return 'Rejoignez notre programme'
@@ -377,7 +367,7 @@ const affiliateCtaTitle = computed(() => {
 })
 
 const affiliateCtaSubtitle = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Earn up to 30% commission promoting digital software.'
   if (lang === 'es') return 'Gana hasta un 30% de comisión promoviendo software digital.'
   if (lang === 'fr') return "Gagnez jusqu’à 30% de commission en recommandant des logiciels numériques."
@@ -386,7 +376,7 @@ const affiliateCtaSubtitle = computed(() => {
 })
 
 const affiliateCtaButton = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Become a Partner'
   if (lang === 'es') return 'Conviértete en socio'
   if (lang === 'fr') return 'Devenir partenaire'
@@ -395,7 +385,7 @@ const affiliateCtaButton = computed(() => {
 })
 
 const affiliateCtaAudienceTitle = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Great for:'
   if (lang === 'es') return 'Ideal para:'
   if (lang === 'fr') return 'Idéal pour :'
@@ -404,7 +394,7 @@ const affiliateCtaAudienceTitle = computed(() => {
 })
 
 const affiliateCtaAudience1 = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'YouTubers'
   if (lang === 'es') return 'YouTubers'
   if (lang === 'fr') return 'YouTubeurs'
@@ -413,7 +403,7 @@ const affiliateCtaAudience1 = computed(() => {
 })
 
 const affiliateCtaAudience2 = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'Bloggers'
   if (lang === 'es') return 'Blogueros'
   if (lang === 'fr') return 'Blogueurs'
@@ -422,7 +412,7 @@ const affiliateCtaAudience2 = computed(() => {
 })
 
 const affiliateCtaAudience3 = computed(() => {
-  const lang = detectLangForAffiliateHome()
+  const lang = String(intl.language.value || 'pt')
   if (lang === 'en') return 'International affiliates'
   if (lang === 'es') return 'Afiliados internacionales'
   if (lang === 'fr') return 'Affiliés internationaux'

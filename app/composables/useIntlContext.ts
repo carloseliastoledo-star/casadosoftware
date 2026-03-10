@@ -119,10 +119,12 @@ export function useIntlContext() {
   const countryCode = computed(() => String(countryCookie.value || '').trim().toUpperCase())
 
   const language = computed<ClientIntl['language']>(() => {
+    const sub = detectSubdomainLanguage(host.value)
+    if (subdomainMode.value && sub) return sub
+
     const fromPath = detectLanguageFromPath()
     if (fromPath) return fromPath
 
-    const sub = detectSubdomainLanguage(host.value)
     if (sub) return sub
 
     const cookie = String(langCookie.value || '').trim()
