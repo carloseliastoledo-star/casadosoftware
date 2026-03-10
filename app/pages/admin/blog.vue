@@ -92,6 +92,14 @@
     <div v-else-if="error" class="text-red-600">Não foi possível carregar os posts.</div>
 
     <div v-else class="bg-white rounded shadow overflow-x-auto">
+      <div class="p-4 border-b">
+        <input
+          v-model="listSearch"
+          type="text"
+          class="w-full border rounded-lg p-3"
+          placeholder="Buscar por título ou slug (ex: como-instalar-office-2024-ltsc)"
+        />
+      </div>
       <table class="w-full text-sm">
         <thead class="bg-gray-100 text-gray-600">
           <tr>
@@ -103,7 +111,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="p in posts" :key="p.id" class="border-t">
+          <tr v-for="p in filteredPosts" :key="p.id" class="border-t">
             <td class="p-3 font-medium">{{ p.titulo }}</td>
             <td class="p-3 font-mono text-xs">/{{ p.slug }}</td>
             <td class="p-3">
@@ -117,6 +125,14 @@
             <td class="p-3 text-xs text-gray-600">{{ formatDate(p.atualizadoEm) }}</td>
             <td class="p-3">
               <div class="flex items-center gap-3">
+                <a
+                  class="text-gray-700 hover:text-gray-900"
+                  :href="`/${p.slug}`"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Abrir
+                </a>
                 <button class="text-blue-600 hover:text-blue-800" @click="openEdit(p.id)">Editar</button>
                 <button class="text-red-600 hover:text-red-800" @click="deletePost(p)">Apagar</button>
               </div>
@@ -429,6 +445,18 @@ const { data, pending, error, refresh } = await useFetch<{ ok: true; posts: Blog
 })
 
 const posts = computed(() => data.value?.posts || [])
+
+const listSearch = ref('')
+
+const filteredPosts = computed(() => {
+  const q = String(listSearch.value || '').trim().toLowerCase()
+  if (!q) return posts.value
+  return posts.value.filter((p) => {
+    const t = String((p as any)?.titulo || '').toLowerCase()
+    const s = String((p as any)?.slug || '').toLowerCase()
+    return t.includes(q) || s.includes(q)
+  })
+})
 
 const seoKeyword = ref('')
 const seoBulkKeywords = ref('')
