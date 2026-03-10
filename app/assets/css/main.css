@@ -88,7 +88,12 @@
 
 .blog-content img,
 .prose img {
+  display: block;
   max-width: 100%;
+  width: 100%;
   height: auto;
+  max-height: 520px;
+  object-fit: contain;
+  margin: 1rem auto;
   border-radius: 1rem;
 }
