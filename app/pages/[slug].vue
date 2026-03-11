@@ -46,7 +46,7 @@ const { data, pending, error } = await useFetch<{ ok: true; post: BlogPostDto }>
   server: true
 })
 
-if (error.value) {
+if (process.server && error.value) {
   throw createError({ statusCode: 404, statusMessage: 'Página não encontrada' })
 }
 

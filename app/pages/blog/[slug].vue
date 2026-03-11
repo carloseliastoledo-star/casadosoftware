@@ -213,7 +213,9 @@ type BlogPostDto = {
 }
 
 const { data, pending, error } = await useFetch<{ ok: true; post: BlogPostDto }>(() => `/api/blog/${slug.value}`, {
-  server: true
+  server: true,
+  key: () => `blog-post-${slug.value}`,
+  watch: [slug]
 })
 
 const post = computed(() => data.value?.post || null)
