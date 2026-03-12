@@ -22,6 +22,11 @@ export default defineNuxtRouteMiddleware((to) => {
   const path = String(to.path || '')
 
   const knownAffiliatePaths = new Set([
+    '/programa-afiliados',
+    '/affiliate-program',
+    '/become-a-partner',
+    '/programme-affiliation',
+    '/partner-program',
     '/pt/programa-afiliados',
     '/es/programa-afiliados',
     '/fr/programme-affiliation',
