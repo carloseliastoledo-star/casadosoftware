@@ -116,8 +116,12 @@ export default defineEventHandler(async (event) => {
 
   const round2 = (n: number) => Math.round(n * 100) / 100
 
+  const reuseWindowMs = 10 * 60 * 1000
+  const reuseAfter = new Date(Date.now() - reuseWindowMs)
+
   let order: any
   let coupon: { id: string; code: string; percent: number } | null = null
+  let reused = false
 
   try {
     const trx = await (prisma as any).$transaction(async (tx: any) => {
@@ -139,8 +143,32 @@ export default defineEventHandler(async (event) => {
         update: {}
       })
 
-      let couponLocal: { id: string; code: string; percent: number } | null = null
       const normalizedCode = String(couponCode || '').trim().toUpperCase()
+
+      if (!normalizedCode) {
+        const existing = await tx.order.findFirst({
+          where: {
+            status: 'PENDING',
+            storeSlug,
+            customerId: customer.id,
+            produtoId: produto.id,
+            cupomId: null,
+            criadoEm: { gte: reuseAfter }
+          },
+          orderBy: { criadoEm: 'desc' },
+          select: {
+            id: true,
+            totalAmount: true,
+            mercadoPagoPaymentId: true
+          }
+        })
+
+        if (existing) {
+          return { order: existing, coupon: null, reused: true }
+        }
+      }
+
+      let couponLocal: { id: string; code: string; percent: number } | null = null
       if (normalizedCode) {
         const c = await tx.cupom.findUnique({
           where: { code: normalizedCode },
@@ -213,11 +241,12 @@ export default defineEventHandler(async (event) => {
         }
       })
 
-      return { order: orderLocal, coupon: couponLocal }
+      return { order: orderLocal, coupon: couponLocal, reused: false }
     })
 
     order = trx.order
     coupon = trx.coupon
+    reused = Boolean((trx as any).reused)
   } catch (err: any) {
     if (err?.statusCode && err?.statusMessage) {
       throw err
@@ -226,6 +255,17 @@ export default defineEventHandler(async (event) => {
   }
 
   const payment = getMpPayment()
+
+  const existingMpPaymentId = String((order as any)?.mercadoPagoPaymentId || '').trim()
+  if (reused && existingMpPaymentId) {
+    try {
+      const mpPayment = await payment.get({ id: existingMpPaymentId })
+      const status = String((mpPayment as any)?.status || '').toLowerCase()
+      return { ok: true, orderId: (order as any).id, paymentId: existingMpPaymentId, status }
+    } catch {
+      // fallback: processa pagamento abaixo
+    }
+  }
 
   const transactionAmount = Number(order.totalAmount ?? Number(effectivePrice))
 

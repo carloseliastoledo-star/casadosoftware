@@ -140,6 +140,34 @@ export default defineEventHandler(async (event) => {
         })
       }
 
+      const existing = await anyTx.order.findFirst({
+        where: {
+          status: 'PENDING',
+          storeSlug,
+          customerId: customer.id,
+          produtoId: produto.id,
+          currency: currencyEffective,
+          countryCode,
+          stripePaymentIntentId: { not: null },
+          criadoEm: { gte: reuseAfter }
+        },
+        orderBy: { criadoEm: 'desc' },
+        select: { id: true, stripePaymentIntentId: true, totalAmount: true }
+      })
+
+      if (existing?.stripePaymentIntentId) {
+        const pi = await stripe.paymentIntents.retrieve(String(existing.stripePaymentIntentId))
+        if (!pi?.client_secret) {
+          throw createError({ statusCode: 502, statusMessage: 'Falha ao recuperar PaymentIntent' })
+        }
+        return {
+          orderId: existing.id,
+          clientSecret: pi.client_secret,
+          currency: currencyEffective,
+          amount: Number(existing.totalAmount ?? subtotalAmount)
+        }
+      }
+
       const subtotalAmount = round2(amountEffective)
       const totalAmount = subtotalAmount
 

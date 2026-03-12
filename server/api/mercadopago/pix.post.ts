@@ -79,7 +79,10 @@ export default defineEventHandler(async (event) => {
 
   const round2 = (n: number) => Math.round(n * 100) / 100
 
-  const { customer, order, coupon } = await (prisma as any).$transaction(async (tx: any) => {
+  const reuseWindowMs = 10 * 60 * 1000
+  const reuseAfter = new Date(Date.now() - reuseWindowMs)
+
+  const { customer, order, coupon, reused } = await (prisma as any).$transaction(async (tx: any) => {
     let affiliateId: number | null = null
     if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
       const code = String(affiliateRef || '').trim()
@@ -182,10 +185,29 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    return { customer, order, coupon }
+    return { customer, order, coupon, reused: false }
   })
 
   const payment = getMpPayment()
+
+  const existingMpPaymentId = String((order as any)?.mercadoPagoPaymentId || '').trim()
+  if (reused && existingMpPaymentId) {
+    try {
+      const mpPayment = await payment.get({ id: existingMpPaymentId })
+      const qrCode = (mpPayment as any)?.point_of_interaction?.transaction_data?.qr_code
+      const qrCodeBase64 = (mpPayment as any)?.point_of_interaction?.transaction_data?.qr_code_base64
+
+      return {
+        ok: true,
+        orderId: (order as any).id,
+        paymentId: existingMpPaymentId,
+        qrCode,
+        qrCodeBase64: qrCodeBase64 ? `data:image/png;base64,${qrCodeBase64}` : null
+      }
+    } catch {
+      // fallback: tenta criar um novo pagamento abaixo
+    }
+  }
 
   const transactionAmount = Number(order.totalAmount ?? Number(effectivePrice))
 
