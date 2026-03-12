@@ -24,6 +24,30 @@
       </div>
     </div>
 
+    <div class="bg-white rounded shadow p-4 mb-6">
+      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <label class="block text-sm font-medium mb-2">Período</label>
+          <select v-model="period" class="border rounded-lg px-3 py-2">
+            <option value="day">Dia (últimas 24h)</option>
+            <option value="week">Semana (últimos 7 dias)</option>
+            <option value="month">Mês (últimos 30 dias)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 w-full md:w-auto">
+          <div class="border rounded-lg px-4 py-3">
+            <div class="text-xs text-gray-500">Vendas (PAID)</div>
+            <div class="text-lg font-semibold">{{ summary.countPaid }}</div>
+          </div>
+          <div class="border rounded-lg px-4 py-3">
+            <div class="text-xs text-gray-500">Total (R$)</div>
+            <div class="text-lg font-semibold">{{ formatBRL(summary.totalPaid) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div v-if="pending" class="text-gray-500">Carregando...</div>
     <div v-else-if="error" class="text-red-600">Não foi possível carregar os pedidos.</div>
 
@@ -479,9 +503,21 @@ type OrderDto = {
   licencas: { id: string; chave: string; status: string }[]
 }
 
-const { data, pending, error, refresh } = await useFetch<{ ok: true; orders: OrderDto[] }>('/api/admin/pedidos', {
-  server: false
-})
+const period = ref<'day' | 'week' | 'month'>('day')
+
+type SummaryDto = {
+  countPaid: number
+  totalPaid: number
+}
+
+const { data, pending, error, refresh } = await useFetch<{ ok: true; orders: OrderDto[]; summary: SummaryDto }>(
+  '/api/admin/pedidos',
+  {
+    server: false,
+    query: computed(() => ({ period: period.value })),
+    watch: [period]
+  }
+)
 
 const { data: produtosData } = await useFetch<ProdutoDto[]>('/api/admin/produtos', {
   server: false
@@ -490,6 +526,10 @@ const { data: produtosData } = await useFetch<ProdutoDto[]>('/api/admin/produtos
 const produtos = computed(() => produtosData.value || [])
 
 const orders = computed(() => data.value?.orders || [])
+
+const summary = computed<SummaryDto>(() => {
+  return data.value?.summary || { countPaid: 0, totalPaid: 0 }
+})
 
 const showEdit = ref(false)
 const editOrder = ref<OrderDto | null>(null)
@@ -741,6 +781,14 @@ function formatDate(input: string) {
     return new Date(input).toLocaleString('pt-BR')
   } catch {
     return input
+  }
+}
+
+function formatBRL(value: number) {
+  try {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value || 0))
+  } catch {
+    return `R$ ${Number(value || 0).toFixed(2)}`
   }
 }
 </script>
