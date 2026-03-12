@@ -1,5 +1,25 @@
 import prisma from '../db/prisma'
 
+function stableClientIdFromUserId(userId: string): string {
+  const u = String(userId || '').trim()
+  if (!u) return ''
+
+  let h1 = 2166136261
+  for (let i = 0; i < u.length; i++) {
+    h1 ^= u.charCodeAt(i)
+    h1 = Math.imul(h1, 16777619)
+  }
+
+  let h2 = 2166136261
+  const u2 = `${u}_b`
+  for (let i = 0; i < u2.length; i++) {
+    h2 ^= u2.charCodeAt(i)
+    h2 = Math.imul(h2, 16777619)
+  }
+
+  return `${(h1 >>> 0) % 10000000000}.${(h2 >>> 0) % 10000000000}`
+}
+
 function resolveMeasurementId(): string {
   const envId = String(process.env.GA4_MEASUREMENT_ID || '').trim()
   if (envId) return envId
@@ -79,8 +99,13 @@ export async function sendGa4PurchaseForOrder(orderId: string, source: string) {
 
   const eventId = `purchase_${order.id}`
 
+  const userId = String(order.customerId || '')
+  const clientId = stableClientIdFromUserId(userId)
+  const nowMicros = Date.now() * 1000
+
   const payload = {
-    user_id: String(order.customerId || ''),
+    ...(clientId ? { client_id: clientId } : {}),
+    ...(userId ? { user_id: userId } : {}),
     events: [
       {
         name: 'purchase',
@@ -89,6 +114,8 @@ export async function sendGa4PurchaseForOrder(orderId: string, source: string) {
           transaction_id: String(order.id),
           currency,
           value,
+          timestamp_micros: nowMicros,
+          engagement_time_msec: 1,
           items: [
             {
               item_id: String(order.produto?.id || ''),
