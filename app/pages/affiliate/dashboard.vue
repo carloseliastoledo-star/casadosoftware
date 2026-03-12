@@ -155,6 +155,30 @@
             </table>
           </div>
         </div>
+
+        <div class="rounded-2xl border bg-white p-6">
+          <div class="text-sm font-semibold text-gray-900">Materiais de divulgação</div>
+
+          <div v-if="materialsLoading" class="mt-4 text-sm text-gray-600">Carregando…</div>
+          <div v-else-if="materialsError" class="mt-4 text-sm text-red-600">{{ materialsError }}</div>
+
+          <div v-else class="mt-4">
+            <div v-if="!materials.length" class="text-sm text-gray-500">Nenhum arquivo disponível.</div>
+            <div v-else class="grid md:grid-cols-2 gap-3">
+              <a
+                v-for="m in materials"
+                :key="m.id"
+                class="rounded-xl border bg-gray-50 hover:bg-gray-100 px-4 py-3 transition"
+                :href="`/api/affiliate/materials/${encodeURIComponent(m.id)}`"
+                target="_blank"
+                rel="noopener"
+              >
+                <div class="text-sm font-semibold text-gray-900 truncate">{{ m.name || m.fileName }}</div>
+                <div class="mt-1 text-xs text-gray-600">{{ m.fileName }}</div>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -167,6 +191,10 @@ const data = ref<any>(null)
 
 const sales = ref<any[]>([])
 const commissions = ref<any[]>([])
+
+const materials = ref<any[]>([])
+const materialsLoading = ref(false)
+const materialsError = ref('')
 
 const payoutAmount = ref('')
 const payoutNote = ref('')
@@ -199,18 +227,28 @@ async function load() {
   sales.value = []
   commissions.value = []
 
+  materials.value = []
+  materialsError.value = ''
+
   loading.value = true
   try {
     data.value = await $fetch('/api/affiliate/dashboard')
-    const [salesRes, commRes] = await Promise.all([
+    materialsLoading.value = true
+
+    const [salesRes, commRes, materialsRes] = await Promise.all([
       $fetch('/api/affiliate/sales'),
-      $fetch('/api/affiliate/commissions')
+      $fetch('/api/affiliate/commissions'),
+      $fetch('/api/affiliate/materials')
     ])
     sales.value = (salesRes as any)?.orders || []
     commissions.value = (commRes as any)?.commissions || []
+    materials.value = (materialsRes as any)?.items || []
   } catch (err: any) {
-    error.value = err?.data?.statusMessage || err?.message || 'Failed to load dashboard.'
+    const msg = err?.data?.statusMessage || err?.message || 'Failed to load dashboard.'
+    error.value = msg
+    materialsError.value = msg
   } finally {
+    materialsLoading.value = false
     loading.value = false
   }
 }
