@@ -6,12 +6,32 @@
         <p class="text-sm text-gray-600 mt-1">Crie posts e publique no site.</p>
       </div>
 
-      <button
-        @click="openCreate"
-        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-      >
-        Novo post
-      </button>
+      <div class="flex items-center gap-3 flex-wrap justify-end">
+        <div class="flex items-center gap-2">
+          <input
+            v-model="openBySlug"
+            type="text"
+            class="border rounded-lg px-3 py-2 text-sm font-mono"
+            placeholder="Abrir por slug"
+            :disabled="openBySlugLoading"
+          />
+          <button
+            type="button"
+            class="px-4 py-2 rounded-lg border bg-white text-sm hover:bg-gray-50 disabled:opacity-50"
+            :disabled="openBySlugLoading || !openBySlug.trim()"
+            @click="openEditBySlug"
+          >
+            {{ openBySlugLoading ? 'Abrindo...' : 'Abrir' }}
+          </button>
+        </div>
+
+        <button
+          @click="openCreate"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Novo post
+        </button>
+      </div>
     </div>
 
     <div class="bg-white rounded shadow p-4 mb-6">
@@ -457,6 +477,26 @@ const filteredPosts = computed(() => {
     return t.includes(q) || s.includes(q)
   })
 })
+
+const openBySlug = ref('')
+const openBySlugLoading = ref(false)
+
+async function openEditBySlug() {
+  const s = String(openBySlug.value || '').trim()
+  if (!s) return
+
+  openBySlugLoading.value = true
+  try {
+    const res = await $fetch<{ ok: true; post: { id: string } }>(`/api/admin/blog/by-slug/${encodeURIComponent(s)}`)
+    const id = String(res?.post?.id || '').trim()
+    if (!id) throw new Error('Post não encontrado')
+    await openEdit(id)
+  } catch (err: any) {
+    modalError.value = err?.data?.statusMessage || err?.message || 'Erro ao abrir por slug'
+  } finally {
+    openBySlugLoading.value = false
+  }
+}
 
 const seoKeyword = ref('')
 const seoBulkKeywords = ref('')
