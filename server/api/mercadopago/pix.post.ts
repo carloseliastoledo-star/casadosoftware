@@ -113,6 +113,32 @@ export default defineEventHandler(async (event) => {
 
     let coupon: { id: string; code: string; percent: number } | null = null
     const normalizedCode = String(couponCode || '').trim().toUpperCase()
+
+    if (!normalizedCode) {
+      try {
+        await tx.$queryRaw`SELECT id FROM Customer WHERE id = ${customer.id} FOR UPDATE`
+      } catch {
+        // sem lock (fallback)
+      }
+
+      const existing = await tx.order.findFirst({
+        where: {
+          status: 'PENDING',
+          storeSlug,
+          customerId: customer.id,
+          produtoId: produto.id,
+          cupomId: null,
+          criadoEm: { gte: reuseAfter }
+        },
+        orderBy: { criadoEm: 'desc' },
+        select: { id: true, totalAmount: true, mercadoPagoPaymentId: true }
+      })
+
+      if (existing) {
+        return { customer, order: existing, coupon: null, reused: true }
+      }
+    }
+
     if (normalizedCode) {
       const c = await tx.cupom.findUnique({
         where: { code: normalizedCode },
