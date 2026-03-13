@@ -1,4 +1,5 @@
-import { defineEventHandler, setHeader, getRequestURL, send } from 'h3'
+import { defineEventHandler, setHeader } from 'h3'
+import prisma from '#root/server/db/prisma'
 
 function escXml(s: string): string {
   return s
@@ -34,6 +35,46 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'no-store, max-age=0')
   setHeader(event, 'CDN-Cache-Control', 'no-store')
 
+  const base = 'https://casadosoftware.com.br'
+
+  let products: Array<{ slug: string; criadoEm: Date | null }> = []
+  let posts: Array<{ slug: string; atualizadoEm: Date | null }> = []
+
+  try {
+    const [productsDb, postsDb] = await Promise.all([
+      prisma.produto.findMany({ where: { ativo: true }, select: { slug: true, criadoEm: true } }),
+      (prisma as any).blogPost.findMany({ where: { publicado: true }, select: { slug: true, atualizadoEm: true } })
+    ])
+
+    products = (productsDb || []) as any
+    posts = (postsDb || []) as any
+  } catch {
+    products = []
+    posts = []
+  }
+
+  const urls: string[] = []
+  urls.push(`<url><loc>${escXml(base)}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>`)
+  urls.push(`<url><loc>${escXml(base + '/blog')}</loc><changefreq>daily</changefreq><priority>0.9</priority></url>`)
+
+  for (const p of products || []) {
+    if (!p?.slug) continue
+    const lastmod = p.criadoEm ? new Date(p.criadoEm).toISOString() : ''
+    urls.push(`<url><loc>${escXml(base + '/produto/' + p.slug)}</loc>${lastmod ? `<lastmod>${escXml(lastmod)}</lastmod>` : ''}<changefreq>weekly</changefreq><priority>0.9</priority></url>`)
+  }
+
+  for (const post of posts || []) {
+    const slug = String((post as any)?.slug || '').trim()
+    if (!slug) continue
+    const last = (post as any)?.atualizadoEm
+    const lastmod = last ? new Date(last).toISOString() : ''
+    urls.push(`<url><loc>${escXml(base + '/blog/' + slug)}</loc>${lastmod ? `<lastmod>${escXml(lastmod)}</lastmod>` : ''}<changefreq>monthly</changefreq><priority>0.7</priority></url>`)
+  }
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('')}\n</urlset>`
+  return xml
+
+  /*
   const reqUrl = getRequestURL(event)
   const base = String(reqUrl.origin || '').replace(/\/$/, '')
   const lang = getLangFromHost(String(reqUrl.hostname || ''))
@@ -123,4 +164,5 @@ export default defineEventHandler(async (event) => {
     `</urlset>\n`
 
   return send(event, xml)
+  */
 })
