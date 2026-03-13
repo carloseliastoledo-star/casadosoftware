@@ -7,6 +7,10 @@
         <NuxtLink to="/" class="hover:underline">{{ t.home }}</NuxtLink>
         <span class="mx-2">/</span>
         <NuxtLink to="/produtos" class="hover:underline">{{ t.products }}</NuxtLink>
+        <template v-if="primaryCategorySlug">
+          <span class="mx-2">/</span>
+          <NuxtLink :to="`/categoria/${primaryCategorySlug}`" class="hover:underline">{{ primaryCategoryLabel }}</NuxtLink>
+        </template>
         <span class="mx-2">/</span>
         <span class="text-gray-700 font-medium">{{ safeProduct.nome }}</span>
       </div>
@@ -415,6 +419,20 @@ const safeProduct = computed(() => {
   }
 })
 
+const primaryCategorySlug = computed(() => {
+  const raw = (safeProduct.value as any)?.categories
+  if (!Array.isArray(raw)) return ''
+  const first = String(raw.find((x: any) => String(x || '').trim()) || '').trim()
+  return first
+})
+
+const primaryCategoryLabel = computed(() => {
+  const s = String(primaryCategorySlug.value || '').trim()
+  if (!s) return ''
+  const pretty = s.replace(/[-_]+/g, ' ').trim()
+  return pretty ? (pretty.charAt(0).toUpperCase() + pretty.slice(1)) : s
+})
+
 const viewItemTracked = ref(false)
 
 watch(
@@ -534,7 +552,7 @@ useHead(() => {
   }
 
   const price = Number(p?.preco || 0)
-  const priceCurrency = String(p?.currency || intl.currency.value || 'BRL')
+  const priceCurrency = String(p?.currency || intl.currency.value || 'BRL').trim().toUpperCase()
 
   const jsonLd: any = {
     '@context': 'https://schema.org',

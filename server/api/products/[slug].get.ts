@@ -46,6 +46,13 @@ function normalizeImageUrl(input: unknown): string | null {
   return raw
 }
 
+function normalizeFinalUrl(input: unknown): string | null {
+  const raw = String(input ?? '').trim()
+  if (!raw) return null
+  if (raw === '/') return raw
+  return raw.replace(/\/+$/, '')
+}
+
 export default defineEventHandler(async (event) => {
   setHeader(event, 'cache-control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0')
   setHeader(event, 'pragma', 'no-cache')
@@ -239,7 +246,7 @@ export default defineEventHandler(async (event) => {
     id: product.id,
     name: translatedName,
     slug: product.slug,
-    finalUrl: product.finalUrl,
+    finalUrl: normalizeFinalUrl(product.finalUrl),
     description: translatedDescription,
     price: effectivePrice,
     precoAntigo: effectiveOldPrice ?? null,
