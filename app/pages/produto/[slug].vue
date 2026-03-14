@@ -367,7 +367,7 @@ const canonicalUrl = computed(() => {
 })
 
 const { data: product, pending, error } = await useAsyncData(
-  () => `product:${String(slug || '')}:${String(lang.value || 'pt')}`,
+  `product:${String(slug || '')}:${String(lang.value || 'pt')}`,
   () => $fetch(`/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
   {
     server: true,
