@@ -26,7 +26,7 @@
       </div>
 
       <!-- Erro -->
-      <div v-else-if="error || !product" class="text-center py-20 text-red-600">
+      <div v-else-if="!product" class="text-center py-20 text-red-600">
         {{ t.notFound }}
       </div>
 
