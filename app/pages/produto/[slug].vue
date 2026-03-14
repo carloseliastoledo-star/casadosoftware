@@ -28,7 +28,7 @@
       <!-- Erro -->
       <!-- Card principal -->
       <div
-        v-else-if="product"
+        v-else-if="safeProduct.nome"
         :class="mainCardClass"
       >
 
@@ -153,7 +153,7 @@
 
       <!-- BLOCO AZUL TUTORIAL -->
       <div
-        v-if="product && safeProduct.tutorialTitulo"
+        v-if="safeProduct.nome && safeProduct.tutorialTitulo"
         :class="tutorialCardClass"
       >
         <div class="flex items-center gap-5">
@@ -181,7 +181,7 @@
 
       <!-- DESCRIÇÃO DETALHADA -->
       <div
-        v-if="product"
+        v-if="safeProduct.nome"
         :class="descriptionCardClass"
       >
         <section>
@@ -197,7 +197,7 @@
       </div>
 
       <div
-        v-if="product"
+        v-if="safeProduct.nome"
         :class="whyPriceCardClass"
       >
         <h2 class="text-2xl font-bold mb-3">{{ t.whyPriceTitle }}</h2>
@@ -210,7 +210,7 @@
       </div>
 
       <div
-        v-if="product && affiliateEnabled"
+        v-if="safeProduct.nome && affiliateEnabled"
         class="mt-8 bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6"
       >
         <div>
