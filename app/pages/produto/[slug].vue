@@ -16,7 +16,7 @@
       </div>
 
       <!-- Título -->
-      <h1 :class="titleClass">
+      <h1 v-if="pending || product" :class="titleClass">
         {{ pageH1 }}
       </h1>
 
@@ -148,7 +148,7 @@
       </div>
 
       <div v-else class="text-center py-20 text-red-600">
-        {{ t.notFound }}
+        <span v-if="import.meta.client">{{ t.notFound }}</span>
       </div>
 
       <!-- BLOCO AZUL TUTORIAL -->
