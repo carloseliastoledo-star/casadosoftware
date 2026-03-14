@@ -26,13 +26,9 @@
       </div>
 
       <!-- Erro -->
-      <div v-else-if="!safeProduct.nome" class="text-center py-20 text-red-600">
-        {{ t.notFound }}
-      </div>
-
       <!-- Card principal -->
       <div
-        v-else
+        v-else-if="product"
         :class="mainCardClass"
       >
 
@@ -149,6 +145,10 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <div v-else class="text-center py-20 text-red-600">
+        {{ t.notFound }}
       </div>
 
       <!-- BLOCO AZUL TUTORIAL -->
@@ -366,14 +366,21 @@ const canonicalUrl = computed(() => {
   return baseUrl ? `${baseUrl}/produto/${s}` : ''
 })
 
+const asyncProductKey = computed(() => `product-${String(slug || '')}-${String(lang.value || 'pt')}`)
+
 const { data: product, pending, error } = await useAsyncData(
-  `product:${String(slug || '')}:${String(lang.value || 'pt')}`,
+  asyncProductKey.value,
   () => $fetch(`/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
   {
     server: true,
+    lazy: false,
     watch: [lang]
   }
 )
+
+if (process.server && !product.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado', fatal: true })
+}
 
 if (process.server) {
   const statusCode = Number((error.value as any)?.statusCode || (error.value as any)?.status || 0)
