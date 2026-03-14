@@ -26,7 +26,7 @@
       </div>
 
       <!-- Erro -->
-      <div v-else-if="error || !data" class="text-center py-20 text-red-600">
+      <div v-else-if="error || !product" class="text-center py-20 text-red-600">
         {{ t.notFound }}
       </div>
 
@@ -153,7 +153,7 @@
 
       <!-- BLOCO AZUL TUTORIAL -->
       <div
-        v-if="data && safeProduct.tutorialTitulo"
+        v-if="product && safeProduct.tutorialTitulo"
         :class="tutorialCardClass"
       >
         <div class="flex items-center gap-5">
@@ -181,7 +181,7 @@
 
       <!-- DESCRIÇÃO DETALHADA -->
       <div
-        v-if="data"
+        v-if="product"
         :class="descriptionCardClass"
       >
         <section>
@@ -197,7 +197,7 @@
       </div>
 
       <div
-        v-if="data"
+        v-if="product"
         :class="whyPriceCardClass"
       >
         <h2 class="text-2xl font-bold mb-3">{{ t.whyPriceTitle }}</h2>
@@ -210,7 +210,7 @@
       </div>
 
       <div
-        v-if="data && affiliateEnabled"
+        v-if="product && affiliateEnabled"
         class="mt-8 bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6"
       >
         <div>
@@ -366,24 +366,24 @@ const canonicalUrl = computed(() => {
   return baseUrl ? `${baseUrl}/produto/${s}` : ''
 })
 
-const { data, pending, error } = await useFetch(
-  () => `/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`,
+const { data: product, pending, error } = await useAsyncData(
+  () => `product:${String(slug || '')}:${String(lang.value || 'pt')}`,
+  () => $fetch(`/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
   {
     server: true,
-    watch: [lang],
-    key: computed(() => `product:${String(slug || '')}:${String(lang.value || 'pt')}`)
+    watch: [lang]
   }
 )
 
 if (process.server) {
   const statusCode = Number((error.value as any)?.statusCode || (error.value as any)?.status || 0)
-  if (statusCode === 404 || (!error.value && !pending.value && !data.value)) {
+  if (statusCode === 404 || (!error.value && !pending.value && !product.value)) {
     throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
   }
 }
 
 const safeProduct = computed(() => {
-  const p = data.value
+  const p = product.value
 
   if (!p) {
     return {
