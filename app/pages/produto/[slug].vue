@@ -3,7 +3,7 @@
     <div :class="containerClass">
 
       <!-- Breadcrumb -->
-      <div :class="breadcrumbClass">
+      <div v-if="safeProduct.nome" :class="breadcrumbClass">
         <NuxtLink to="/" class="hover:underline">{{ t.home }}</NuxtLink>
         <span class="mx-2">/</span>
         <NuxtLink to="/produtos" class="hover:underline">{{ t.products }}</NuxtLink>
@@ -16,7 +16,7 @@
       </div>
 
       <!-- Título -->
-      <h1 v-if="pending || product" :class="titleClass">
+      <h1 v-if="pending || safeProduct.nome" :class="titleClass">
         {{ pageH1 }}
       </h1>
 
@@ -147,9 +147,7 @@
         </div>
       </div>
 
-      <div v-else class="text-center py-20 text-red-600">
-        <span v-if="isClient">{{ t.notFound }}</span>
-      </div>
+      <div v-else class="text-center py-20 text-red-600" />
 
       <!-- BLOCO AZUL TUTORIAL -->
       <div
