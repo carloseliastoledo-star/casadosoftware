@@ -140,7 +140,7 @@
           >
             <div class="font-semibold text-gray-900">{{ t.ms365HowTitle }}</div>
             <ul class="mt-3 list-disc pl-5 space-y-2">
-              <li>{{ t.ms365Bullet1 }}</li>
+              <li v-if="t.ms365Bullet1">{{ t.ms365Bullet1 }}</li>
               <li>{{ t.ms365Bullet2 }}</li>
               <li>{{ t.ms365Bullet3 }}</li>
             </ul>
@@ -232,6 +232,7 @@
 
 <script setup lang="ts">
 import { useIntlContext } from '#imports'
+import { createError } from 'h3'
 import DOMPurify from 'isomorphic-dompurify'
 import { trackViewItem } from '~/services/analytics'
 
@@ -373,6 +374,13 @@ const { data, pending, error } = await useFetch(
     key: computed(() => `product:${String(slug || '')}:${String(lang.value || 'pt')}`)
   }
 )
+
+if (process.server) {
+  const statusCode = Number((error.value as any)?.statusCode || (error.value as any)?.status || 0)
+  if (statusCode === 404 || (!error.value && !pending.value && !data.value)) {
+    throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
+  }
+}
 
 const safeProduct = computed(() => {
   const p = data.value
@@ -954,7 +962,7 @@ const t = computed(() => {
       whyPriceP1: 'Our prices are more affordable because we work with digital distribution, with no physical media, logistics, or middleman costs.',
       whyPriceP2: 'This allows us to offer competitive prices while keeping support and fast delivery after payment confirmation.',
       ms365HowTitle: 'Microsoft 365 / Office 365 — how it works',
-      ms365Bullet1: 'Annual subscription (12 months), as described in the product.',
+      ms365Bullet1: '',
       ms365Bullet2: 'Delivery via a provided account (login and password) after payment confirmation.',
       ms365Bullet3: 'Access is via the provided account (it is not activation on an existing personal Microsoft account).',
       ms365HelpPrefix: 'Questions? See',
@@ -983,7 +991,7 @@ const t = computed(() => {
       whyPriceP1: 'Nuestros precios son más accesibles porque trabajamos con distribución digital, sin costos de medios físicos, logística ni intermediarios.',
       whyPriceP2: 'Esto nos permite ofrecer valores competitivos, manteniendo soporte y entrega rápida tras la confirmación del pago.',
       ms365HowTitle: 'Microsoft 365 / Office 365 — cómo funciona',
-      ms365Bullet1: 'Suscripción anual (12 meses), según se describe en el producto.',
+      ms365Bullet1: '',
       ms365Bullet2: 'Entrega mediante una cuenta proporcionada (usuario y contraseña) tras la confirmación del pago.',
       ms365Bullet3: 'El acceso se realiza con la cuenta proporcionada (no es activación en una cuenta Microsoft personal ya existente).',
       ms365HelpPrefix: '¿Dudas? Consulta',
@@ -1012,7 +1020,7 @@ const t = computed(() => {
       whyPriceP1: 'I nostri prezzi sono più convenienti perché lavoriamo con distribuzione digitale, senza costi di supporti fisici, logistica o intermediari.',
       whyPriceP2: 'Questo ci permette di offrire prezzi competitivi, mantenendo supporto e consegna rapida dopo la conferma del pagamento.',
       ms365HowTitle: 'Microsoft 365 / Office 365 — come funziona',
-      ms365Bullet1: 'Abbonamento annuale (12 mesi), come descritto nel prodotto.',
+      ms365Bullet1: '',
       ms365Bullet2: 'Consegna tramite un account fornito (login e password) dopo la conferma del pagamento.',
       ms365Bullet3: "L'accesso avviene con l'account fornito (non è un’attivazione su un account Microsoft personale già esistente).",
       ms365HelpPrefix: 'Dubbi? Vedi',
@@ -1041,7 +1049,7 @@ const t = computed(() => {
       whyPriceP1: 'Nos prix sont plus abordables car nous travaillons avec une distribution numérique, sans coûts de support physique, de logistique ou d’intermédiaires.',
       whyPriceP2: 'Cela nous permet de proposer des prix compétitifs tout en maintenant le support et une livraison rapide après confirmation du paiement.',
       ms365HowTitle: 'Microsoft 365 / Office 365 — comment ça marche',
-      ms365Bullet1: 'Abonnement annuel (12 mois), comme décrit dans le produit.',
+      ms365Bullet1: '',
       ms365Bullet2: 'Livraison via un compte fourni (identifiant et mot de passe) après confirmation du paiement.',
       ms365Bullet3: "L'accès se fait avec le compte fourni (ce n'est pas une activation sur un compte Microsoft personnel existant).",
       ms365HelpPrefix: 'Des questions ? Voir',
@@ -1065,11 +1073,11 @@ const t = computed(() => {
     tutorialCardTitle: 'Tutorial de Ativação',
     viewTutorial: 'Ver Tutorial',
     detailedDescription: 'Descrição Detalhada',
-    whyPriceTitle: 'Por que nosso preço é mais acessível?',
+    whyPriceTitle: 'Por que o preço é tão bom? Entenda.',
     whyPriceP1: 'Nossos preços são mais acessíveis porque trabalhamos com distribuição digital, sem custos de mídia física, logística ou intermediários.',
     whyPriceP2: 'Isso nos permite oferecer valores competitivos, mantendo suporte e envio imediato após confirmação.',
     ms365HowTitle: 'Microsoft 365 / Office 365 — como funciona',
-    ms365Bullet1: 'Assinatura anual (12 meses), conforme descrito no produto.',
+    ms365Bullet1: '',
     ms365Bullet2: 'Entrega por conta fornecida (login e senha) após a confirmação do pagamento.',
     ms365Bullet3: 'O acesso é feito com a conta fornecida (não é ativação em uma conta Microsoft pessoal já existente).',
     ms365HelpPrefix: 'Dúvidas? Consulte',
