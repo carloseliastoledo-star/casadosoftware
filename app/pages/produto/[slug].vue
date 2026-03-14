@@ -345,6 +345,8 @@ const slug = route.params.slug as string
 
 const lang = computed(() => intl.language.value)
 
+const requestFetch = useRequestFetch()
+
 const isOffice365FiveLicenses = computed(() => {
   const s = String(slug || '').trim().toLowerCase()
   return s === 'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
@@ -370,7 +372,7 @@ const asyncProductKey = computed(() => `product-${String(slug || '')}-${String(l
 
 const { data: product, pending, error } = await useAsyncData(
   asyncProductKey.value,
-  () => $fetch(`/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
+  () => requestFetch(`/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
   {
     server: true,
     lazy: false,
