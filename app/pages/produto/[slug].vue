@@ -148,7 +148,7 @@
       </div>
 
       <div v-else class="text-center py-20 text-red-600">
-        <span v-if="import.meta.client">{{ t.notFound }}</span>
+        <span v-if="isClient">{{ t.notFound }}</span>
       </div>
 
       <!-- BLOCO AZUL TUTORIAL -->
@@ -344,6 +344,8 @@ const route = useRoute()
 const slug = route.params.slug as string
 
 const lang = computed(() => intl.language.value)
+
+const isClient = import.meta.client
 
 const requestFetch = useRequestFetch()
 
