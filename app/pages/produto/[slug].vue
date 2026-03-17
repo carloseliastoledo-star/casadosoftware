@@ -555,7 +555,13 @@ const seoDescription = computed(() => {
 useHead(() => {
   const title = seoTitle.value
   const description = seoDescription.value
-  const link = canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []
+  const selfCanonical = canonicalUrl.value
+  const link: any[] = selfCanonical ? [{ rel: 'canonical', href: selfCanonical }] : []
+  if (selfCanonical) {
+    const ptUrl = selfCanonical.replace('://en.', '://')
+    const enUrl = selfCanonical.includes('://en.') ? selfCanonical : selfCanonical.replace('://', '://en.')
+    link.push({ rel: 'alternate', hreflang: 'pt-BR', href: ptUrl }, { rel: 'alternate', hreflang: 'en', href: enUrl }, { rel: 'alternate', hreflang: 'x-default', href: ptUrl })
+  }
 
   const p = safeProduct.value as any
   const hasProduct = !pending.value && !error.value && String(p?.nome || '').trim()
