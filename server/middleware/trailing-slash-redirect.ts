@@ -5,6 +5,11 @@ function shouldIgnore(path: string): boolean {
   if (!path) return true
   if (path === '/') return true
 
+  // App routes that can collide with public asset directories (e.g. /products/)
+  // We must NOT strip their trailing slash, otherwise we can create redirect loops.
+  if (/^\/(?:en|es|it|fr)?\/?products\/?$/i.test(path)) return true
+  if (/^\/(?:en|es|it|fr)?\/?categories\/?$/i.test(path)) return true
+
   // ignore API and common assets
   if (path.startsWith('/api/')) return true
   if (path.startsWith('/_nuxt/')) return true
