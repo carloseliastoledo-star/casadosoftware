@@ -429,12 +429,12 @@
             <h3 class="font-display font-semibold text-foreground mb-4">Legal</h3>
             <ul class="space-y-3">
               <li>
-                <NuxtLink to="/privacidade" class="text-muted-foreground hover:text-primary transition-colors">
+                <NuxtLink :to="privacyPolicyPath" class="text-muted-foreground hover:text-primary transition-colors">
                   Política de Privacidade
                 </NuxtLink>
               </li>
               <li>
-                <NuxtLink to="/termos" class="text-muted-foreground hover:text-primary transition-colors">
+                <NuxtLink :to="termsOfUsePath" class="text-muted-foreground hover:text-primary transition-colors">
                   Termos de Uso
                 </NuxtLink>
               </li>
@@ -473,6 +473,15 @@
 
 <script setup lang="ts">
 import { defineComponent } from 'vue'
+import { useIntlContext } from '../composables/useIntlContext'
+
+const intl = useIntlContext()
+
+const aboutUsPath = computed(() => (intl.language.value === 'en' ? '/about-us' : '/quem-somos'))
+const digitalDeliveryPath = computed(() => (intl.language.value === 'en' ? '/digital-delivery' : '/entrega-digital'))
+const refundPolicyPath = computed(() => (intl.language.value === 'en' ? '/refund-policy' : '/reembolso'))
+const privacyPolicyPath = computed(() => (intl.language.value === 'en' ? '/privacy-policy' : '/privacidade'))
+const termsOfUsePath = computed(() => (intl.language.value === 'en' ? '/terms-of-use' : '/termos'))
 
 const { companyLegalName, companyCnpj } = useSiteBranding()
 

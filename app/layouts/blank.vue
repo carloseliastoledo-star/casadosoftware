@@ -14,7 +14,7 @@
           </NuxtLink>
 
           <NuxtLink to="/" class="text-sm font-semibold text-gray-700 hover:text-blue-600">
-            Voltar para o site
+            {{ backToSiteLabel }}
           </NuxtLink>
         </div>
       </div>
@@ -40,14 +40,14 @@
         </div>
 
         <div>
-          <h3 class="font-semibold text-gray-800 mb-3">Páginas</h3>
+          <h3 class="font-semibold text-gray-800 mb-3">{{ pagesTitleLabel }}</h3>
           <ul class="space-y-2">
             <li><NuxtLink to="/atendimento-e-politicas" class="hover:text-blue-600">Atendimento e Políticas</NuxtLink></li>
-            <li><NuxtLink to="/entrega-digital" class="hover:text-blue-600">Entrega Digital</NuxtLink></li>
-            <li><NuxtLink to="/reembolso" class="hover:text-blue-600">Política de Reembolso</NuxtLink></li>
-            <li><NuxtLink to="/privacidade" class="hover:text-blue-600">Privacidade</NuxtLink></li>
-            <li><NuxtLink to="/termos" class="hover:text-blue-600">Termos</NuxtLink></li>
-            <li><NuxtLink to="/quem-somos" class="hover:text-blue-600">Contato</NuxtLink></li>
+            <li><NuxtLink :to="digitalDeliveryPath" class="hover:text-blue-600">{{ digitalDeliveryLabel }}</NuxtLink></li>
+            <li><NuxtLink :to="refundPolicyPath" class="hover:text-blue-600">{{ refundPolicyLabel }}</NuxtLink></li>
+            <li><NuxtLink :to="privacyPolicyPath" class="hover:text-blue-600">{{ privacyLabel }}</NuxtLink></li>
+            <li><NuxtLink :to="termsOfUsePath" class="hover:text-blue-600">{{ termsLabel }}</NuxtLink></li>
+            <li><NuxtLink :to="aboutUsPath" class="hover:text-blue-600">{{ contactLabel }}</NuxtLink></li>
           </ul>
         </div>
 
@@ -76,6 +76,21 @@
 
 <script setup lang="ts">
 const { siteName, logoPath, supportEmail, whatsappNumber, companyLegalName, companyCnpj } = useSiteBranding()
+const intl = useIntlContext()
+
+const aboutUsPath = computed(() => (intl.language.value === 'en' ? '/about-us' : '/quem-somos'))
+const digitalDeliveryPath = computed(() => (intl.language.value === 'en' ? '/digital-delivery' : '/entrega-digital'))
+const refundPolicyPath = computed(() => (intl.language.value === 'en' ? '/refund-policy' : '/reembolso'))
+const privacyPolicyPath = computed(() => (intl.language.value === 'en' ? '/privacy-policy' : '/privacidade'))
+const termsOfUsePath = computed(() => (intl.language.value === 'en' ? '/terms-of-use' : '/termos'))
+
+const backToSiteLabel = computed(() => (intl.language.value === 'en' ? 'Back to the website' : 'Voltar para o site'))
+const pagesTitleLabel = computed(() => (intl.language.value === 'en' ? 'Pages' : 'Páginas'))
+const digitalDeliveryLabel = computed(() => (intl.language.value === 'en' ? 'Digital delivery' : 'Entrega Digital'))
+const refundPolicyLabel = computed(() => (intl.language.value === 'en' ? 'Refund policy' : 'Política de Reembolso'))
+const privacyLabel = computed(() => (intl.language.value === 'en' ? 'Privacy policy' : 'Privacidade'))
+const termsLabel = computed(() => (intl.language.value === 'en' ? 'Terms of use' : 'Termos'))
+const contactLabel = computed(() => (intl.language.value === 'en' ? 'Contact' : 'Contato'))
 
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()

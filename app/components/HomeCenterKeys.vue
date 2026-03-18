@@ -32,7 +32,7 @@
 
                   <div class="mt-6">
                     <NuxtLink
-                      to="/produtos"
+                      :to="productsIndexPath"
                       class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white text-gray-900 font-semibold border border-black/10 hover:bg-gray-50"
                     >
                       {{ t.promoCtaShopNow }}
@@ -57,7 +57,7 @@
                     </p>
                     <div class="mt-6">
                       <NuxtLink
-                        to="/produto/microsoft-office-365-vitalicio-microsoft-windows-11-pro-1-licenca"
+                        :to="promoProductPath"
                         class="inline-flex items-center justify-center px-6 py-3 rounded-full bg-white text-gray-900 font-semibold border border-black/10 hover:bg-gray-50"
                       >
                         {{ t.promoCtaBuyNow }}
@@ -88,7 +88,7 @@
                 <span class="hidden md:block h-[3px] w-16 bg-blue-600 rounded-full mb-1" />
               </div>
             </div>
-            <NuxtLink to="/produtos" class="text-sm font-semibold text-gray-800 hover:underline">
+            <NuxtLink :to="productsIndexPath" class="text-sm font-semibold text-gray-800 hover:underline">
               {{ t.viewAll }}
             </NuxtLink>
           </div>
@@ -208,7 +208,7 @@
 
               <div class="mt-6 flex flex-col sm:flex-row gap-3">
                 <NuxtLink
-                  to="/produtos"
+                  :to="productsIndexPath"
                   class="bg-cyan-400 hover:bg-cyan-300 text-neutral-950 font-extrabold px-6 py-3 rounded-xl transition text-center"
                 >
                   {{ t.heroPrimaryCta }}
@@ -355,7 +355,7 @@
             <span class="hidden md:block h-[3px] w-16 bg-blue-600 rounded-full mb-1" />
           </div>
         </div>
-        <NuxtLink to="/produtos" class="text-sm font-semibold text-gray-800 hover:underline">
+        <NuxtLink :to="productsIndexPath" class="text-sm font-semibold text-gray-800 hover:underline">
           {{ t.viewAll }}
         </NuxtLink>
       </div>
@@ -515,7 +515,7 @@
             </p>
             <div class="mt-6 flex flex-col sm:flex-row gap-3">
               <NuxtLink
-                to="/produtos"
+                :to="productsIndexPath"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
               >
                 {{ t.helpCtaBuy }}
@@ -571,6 +571,13 @@ const props = defineProps<{ onlyBestSellers?: boolean }>()
 const onlyBestSellers = computed(() => Boolean(props.onlyBestSellers))
 
 const intl = useIntlContext()
+
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
+const promoProductPath = computed(() =>
+  intl.language.value === 'en'
+    ? '/product/microsoft-office-365-vitalicio-microsoft-windows-11-pro-1-licenca'
+    : '/produto/microsoft-office-365-vitalicio-microsoft-windows-11-pro-1-licenca'
+)
 
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())

@@ -5,6 +5,9 @@ import { trackPurchase } from '~/services/analytics'
 
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
+const intl = useIntlContext()
+
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
 
 useSeoMeta({
   title: `Obrigado | ${siteName}`
@@ -141,7 +144,7 @@ onMounted(async () => {
           <NuxtLink to="/" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold">
             Voltar para a Home
           </NuxtLink>
-          <NuxtLink to="/produtos" class="bg-white hover:bg-gray-50 text-gray-900 px-5 py-3 rounded-xl font-semibold border border-gray-200">
+          <NuxtLink :to="productsIndexPath" class="bg-white hover:bg-gray-50 text-gray-900 px-5 py-3 rounded-xl font-semibold border border-gray-200">
             Ver produtos
           </NuxtLink>
         </div>

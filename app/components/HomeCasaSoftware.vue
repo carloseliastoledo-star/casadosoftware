@@ -18,7 +18,7 @@
 
           <div class="flex flex-col sm:flex-row gap-3">
             <NuxtLink
-              to="/produtos"
+              :to="productsIndexPath"
               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
             >
               {{ $t('home.view_products') }}
@@ -59,7 +59,7 @@
             </div>
             <div class="mt-6">
               <NuxtLink
-                to="/produtos"
+                :to="productsIndexPath"
                 class="inline-flex items-center justify-center w-full bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition"
               >
                 {{ $t('home.start_now') }}
@@ -109,7 +109,7 @@
           <p class="text-gray-600 mt-2">{{ $t('home.best_sellers_subtitle') }}</p>
         </div>
         <NuxtLink
-          to="/produtos"
+          :to="productsIndexPath"
           class="text-blue-700 font-semibold hover:underline"
         >
           {{ $t('home.view_all') }} →
@@ -179,7 +179,7 @@
             </p>
             <div class="mt-6 flex flex-col sm:flex-row gap-3">
               <NuxtLink
-                to="/produtos"
+                :to="productsIndexPath"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
               >
                 {{ $t('buy_now') }}
@@ -275,6 +275,8 @@
 
 <script setup lang="ts">
 const intl = useIntlContext()
+
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
 
 const affiliateLandingTo = computed(() => {
   const lang = String(intl.language.value || 'pt')
@@ -466,7 +468,7 @@ const { data, pending, error: asyncError } = await useAsyncData(
   asyncKey,
   async () => {
     try {
-      return await $fetch('/api/products/best-sellers', {
+      return await $fetch(`${productsIndexPath.value}/best-sellers`, {
         headers: fetchHeaders as any
       })
     } catch (err) {

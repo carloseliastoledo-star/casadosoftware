@@ -58,7 +58,7 @@
         <p class="text-gray-600 mb-4">Clique abaixo para conhecer a oferta disponível.</p>
 
         <NuxtLink
-          to="/produto/microsoft-windows-11-pro-chave-esd-32-64-bits"
+          :to="productPath"
           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
         >
           Ver Produto
@@ -70,4 +70,11 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
+
+const intl = useIntlContext()
+const productPath = computed(() =>
+  intl.language.value === 'en'
+    ? '/product/microsoft-windows-11-pro-chave-esd-32-64-bits'
+    : '/produto/microsoft-windows-11-pro-chave-esd-32-64-bits'
+)
 </script>

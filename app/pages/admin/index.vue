@@ -4,6 +4,9 @@ definePageMeta({
   ssr: true
 })
 
+const intl = useIntlContext()
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
+
 const headers = import.meta.server ? useRequestHeaders(['cookie']) : undefined
 const { data, pending, error } = useFetch('/api/admin/stats', { headers })
 
@@ -53,7 +56,7 @@ const stats = computed(() => data.value || { produtosTotal: 0, licencasTotal: 0,
           <NuxtLink to="/admin/produtos/novo" class="block text-blue-600 hover:underline text-sm">
             Criar novo produto
           </NuxtLink>
-          <NuxtLink to="/produtos" class="block text-blue-600 hover:underline text-sm">
+          <NuxtLink :to="productsIndexPath" class="block text-blue-600 hover:underline text-sm">
             Ver loja
           </NuxtLink>
         </div>

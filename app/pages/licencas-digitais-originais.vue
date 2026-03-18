@@ -68,25 +68,25 @@
 
             <div class="mt-6 flex flex-wrap gap-3">
               <NuxtLink
-                to="/entrega-digital"
+                :to="digitalDeliveryPath"
                 class="inline-flex items-center px-4 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition"
               >
                 Entrega Digital
               </NuxtLink>
               <NuxtLink
-                to="/reembolso"
+                :to="refundPolicyPath"
                 class="inline-flex items-center px-4 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition"
               >
                 Política de Reembolso
               </NuxtLink>
               <NuxtLink
-                to="/privacidade"
+                :to="privacyPolicyPath"
                 class="inline-flex items-center px-4 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition"
               >
                 Privacidade
               </NuxtLink>
               <NuxtLink
-                to="/termos"
+                :to="termsOfUsePath"
                 class="inline-flex items-center px-4 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/15 transition"
               >
                 Termos
@@ -163,6 +163,12 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'blank' as any })
+
+const intl = useIntlContext()
+const digitalDeliveryPath = computed(() => (intl.language.value === 'en' ? '/digital-delivery' : '/entrega-digital'))
+const refundPolicyPath = computed(() => (intl.language.value === 'en' ? '/refund-policy' : '/reembolso'))
+const privacyPolicyPath = computed(() => (intl.language.value === 'en' ? '/privacy-policy' : '/privacidade'))
+const termsOfUsePath = computed(() => (intl.language.value === 'en' ? '/terms-of-use' : '/termos'))
 
 useHead({
   script: [

@@ -6,10 +6,10 @@
       <div v-if="safeProduct.nome" :class="breadcrumbClass">
         <NuxtLink to="/" class="hover:underline">{{ t.home }}</NuxtLink>
         <span class="mx-2">/</span>
-        <NuxtLink to="/produtos" class="hover:underline">{{ t.products }}</NuxtLink>
+        <NuxtLink :to="productsIndexPath" class="hover:underline">{{ t.products }}</NuxtLink>
         <template v-if="primaryCategorySlug">
           <span class="mx-2">/</span>
-          <NuxtLink :to="`/categoria/${primaryCategorySlug}`" class="hover:underline">{{ primaryCategoryLabel }}</NuxtLink>
+          <NuxtLink :to="`${categoryPathPrefix}/${primaryCategorySlug}`" class="hover:underline">{{ primaryCategoryLabel }}</NuxtLink>
         </template>
         <span class="mx-2">/</span>
         <span class="text-gray-700 font-medium">{{ safeProduct.nome }}</span>
@@ -135,13 +135,13 @@
             class="rounded-xl border bg-gray-50 p-5 text-sm text-gray-700"
           >
             <div class="font-semibold text-gray-900">{{ t.ms365HowTitle }}</div>
-            <ul class="mt-3 list-disc pl-5 space-y-2">
-              <li v-if="t.ms365Bullet1">{{ t.ms365Bullet1 }}</li>
+            <ul class="mt-3 list-disc pl-6 text-sm text-gray-700 space-y-1">
+              <li>{{ t.ms365Bullet1 }}</li>
               <li>{{ t.ms365Bullet2 }}</li>
               <li>{{ t.ms365Bullet3 }}</li>
             </ul>
             <div class="mt-3">
-              {{ t.ms365HelpPrefix }} <NuxtLink class="text-blue-600 hover:underline" to="/entrega-digital">{{ t.ms365HelpLink }}</NuxtLink>.
+              {{ t.ms365HelpPrefix }} <NuxtLink class="text-blue-600 hover:underline" :to="digitalDeliveryPath">{{ t.ms365HelpLink }}</NuxtLink>.
             </div>
           </div>
         </div>
@@ -275,6 +275,10 @@ const normalizedHost = computed(() => {
   const h4 = h3.replace(/^www\./, '')
   return h4.replace(/\.$/, '')
 })
+
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
+const categoryPathPrefix = computed(() => (intl.language.value === 'en' ? '/category' : '/categoria'))
+const digitalDeliveryPath = computed(() => (intl.language.value === 'en' ? '/digital-delivery' : '/entrega-digital'))
 
 const isCasaDoSoftware = computed(() => {
   if (normalizedHost.value.includes('casadosoftware.com.br')) return true
