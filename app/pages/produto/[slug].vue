@@ -365,7 +365,8 @@ const baseUrl = useSiteUrl()
 const canonicalUrl = computed(() => {
   const s = String(slug || '').trim()
   if (!s) return baseUrl ? `${baseUrl}/` : ''
-  return baseUrl ? `${baseUrl}/produto/${s}` : ''
+  const segment = lang.value === 'en' ? 'product' : 'produto'
+  return baseUrl ? `${baseUrl}/${segment}/${s}` : ''
 })
 
 const asyncProductKey = computed(() => `product-${String(slug || '')}-${String(lang.value || 'pt')}`)
@@ -558,8 +559,12 @@ useHead(() => {
   const selfCanonical = canonicalUrl.value
   const link: any[] = selfCanonical ? [{ rel: 'canonical', href: selfCanonical }] : []
   if (selfCanonical) {
-    const ptUrl = selfCanonical.replace('://en.', '://')
-    const enUrl = selfCanonical.includes('://en.') ? selfCanonical : selfCanonical.replace('://', '://en.')
+    const ptUrl = selfCanonical
+      .replace('://en.', '://')
+      .replace('/product/', '/produto/')
+    const enUrl = ptUrl
+      .replace('://', '://en.')
+      .replace('/produto/', '/product/')
     link.push({ rel: 'alternate', hreflang: 'pt-BR', href: ptUrl }, { rel: 'alternate', hreflang: 'en', href: enUrl }, { rel: 'alternate', hreflang: 'x-default', href: ptUrl })
   }
 

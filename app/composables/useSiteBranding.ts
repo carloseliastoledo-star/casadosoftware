@@ -40,16 +40,17 @@ export function useSiteUrl() {
   const config = useRuntimeConfig()
   const configured = String(config.public.siteUrl || '').trim()
 
-  if (configured) return configured.replace(/\/$/, '')
-
   if (import.meta.server) {
     try {
       const url = useRequestURL()
-      return String(url?.origin || '').replace(/\/$/, '')
+      const origin = String(url?.origin || '').trim()
+      if (origin) return origin.replace(/\/$/, '')
     } catch {
-      return ''
+      // ignore
     }
   }
+
+  if (configured) return configured.replace(/\/$/, '')
 
   if (typeof window !== 'undefined' && window.location?.origin) {
     return String(window.location.origin).replace(/\/$/, '')
