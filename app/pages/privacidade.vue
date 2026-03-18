@@ -133,7 +133,11 @@ useSeoMeta({
   title: `${t.value.title} | ${siteName}`
 })
 
+const canonicalPath = computed(() => {
+  return intl.language.value === 'en' ? '/privacy-policy' : '/privacidade'
+})
+
 useHead(() => ({
-  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/privacidade` }] : []
+  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}${canonicalPath.value}` }] : []
 }))
 </script>

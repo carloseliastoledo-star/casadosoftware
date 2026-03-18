@@ -156,11 +156,11 @@
           </NuxtLink>
 
           <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-gray-800">
-            <NuxtLink to="/categoria/windows" class="hover:text-blue-600">Windows</NuxtLink>
-            <NuxtLink to="/categoria/windows-server" class="hover:text-blue-600">Windows Server</NuxtLink>
-            <NuxtLink to="/categoria/office" class="hover:text-blue-600">Office</NuxtLink>
-            <NuxtLink to="/categoria/corel" class="hover:text-blue-600">Corel</NuxtLink>
-            <NuxtLink to="/categoria/autodesk" class="hover:text-blue-600">Autodesk</NuxtLink>
+            <NuxtLink :to="`${categoryPathPrefix}/windows`" class="hover:text-blue-600">Windows</NuxtLink>
+            <NuxtLink :to="`${categoryPathPrefix}/windows-server`" class="hover:text-blue-600">Windows Server</NuxtLink>
+            <NuxtLink :to="`${categoryPathPrefix}/office`" class="hover:text-blue-600">Office</NuxtLink>
+            <NuxtLink :to="`${categoryPathPrefix}/corel`" class="hover:text-blue-600">Corel</NuxtLink>
+            <NuxtLink :to="`${categoryPathPrefix}/autodesk`" class="hover:text-blue-600">Autodesk</NuxtLink>
             <NuxtLink :to="blogMenuTo" class="hover:text-blue-600">Blog</NuxtLink>
             <NuxtLink :to="affiliateMenuTo" class="hover:text-blue-600">{{ affiliateMenuLabel }}</NuxtLink>
           </nav>
@@ -354,11 +354,11 @@
               </NuxtLink>
             </template>
             <template v-else>
-              <NuxtLink to="/reembolso" class="block hover:underline">Policys of Refunds and Exchange</NuxtLink>
-              <NuxtLink to="/privacidade" class="block hover:underline">Privacy Policy</NuxtLink>
-              <NuxtLink to="/termos" class="block hover:underline">Terms of Service</NuxtLink>
-              <NuxtLink to="/privacidade" class="block hover:underline">Privacy and Safety</NuxtLink>
-              <NuxtLink to="/quem-somos" class="block hover:underline">Legal Notice</NuxtLink>
+              <NuxtLink :to="refundPolicyPath" class="block hover:underline">Policys of Refunds and Exchange</NuxtLink>
+              <NuxtLink :to="privacyPolicyPath" class="block hover:underline">Privacy Policy</NuxtLink>
+              <NuxtLink :to="termsOfUsePath" class="block hover:underline">Terms of Service</NuxtLink>
+              <NuxtLink :to="privacyPolicyPath" class="block hover:underline">Privacy and Safety</NuxtLink>
+              <NuxtLink :to="aboutUsPath" class="block hover:underline">Legal Notice</NuxtLink>
             </template>
           </div>
         </div>
@@ -423,16 +423,16 @@
         <div>
           <h3 class="font-semibold text-gray-800 mb-2">{{ footerLinksTitleText }}</h3>
           <ul class="space-y-2">
-            <li><NuxtLink to="/produtos" class="hover:text-blue-600">{{ t.footerProducts }}</NuxtLink></li>
+            <li><NuxtLink :to="productsIndexPath" class="hover:text-blue-600">{{ t.footerProducts }}</NuxtLink></li>
             <li><NuxtLink to="/tutoriais" class="hover:text-blue-600">{{ t.footerTutorials }}</NuxtLink></li>
             <li><NuxtLink :to="blogMenuTo" class="hover:text-blue-600">{{ t.footerBlog }}</NuxtLink></li>
             <li><NuxtLink :to="affiliateMenuTo" class="hover:text-blue-600">{{ affiliateMenuLabel }}</NuxtLink></li>
             <li v-if="showAffiliateSeoFooterLink"><NuxtLink to="/en/affiliate-program" class="hover:text-blue-600">Affiliate Program</NuxtLink></li>
-            <li><NuxtLink to="/quem-somos" class="hover:text-blue-600">{{ t.footerAbout }}</NuxtLink></li>
-            <li><NuxtLink to="/entrega-digital" class="hover:text-blue-600">{{ t.footerDigitalDelivery }}</NuxtLink></li>
-            <li><NuxtLink to="/reembolso" class="hover:text-blue-600">{{ t.footerRefundPolicy }}</NuxtLink></li>
-            <li><NuxtLink to="/privacidade" class="hover:text-blue-600">{{ t.footerPrivacy }}</NuxtLink></li>
-            <li><NuxtLink to="/termos" class="hover:text-blue-600">{{ t.footerTerms }}</NuxtLink></li>
+            <li><NuxtLink :to="aboutUsPath" class="hover:text-blue-600">{{ t.footerAbout }}</NuxtLink></li>
+            <li><NuxtLink :to="digitalDeliveryPath" class="hover:text-blue-600">{{ t.footerDigitalDelivery }}</NuxtLink></li>
+            <li><NuxtLink :to="refundPolicyPath" class="hover:text-blue-600">{{ t.footerRefundPolicy }}</NuxtLink></li>
+            <li><NuxtLink :to="privacyPolicyPath" class="hover:text-blue-600">{{ t.footerPrivacy }}</NuxtLink></li>
+            <li><NuxtLink :to="termsOfUsePath" class="hover:text-blue-600">{{ t.footerTerms }}</NuxtLink></li>
             <li v-for="p in paginas" :key="p.slug">
               <NuxtLink :to="`/paginas/${p.slug}`" class="hover:text-blue-600">{{ p.titulo }}</NuxtLink>
             </li>
@@ -675,13 +675,24 @@ const categoriasSet = computed(() => {
   return new Set(categorias.value.map((c) => String(c.slug || '').trim()).filter(Boolean))
 })
 
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
+const categoriesIndexPath = computed(() => (intl.language.value === 'en' ? '/categories' : '/categorias'))
+const categoryPathPrefix = computed(() => (intl.language.value === 'en' ? '/category' : '/categoria'))
+
+const aboutUsPath = computed(() => (intl.language.value === 'en' ? '/about-us' : '/quem-somos'))
+const digitalDeliveryPath = computed(() => (intl.language.value === 'en' ? '/digital-delivery' : '/entrega-digital'))
+const refundPolicyPath = computed(() => (intl.language.value === 'en' ? '/refund-policy' : '/reembolso'))
+const privacyPolicyPath = computed(() => (intl.language.value === 'en' ? '/privacy-policy' : '/privacidade'))
+const termsOfUsePath = computed(() => (intl.language.value === 'en' ? '/terms-of-use' : '/termos'))
+
 const mainMenu = computed(() => {
   const base = mainMenuBase.map((it) => {
     if ('to' in it) return it
     const slug = String(it.slug || '').trim()
-    if (!slug) return { label: it.label, to: it.fallbackTo }
-    if (categoriasSet.value.has(slug)) return { label: it.label, to: `/categoria/${slug}` }
-    return { label: it.label, to: it.fallbackTo }
+    const fallbackTo = categoriesIndexPath.value
+    if (!slug) return { label: it.label, to: fallbackTo }
+    if (categoriasSet.value.has(slug)) return { label: it.label, to: `${categoryPathPrefix.value}/${slug}` }
+    return { label: it.label, to: fallbackTo }
   })
 
   return [...base, { label: affiliateMenuLabel.value, to: affiliateMenuTo.value }]
@@ -844,10 +855,10 @@ const footerInstitutionalLinks = computed(() => {
 function submitSearch() {
   const q = String(search.value || '').trim()
   if (!q) {
-    navigateTo('/produtos')
+    navigateTo(productsIndexPath.value)
     return
   }
-  navigateTo({ path: '/produtos', query: { q } })
+  navigateTo({ path: productsIndexPath.value, query: { q } })
 }
 
 function onCurrencyChange(e: Event) {

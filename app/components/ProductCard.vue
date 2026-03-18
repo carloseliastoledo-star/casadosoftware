@@ -49,6 +49,13 @@ const productImage = computed(() => {
   return `/${cleanImage}`
 })
 
+const productPath = computed(() => {
+  const s = String((props.product as any)?.slug || '').trim()
+  if (!s) return '/'
+  const segment = intl.language.value === 'en' ? 'product' : intl.language.value === 'es' ? 'producto' : 'produto'
+  return `/${segment}/${s}`
+})
+
 function onImageError(e: Event) {
   const el = e.target as HTMLImageElement | null
   if (!el) return
@@ -315,7 +322,7 @@ function buyNow(event: Event) {
 
 <template>
   <NuxtLink
-    :to="`/produto/${product.slug}`"
+    :to="productPath"
     class="bg-white rounded-xl shadow hover:shadow-lg transition flex flex-col overflow-hidden"
   >
     <!-- Imagem -->

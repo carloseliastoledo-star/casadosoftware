@@ -122,7 +122,11 @@ useSeoMeta({
   title: `${t.value.title} | ${siteName}`
 })
 
+const canonicalPath = computed(() => {
+  return intl.language.value === 'en' ? '/digital-delivery' : '/entrega-digital'
+})
+
 useHead(() => ({
-  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/entrega-digital` }] : []
+  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}${canonicalPath.value}` }] : []
 }))
 </script>

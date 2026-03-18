@@ -115,7 +115,11 @@ useSeoMeta({
   title: `${t.value.title} | ${siteName}`
 })
 
+const canonicalPath = computed(() => {
+  return intl.language.value === 'en' ? '/terms-of-use' : '/termos'
+})
+
 useHead(() => ({
-  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/termos` }] : []
+  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}${canonicalPath.value}` }] : []
 }))
 </script>

@@ -87,6 +87,62 @@ export default defineNuxtConfig({
         file: productFile
       })
 
+      const productsIndexFile = resolve(__dirname, 'app/pages/produtos/index.vue')
+      pages.push({
+        name: 'products-index',
+        path: '/products',
+        file: productsIndexFile
+      })
+
+      const categoryFile = resolve(__dirname, 'app/pages/categoria/[slug].vue')
+      pages.push({
+        name: 'category-slug',
+        path: '/category/:slug',
+        file: categoryFile
+      })
+
+      const categoriesIndexFile = resolve(__dirname, 'app/pages/categorias.vue')
+      pages.push({
+        name: 'categories-index',
+        path: '/categories',
+        file: categoriesIndexFile
+      })
+
+      const aboutUsFile = resolve(__dirname, 'app/pages/quem-somos.vue')
+      pages.push({
+        name: 'about-us',
+        path: '/about-us',
+        file: aboutUsFile
+      })
+
+      const digitalDeliveryFile = resolve(__dirname, 'app/pages/entrega-digital.vue')
+      pages.push({
+        name: 'digital-delivery',
+        path: '/digital-delivery',
+        file: digitalDeliveryFile
+      })
+
+      const refundPolicyFile = resolve(__dirname, 'app/pages/reembolso.vue')
+      pages.push({
+        name: 'refund-policy',
+        path: '/refund-policy',
+        file: refundPolicyFile
+      })
+
+      const privacyPolicyFile = resolve(__dirname, 'app/pages/privacidade.vue')
+      pages.push({
+        name: 'privacy-policy',
+        path: '/privacy-policy',
+        file: privacyPolicyFile
+      })
+
+      const termsOfUseFile = resolve(__dirname, 'app/pages/termos.vue')
+      pages.push({
+        name: 'terms-of-use',
+        path: '/terms-of-use',
+        file: termsOfUseFile
+      })
+
       const blogIndexFile = resolve(__dirname, 'app/pages/blog/index.vue')
       const blogSlugFile = resolve(__dirname, 'app/pages/blog/[slug].vue')
       const blogLangPrefixes = ['pt', 'en', 'es', 'fr', 'it', 'de']

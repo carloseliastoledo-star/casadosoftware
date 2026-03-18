@@ -170,7 +170,11 @@ useSeoMeta({
   twitterDescription: ''
 })
 
+const canonicalPath = computed(() => {
+  return intl.language.value === 'en' ? '/about-us' : '/quem-somos'
+})
+
 useHead(() => ({
-  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/quem-somos` }] : []
+  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}${canonicalPath.value}` }] : []
 }))
 </script>
