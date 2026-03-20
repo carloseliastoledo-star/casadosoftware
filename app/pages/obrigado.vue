@@ -35,6 +35,37 @@ const googleAdsConversionLabel = computed(() => {
 })
 
 onMounted(async () => {
+  // Check for upsell opportunity first
+  const oid = String(orderId.value || '').trim()
+  const hasUpsell = String(route.query.upsell || '') !== '1'
+  
+  if (oid && hasUpsell) {
+    try {
+      // Check if there's an upsell available for this order
+      const upsellCheck: any = await $fetch('/api/upsell/check', {
+        query: { orderId: oid }
+      })
+      
+      if (upsellCheck.hasUpsell && upsellCheck.upsellProductId) {
+        // Redirect to upsell page
+        navigateTo({
+          path: '/upsell',
+          query: {
+            orderId: oid,
+            productId: upsellCheck.upsellProductId,
+            cardToken: upsellCheck.cardToken || '',
+            sc: upsellCheck.stripeCustomerId || '',
+            pm: upsellCheck.stripePaymentMethodId || ''
+          }
+        })
+        return
+      }
+    } catch {
+      // If upsell check fails, continue with normal thank you page
+    }
+  }
+
+  // Original conversion tracking code
   const id = googleAdsConversionId.value
   if (!id) return
   if (typeof window === 'undefined') return

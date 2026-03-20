@@ -237,27 +237,40 @@ export default defineEventHandler(async (event) => {
 
   const transactionAmount = Number(order.totalAmount ?? Number(effectivePrice))
 
-  const result = await payment.create({
-    body: {
-      transaction_amount: transactionAmount,
-      description: produto.nome,
-      payment_method_id: 'pix',
-      payer: {
-        email
-      },
-      metadata: {
-        orderId: order.id,
-        produtoId: produto.id,
-        nome,
-        whatsapp,
-        cpf,
-        pixDiscountPercent: 5,
-        couponCode: coupon?.code || null,
-        couponPercent: coupon?.percent || null
-      },
-      external_reference: order.id
-    }
-  })
+  let result: any
+  try {
+    result = await payment.create({
+      body: {
+        transaction_amount: transactionAmount,
+        description: produto.nome,
+        payment_method_id: 'pix',
+        payer: {
+          email
+        },
+        metadata: {
+          orderId: order.id,
+          produtoId: produto.id,
+          nome,
+          whatsapp,
+          cpf,
+          pixDiscountPercent: 5,
+          couponCode: coupon?.code || null,
+          couponPercent: coupon?.percent || null
+        },
+        external_reference: order.id
+      }
+    })
+  } catch (mpErr: any) {
+    console.error('[pix] Mercado Pago payment.create error:', JSON.stringify({
+      message: mpErr?.message,
+      status: mpErr?.status || mpErr?.statusCode,
+      cause: mpErr?.cause,
+      apiError: mpErr?.error,
+      body: mpErr?.body
+    }, null, 2))
+    const detail = mpErr?.cause?.[0]?.description || mpErr?.message || 'Erro desconhecido'
+    throw createError({ statusCode: 502, statusMessage: `Mercado Pago: ${detail}` })
+  }
 
   const mpPaymentId = String((result as any)?.id || '')
   if (!mpPaymentId) {

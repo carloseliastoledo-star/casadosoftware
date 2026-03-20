@@ -625,6 +625,7 @@ watch(
   { immediate: true }
 )
 
+const stripeClientSecret = ref<string | null>(null)
 const stripeOrderId = ref<string | null>(null)
 const stripeAmount = ref<number | null>(null)
 const stripeCurrency = ref<'usd' | 'eur'>('usd')
@@ -838,6 +839,7 @@ function onProductImageError(e: Event) {
   if (el.src.endsWith('/products/placeholder.svg')) return
   el.src = '/products/placeholder.svg'
 }
+
 const desconto = computed(() => {
   const base = subtotal.value
   if (!base) return 0
@@ -845,7 +847,9 @@ const desconto = computed(() => {
   const couponDiscount = appliedCoupon.value ? Math.round(base * (appliedCoupon.value.percent / 100) * 100) / 100 : 0
   return Math.round((pixDiscount + couponDiscount) * 100) / 100
 })
+
 const total = computed(() => Math.max(0, Math.round((subtotal.value - desconto.value) * 100) / 100))
+
 const cardLoading = ref(false)
 const cardError = ref('')
 const cardSdkError = ref('')
@@ -1040,10 +1044,6 @@ async function finalizeCheckout() {
       return
     }
 
-    if (normalizedEmail !== customerEmail.value) {
-      customerEmail.value = normalizedEmail
-    }
-
     if (!cpf.value) {
       finalizeError.value = 'Informe o CPF.'
       return
@@ -1234,10 +1234,6 @@ async function applyCoupon() {
 function removeCoupon() {
   appliedCoupon.value = null
   couponError.value = ''
-  if (paymentTab.value === 'card') {
-    mpCardForm = null
-    nextTick(() => initCardForm())
-  }
 }
 
 onMounted(() => {

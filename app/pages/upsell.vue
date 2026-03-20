@@ -68,7 +68,7 @@ function decline() {
         <h1 class="text-2xl font-bold text-gray-900 mb-2 leading-tight">
           Adicione <span class="text-blue-600">{{ product.nome }}</span> com 1 clique
         </h1>
-        <p class="text-gray-500 text-sm mb-6" v-html="product.descricao?.replace(/<[^>]*>/g, '').substring(0, 160) + '...'" />
+        <p class="text-gray-500 text-sm mb-6">{{ product.descricao?.replace(/<[^>]*>/g, '').substring(0, 160) + '...' || '' }}</p>
 
         <!-- Preço -->
         <div class="flex items-baseline gap-3 mb-6">
