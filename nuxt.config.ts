@@ -41,6 +41,9 @@ export default defineNuxtConfig({
       topbarText: process.env.SITE_TOPBAR_TEXT || '',
       topbarLink: process.env.SITE_TOPBAR_LINK || '',
       mercadopagoPublicKey: process.env.MERCADOPAGO_PUBLIC_KEY || '',
+      pagarmePublicKey: process.env.PAGARME_PUBLIC_KEY || '',
+      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
+      metaPixelId: process.env.META_PIXEL_ID || '',
       gaId: process.env.GA_ID || '',
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || '',
       googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID || '',
@@ -59,6 +62,9 @@ export default defineNuxtConfig({
         dir: resolve(__dirname, 'app/public'),
       },
     ],
+    alias: {
+      '#root': resolve(__dirname),
+    },
   },
 
   alias: {

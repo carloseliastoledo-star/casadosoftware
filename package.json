@@ -12,7 +12,7 @@
     "start": "prisma migrate deploy && node .output/server/index.mjs",
     "start:prod": "prisma migrate deploy && node .output/server/index.mjs",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare && prisma generate"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"

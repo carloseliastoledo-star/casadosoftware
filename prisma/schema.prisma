@@ -210,6 +210,10 @@ model Order {
   mercadoPagoPaymentTypeId String?
   mercadoPagoPaymentMethodId String?
   stripePaymentIntentId String? @unique
+  pagarmeChargeId      String?  @unique
+  orderBump            Boolean  @default(false)
+  bumpProductId        String?
+  parentOrderId        String?
   criadoEm             DateTime @default(now()) @db.DateTime(0)
   pagoEm               DateTime? @db.DateTime(0)
   emailEnviadoEm       DateTime? @db.DateTime(0)
@@ -376,6 +380,21 @@ model AffiliatePayoutRequest {
   affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
 
   @@index([affiliateId])
+}
+
+model Lead {
+  id         String   @id @default(uuid())
+  email      String
+  produtoId  String?
+  storeSlug  String?
+  status     String   @default("abandoned")
+  bumpAdded  Boolean  @default(false)
+  totalAmount Float?
+  criadoEm   DateTime @default(now()) @db.DateTime(0)
+  atualizadoEm DateTime @updatedAt @db.DateTime(0)
+
+  @@index([email])
+  @@index([storeSlug])
 }
 
 model PartnerApplication {
