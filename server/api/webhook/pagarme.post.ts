@@ -23,69 +23,79 @@ function verifySignature(rawBody: string, signature: string): boolean {
 }
 
 export default defineEventHandler(async (event) => {
-  const rawBody = await readBody(event, { strict: false })
-  const bodyStr = typeof rawBody === 'string' ? rawBody : JSON.stringify(rawBody)
-  const signature = getHeader(event, 'x-pagarme-signature') || ''
-
-  if (signature && !verifySignature(bodyStr, signature)) {
-    throw createError({ statusCode: 400, statusMessage: 'Assinatura inválida' })
-  }
-
-  let payload: any
   try {
-    payload = typeof rawBody === 'object' ? rawBody : JSON.parse(bodyStr)
-  } catch {
-    throw createError({ statusCode: 400, statusMessage: 'JSON inválido' })
-  }
+    const rawBody = await readBody(event)
+    const signature = getHeader(event, 'x-pagarme-signature') || ''
 
-  const type = String(payload?.type || payload?.event || '').toLowerCase()
-  const charge = payload?.data || payload?.charge || payload
-
-  // ─── charge.paid ─────────────────────────────────────────────────────────
-  if (type === 'charge.paid' || (type === '' && charge?.status === 'paid')) {
-    const chargeId = String(charge?.id || '').trim()
-    if (!chargeId) return { received: true }
-
-    const order = await (prisma as any).order.findFirst({
-      where: { pagarmeChargeId: chargeId },
-      select: { id: true, status: true },
-    })
-
-    if (!order) {
-      console.warn('[pagarme-webhook] ordem não encontrada para charge', chargeId)
-      return { received: true }
+    if (signature) {
+      const bodyStr = typeof rawBody === 'string' ? rawBody : JSON.stringify(rawBody)
+      if (!verifySignature(bodyStr, signature)) {
+        console.warn('[pagarme-webhook] assinatura inválida')
+        throw createError({ statusCode: 400, statusMessage: 'Assinatura inválida' })
+      }
     }
 
-    if (String(order.status).toUpperCase() !== 'PAID') {
-      await (prisma as any).order.update({
-        where: { id: order.id },
-        data: { status: 'PAID', pagoEm: new Date() },
-        select: { id: true },
-      })
+    const payload: any = typeof rawBody === 'string' ? JSON.parse(rawBody) : rawBody
 
-      try { await ensureMarketplaceCommissionForOrder(order.id) } catch {}
-      try { await sendGa4PurchaseForOrder(order.id, 'pagarme') } catch {}
-      try { await fulfillPaidOrder(order.id) } catch {}
-    }
-  }
+    const type = String(payload?.type || payload?.event || '').toLowerCase()
+    console.log('[pagarme-webhook] evento recebido:', type)
 
-  // ─── charge.payment_failed ───────────────────────────────────────────────
-  if (type === 'charge.payment_failed' || (type === '' && charge?.status === 'failed')) {
-    const chargeId = String(charge?.id || '').trim()
-    if (chargeId) {
+    const charge = payload?.data || payload?.charge || payload
+
+    // ─── charge.paid ─────────────────────────────────────────────────────────
+    if (type === 'charge.paid' || (type === '' && charge?.status === 'paid')) {
+      const chargeId = String(charge?.id || '').trim()
+      console.log('[pagarme-webhook] charge.paid chargeId:', chargeId)
+      if (!chargeId) return { received: true }
+
       const order = await (prisma as any).order.findFirst({
         where: { pagarmeChargeId: chargeId },
         select: { id: true, status: true },
       })
-      if (order && String(order.status).toUpperCase() === 'PENDING') {
+
+      if (!order) {
+        console.warn('[pagarme-webhook] ordem não encontrada para charge', chargeId)
+        return { received: true }
+      }
+
+      if (String(order.status).toUpperCase() !== 'PAID') {
         await (prisma as any).order.update({
           where: { id: order.id },
-          data: { status: 'FAILED' },
+          data: { status: 'PAID', pagoEm: new Date() },
           select: { id: true },
         })
+
+        console.log('[pagarme-webhook] ordem atualizada para PAID:', order.id)
+        try { await ensureMarketplaceCommissionForOrder(order.id) } catch {}
+        try { await sendGa4PurchaseForOrder(order.id, 'pagarme') } catch {}
+        try { await fulfillPaidOrder(order.id) } catch (e: any) {
+          console.error('[pagarme-webhook] fulfillPaidOrder error:', e?.message)
+        }
       }
     }
-  }
 
-  return { received: true }
+    // ─── charge.payment_failed ───────────────────────────────────────────────
+    if (type === 'charge.payment_failed' || (type === '' && charge?.status === 'failed')) {
+      const chargeId = String(charge?.id || '').trim()
+      if (chargeId) {
+        const order = await (prisma as any).order.findFirst({
+          where: { pagarmeChargeId: chargeId },
+          select: { id: true, status: true },
+        })
+        if (order && String(order.status).toUpperCase() === 'PENDING') {
+          await (prisma as any).order.update({
+            where: { id: order.id },
+            data: { status: 'FAILED' },
+            select: { id: true },
+          })
+        }
+      }
+    }
+
+    return { received: true }
+  } catch (err: any) {
+    console.error('[pagarme-webhook] erro:', err?.message || err)
+    if (err?.statusCode) throw err
+    return { received: true }
+  }
 })
