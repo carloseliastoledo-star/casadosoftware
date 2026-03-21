@@ -12,6 +12,8 @@ export function useApi<T = any>(url: string | (() => string), options: UseFetchO
 
   return useFetch<T>(() => `${apiUrl}${resolvedUrl()}`, {
     ...options,
+    server: true,
+    lazy: false,
     default: options.default ?? (() => null as any),
   })
 }

@@ -5,9 +5,7 @@ const intl = useIntlContext()
 
 const { siteName } = useSiteBranding()
 
-const { data, pending, error } = await useFetch<{ ok: true; categorias: CategoriaDto[] }>('/api/categorias', {
-  server: true
-})
+const { data, pending, error } = await useApi<{ ok: true; categorias: CategoriaDto[] }>('/api/categorias')
 
 const categorias = computed(() => data.value?.categorias || [])
 

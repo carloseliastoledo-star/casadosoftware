@@ -121,9 +121,7 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
-const { data, pending, error } = await useFetch(() => `/api/categorias/${slug}`, {
-  server: true
-})
+const { data, pending, error } = await useApi(() => `/api/categorias/${slug}`)
 
 const categoria = computed(() => (data.value as any)?.categoria || null)
 const produtos = computed(() => (data.value as any)?.produtos || [])

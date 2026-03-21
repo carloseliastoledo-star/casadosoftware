@@ -5,6 +5,10 @@ export default defineNuxtConfig({
 
   ssr: true,
 
+  nitro: {
+    preset: 'vercel'
+  },
+
   sourcemap: {
     client: true,
     server: false,
@@ -48,6 +52,7 @@ export default defineNuxtConfig({
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || '',
       googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID || '',
       googleAdsConversionLabel: process.env.GOOGLE_ADS_CONVERSION_LABEL || '',
+      API_URL: process.env.API_URL || 'https://api.casadosoftware.com.br',
     },
   },
 
