@@ -29,7 +29,10 @@ export default defineEventHandler(async (event) => {
   const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
   const categoria = await (prisma as any).categoria.findFirst({
-    where: { slug },
+  where: {
+    slug,
+    ativo: true
+  },
     select: {
       id: true,
       nome: true,
@@ -65,9 +68,7 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  if (!categoria) {
-    throw createError({ statusCode: 404, statusMessage: 'Categoria não encontrada' })
-  }
+  
 
   if (!(categoria as any).ativo) {
     throw createError({ statusCode: 404, statusMessage: 'Categoria não encontrada' })
