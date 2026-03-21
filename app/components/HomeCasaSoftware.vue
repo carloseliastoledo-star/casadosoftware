@@ -464,6 +464,1404 @@ const asyncKey = `best-sellers:${keyHost || 'default'}`
 
 const bestSellersFailed = ref(false)
 
+<template>
+  <section class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 pt-12 pb-10">
+      <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
+            <span class="text-blue-600">⚡</span>
+            {{ $t('home.badge_instant_email') }}
+          </div>
+
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
+            {{ $t('home.hero_title') }}
+          </h1>
+
+          <p class="text-gray-600 text-lg leading-relaxed">
+            {{ $t('home.hero_description') }}
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <NuxtLink
+              :to="productsIndexPath"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
+            >
+              {{ $t('home.view_products') }}
+            </NuxtLink>
+
+            <NuxtLink
+              to="/tutoriais"
+              class="border border-blue-600 text-blue-700 hover:bg-blue-50 font-semibold px-6 py-3 rounded-lg transition text-center"
+            >
+              {{ $t('view_tutorials') }}
+            </NuxtLink>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-sm text-gray-700 pt-2">
+            <div class="bg-white border rounded-lg p-3">🔒 {{ $t('home.trust_secure_purchase') }}</div>
+            <div class="bg-white border rounded-lg p-3">💳 {{ $t('home.trust_online_payment') }}</div>
+            <div class="bg-white border rounded-lg p-3">⚡ {{ $t('home.trust_instant_delivery') }}</div>
+            <div class="bg-white border rounded-lg p-3">💬 {{ $t('home.trust_fast_support') }}</div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white shadow-lg">
+            <div class="text-sm font-semibold text-blue-100">{{ $t('home.featured_badge') }}</div>
+            <div class="mt-2 text-2xl font-extrabold">{{ $t('home.featured_title') }}</div>
+            <p class="mt-3 text-blue-100">
+              {{ $t('home.featured_description') }}
+            </p>
+            <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="font-bold">Windows</div>
+                <div class="text-blue-100 mt-1">10/11 Pro</div>
+              </div>
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="font-bold">Office</div>
+                <div class="text-blue-100 mt-1">2021 / 365</div>
+              </div>
+            </div>
+            <div class="mt-6">
+              <NuxtLink
+                :to="productsIndexPath"
+                class="inline-flex items-center justify-center w-full bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition"
+              >
+                {{ $t('home.start_now') }}
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white border-y">
+      <div class="max-w-7xl mx-auto px-6 py-10">
+        <h2 class="text-2xl font-extrabold text-gray-900 text-center">{{ $t('home.why_title') }}</h2>
+        <p class="text-gray-600 text-center mt-2">
+          {{ $t('home.why_subtitle') }}
+        </p>
+
+        <div class="mt-8 grid md:grid-cols-4 gap-5">
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">✅</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card1_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card1_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">⚡</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card2_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card2_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">📘</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card3_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card3_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">💬</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card4_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card4_body') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+      <div class="flex items-end justify-between gap-6 flex-wrap">
+        <div>
+          <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.best_sellers_title') }}</h2>
+          <p class="text-gray-600 mt-2">{{ $t('home.best_sellers_subtitle') }}</p>
+        </div>
+        <NuxtLink
+          :to="productsIndexPath"
+          class="text-blue-700 font-semibold hover:underline"
+        >
+          {{ $t('home.view_all') }} →
+        </NuxtLink>
+      </div>
+
+      <div v-if="pending" class="text-center py-16 text-gray-500">
+        {{ $t('home.loading_products') }}
+      </div>
+
+      <div v-else-if="hasError" class="text-center py-16 text-red-600">
+        {{ $t('home.error_loading_products') }}
+      </div>
+
+      <div v-else-if="products.length === 0" class="text-center py-16 text-gray-500">
+        {{ $t('home.no_best_sellers') }}
+      </div>
+
+      <div v-else class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <ProductCard
+          v-for="product in products"
+          :key="product.id"
+          :product="product"
+        />
+      </div>
+    </div>
+
+    <div class="bg-white border-t">
+      <div class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.how_title') }}</h2>
+            <p class="text-gray-600 mt-2">
+              {{ $t('home.how_subtitle') }}
+            </p>
+
+            <div class="mt-6 space-y-4">
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">1</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step1_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step1_body') }}</div>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">2</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step2_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step2_body') }}</div>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">3</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step3_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step3_body') }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-100 rounded-3xl p-8">
+            <div class="text-blue-700 font-semibold">{{ $t('home.help_need_help') }}</div>
+            <div class="text-2xl font-extrabold text-gray-900 mt-2">{{ $t('home.help_title') }}</div>
+            <p class="text-gray-700 mt-3">
+              {{ $t('home.help_body') }}
+            </p>
+            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+              <NuxtLink
+                :to="productsIndexPath"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
+              >
+                {{ $t('buy_now') }}
+              </NuxtLink>
+              <NuxtLink
+                to="/tutoriais"
+                class="border border-blue-600 text-blue-700 hover:bg-white font-semibold px-6 py-3 rounded-lg transition text-center"
+              >
+                {{ $t('view_tutorials') }}
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t bg-gradient-to-b from-blue-50 via-white to-white">
+      <div class="max-w-7xl mx-auto px-6 py-14">
+        <div class="relative overflow-hidden rounded-3xl border bg-white">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10" />
+          <div class="relative p-8 md:p-10">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+              <div>
+                <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
+                  {{ affiliateCtaKicker }}
+                  <span class="h-1 w-1 rounded-full bg-blue-400" aria-hidden="true" />
+                  <span class="text-blue-700">{{ affiliateCtaHighlight }}</span>
+                </div>
+
+                <h2 class="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+                  {{ affiliateCtaTitle }}
+                </h2>
+
+                <p class="mt-3 text-gray-700 text-base leading-7">
+                  {{ affiliateCtaSubtitle }}
+                </p>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                  <NuxtLink
+                    :to="affiliateLandingTo"
+                    class="group inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 transition text-center shadow-sm hover:shadow"
+                  >
+                    <span>{{ affiliateCtaButton }}</span>
+                    <span class="ml-2 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                  </NuxtLink>
+
+                  <div class="hidden sm:flex items-center text-sm text-gray-600">
+                    <span class="font-semibold text-gray-900">{{ affiliateCtaNoFees }}</span>
+                    <span class="ml-1">{{ affiliateCtaStartToday }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-3xl border bg-gray-50 p-8">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="text-sm font-semibold text-gray-900">{{ affiliateCtaAudienceTitle }}</div>
+                  <div class="text-xs font-semibold text-blue-700 rounded-full bg-blue-100 px-3 py-1">{{ affiliateCtaWorldwide }}</div>
+                </div>
+
+                <ul class="mt-5 grid gap-3">
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience1 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience2 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience3 }}</span>
+                  </li>
+                </ul>
+
+                <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatCommissionLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">20%–30%</div>
+                  </div>
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatProductsLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">{{ affiliateCtaStatProductsValue }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+const intl = useIntlContext()
+
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
+
+const affiliateLandingTo = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return '/en/become-a-partner'
+  if (lang === 'es') return '/es/programa-afiliados'
+  if (lang === 'fr') return '/fr/programme-affiliation'
+  if (lang === 'de') return '/de/partner-program'
+  return '/pt/programa-afiliados'
+})
+
+const affiliateCtaKicker = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Earn with us'
+  if (lang === 'es') return 'Gana con nosotros'
+  if (lang === 'fr') return 'Gagnez avec nous'
+  if (lang === 'de') return 'Verdienen Sie mit uns'
+  return 'Ganhe com a gente'
+})
+
+const affiliateCtaHighlight = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Up to 30%'
+  if (lang === 'es') return 'Hasta 30%'
+  if (lang === 'fr') return "Jusqu'à 30%"
+  if (lang === 'de') return 'Bis zu 30%'
+  return 'Até 30%'
+})
+
+const affiliateCtaNoFees = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'No fees.'
+  if (lang === 'es') return 'Sin costos.'
+  if (lang === 'fr') return 'Sans frais.'
+  if (lang === 'de') return 'Keine Gebühren.'
+  return 'Sem taxas.'
+})
+
+const affiliateCtaStartToday = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Start promoting today.'
+  if (lang === 'es') return 'Empieza a promocionar hoy.'
+  if (lang === 'fr') return "Commencez à promouvoir aujourd'hui."
+  if (lang === 'de') return 'Starten Sie noch heute.'
+  return 'Comece hoje mesmo.'
+})
+
+const affiliateCtaWorldwide = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Worldwide'
+  if (lang === 'es') return 'Global'
+  if (lang === 'fr') return 'Mondial'
+  if (lang === 'de') return 'Weltweit'
+  return 'Global'
+})
+
+const affiliateCtaStatCommissionLabel = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Commission'
+  if (lang === 'es') return 'Comisión'
+  if (lang === 'fr') return 'Commission'
+  if (lang === 'de') return 'Provision'
+  return 'Comissão'
+})
+
+const affiliateCtaStatProductsLabel = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Products'
+  if (lang === 'es') return 'Productos'
+  if (lang === 'fr') return 'Produits'
+  if (lang === 'de') return 'Produkte'
+  return 'Produtos'
+})
+
+const affiliateCtaStatProductsValue = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Windows & Office'
+  if (lang === 'es') return 'Windows y Office'
+  if (lang === 'fr') return 'Windows et Office'
+  if (lang === 'de') return 'Windows & Office'
+  return 'Windows e Office'
+})
+
+const affiliateCtaTitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Join our Partner Program'
+  if (lang === 'es') return 'Únete a nuestro programa'
+  if (lang === 'fr') return 'Rejoignez notre programme'
+  if (lang === 'de') return 'Werden Sie Partner'
+  return 'Participe do nosso programa'
+})
+
+const affiliateCtaSubtitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Earn up to 30% commission promoting digital software.'
+  if (lang === 'es') return 'Gana hasta un 30% de comisión promoviendo software digital.'
+  if (lang === 'fr') return "Gagnez jusqu’à 30% de commission en recommandant des logiciels numériques."
+  if (lang === 'de') return 'Verdienen Sie bis zu 30% Provision mit digitaler Software.'
+  return 'Ganhe até 30% de comissão promovendo software digital.'
+})
+
+const affiliateCtaButton = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Become a Partner'
+  if (lang === 'es') return 'Conviértete en socio'
+  if (lang === 'fr') return 'Devenir partenaire'
+  if (lang === 'de') return 'Partner werden'
+  return 'Seja um parceiro'
+})
+
+const affiliateCtaAudienceTitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Great for:'
+  if (lang === 'es') return 'Ideal para:'
+  if (lang === 'fr') return 'Idéal pour :'
+  if (lang === 'de') return 'Ideal für:'
+  return 'Ideal para:'
+})
+
+const affiliateCtaAudience1 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'YouTubers'
+  if (lang === 'es') return 'YouTubers'
+  if (lang === 'fr') return 'YouTubeurs'
+  if (lang === 'de') return 'YouTuber'
+  return 'YouTubers'
+})
+
+const affiliateCtaAudience2 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Bloggers'
+  if (lang === 'es') return 'Blogueros'
+  if (lang === 'fr') return 'Blogueurs'
+  if (lang === 'de') return 'Blogger'
+  return 'Blogueiros'
+})
+
+const affiliateCtaAudience3 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'International affiliates'
+  if (lang === 'es') return 'Afiliados internacionales'
+  if (lang === 'fr') return 'Affiliés internationaux'
+  if (lang === 'de') return 'Internationale Affiliates'
+  return 'Afiliados internacionais'
+})
+
+const forwardedHeaders = import.meta.server
+  ? useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host'])
+  : undefined
+
+function normalizeHostValue(input: unknown) {
+  const raw = String(input || '').trim().toLowerCase()
+  if (!raw) return ''
+  const noProto = raw.replace(/^https?:\/\//, '')
+  const noPath = noProto.replace(/\/.*/, '')
+  const noPort = noPath.replace(/:\d+$/, '')
+  return noPort.replace(/^www\./, '')
+}
+
+function pickPublicHost(input: unknown) {
+  const raw = String(input || '').trim()
+  if (!raw) return ''
+  const parts = raw.split(',').map((p) => normalizeHostValue(p)).filter(Boolean)
+  if (parts.length === 0) return ''
+  const preferred = parts.find((h) => h.includes('casadosoftware.com.br') || h.includes('licencasdigitais.com.br'))
+  return preferred || parts[0]!
+}
+
+const forwardedHost = import.meta.server
+  ? pickPublicHost((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.['x-original-host'] || (forwardedHeaders as any)?.host || '')
+  : ''
+
+const fetchHeaders = import.meta.server
+  ? ({
+      'x-forwarded-host': forwardedHost
+    } as Record<string, string>)
+  : undefined
+
+const clientHost = !import.meta.server
+  ? pickPublicHost(typeof window !== 'undefined' ? window.location.host : '')
+  : ''
+
+const keyHost = import.meta.server ? forwardedHost : clientHost
+
+const asyncKey = `best-sellers:${keyHost || 'default'}`
+
+const bestSellersFailed = ref(false)
+
+<template>
+  <section class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 pt-12 pb-10">
+      <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
+            <span class="text-blue-600">⚡</span>
+            {{ $t('home.badge_instant_email') }}
+          </div>
+
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
+            {{ $t('home.hero_title') }}
+          </h1>
+
+          <p class="text-gray-600 text-lg leading-relaxed">
+            {{ $t('home.hero_description') }}
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <NuxtLink
+              :to="productsIndexPath"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
+            >
+              {{ $t('home.view_products') }}
+            </NuxtLink>
+
+            <NuxtLink
+              to="/tutoriais"
+              class="border border-blue-600 text-blue-700 hover:bg-blue-50 font-semibold px-6 py-3 rounded-lg transition text-center"
+            >
+              {{ $t('view_tutorials') }}
+            </NuxtLink>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-sm text-gray-700 pt-2">
+            <div class="bg-white border rounded-lg p-3">🔒 {{ $t('home.trust_secure_purchase') }}</div>
+            <div class="bg-white border rounded-lg p-3">💳 {{ $t('home.trust_online_payment') }}</div>
+            <div class="bg-white border rounded-lg p-3">⚡ {{ $t('home.trust_instant_delivery') }}</div>
+            <div class="bg-white border rounded-lg p-3">💬 {{ $t('home.trust_fast_support') }}</div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white shadow-lg">
+            <div class="text-sm font-semibold text-blue-100">{{ $t('home.featured_badge') }}</div>
+            <div class="mt-2 text-2xl font-extrabold">{{ $t('home.featured_title') }}</div>
+            <p class="mt-3 text-blue-100">
+              {{ $t('home.featured_description') }}
+            </p>
+            <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="font-bold">Windows</div>
+                <div class="text-blue-100 mt-1">10/11 Pro</div>
+              </div>
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="font-bold">Office</div>
+                <div class="text-blue-100 mt-1">2021 / 365</div>
+              </div>
+            </div>
+            <div class="mt-6">
+              <NuxtLink
+                :to="productsIndexPath"
+                class="inline-flex items-center justify-center w-full bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition"
+              >
+                {{ $t('home.start_now') }}
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white border-y">
+      <div class="max-w-7xl mx-auto px-6 py-10">
+        <h2 class="text-2xl font-extrabold text-gray-900 text-center">{{ $t('home.why_title') }}</h2>
+        <p class="text-gray-600 text-center mt-2">
+          {{ $t('home.why_subtitle') }}
+        </p>
+
+        <div class="mt-8 grid md:grid-cols-4 gap-5">
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">✅</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card1_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card1_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">⚡</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card2_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card2_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">📘</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card3_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card3_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">💬</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card4_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card4_body') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+      <div class="flex items-end justify-between gap-6 flex-wrap">
+        <div>
+          <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.best_sellers_title') }}</h2>
+          <p class="text-gray-600 mt-2">{{ $t('home.best_sellers_subtitle') }}</p>
+        </div>
+        <NuxtLink
+          :to="productsIndexPath"
+          class="text-blue-700 font-semibold hover:underline"
+        >
+          {{ $t('home.view_all') }} →
+        </NuxtLink>
+      </div>
+
+      <div v-if="pending" class="text-center py-16 text-gray-500">
+        {{ $t('home.loading_products') }}
+      </div>
+
+      <div v-else-if="hasError" class="text-center py-16 text-red-600">
+        {{ $t('home.error_loading_products') }}
+      </div>
+
+      <div v-else-if="products.length === 0" class="text-center py-16 text-gray-500">
+        {{ $t('home.no_best_sellers') }}
+      </div>
+
+      <div v-else class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <ProductCard
+          v-for="product in products"
+          :key="product.id"
+          :product="product"
+        />
+      </div>
+    </div>
+
+    <div class="bg-white border-t">
+      <div class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.how_title') }}</h2>
+            <p class="text-gray-600 mt-2">
+              {{ $t('home.how_subtitle') }}
+            </p>
+
+            <div class="mt-6 space-y-4">
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">1</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step1_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step1_body') }}</div>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">2</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step2_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step2_body') }}</div>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">3</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step3_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step3_body') }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-100 rounded-3xl p-8">
+            <div class="text-blue-700 font-semibold">{{ $t('home.help_need_help') }}</div>
+            <div class="text-2xl font-extrabold text-gray-900 mt-2">{{ $t('home.help_title') }}</div>
+            <p class="text-gray-700 mt-3">
+              {{ $t('home.help_body') }}
+            </p>
+            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+              <NuxtLink
+                :to="productsIndexPath"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
+              >
+                {{ $t('buy_now') }}
+              </NuxtLink>
+              <NuxtLink
+                to="/tutoriais"
+                class="border border-blue-600 text-blue-700 hover:bg-white font-semibold px-6 py-3 rounded-lg transition text-center"
+              >
+                {{ $t('view_tutorials') }}
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t bg-gradient-to-b from-blue-50 via-white to-white">
+      <div class="max-w-7xl mx-auto px-6 py-14">
+        <div class="relative overflow-hidden rounded-3xl border bg-white">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10" />
+          <div class="relative p-8 md:p-10">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+              <div>
+                <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
+                  {{ affiliateCtaKicker }}
+                  <span class="h-1 w-1 rounded-full bg-blue-400" aria-hidden="true" />
+                  <span class="text-blue-700">{{ affiliateCtaHighlight }}</span>
+                </div>
+
+                <h2 class="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+                  {{ affiliateCtaTitle }}
+                </h2>
+
+                <p class="mt-3 text-gray-700 text-base leading-7">
+                  {{ affiliateCtaSubtitle }}
+                </p>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                  <NuxtLink
+                    :to="affiliateLandingTo"
+                    class="group inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 transition text-center shadow-sm hover:shadow"
+                  >
+                    <span>{{ affiliateCtaButton }}</span>
+                    <span class="ml-2 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                  </NuxtLink>
+
+                  <div class="hidden sm:flex items-center text-sm text-gray-600">
+                    <span class="font-semibold text-gray-900">{{ affiliateCtaNoFees }}</span>
+                    <span class="ml-1">{{ affiliateCtaStartToday }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-3xl border bg-gray-50 p-8">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="text-sm font-semibold text-gray-900">{{ affiliateCtaAudienceTitle }}</div>
+                  <div class="text-xs font-semibold text-blue-700 rounded-full bg-blue-100 px-3 py-1">{{ affiliateCtaWorldwide }}</div>
+                </div>
+
+                <ul class="mt-5 grid gap-3">
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience1 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience2 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience3 }}</span>
+                  </li>
+                </ul>
+
+                <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatCommissionLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">20%–30%</div>
+                  </div>
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatProductsLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">{{ affiliateCtaStatProductsValue }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+const intl = useIntlContext()
+
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
+
+const affiliateLandingTo = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return '/en/become-a-partner'
+  if (lang === 'es') return '/es/programa-afiliados'
+  if (lang === 'fr') return '/fr/programme-affiliation'
+  if (lang === 'de') return '/de/partner-program'
+  return '/pt/programa-afiliados'
+})
+
+const affiliateCtaKicker = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Earn with us'
+  if (lang === 'es') return 'Gana con nosotros'
+  if (lang === 'fr') return 'Gagnez avec nous'
+  if (lang === 'de') return 'Verdienen Sie mit uns'
+  return 'Ganhe com a gente'
+})
+
+const affiliateCtaHighlight = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Up to 30%'
+  if (lang === 'es') return 'Hasta 30%'
+  if (lang === 'fr') return "Jusqu'à 30%"
+  if (lang === 'de') return 'Bis zu 30%'
+  return 'Até 30%'
+})
+
+const affiliateCtaNoFees = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'No fees.'
+  if (lang === 'es') return 'Sin costos.'
+  if (lang === 'fr') return 'Sans frais.'
+  if (lang === 'de') return 'Keine Gebühren.'
+  return 'Sem taxas.'
+})
+
+const affiliateCtaStartToday = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Start promoting today.'
+  if (lang === 'es') return 'Empieza a promocionar hoy.'
+  if (lang === 'fr') return "Commencez à promouvoir aujourd'hui."
+  if (lang === 'de') return 'Starten Sie noch heute.'
+  return 'Comece hoje mesmo.'
+})
+
+const affiliateCtaWorldwide = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Worldwide'
+  if (lang === 'es') return 'Global'
+  if (lang === 'fr') return 'Mondial'
+  if (lang === 'de') return 'Weltweit'
+  return 'Global'
+})
+
+const affiliateCtaStatCommissionLabel = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Commission'
+  if (lang === 'es') return 'Comisión'
+  if (lang === 'fr') return 'Commission'
+  if (lang === 'de') return 'Provision'
+  return 'Comissão'
+})
+
+const affiliateCtaStatProductsLabel = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Products'
+  if (lang === 'es') return 'Productos'
+  if (lang === 'fr') return 'Produits'
+  if (lang === 'de') return 'Produkte'
+  return 'Produtos'
+})
+
+const affiliateCtaStatProductsValue = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Windows & Office'
+  if (lang === 'es') return 'Windows y Office'
+  if (lang === 'fr') return 'Windows et Office'
+  if (lang === 'de') return 'Windows & Office'
+  return 'Windows e Office'
+})
+
+const affiliateCtaTitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Join our Partner Program'
+  if (lang === 'es') return 'Únete a nuestro programa'
+  if (lang === 'fr') return 'Rejoignez notre programme'
+  if (lang === 'de') return 'Werden Sie Partner'
+  return 'Participe do nosso programa'
+})
+
+const affiliateCtaSubtitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Earn up to 30% commission promoting digital software.'
+  if (lang === 'es') return 'Gana hasta un 30% de comisión promoviendo software digital.'
+  if (lang === 'fr') return "Gagnez jusqu’à 30% de commission en recommandant des logiciels numériques."
+  if (lang === 'de') return 'Verdienen Sie bis zu 30% Provision mit digitaler Software.'
+  return 'Ganhe até 30% de comissão promovendo software digital.'
+})
+
+const affiliateCtaButton = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Become a Partner'
+  if (lang === 'es') return 'Conviértete en socio'
+  if (lang === 'fr') return 'Devenir partenaire'
+  if (lang === 'de') return 'Partner werden'
+  return 'Seja um parceiro'
+})
+
+const affiliateCtaAudienceTitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Great for:'
+  if (lang === 'es') return 'Ideal para:'
+  if (lang === 'fr') return 'Idéal pour :'
+  if (lang === 'de') return 'Ideal für:'
+  return 'Ideal para:'
+})
+
+const affiliateCtaAudience1 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'YouTubers'
+  if (lang === 'es') return 'YouTubers'
+  if (lang === 'fr') return 'YouTubeurs'
+  if (lang === 'de') return 'YouTuber'
+  return 'YouTubers'
+})
+
+const affiliateCtaAudience2 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Bloggers'
+  if (lang === 'es') return 'Blogueros'
+  if (lang === 'fr') return 'Blogueurs'
+  if (lang === 'de') return 'Blogger'
+  return 'Blogueiros'
+})
+
+const affiliateCtaAudience3 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'International affiliates'
+  if (lang === 'es') return 'Afiliados internacionales'
+  if (lang === 'fr') return 'Affiliés internationaux'
+  if (lang === 'de') return 'Internationale Affiliates'
+  return 'Afiliados internacionais'
+})
+
+const forwardedHeaders = import.meta.server
+  ? useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host'])
+  : undefined
+
+function normalizeHostValue(input: unknown) {
+  const raw = String(input || '').trim().toLowerCase()
+  if (!raw) return ''
+  const noProto = raw.replace(/^https?:\/\//, '')
+  const noPath = noProto.replace(/\/.*/, '')
+  const noPort = noPath.replace(/:\d+$/, '')
+  return noPort.replace(/^www\./, '')
+}
+
+function pickPublicHost(input: unknown) {
+  const raw = String(input || '').trim()
+  if (!raw) return ''
+  const parts = raw.split(',').map((p) => normalizeHostValue(p)).filter(Boolean)
+  if (parts.length === 0) return ''
+  const preferred = parts.find((h) => h.includes('casadosoftware.com.br') || h.includes('licencasdigitais.com.br'))
+  return preferred || parts[0]!
+}
+
+const forwardedHost = import.meta.server
+  ? pickPublicHost((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.['x-original-host'] || (forwardedHeaders as any)?.host || '')
+  : ''
+
+const fetchHeaders = import.meta.server
+  ? ({
+      'x-forwarded-host': forwardedHost
+    } as Record<string, string>)
+  : undefined
+
+const clientHost = !import.meta.server
+  ? pickPublicHost(typeof window !== 'undefined' ? window.location.host : '')
+  : ''
+
+const keyHost = import.meta.server ? forwardedHost : clientHost
+
+const asyncKey = `best-sellers:${keyHost || 'default'}`
+
+const bestSellersFailed = ref(false)
+
+<template>
+  <section class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6 pt-12 pb-10">
+      <div class="grid lg:grid-cols-2 gap-10 items-center">
+        <div class="space-y-6">
+          <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
+            <span class="text-blue-600">⚡</span>
+            {{ $t('home.badge_instant_email') }}
+          </div>
+
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
+            {{ $t('home.hero_title') }}
+          </h1>
+
+          <p class="text-gray-600 text-lg leading-relaxed">
+            {{ $t('home.hero_description') }}
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <NuxtLink
+              :to="productsIndexPath"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
+            >
+              {{ $t('home.view_products') }}
+            </NuxtLink>
+
+            <NuxtLink
+              to="/tutoriais"
+              class="border border-blue-600 text-blue-700 hover:bg-blue-50 font-semibold px-6 py-3 rounded-lg transition text-center"
+            >
+              {{ $t('view_tutorials') }}
+            </NuxtLink>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-sm text-gray-700 pt-2">
+            <div class="bg-white border rounded-lg p-3">🔒 {{ $t('home.trust_secure_purchase') }}</div>
+            <div class="bg-white border rounded-lg p-3">💳 {{ $t('home.trust_online_payment') }}</div>
+            <div class="bg-white border rounded-lg p-3">⚡ {{ $t('home.trust_instant_delivery') }}</div>
+            <div class="bg-white border rounded-lg p-3">💬 {{ $t('home.trust_fast_support') }}</div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white shadow-lg">
+            <div class="text-sm font-semibold text-blue-100">{{ $t('home.featured_badge') }}</div>
+            <div class="mt-2 text-2xl font-extrabold">{{ $t('home.featured_title') }}</div>
+            <p class="mt-3 text-blue-100">
+              {{ $t('home.featured_description') }}
+            </p>
+            <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="font-bold">Windows</div>
+                <div class="text-blue-100 mt-1">10/11 Pro</div>
+              </div>
+              <div class="bg-white/10 rounded-xl p-4">
+                <div class="font-bold">Office</div>
+                <div class="text-blue-100 mt-1">2021 / 365</div>
+              </div>
+            </div>
+            <div class="mt-6">
+              <NuxtLink
+                :to="productsIndexPath"
+                class="inline-flex items-center justify-center w-full bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition"
+              >
+                {{ $t('home.start_now') }}
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white border-y">
+      <div class="max-w-7xl mx-auto px-6 py-10">
+        <h2 class="text-2xl font-extrabold text-gray-900 text-center">{{ $t('home.why_title') }}</h2>
+        <p class="text-gray-600 text-center mt-2">
+          {{ $t('home.why_subtitle') }}
+        </p>
+
+        <div class="mt-8 grid md:grid-cols-4 gap-5">
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">✅</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card1_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card1_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">⚡</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card2_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card2_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">📘</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card3_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card3_body') }}</div>
+          </div>
+          <div class="bg-gray-50 border rounded-2xl p-6">
+            <div class="text-2xl">💬</div>
+            <div class="font-bold mt-3">{{ $t('home.why_card4_title') }}</div>
+            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card4_body') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-12">
+      <div class="flex items-end justify-between gap-6 flex-wrap">
+        <div>
+          <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.best_sellers_title') }}</h2>
+          <p class="text-gray-600 mt-2">{{ $t('home.best_sellers_subtitle') }}</p>
+        </div>
+        <NuxtLink
+          :to="productsIndexPath"
+          class="text-blue-700 font-semibold hover:underline"
+        >
+          {{ $t('home.view_all') }} →
+        </NuxtLink>
+      </div>
+
+      <div v-if="pending" class="text-center py-16 text-gray-500">
+        {{ $t('home.loading_products') }}
+      </div>
+
+      <div v-else-if="hasError" class="text-center py-16 text-red-600">
+        {{ $t('home.error_loading_products') }}
+      </div>
+
+      <div v-else-if="products.length === 0" class="text-center py-16 text-gray-500">
+        {{ $t('home.no_best_sellers') }}
+      </div>
+
+      <div v-else class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <ProductCard
+          v-for="product in products"
+          :key="product.id"
+          :product="product"
+        />
+      </div>
+    </div>
+
+    <div class="bg-white border-t">
+      <div class="max-w-7xl mx-auto px-6 py-12">
+        <div class="grid lg:grid-cols-2 gap-10 items-center">
+          <div>
+            <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.how_title') }}</h2>
+            <p class="text-gray-600 mt-2">
+              {{ $t('home.how_subtitle') }}
+            </p>
+
+            <div class="mt-6 space-y-4">
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">1</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step1_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step1_body') }}</div>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">2</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step2_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step2_body') }}</div>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">3</div>
+                <div>
+                  <div class="font-bold text-gray-900">{{ $t('home.step3_title') }}</div>
+                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step3_body') }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-100 rounded-3xl p-8">
+            <div class="text-blue-700 font-semibold">{{ $t('home.help_need_help') }}</div>
+            <div class="text-2xl font-extrabold text-gray-900 mt-2">{{ $t('home.help_title') }}</div>
+            <p class="text-gray-700 mt-3">
+              {{ $t('home.help_body') }}
+            </p>
+            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+              <NuxtLink
+                :to="productsIndexPath"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
+              >
+                {{ $t('buy_now') }}
+              </NuxtLink>
+              <NuxtLink
+                to="/tutoriais"
+                class="border border-blue-600 text-blue-700 hover:bg-white font-semibold px-6 py-3 rounded-lg transition text-center"
+              >
+                {{ $t('view_tutorials') }}
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t bg-gradient-to-b from-blue-50 via-white to-white">
+      <div class="max-w-7xl mx-auto px-6 py-14">
+        <div class="relative overflow-hidden rounded-3xl border bg-white">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10" />
+          <div class="relative p-8 md:p-10">
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+              <div>
+                <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
+                  {{ affiliateCtaKicker }}
+                  <span class="h-1 w-1 rounded-full bg-blue-400" aria-hidden="true" />
+                  <span class="text-blue-700">{{ affiliateCtaHighlight }}</span>
+                </div>
+
+                <h2 class="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
+                  {{ affiliateCtaTitle }}
+                </h2>
+
+                <p class="mt-3 text-gray-700 text-base leading-7">
+                  {{ affiliateCtaSubtitle }}
+                </p>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                  <NuxtLink
+                    :to="affiliateLandingTo"
+                    class="group inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 transition text-center shadow-sm hover:shadow"
+                  >
+                    <span>{{ affiliateCtaButton }}</span>
+                    <span class="ml-2 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                  </NuxtLink>
+
+                  <div class="hidden sm:flex items-center text-sm text-gray-600">
+                    <span class="font-semibold text-gray-900">{{ affiliateCtaNoFees }}</span>
+                    <span class="ml-1">{{ affiliateCtaStartToday }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-3xl border bg-gray-50 p-8">
+                <div class="flex items-center justify-between gap-3">
+                  <div class="text-sm font-semibold text-gray-900">{{ affiliateCtaAudienceTitle }}</div>
+                  <div class="text-xs font-semibold text-blue-700 rounded-full bg-blue-100 px-3 py-1">{{ affiliateCtaWorldwide }}</div>
+                </div>
+
+                <ul class="mt-5 grid gap-3">
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience1 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience2 }}</span>
+                  </li>
+                  <li class="flex items-center gap-3 text-gray-800">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
+                    <span class="font-medium">{{ affiliateCtaAudience3 }}</span>
+                  </li>
+                </ul>
+
+                <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatCommissionLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">20%–30%</div>
+                  </div>
+                  <div class="rounded-xl border bg-white p-4">
+                    <div class="text-gray-500">{{ affiliateCtaStatProductsLabel }}</div>
+                    <div class="mt-1 font-extrabold text-gray-900">{{ affiliateCtaStatProductsValue }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+const intl = useIntlContext()
+
+const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
+
+const affiliateLandingTo = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return '/en/become-a-partner'
+  if (lang === 'es') return '/es/programa-afiliados'
+  if (lang === 'fr') return '/fr/programme-affiliation'
+  if (lang === 'de') return '/de/partner-program'
+  return '/pt/programa-afiliados'
+})
+
+const affiliateCtaKicker = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Earn with us'
+  if (lang === 'es') return 'Gana con nosotros'
+  if (lang === 'fr') return 'Gagnez avec nous'
+  if (lang === 'de') return 'Verdienen Sie mit uns'
+  return 'Ganhe com a gente'
+})
+
+const affiliateCtaHighlight = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Up to 30%'
+  if (lang === 'es') return 'Hasta 30%'
+  if (lang === 'fr') return "Jusqu'à 30%"
+  if (lang === 'de') return 'Bis zu 30%'
+  return 'Até 30%'
+})
+
+const affiliateCtaNoFees = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'No fees.'
+  if (lang === 'es') return 'Sin costos.'
+  if (lang === 'fr') return 'Sans frais.'
+  if (lang === 'de') return 'Keine Gebühren.'
+  return 'Sem taxas.'
+})
+
+const affiliateCtaStartToday = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Start promoting today.'
+  if (lang === 'es') return 'Empieza a promocionar hoy.'
+  if (lang === 'fr') return "Commencez à promouvoir aujourd'hui."
+  if (lang === 'de') return 'Starten Sie noch heute.'
+  return 'Comece hoje mesmo.'
+})
+
+const affiliateCtaWorldwide = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Worldwide'
+  if (lang === 'es') return 'Global'
+  if (lang === 'fr') return 'Mondial'
+  if (lang === 'de') return 'Weltweit'
+  return 'Global'
+})
+
+const affiliateCtaStatCommissionLabel = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Commission'
+  if (lang === 'es') return 'Comisión'
+  if (lang === 'fr') return 'Commission'
+  if (lang === 'de') return 'Provision'
+  return 'Comissão'
+})
+
+const affiliateCtaStatProductsLabel = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Products'
+  if (lang === 'es') return 'Productos'
+  if (lang === 'fr') return 'Produits'
+  if (lang === 'de') return 'Produkte'
+  return 'Produtos'
+})
+
+const affiliateCtaStatProductsValue = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Windows & Office'
+  if (lang === 'es') return 'Windows y Office'
+  if (lang === 'fr') return 'Windows et Office'
+  if (lang === 'de') return 'Windows & Office'
+  return 'Windows e Office'
+})
+
+const affiliateCtaTitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Join our Partner Program'
+  if (lang === 'es') return 'Únete a nuestro programa'
+  if (lang === 'fr') return 'Rejoignez notre programme'
+  if (lang === 'de') return 'Werden Sie Partner'
+  return 'Participe do nosso programa'
+})
+
+const affiliateCtaSubtitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Earn up to 30% commission promoting digital software.'
+  if (lang === 'es') return 'Gana hasta un 30% de comisión promoviendo software digital.'
+  if (lang === 'fr') return "Gagnez jusqu’à 30% de commission en recommandant des logiciels numériques."
+  if (lang === 'de') return 'Verdienen Sie bis zu 30% Provision mit digitaler Software.'
+  return 'Ganhe até 30% de comissão promovendo software digital.'
+})
+
+const affiliateCtaButton = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Become a Partner'
+  if (lang === 'es') return 'Conviértete en socio'
+  if (lang === 'fr') return 'Devenir partenaire'
+  if (lang === 'de') return 'Partner werden'
+  return 'Seja um parceiro'
+})
+
+const affiliateCtaAudienceTitle = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Great for:'
+  if (lang === 'es') return 'Ideal para:'
+  if (lang === 'fr') return 'Idéal pour :'
+  if (lang === 'de') return 'Ideal für:'
+  return 'Ideal para:'
+})
+
+const affiliateCtaAudience1 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'YouTubers'
+  if (lang === 'es') return 'YouTubers'
+  if (lang === 'fr') return 'YouTubeurs'
+  if (lang === 'de') return 'YouTuber'
+  return 'YouTubers'
+})
+
+const affiliateCtaAudience2 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'Bloggers'
+  if (lang === 'es') return 'Blogueros'
+  if (lang === 'fr') return 'Blogueurs'
+  if (lang === 'de') return 'Blogger'
+  return 'Blogueiros'
+})
+
+const affiliateCtaAudience3 = computed(() => {
+  const lang = String(intl.language.value || 'pt')
+  if (lang === 'en') return 'International affiliates'
+  if (lang === 'es') return 'Afiliados internacionales'
+  if (lang === 'fr') return 'Affiliés internationaux'
+  if (lang === 'de') return 'Internationale Affiliates'
+  return 'Afiliados internacionais'
+})
+
+const forwardedHeaders = import.meta.server
+  ? useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host'])
+  : undefined
+
+function normalizeHostValue(input: unknown) {
+  const raw = String(input || '').trim().toLowerCase()
+  if (!raw) return ''
+  const noProto = raw.replace(/^https?:\/\//, '')
+  const noPath = noProto.replace(/\/.*/, '')
+  const noPort = noPath.replace(/:\d+$/, '')
+  return noPort.replace(/^www\./, '')
+}
+
+function pickPublicHost(input: unknown) {
+  const raw = String(input || '').trim()
+  if (!raw) return ''
+  const parts = raw.split(',').map((p) => normalizeHostValue(p)).filter(Boolean)
+  if (parts.length === 0) return ''
+  const preferred = parts.find((h) => h.includes('casadosoftware.com.br') || h.includes('licencasdigitais.com.br'))
+  return preferred || parts[0]!
+}
+
+const forwardedHost = import.meta.server
+  ? pickPublicHost((forwardedHeaders as any)?.['x-forwarded-host'] || (forwardedHeaders as any)?.['x-original-host'] || (forwardedHeaders as any)?.host || '')
+  : ''
+
+const fetchHeaders = import.meta.server
+  ? ({
+      'x-forwarded-host': forwardedHost
+    } as Record<string, string>)
+  : undefined
+
+const clientHost = !import.meta.server
+  ? pickPublicHost(typeof window !== 'undefined' ? window.location.host : '')
+  : ''
+
+const keyHost = import.meta.server ? forwardedHost : clientHost
+
+const asyncKey = `best-sellers:${keyHost || 'default'}`
+
+const bestSellersFailed = ref(false)
+
 const { data, pending, error: asyncError } = await useAsyncData(
   asyncKey,
   async () => {
@@ -487,4 +1885,13 @@ const products = computed(() =>
   Array.isArray(data.value) ? data.value : []
 )
 const hasError = computed(() => !pending && products.value.length === 0)
+</script>
+
+
+const products = computed(() =>
+  Array.isArray(data.value) ? data.value : []
+)
+const hasError = computed(() => !pending && products.value.length === 0)
+</script>
+
 </script>
