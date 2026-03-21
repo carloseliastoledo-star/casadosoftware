@@ -5,14 +5,11 @@ const intl = useIntlContext()
 
 const { siteName } = useSiteBranding()
 
-// Dados estáticos para evitar erro 500 quando API local falha
-const categorias = ref<CategoriaDto[]>([
-  { id: '1', nome: 'Microsoft Office', slug: 'microsoft-office' },
-  { id: '2', nome: 'Windows', slug: 'windows' },
-  { id: '3', nome: 'Antivírus', slug: 'antivirus' }
-])
-const pending = ref(false)
-const error = ref(null)
+const { data, pending, error } = await useFetch<{ ok: true; categorias: CategoriaDto[] }>('/api/categorias', {
+  server: true
+})
+
+const categorias = computed(() => data.value?.categorias || [])
 
 const ui = computed(() => {
   if (intl.language.value === 'en') {
