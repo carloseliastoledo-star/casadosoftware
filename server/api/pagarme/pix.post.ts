@@ -372,6 +372,7 @@ export default defineEventHandler(async (event) => {
     result = await createPagarmePix({
       orderId: (order as any).id,
       amountBrl: transactionAmount,
+      description: produto.nome,
       customer: {
         name: nome || email.split('@')[0],
         email,

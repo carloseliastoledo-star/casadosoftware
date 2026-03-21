@@ -51,6 +51,7 @@ export interface PagarmeCardResult {
 export async function createPagarmePix(opts: {
   orderId: string
   amountBrl: number
+  description?: string
   customer: PagarmeCustomer
   split?: PagarmeSplitRule[]
   expiresInSeconds?: number
@@ -59,9 +60,14 @@ export async function createPagarmePix(opts: {
 
   const body: any = {
     code: `order_${opts.orderId}`,
-    amount: amountCents,
-    currency: 'BRL',
-    payment_method: 'pix',
+    items: [
+      {
+        amount: amountCents,
+        description: opts.description || 'Pedido',
+        quantity: 1,
+        code: opts.orderId,
+      },
+    ],
     customer: {
       name: opts.customer.name,
       email: opts.customer.email,
@@ -69,27 +75,48 @@ export async function createPagarmePix(opts: {
       document: opts.customer.document.replace(/\D/g, ''),
       document_type: opts.customer.document_type || 'CPF',
     },
-    pix: {
-      expires_in: opts.expiresInSeconds ?? 3600,
-    },
+    payments: [
+      {
+        payment_method: 'pix',
+        pix: {
+          expires_in: opts.expiresInSeconds ?? 3600,
+        },
+      },
+    ],
   }
 
   if (opts.split?.length) {
-    body.split = opts.split
+    body.payments[0].split = opts.split
   }
 
-  const res = await $fetch<any>(`${BASE}/charges`, {
-    method: 'POST',
-    headers: {
-      Authorization: authHeader(),
-      'Content-Type': 'application/json',
-    },
-    body,
-  })
+  console.log('[pagarme] createPagarmePix request:', JSON.stringify(body, null, 2))
 
-  const lastTx = res?.last_transaction || res
+  let res: any
+  try {
+    res = await $fetch<any>(`${BASE}/orders`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader(),
+        'Content-Type': 'application/json',
+      },
+      body,
+    })
+  } catch (fetchErr: any) {
+    console.error('[pagarme] createPagarmePix API error:', JSON.stringify({
+      status: fetchErr?.status || fetchErr?.statusCode,
+      message: fetchErr?.message,
+      data: fetchErr?.data,
+      response: fetchErr?.response?._data,
+    }, null, 2))
+    throw fetchErr
+  }
+
+  console.log('[pagarme] createPagarmePix response:', JSON.stringify(res, null, 2))
+
+  const charge = res?.charges?.[0] || {}
+  const lastTx = charge?.last_transaction || {}
   return {
-    charge_id: res.id || res.charge_id,
+    charge_id: charge.id || res.id,
     qr_code: lastTx?.qr_code || '',
     qr_code_url: lastTx?.qr_code_url || '',
     expires_at: lastTx?.expires_at || '',
