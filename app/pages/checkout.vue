@@ -1117,7 +1117,15 @@ async function goToPix() {
       startPixStatusPolling()
     }
   } catch (err: any) {
-    pixError.value = err?.data?.statusMessage || 'Não foi possível gerar o PIX'
+    console.error('[goToPix] ERRO COMPLETO:', JSON.stringify({
+      message: err?.message,
+      statusCode: err?.statusCode,
+      statusMessage: err?.data?.statusMessage,
+      data: err?.data,
+      url: err?.url || err?.request,
+      stack: err?.stack
+    }, null, 2))
+    pixError.value = err?.data?.statusMessage || err?.message || 'Não foi possível gerar o PIX'
   } finally {
     pixLoading.value = false
   }
