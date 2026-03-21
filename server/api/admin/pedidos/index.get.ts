@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
 
   const listWhere = whereForStore(
     {
-      pagoEm: paidAfter ? { gte: paidAfter } : undefined
+      criadoEm: paidAfter ? { gte: paidAfter } : undefined
     },
     ctx
   ) as any

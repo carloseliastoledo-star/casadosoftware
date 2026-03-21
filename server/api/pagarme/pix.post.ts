@@ -318,6 +318,14 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  console.log('[pagarme-pix] Transação concluída:', JSON.stringify({
+    orderId: (order as any)?.id,
+    storeSlug: (order as any)?.storeSlug,
+    reused,
+    customerId: (customer as any)?.id,
+    totalAmount: (order as any)?.totalAmount
+  }))
+
   // Se reutilizando order com charge existente, verificar status
   const existingChargeId = String((order as any)?.pagarmeChargeId || '').trim()
 
