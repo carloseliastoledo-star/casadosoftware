@@ -435,7 +435,16 @@ export default defineEventHandler(async (event) => {
         description: produto.nome,
         payment_method_id: 'pix',
         payer: {
-          email
+          email,
+          first_name: nome || undefined,
+          ...(cpf
+            ? {
+                identification: {
+                  type: 'CPF',
+                  number: cpf.replace(/\D/g, '')
+                }
+              }
+            : {})
         },
         metadata: {
           orderId: (order as any).id,

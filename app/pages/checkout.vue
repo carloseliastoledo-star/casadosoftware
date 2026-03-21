@@ -1063,6 +1063,11 @@ async function finalizeCheckout() {
 async function goToPix() {
   if (!product.value) return
 
+  if (!cpf.value || cpf.value.replace(/\D/g, '').length < 11) {
+    pixError.value = 'Informe um CPF válido para gerar o PIX.'
+    return
+  }
+
   pixLoading.value = true
   pixError.value = ''
   pix.qrCode = ''
