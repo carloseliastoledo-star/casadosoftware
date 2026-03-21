@@ -3,18 +3,6 @@ import prisma from '../../db/prisma.js'
 import { getMpPayment } from '../../utils/mercadopago.js'
 import { getStoreContext } from '../../utils/store'
 
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-  let timeoutId: NodeJS.Timeout | null = null
-  const timeoutPromise = new Promise<T>((_, reject) => {
-    timeoutId = setTimeout(() => {
-      reject(createError({ statusCode: 504, statusMessage: `Timeout (${label})` }))
-    }, ms)
-  })
-  return Promise.race([promise, timeoutPromise]).finally(() => {
-    if (timeoutId) clearTimeout(timeoutId)
-  }) as Promise<T>
-}
-
 export default defineEventHandler(async (event) => {
   const country = String(getCookie(event, 'ld_country') || '').trim().toUpperCase()
 
@@ -375,11 +363,7 @@ export default defineEventHandler(async (event) => {
         paymentId: existingMpPaymentId
       })
 
-      const mpPayment = await withTimeout(
-        payment.get({ id: existingMpPaymentId }),
-        10000,
-        'Mercado Pago payment.get'
-      )
+      const mpPayment = await payment.get({ id: existingMpPaymentId })
 
       const qrCode =
         (mpPayment as any)?.point_of_interaction?.transaction_data?.qr_code || null
@@ -438,37 +422,34 @@ export default defineEventHandler(async (event) => {
     email,
     nome,
     whatsapp,
+    cpf,
     couponCode: coupon?.code || null,
     couponPercent: coupon?.percent || null,
     storeSlug
   }, null, 2))
 
   try {
-    result = await withTimeout(
-      payment.create({
-        body: {
-          transaction_amount: transactionAmount,
-          description: produto.nome,
-          payment_method_id: 'pix',
-          payer: {
-            email
-          },
-          metadata: {
-            orderId: (order as any).id,
-            produtoId: produto.id,
-            nome: nome || null,
-            whatsapp: whatsapp || null,
-            cpf: cpf || null,
-            pixDiscountPercent: 5,
-            couponCode: coupon?.code || null,
-            couponPercent: coupon?.percent || null
-          },
-          external_reference: (order as any).id
-        }
-      }),
-      15000,
-      'Mercado Pago payment.create'
-    )
+    result = await payment.create({
+      body: {
+        transaction_amount: transactionAmount,
+        description: produto.nome,
+        payment_method_id: 'pix',
+        payer: {
+          email
+        },
+        metadata: {
+          orderId: (order as any).id,
+          produtoId: produto.id,
+          nome: nome || null,
+          whatsapp: whatsapp || null,
+          cpf: cpf || null,
+          pixDiscountPercent: 5,
+          couponCode: coupon?.code || null,
+          couponPercent: coupon?.percent || null
+        },
+        external_reference: (order as any).id
+      }
+    })
 
     console.log('[pix] Mercado Pago payment.create sucesso:', JSON.stringify({
       id: (result as any)?.id,
@@ -491,10 +472,6 @@ export default defineEventHandler(async (event) => {
       apiError: mpErr?.error,
       body: mpErr?.body
     }, null, 2))
-
-    if (mpErr?.statusCode === 504) {
-      throw createError({ statusCode: 504, statusMessage: 'Timeout ao comunicar com Mercado Pago. Tente novamente.' })
-    }
 
     const detail =
       mpErr?.cause?.[0]?.description ||
