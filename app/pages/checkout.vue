@@ -219,7 +219,7 @@
                 {{ pixError }}
               </div>
 
-              <div v-if="pix.qrCodeBase64 || pix.qrCode" class="mt-6 border border-gray-200 rounded-2xl overflow-hidden">
+              <div v-if="pix.qrCodeBase64 || pix.qrCodeUrl || pix.qrCode" class="mt-6 border border-gray-200 rounded-2xl overflow-hidden">
                 <div class="bg-gray-50 px-4 py-3 flex items-center justify-between gap-4">
                   <div>
                     <div class="font-semibold text-gray-900">PIX gerado</div>
@@ -233,7 +233,7 @@
                 <div class="p-4 bg-white">
                   <div class="grid md:grid-cols-2 gap-6 items-start">
                     <div class="flex items-center justify-center">
-                      <img v-if="pix.qrCodeBase64" :src="pix.qrCodeBase64" alt="QR Code PIX" class="w-56" />
+                      <img v-if="pix.qrCodeBase64 || pix.qrCodeUrl" :src="pix.qrCodeBase64 || pix.qrCodeUrl" alt="QR Code PIX" class="w-56" />
                     </div>
 
                     <div v-if="pix.qrCode" class="space-y-3">
@@ -584,9 +584,10 @@ const whatsapp = ref('')
 const nome = ref('')
 const pixLoading = ref(false)
 const pixError = ref('')
-const pix = reactive<{ qrCode: string; qrCodeBase64: string | null }>({
+const pix = reactive<{ qrCode: string; qrCodeBase64: string | null; qrCodeUrl: string | null }>({
   qrCode: '',
-  qrCodeBase64: null
+  qrCodeBase64: null,
+  qrCodeUrl: null
 })
 
 const pixOrderId = ref('')
@@ -1063,15 +1064,21 @@ async function finalizeCheckout() {
 async function goToPix() {
   if (!product.value) return
 
+  if (!cpf.value || cpf.value.replace(/\D/g, '').length < 11) {
+    pixError.value = 'Informe um CPF válido para gerar o PIX.'
+    return
+  }
+
   pixLoading.value = true
   pixError.value = ''
   pix.qrCode = ''
   pix.qrCodeBase64 = null
+  pix.qrCodeUrl = null
   pixOrderId.value = ''
   pixPaymentId.value = ''
 
   try {
-    const res: any = await $api('/api/mercadopago/pix', {
+    const res: any = await $api('/api/pagarme/pix', {
       method: 'POST',
       body: {
         produtoId: product.value.id,
@@ -1112,6 +1119,7 @@ async function goToPix() {
 
     pix.qrCode = res.qrCode || ''
     pix.qrCodeBase64 = res.qrCodeBase64 || null
+    pix.qrCodeUrl = res.qrCodeUrl || null
 
     if (pixOrderId.value) {
       startPixStatusPolling()
