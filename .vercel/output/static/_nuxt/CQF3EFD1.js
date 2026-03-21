@@ -1,0 +1,2 @@
+import{e as a,z as t,C as r,B as n,c,a as e,o as d}from"./BAoBiKPo.js";const i={class:"bg-gray-50 min-h-screen py-16"},m=a({__name:"sucesso",setup(u){const s=t();return r(()=>{n({path:"/obrigado",query:s.query})}),(l,o)=>(d(),c("section",i,[...o[0]||(o[0]=[e("div",{class:"max-w-2xl mx-auto px-6"},[e("div",{class:"bg-white rounded-2xl border border-gray-100 shadow-sm p-8"},[e("h1",{class:"text-2xl font-bold text-gray-900"},"Redirecionando...")])],-1)])]))}});export{m as default};
+//# sourceMappingURL=CQF3EFD1.js.map

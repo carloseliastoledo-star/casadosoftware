@@ -1,0 +1,1 @@
+.blog-content :where(img){border-radius:.75rem;margin-bottom:1.5rem;margin-top:1.5rem}.blog-content :where(a){font-weight:600;text-decoration:underline}.blog-content :where(a):hover{opacity:.9}.blog-content :where(div.bg-blue-50){border-radius:.75rem}
