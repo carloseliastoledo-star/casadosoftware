@@ -468,7 +468,7 @@ const { data, pending, error: asyncError } = await useAsyncData(
   asyncKey,
   async () => {
     try {
-      return await $fetch(`${productsIndexPath.value}/best-sellers`, {
+      return await $api(`${productsIndexPath.value}/best-sellers`, {
         headers: fetchHeaders as any
       })
     } catch (err) {

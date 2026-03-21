@@ -131,18 +131,24 @@ const discountPercent = computed(() => {
 })
 
 const formattedPrice = computed(() => {
-  return productPrice.value.toLocaleString(locale.value, {
-    style: 'currency',
-    currency: currencyUpper.value
-  })
+  if (import.meta.client) {
+    return productPrice.value.toLocaleString(locale.value, {
+      style: 'currency',
+      currency: currencyUpper.value
+    })
+  }
+  return productPrice.value || 0
 })
 
 const formattedOldPrice = computed(() => {
   if (!productOldPrice.value) return null
-  return productOldPrice.value.toLocaleString(locale.value, {
-    style: 'currency',
-    currency: currencyUpper.value
-  })
+  if (import.meta.client) {
+    return productOldPrice.value.toLocaleString(locale.value, {
+      style: 'currency',
+      currency: currencyUpper.value
+    })
+  }
+  return productOldPrice.value || 0
 })
 
 const formattedPixPrice = computed(() => {
@@ -151,10 +157,13 @@ const formattedPixPrice = computed(() => {
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
   if (pixPrice === price) return null
-  return pixPrice.toLocaleString(locale.value, {
-    style: 'currency',
-    currency: currencyUpper.value
-  })
+  if (import.meta.client) {
+    return pixPrice.toLocaleString(locale.value, {
+      style: 'currency',
+      currency: currencyUpper.value
+    })
+  }
+  return pixPrice || 0
 })
 
 const installments12 = computed(() => {
@@ -163,10 +172,13 @@ const installments12 = computed(() => {
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   if (!value) return null
-  return value.toLocaleString(locale.value, {
-    style: 'currency',
-    currency: currencyUpper.value
-  })
+  if (import.meta.client) {
+    return value.toLocaleString(locale.value, {
+      style: 'currency',
+      currency: currencyUpper.value
+    })
+  }
+  return value || 0
 })
 
 const categoryLabel = computed(() => {

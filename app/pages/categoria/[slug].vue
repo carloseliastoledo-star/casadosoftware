@@ -77,6 +77,8 @@ import ProductCard from '~/components/ProductCard.vue'
 
 const route = useRoute()
 const slug = String(route.params.slug || '')
+  .trim()
+  .toLowerCase()
 
 const baseUrl = useSiteUrl()
 const { siteName } = useSiteBranding()
