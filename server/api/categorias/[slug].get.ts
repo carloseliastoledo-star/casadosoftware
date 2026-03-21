@@ -15,7 +15,9 @@ function normalizeImageUrl(input: unknown): string | null {
 }
 
 export default defineEventHandler(async (event) => {
-  const slug = String(getRouterParam(event, 'slug') || '').trim()
+  const slug = String(getRouterParam(event, 'slug') || '')
+  .trim()
+  .toLowerCase()
   if (!slug) {
     throw createError({ statusCode: 400, statusMessage: 'slug obrigatório' })
   }
@@ -26,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
   const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
-  const categoria = await (prisma as any).categoria.findUnique({
+  const categoria = await (prisma as any).categoria.findFirst({
     where: { slug },
     select: {
       id: true,

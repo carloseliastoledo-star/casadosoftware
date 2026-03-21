@@ -2,7 +2,18 @@
 import { computed } from 'vue'
 import { useIntlContext } from '#imports'
 
-const intl = useIntlContext()
+let intl: any = {
+  language: { value: 'pt' },
+  locale: { value: 'pt-BR' },
+  currencyLower: { value: 'brl' }
+}
+
+if (import.meta.client) {
+  try {
+    const ctx = useIntlContext()
+    if (ctx) intl = ctx
+  } catch {}
+}
 
 interface Product {
   id: number
@@ -52,7 +63,14 @@ const productImage = computed(() => {
 const productPath = computed(() => {
   const s = String((props.product as any)?.slug || '').trim()
   if (!s) return '/'
-  const segment = intl.language.value === 'en' ? 'product' : intl.language.value === 'es' ? 'producto' : 'produto'
+
+  const lang = intl?.language?.value || 'pt'
+
+  const segment =
+    lang === 'en' ? 'product' :
+    lang === 'es' ? 'producto' :
+    'produto'
+
   return `/${segment}/${s}`
 })
 
@@ -172,13 +190,10 @@ const installments12 = computed(() => {
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   if (!value) return null
-  if (import.meta.client) {
-    return value.toLocaleString(locale.value, {
-      style: 'currency',
-      currency: currencyUpper.value
-    })
-  }
-  return value || 0
+  return value.toLocaleString(locale.value, {
+    style: 'currency',
+    currency: currencyUpper.value
+  })
 })
 
 const categoryLabel = computed(() => {
