@@ -483,6 +483,6 @@ const { data, pending, error: asyncError } = await useAsyncData(
   }
 )
 
-const products = computed(() => (Array.isArray(data.value) ? data.value : []))
-const hasError = computed(() => Boolean(bestSellersFailed.value || asyncError.value))
+const products = computed(() => data.value?.produtos || [])
+const hasError = computed(() => !pending.value && products.value.length === 0)
 </script>
