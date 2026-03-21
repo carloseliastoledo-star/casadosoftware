@@ -1862,16 +1862,15 @@ const asyncKey = `best-sellers:${keyHost || 'default'}`
 
 const bestSellersFailed = ref(false)
 
-const { data, pending, error: asyncError } = await useAsyncData(
+const { data, pending } = await useAsyncData(
   asyncKey,
   async () => {
     try {
-      return await $api(`${productsIndexPath.value}/best-sellers`, {
+      return await $fetch('/api/products', {
         headers: fetchHeaders as any
       })
     } catch (err) {
-      bestSellersFailed.value = true
-      console.error('[home][best-sellers] failed', err)
+      console.error('[home][products] failed', err)
       return []
     }
   },
@@ -1884,14 +1883,6 @@ const { data, pending, error: asyncError } = await useAsyncData(
 const products = computed(() =>
   Array.isArray(data.value) ? data.value : []
 )
-const hasError = computed(() => !pending && products.value.length === 0)
-</script>
 
-
-const products = computed(() =>
-  Array.isArray(data.value) ? data.value : []
-)
-const hasError = computed(() => !pending && products.value.length === 0)
-</script>
-
+const hasError = computed(() => false)
 </script>
