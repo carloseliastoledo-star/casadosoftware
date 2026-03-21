@@ -369,6 +369,15 @@ export default defineEventHandler(async (event) => {
   let result: any
 
   try {
+    const whatsDigits = String(whatsapp || '').replace(/\D/g, '')
+    const mobilePhone = whatsDigits.length >= 10
+      ? {
+          country_code: '55',
+          area_code: whatsDigits.slice(0, 2),
+          number: whatsDigits.slice(2)
+        }
+      : undefined
+
     result = await createPagarmePix({
       orderId: (order as any).id,
       amountBrl: transactionAmount,
@@ -378,7 +387,8 @@ export default defineEventHandler(async (event) => {
         email,
         document: cpfClean,
         document_type: 'CPF',
-        type: 'individual'
+        type: 'individual',
+        ...(mobilePhone ? { phones: { mobile_phone: mobilePhone } } : {})
       },
       expiresInSeconds: 3600
     })

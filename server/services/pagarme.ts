@@ -74,6 +74,11 @@ export async function createPagarmePix(opts: {
       type: opts.customer.type || 'individual',
       document: opts.customer.document.replace(/\D/g, ''),
       document_type: opts.customer.document_type || 'CPF',
+      ...(opts.customer.phones?.mobile_phone ? {
+        phones: {
+          mobile_phone: opts.customer.phones.mobile_phone
+        }
+      } : {}),
     },
     payments: [
       {
@@ -115,6 +120,22 @@ export async function createPagarmePix(opts: {
 
   const charge = res?.charges?.[0] || {}
   const lastTx = charge?.last_transaction || {}
+  const chargeStatus = String(charge?.status || '').toLowerCase()
+
+  if (chargeStatus === 'failed') {
+    const gatewayMsg = lastTx?.gateway_response?.errors?.[0]?.message
+      || lastTx?.acquirer_message
+      || lastTx?.gateway_response?.message
+      || 'Charge failed'
+    console.error('[pagarme] PIX charge failed:', JSON.stringify({
+      charge_id: charge.id,
+      status: chargeStatus,
+      gateway_response: lastTx?.gateway_response,
+      acquirer_message: lastTx?.acquirer_message,
+    }, null, 2))
+    throw new Error(`Pagar.me PIX falhou: ${gatewayMsg}`)
+  }
+
   return {
     charge_id: charge.id || res.id,
     qr_code: lastTx?.qr_code || '',
