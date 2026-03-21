@@ -158,7 +158,7 @@ const canonicalUrl = computed(() => {
   const s = categoria.value?.slug || slug
   if (!s) return ''
   if (!baseUrl) return ''
-  const segment = intl.language.value === 'en' ? 'category' : 'categoria'
+  const segment = 'categoria'
   return `${baseUrl}/${segment}/${s}`
 })
 

@@ -706,7 +706,7 @@ async function ensureStripeElement() {
     }
   })()
 
-  const res: any = await $fetch('/api/stripe/payment-intent', {
+  const res: any = await $api('/api/stripe/payment-intent', {
     method: 'POST',
     body: {
       produtoId: product.value.id,
@@ -989,7 +989,7 @@ async function payWithCard() {
       throw new Error('Selecione a bandeira do cartão e tente novamente.')
     }
 
-    const res: any = await $fetch('/api/mercadopago/card', {
+    const res: any = await $api('/api/mercadopago/card', {
       method: 'POST',
       body: {
         produtoId: product.value.id,
@@ -1071,7 +1071,7 @@ async function goToPix() {
   pixPaymentId.value = ''
 
   try {
-    const res: any = await $fetch('/api/mercadopago/pix', {
+    const res: any = await $api('/api/mercadopago/pix', {
       method: 'POST',
       body: {
         produtoId: product.value.id,
@@ -1168,7 +1168,7 @@ async function startPixStatusPolling() {
     const startedAt = Date.now()
 
     while (Date.now() - startedAt < 10 * 60 * 1000) {
-      const res: any = await $fetch('/api/order-status', {
+      const res: any = await $api('/api/order-status', {
         query: { orderId: pixOrderId.value }
       })
 
@@ -1206,7 +1206,7 @@ async function applyCoupon() {
   couponError.value = ''
   applyingCoupon.value = true
   try {
-    const res: any = await $fetch('/api/coupons/apply', {
+    const res: any = await $api('/api/coupons/apply', {
       method: 'POST',
       body: {
         produtoId: product.value.id,
