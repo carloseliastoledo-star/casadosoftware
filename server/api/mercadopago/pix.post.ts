@@ -106,6 +106,14 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const cpfClean = String(cpf || '').replace(/\D/g, '')
+  if (!cpfClean || cpfClean.length < 11) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'CPF obrigatório para pagamento PIX'
+    })
+  }
+
   const round2 = (n: number) => Math.round(n * 100) / 100
 
   const produto = await (prisma as any).produto.findUnique({
@@ -439,6 +447,7 @@ export default defineEventHandler(async (event) => {
     nome,
     whatsapp,
     cpf,
+    cpfClean,
     couponCode: coupon?.code || null,
     couponPercent: coupon?.percent || null,
     storeSlug
@@ -454,14 +463,10 @@ export default defineEventHandler(async (event) => {
           payer: {
             email,
             first_name: nome || undefined,
-            ...(cpf
-              ? {
-                  identification: {
-                    type: 'CPF',
-                    number: cpf.replace(/\D/g, '')
-                  }
-                }
-              : {})
+            identification: {
+              type: 'CPF',
+              number: cpfClean
+            }
           },
           metadata: {
             orderId: (order as any).id,
