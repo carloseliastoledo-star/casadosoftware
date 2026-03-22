@@ -352,6 +352,11 @@ const whyPriceCardClass = computed(() => {
 const route = useRoute()
 const slug = route.params.slug as string
 
+const { hreflangLinks: productHreflang } = useSeoLocale({
+  pageType: 'product',
+  slug: computed(() => String((safeProduct.value as any)?.slug || slug || ''))
+})
+
 const lang = computed(() => intl.language.value)
 
 const isClient = import.meta.client
@@ -574,16 +579,10 @@ useHead(() => {
   const title = seoTitle.value
   const description = seoDescription.value
   const selfCanonical = canonicalUrl.value
-  const link: any[] = selfCanonical ? [{ rel: 'canonical', href: selfCanonical }] : []
-  if (selfCanonical) {
-    const ptUrl = selfCanonical
-      .replace('://en.', '://')
-      .replace('/product/', '/produto/')
-    const enUrl = ptUrl
-      .replace('://', '://en.')
-      .replace('/produto/', '/product/')
-    link.push({ rel: 'alternate', hreflang: 'pt-BR', href: ptUrl }, { rel: 'alternate', hreflang: 'en', href: enUrl }, { rel: 'alternate', hreflang: 'x-default', href: ptUrl })
-  }
+  const link: any[] = [
+    ...(selfCanonical ? [{ rel: 'canonical', href: selfCanonical }] : []),
+    ...(productHreflang.value as any[])
+  ]
 
   const p = safeProduct.value as any
   const hasProduct = !pending.value && !error.value && String(p?.nome || '').trim()

@@ -54,14 +54,13 @@ const CASA_HOME_DESCRIPTION = computed(() =>
     : 'Compre licenças digitais originais Windows 10, 11 e Office com entrega imediata e suporte técnico.'
 )
 
-useHead({
+const { canonicalUrl: homeCanonical, hreflangLinks: homeHreflang } = useSeoLocale({ pageType: 'home' })
+useHead(() => ({
   link: [
-    {
-      rel: 'canonical',
-      href: url.origin + '/'
-    }
+    { rel: 'canonical', href: homeCanonical.value },
+    ...(homeHreflang.value as any[])
   ]
-})
+}))
 
 const host = computed(() => {
   if (process.server) {
@@ -134,25 +133,6 @@ if (applyCasaSeo.value) {
   })
 }
 
-useHead(() => {
-  if (!applyCasaSeo.value) return {}
-
-  const alternates = [
-    { hreflang: 'pt-BR', href: 'https://casadosoftware.com.br/' },
-    { hreflang: 'en', href: 'https://en.casadosoftware.com.br/' },
-    { hreflang: 'es', href: 'https://es.casadosoftware.com.br/' },
-    { hreflang: 'fr', href: 'https://fr.casadosoftware.com.br/' },
-    { hreflang: 'de', href: 'https://de.casadosoftware.com.br/' },
-    { hreflang: 'x-default', href: 'https://casadosoftware.com.br/' }
-  ]
-
-  return {
-    link: [
-      ...alternates.map((a) => ({ rel: 'alternate', hreflang: a.hreflang, href: a.href }))
-    ],
-    script: []
-  }
-})
 
 useJsonLd(
   () => {

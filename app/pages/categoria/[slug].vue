@@ -182,13 +182,6 @@ const sortedProdutos = computed(() => {
   return list
 })
 
-const canonicalUrl = computed(() => {
-  const s = categoria.value?.slug || slug
-  if (!s) return ''
-  if (!baseUrl) return ''
-  return `${baseUrl}/categoria/${s}`
-})
-
 const pageTitle = computed(() => {
   const slugValue = String(categoria.value?.slug || slug || '').trim().toLowerCase()
 
@@ -233,8 +226,9 @@ useSeoMeta({
 })
 
 useHead(() => ({
-  link: canonicalUrl.value
-    ? [{ rel: 'canonical', href: canonicalUrl.value }]
-    : []
+  link: [
+    ...(canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []),
+    ...(hreflangLinks.value as any[])
+  ]
 }))
 </script>

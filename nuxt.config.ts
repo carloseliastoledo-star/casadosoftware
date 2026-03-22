@@ -116,6 +116,52 @@ export default defineNuxtConfig({
         file: categoriesIndexFile
       })
 
+      // ── Language-prefixed home pages ───────────────────────────────────────
+      const homeFile = resolve(__dirname, 'app/pages/index.vue')
+      for (const lang of ['en', 'es', 'fr', 'it']) {
+        pages.push({ name: `${lang}-home`, path: `/${lang}`, file: homeFile })
+      }
+
+      // ── Language-prefixed product pages ────────────────────────────────────
+      const langProductPaths: Array<{ lang: string; prefix: string; listSuffix: string }> = [
+        { lang: 'en', prefix: 'product',  listSuffix: 'products'  },
+        { lang: 'es', prefix: 'producto', listSuffix: 'productos' },
+        { lang: 'fr', prefix: 'produit',  listSuffix: 'produits'  },
+        { lang: 'it', prefix: 'prodotto', listSuffix: 'prodotti'  }
+      ]
+      for (const { lang, prefix, listSuffix } of langProductPaths) {
+        pages.push({
+          name: `${lang}-${prefix}-slug`,
+          path: `/${lang}/${prefix}/:slug`,
+          file: productFile
+        })
+        pages.push({
+          name: `${lang}-${listSuffix}-index`,
+          path: `/${lang}/${listSuffix}`,
+          file: productsIndexFile
+        })
+      }
+
+      // ── Language-prefixed category pages ───────────────────────────────────
+      const langCategoryPaths: Array<{ lang: string; prefix: string; listSuffix: string }> = [
+        { lang: 'en', prefix: 'category',  listSuffix: 'categories' },
+        { lang: 'es', prefix: 'categoria', listSuffix: 'categorias' },
+        { lang: 'fr', prefix: 'categorie', listSuffix: 'categories' },
+        { lang: 'it', prefix: 'categoria', listSuffix: 'categorie'  }
+      ]
+      for (const { lang, prefix, listSuffix } of langCategoryPaths) {
+        pages.push({
+          name: `${lang}-${prefix}-slug`,
+          path: `/${lang}/${prefix}/:slug`,
+          file: categoryFile
+        })
+        pages.push({
+          name: `${lang}-${listSuffix}-list`,
+          path: `/${lang}/${listSuffix}`,
+          file: categoriesIndexFile
+        })
+      }
+
       const aboutUsFile = resolve(__dirname, 'app/pages/quem-somos.vue')
       pages.push({
         name: 'about-us',
