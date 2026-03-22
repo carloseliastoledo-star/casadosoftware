@@ -69,7 +69,7 @@ export const LANG_CONFIGS: LangConfig[] = [
 ]
 
 export function escXml(s: string): string {
-  return String(s || '')
+  return String(s ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -77,9 +77,15 @@ export function escXml(s: string): string {
     .replace(/'/g, '&apos;')
 }
 
+function safeSlug(s: unknown): string {
+  return String(s ?? '').trim()
+}
+
 function urlEntry(loc: string, lastmod?: string, priority = '0.8', changefreq = 'weekly'): string {
+  const escapedLoc = escXml(String(loc ?? '').trim())
+  if (!escapedLoc) return ''
   const lm = lastmod ? `<lastmod>${escXml(lastmod)}</lastmod>` : ''
-  return `<url><loc>${escXml(loc)}</loc>${lm}<changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`
+  return `<url><loc>${escapedLoc}</loc>${lm}<changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`
 }
 
 export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
@@ -88,49 +94,57 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
   let posts: Array<{ slug: string; atualizadoEm: Date | null }> = []
 
   try {
-    const [p, c, b] = await Promise.all([
+    const results = await Promise.all([
       prisma.produto.findMany({ where: { ativo: true }, select: { slug: true, criadoEm: true } }),
       prisma.categoria.findMany({ select: { slug: true } }),
       (prisma as any).blogPost.findMany({ where: { publicado: true }, select: { slug: true, atualizadoEm: true } })
     ])
-    products = p || []
-    categories = c || []
-    posts = b || []
+    products = results[0] || []
+    categories = results[1] || []
+    posts = results[2] || []
   } catch {
-    // DB unavailable — return minimal sitemap
+    // DB unavailable — return minimal valid sitemap
   }
 
-  const b = cfg.base
-  const urls: string[] = []
+  const base = cfg.base
+  const entries: string[] = []
 
+  // Home
   const homePath = cfg.lang === 'pt' ? '/' : `/${cfg.lang}`
-  urls.push(urlEntry(b + homePath, undefined, '1.0', 'daily'))
-  urls.push(urlEntry(b + cfg.blogIndexPath, undefined, '0.9', 'daily'))
-  urls.push(urlEntry(b + cfg.productsPath, undefined, '0.8', 'weekly'))
-  urls.push(urlEntry(b + cfg.categoriesPath, undefined, '0.7', 'weekly'))
+  entries.push(urlEntry(base + homePath, undefined, '1.0', 'daily'))
 
-  for (const c of categories) {
-    if (!c?.slug) continue
-    urls.push(urlEntry(b + cfg.categoryPath(c.slug), undefined, '0.8', 'weekly'))
+  // Blog index
+  entries.push(urlEntry(base + cfg.blogIndexPath, undefined, '0.9', 'daily'))
+
+  // Categories (individual pages only — no listing page for intl)
+  for (const cat of categories) {
+    const s = safeSlug(cat?.slug)
+    if (!s) continue
+    entries.push(urlEntry(base + cfg.categoryPath(s), undefined, '0.8', 'weekly'))
   }
 
-  for (const p of products) {
-    if (!p?.slug) continue
-    const lm = p.criadoEm ? new Date(p.criadoEm).toISOString().slice(0, 10) : ''
-    urls.push(urlEntry(b + cfg.productPath(p.slug), lm || undefined, '0.9', 'weekly'))
+  // Products
+  for (const prod of products) {
+    const s = safeSlug(prod?.slug)
+    if (!s) continue
+    const lastmod = prod.criadoEm ? new Date(prod.criadoEm).toISOString().slice(0, 10) : undefined
+    entries.push(urlEntry(base + cfg.productPath(s), lastmod, '0.9', 'weekly'))
   }
 
+  // Blog posts
   for (const post of posts) {
-    const slug = String(post?.slug || '').trim()
-    if (!slug) continue
-    const lm = post.atualizadoEm ? new Date(post.atualizadoEm).toISOString().slice(0, 10) : ''
-    urls.push(urlEntry(b + cfg.blogPath(slug), lm || undefined, '0.7', 'monthly'))
+    const s = safeSlug(post?.slug)
+    if (!s) continue
+    const lastmod = post.atualizadoEm ? new Date(post.atualizadoEm).toISOString().slice(0, 10) : undefined
+    entries.push(urlEntry(base + cfg.blogPath(s), lastmod, '0.7', 'monthly'))
   }
 
-  return (
-    '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    urls.join('\n') +
-    '\n</urlset>'
-  )
+  const validEntries = entries.filter(Boolean)
+
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...validEntries,
+    '</urlset>'
+  ].join('\n')
 }
