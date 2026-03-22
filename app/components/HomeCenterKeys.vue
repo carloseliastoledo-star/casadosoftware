@@ -637,7 +637,9 @@ const fetchHeaders = import.meta.server
 
 const { data, pending, error } = await useFetch<any[]>('/api/products/best-sellers', {
   server: true,
-  headers: fetchHeaders as any
+  headers: fetchHeaders as any,
+  cache: 'no-store',
+  revalidate: 0
 })
 
 const { data: siteSettings } = await useFetch('/api/site-settings', { server: true, headers: fetchHeaders as any })
