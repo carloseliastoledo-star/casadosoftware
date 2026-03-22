@@ -478,7 +478,7 @@ const { data, pending } = await useAsyncData(
   asyncKey,
   async () => {
     try {
-      return await $fetch('/api/products', {
+      return await $fetch('/api/products/best-sellers', {
         headers: fetchHeaders as any
       })
     } catch (err) {
