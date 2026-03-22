@@ -74,6 +74,18 @@ export default defineEventHandler(async (event) => {
 
     const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
+    // Debug: list ALL siteSettings to understand the data
+    const allSettings = await (prisma as any).siteSettings.findMany({
+      select: { id: true, storeSlug: true, homeBestSellerSlugs: true }
+    })
+    console.log('[best-sellers] storeSlug:', storeSlug)
+    console.log('[best-sellers] allSettings:', JSON.stringify(allSettings.map((s: any) => ({
+      id: s.id,
+      storeSlug: s.storeSlug,
+      hasSlugs: !!s.homeBestSellerSlugs,
+      slugsPreview: String(s.homeBestSellerSlugs || '').substring(0, 80)
+    }))))
+
     const settings = storeSlug
       ? await (prisma as any).siteSettings.findFirst({
           where: { storeSlug },
@@ -98,7 +110,10 @@ export default defineEventHandler(async (event) => {
         })
       : null
 
-    const manualSlugs = parseSlugs(settings?.homeBestSellerSlugs || legacySettings?.homeBestSellerSlugs || fallbackSettings?.homeBestSellerSlugs)
+    const rawSlugsValue = settings?.homeBestSellerSlugs || legacySettings?.homeBestSellerSlugs || fallbackSettings?.homeBestSellerSlugs
+    const manualSlugs = parseSlugs(rawSlugsValue)
+    console.log('[best-sellers] rawSlugsValue:', JSON.stringify(rawSlugsValue))
+    console.log('[best-sellers] manualSlugs:', JSON.stringify(manualSlugs))
 
     const productSelect = {
       id: true,
