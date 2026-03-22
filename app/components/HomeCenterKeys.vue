@@ -635,7 +635,7 @@ const fetchHeaders = import.meta.server
     } as Record<string, string>)
   : undefined
 
-const { data, pending, error } = await useFetch<any[]>('/api/products/best-sellers', {
+const { data, pending, error } = await useFetch<any[]>(`/api/products/best-sellers?t=${Date.now()}`, {
   server: true,
   headers: fetchHeaders as any,
   cache: 'no-store',
