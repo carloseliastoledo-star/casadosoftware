@@ -68,6 +68,12 @@
               </div>
             </div>
 
+            <IntlLanguageSwitcher
+              page-type="blog-post"
+              :slug="String(slug)"
+              class="mt-8"
+            />
+
             <div class="mt-10 border-t pt-8">
               <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

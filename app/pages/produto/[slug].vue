@@ -214,6 +214,13 @@
         <section class="max-w-5xl mx-auto px-4 prose prose-gray max-w-none blog-content" v-html="safeSeoContentHtml" />
       </div>
 
+      <IntlLanguageSwitcher
+        v-if="safeProduct.nome"
+        page-type="product"
+        :slug="String((safeProduct as any)?.slug || slug || '')"
+        class="max-w-5xl mx-auto px-4 w-full"
+      />
+
       <div
         v-if="safeProduct.nome && affiliateEnabled"
         class="mt-8 bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6"
@@ -512,30 +519,56 @@ const seoTitle = computed(() => {
   if (customSeoTitle) return customSeoTitle
 
   const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
+  const lang = intl.language.value
+  const base = String(siteName || 'Casa do Software')
+
   if (isCasaDoSoftware.value) {
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
-      return 'Licença Windows 11 Pro Original – Ativação Imediata | Casa do Software'
+      if (lang === 'en') return `Windows 11 Pro Original License – Instant Activation | ${base}`
+      if (lang === 'es') return `Licencia Windows 11 Pro Original – Activación Inmediata | ${base}`
+      if (lang === 'fr') return `Licence Windows 11 Pro Originale – Activation Instantanée | ${base}`
+      if (lang === 'it') return `Licenza Windows 11 Pro Originale – Attivazione Immediata | ${base}`
+      return `Licença Windows 11 Pro Original – Ativação Imediata | ${base}`
     }
     if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
-      return 'Windows 10 Pro Original – Licença Digital Vitalícia | Casa do Software'
+      if (lang === 'en') return `Windows 10 Pro Original License – Lifetime Digital Key | ${base}`
+      if (lang === 'es') return `Licencia Windows 10 Pro Original – Clave Digital Vitalicia | ${base}`
+      if (lang === 'fr') return `Licence Windows 10 Pro Originale – Clé Numérique à Vie | ${base}`
+      if (lang === 'it') return `Licenza Windows 10 Pro Originale – Chiave Digitale a Vita | ${base}`
+      return `Windows 10 Pro Original – Licença Digital Vitalícia | ${base}`
     }
     if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
       if (isOffice365FiveLicenses.value) {
-        if (intl.language.value === 'en') return 'Original Microsoft 365 License for PC and Mac | Instant delivery'
-        if (intl.language.value === 'es') return 'Licencia original de Microsoft 365 para PC y Mac | Entrega inmediata'
-        return 'Licença Microsoft 365 Original PC e Mac | Entrega imediata'
+        if (lang === 'en') return `Original Microsoft 365 License – 5 Devices, 1TB OneDrive | ${base}`
+        if (lang === 'es') return `Licencia Microsoft 365 Original – 5 Dispositivos, 1TB OneDrive | ${base}`
+        if (lang === 'fr') return `Licence Microsoft 365 Originale – 5 Appareils, 1To OneDrive | ${base}`
+        if (lang === 'it') return `Licenza Microsoft 365 Originale – 5 Dispositivi, 1TB OneDrive | ${base}`
+        return `Licença Microsoft 365 Original PC e Mac | Entrega imediata`
       }
-
-      return 'Office 365 Original – Licença Oficial com Entrega Imediata'
+      if (lang === 'en') return `Buy Microsoft Office 365 License – Instant Delivery | ${base}`
+      if (lang === 'es') return `Comprar Licencia Microsoft Office 365 – Entrega Inmediata | ${base}`
+      if (lang === 'fr') return `Acheter Licence Microsoft Office 365 – Livraison Instantanée | ${base}`
+      if (lang === 'it') return `Acquista Licenza Microsoft Office 365 – Consegna Immediata | ${base}`
+      return `Office 365 Original – Licença Oficial com Entrega Imediata`
     }
     if (slugValue.includes('office') && slugValue.includes('2021')) {
-      return 'Office 2021 Original – Chave de Ativação Vitalícia | Casa do Software'
+      if (lang === 'en') return `Microsoft Office 2021 Original – Lifetime Activation Key | ${base}`
+      if (lang === 'es') return `Microsoft Office 2021 Original – Clave de Activación Vitalicia | ${base}`
+      if (lang === 'fr') return `Microsoft Office 2021 Original – Clé d'Activation à Vie | ${base}`
+      if (lang === 'it') return `Microsoft Office 2021 Originale – Chiave Attivazione a Vita | ${base}`
+      return `Office 2021 Original – Chave de Ativação Vitalícia | ${base}`
     }
   }
 
   const name = String((safeProduct.value as any)?.nome || '').trim()
-  const base = String(siteName || 'Casa do Software')
-  return name ? `${name} | ${base}` : base
+  if (name) {
+    if (lang === 'en') return `Buy ${name} – Instant Digital Delivery | ${base}`
+    if (lang === 'es') return `Comprar ${name} – Entrega Digital Inmediata | ${base}`
+    if (lang === 'fr') return `Acheter ${name} – Livraison Numérique Instantanée | ${base}`
+    if (lang === 'it') return `Acquista ${name} – Consegna Digitale Immediata | ${base}`
+    return `${name} | ${base}`
+  }
+  return base
 })
 
 const seoDescription = computed(() => {
@@ -543,21 +576,42 @@ const seoDescription = computed(() => {
   if (customSeoDesc) return customSeoDesc
 
   const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
+  const lang = intl.language.value
+
   if (isCasaDoSoftware.value) {
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
+      if (lang === 'en') return 'Buy Windows 11 Pro original license with lifetime key and instant delivery. Install and activate in minutes with full support. Secure payment!'
+      if (lang === 'es') return '¡Compra tu licencia original de Windows 11 Pro con clave vitalicia y entrega inmediata. Instala y activa en minutos con soporte completo!'
+      if (lang === 'fr') return 'Achetez votre licence Windows 11 Pro originale avec clé à vie et livraison instantanée. Installation simple avec assistance complète!'
+      if (lang === 'it') return 'Acquista la licenza originale di Windows 11 Pro con chiave a vita e consegna immediata. Attiva in pochi minuti con supporto completo!'
       return 'Windows 11 Pro original com chave vitalícia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
     }
     if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
+      if (lang === 'en') return 'Buy Windows 10 Pro original with instant activation and lifetime guarantee. Digital license for PC or laptop. Support included!'
+      if (lang === 'es') return 'Compra Windows 10 Pro original con activación instantánea y garantía vitalicia. Licencia digital para PC o portátil. ¡Soporte incluido!'
+      if (lang === 'fr') return 'Achetez Windows 10 Pro original avec activation instantanée et garantie à vie. Licence numérique pour PC ou ordinateur portable. Support inclus!'
+      if (lang === 'it') return 'Acquista Windows 10 Pro originale con attivazione immediata e garanzia a vita. Licenza digitale per PC o laptop. Supporto incluso!'
       return 'Compre Windows 10 Pro original com ativação instantânea e garantia. Licença vitalícia para PC ou notebook. Suporte incluso!'
     }
     if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
       if (isOffice365FiveLicenses.value) {
+        if (lang === 'en') return 'Buy original Microsoft 365 license for up to 5 devices. Fast activation, official account, 1TB OneDrive storage. Instant delivery by email!'
+        if (lang === 'es') return 'Compra tu licencia Microsoft 365 original para hasta 5 dispositivos. Activación rápida, cuenta oficial y 1TB de almacenamiento. ¡Entrega inmediata!'
+        if (lang === 'fr') return 'Achetez votre licence Microsoft 365 originale pour jusqu\'à 5 appareils. Activation rapide, compte officiel, 1To OneDrive. Livraison instantanée!'
+        if (lang === 'it') return 'Acquista la tua licenza Microsoft 365 originale per fino a 5 dispositivi. Attivazione rapida, account ufficiale, 1TB OneDrive. Consegna immediata!'
         return 'Comprar licença do pacote Office permanente nunca foi tão fácil. Original, ativação rápida, conta oficial, suporte completo e envio imediato por email.'
       }
-
+      if (lang === 'en') return 'Original Microsoft Office 365 for PC and Mac. Fast activation, official account and full support. Get it now by email!'
+      if (lang === 'es') return 'Microsoft Office 365 original para PC y Mac. Activación rápida, cuenta oficial y soporte completo. ¡Recíbelo ahora por email!'
+      if (lang === 'fr') return 'Microsoft Office 365 original pour PC et Mac. Activation rapide, compte officiel et support complet. Recevez-le maintenant par email!'
+      if (lang === 'it') return 'Microsoft Office 365 originale per PC e Mac. Attivazione rapida, account ufficiale e supporto completo. Ricevilo ora per email!'
       return 'Microsoft Office 365 original para PC e Mac. Ativação rápida, conta oficial e suporte completo. Receba agora por e-mail!'
     }
     if (slugValue.includes('office') && slugValue.includes('2021')) {
+      if (lang === 'en') return 'Buy Microsoft Office 2021 original with permanent key and simple installation. Instant delivery and secure payment. Activate in minutes!'
+      if (lang === 'es') return '¡Compra Microsoft Office 2021 original con clave permanente e instalación simple. Entrega inmediata y pago seguro. Actívalo en minutos!'
+      if (lang === 'fr') return 'Achetez Microsoft Office 2021 original avec clé permanente et installation simple. Livraison instantanée et paiement sécurisé. Activez en minutes!'
+      if (lang === 'it') return 'Acquista Microsoft Office 2021 originale con chiave permanente e installazione semplice. Consegna immediata e pagamento sicuro. Attiva in minuti!'
       return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
     }
   }
@@ -598,7 +652,7 @@ useHead(() => {
   const price = Number(p?.preco || 0)
   const priceCurrency = String(p?.currency || intl.currency.value || 'BRL').trim().toUpperCase()
 
-  const jsonLd: any = {
+  const productJsonLd: any = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: String(p?.nome || '').trim() || undefined,
@@ -619,6 +673,16 @@ useHead(() => {
     }
   }
 
+  const homeUrl = selfCanonical ? selfCanonical.replace(/\/(?:en|es|fr|it)\/.*|\/produto\/.*|\/product\/.*|\/producto\/.*|\/produit\/.*|\/prodotto\/.*/, '/') : '/'
+  const breadcrumbJsonLd: any = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: siteName || 'Casa do Software', item: homeUrl },
+      { '@type': 'ListItem', position: 2, name: String(p?.nome || '').trim() || 'Produto', item: selfCanonical || '' }
+    ]
+  }
+
   return {
     title,
     meta: [{ name: 'description', content: description }],
@@ -626,7 +690,7 @@ useHead(() => {
     script: [
       {
         type: 'application/ld+json',
-        children: JSON.stringify(jsonLd)
+        children: JSON.stringify([productJsonLd, breadcrumbJsonLd])
       }
     ]
   }

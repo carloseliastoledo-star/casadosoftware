@@ -47,6 +47,13 @@
           :product="p"
         />
       </div>
+
+      <IntlLanguageSwitcher
+        v-if="categoria"
+        page-type="category"
+        :slug="String(categoria?.slug || '')"
+        class="mt-6"
+      />
     </div>
   </section>
 
@@ -76,6 +83,13 @@
           :product="p"
         />
       </div>
+
+      <IntlLanguageSwitcher
+        v-if="categoria"
+        page-type="category"
+        :slug="String(categoria?.slug || '')"
+        class="mt-6"
+      />
     </div>
   </section>
 </template>
