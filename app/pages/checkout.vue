@@ -1078,7 +1078,7 @@ async function goToPix() {
   pixPaymentId.value = ''
 
   try {
-    const res: any = await $api('/api/pagarme/pix', {
+    const res: any = await $api('/api/mercadopago/pix', {
       method: 'POST',
       body: {
         produtoId: product.value.id,
