@@ -53,6 +53,9 @@ model Produto {
   tutorialConteudoEs String?  @db.Text
   tutorialConteudoIt String?  @db.Text
   tutorialConteudoFr String?  @db.Text
+  seoTitle       String?
+  seoDescription String?   @db.Text
+  seoContent     String?   @db.Text
   criadoEm  DateTime  @default(now()) @db.DateTime(0)
   licencas  Licenca[]
   orders    Order[]

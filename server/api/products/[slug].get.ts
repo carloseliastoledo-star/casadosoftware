@@ -125,7 +125,10 @@ export default defineEventHandler(async (event) => {
         select: { currency: true, amount: true, oldAmount: true }
       },
       produtoCategorias: { select: { categoria: { select: { slug: true } } } },
-      cardItems: true
+      cardItems: true,
+      seoTitle: true,
+      seoDescription: true,
+      seoContent: true
     }
   })
 
@@ -257,6 +260,9 @@ export default defineEventHandler(async (event) => {
     tutorialTitle: translatedTutorialTitle,
     tutorialSubtitle: translatedTutorialSubtitle,
     tutorialContent: translatedTutorialContent,
+    seoTitle: (product as any).seoTitle || null,
+    seoDescription: (product as any).seoDescription || null,
+    seoContent: (product as any).seoContent || null,
     createdAt: product.criadoEm
   }
 })

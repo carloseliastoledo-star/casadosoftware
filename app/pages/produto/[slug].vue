@@ -208,6 +208,13 @@
       </div>
 
       <div
+        v-if="safeSeoContentHtml"
+        class="mt-8"
+      >
+        <section class="max-w-5xl mx-auto px-4 prose prose-gray max-w-none blog-content" v-html="safeSeoContentHtml" />
+      </div>
+
+      <div
         v-if="safeProduct.nome && affiliateEnabled"
         class="mt-8 bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6"
       >
@@ -496,6 +503,9 @@ const absoluteImageUrl = computed(() => {
 })
 
 const seoTitle = computed(() => {
+  const customSeoTitle = String((safeProduct.value as any)?.seoTitle || '').trim()
+  if (customSeoTitle) return customSeoTitle
+
   const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
   if (isCasaDoSoftware.value) {
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
@@ -524,6 +534,9 @@ const seoTitle = computed(() => {
 })
 
 const seoDescription = computed(() => {
+  const customSeoDesc = String((safeProduct.value as any)?.seoDescription || '').trim()
+  if (customSeoDesc) return customSeoDesc
+
   const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
   if (isCasaDoSoftware.value) {
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
@@ -748,6 +761,14 @@ const safeDescriptionHtml = computed(() => {
   })()
 
   return DOMPurify.sanitize(normalized, {
+    USE_PROFILES: { html: true }
+  })
+})
+
+const safeSeoContentHtml = computed(() => {
+  const raw = String((safeProduct.value as any)?.seoContent || '').trim()
+  if (!raw) return ''
+  return DOMPurify.sanitize(raw, {
     USE_PROFILES: { html: true }
   })
 })

@@ -26,7 +26,10 @@ const form = reactive({
   googleAdsConversionCurrency: 'BRL',
   tutorialTitulo: '',
   tutorialSubtitulo: '',
-  tutorialConteudo: ''
+  tutorialConteudo: '',
+  seoTitle: '',
+  seoDescription: '',
+  seoContent: ''
 })
 
 const uploadLoading = ref(false)
@@ -87,6 +90,9 @@ watchEffect(() => {
   form.tutorialTitulo = p.tutorialTitulo ?? ''
   form.tutorialSubtitulo = p.tutorialSubtitulo ?? ''
   form.tutorialConteudo = p.tutorialConteudo ?? ''
+  form.seoTitle = p.seoTitle ?? ''
+  form.seoDescription = p.seoDescription ?? ''
+  form.seoContent = p.seoContent ?? ''
 })
 
 async function uploadImagem(event) {
@@ -202,6 +208,30 @@ async function salvar() {
           rows="14"
           class="w-full border p-3 rounded"
         />
+
+        <div class="border-t pt-4 mt-4">
+          <h3 class="text-lg font-semibold mb-3">SEO (conteúdo abaixo do produto)</h3>
+
+          <input
+            v-model="form.seoTitle"
+            placeholder="SEO Title (ex: Office 365 Vitalício Original | Licença Oficial + 1TB OneDrive)"
+            class="w-full border p-3 rounded mb-3"
+          />
+
+          <textarea
+            v-model="form.seoDescription"
+            placeholder="SEO Meta Description (até ~160 caracteres)"
+            rows="3"
+            class="w-full border p-3 rounded mb-3"
+          />
+
+          <textarea
+            v-model="form.seoContent"
+            placeholder="Conteúdo SEO em HTML (seções H2/H3, FAQ, CTA — aparece abaixo do produto)"
+            rows="16"
+            class="w-full border p-3 rounded font-mono text-sm"
+          />
+        </div>
       </div>
 
       <div class="bg-white p-6 rounded shadow space-y-4">

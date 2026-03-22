@@ -107,6 +107,9 @@ export default defineEventHandler(async (event) => {
       ativo: true,
       imagem: true,
       cardItems: true,
+      seoTitle: true,
+      seoDescription: true,
+      seoContent: true,
       tutorialTitulo: true,
       tutorialTituloEn: true,
       tutorialTituloEs: true,
@@ -260,6 +263,9 @@ export default defineEventHandler(async (event) => {
     tutorialTitle: translatedTutorialTitle,
     tutorialSubtitle: translatedTutorialSubtitle,
     tutorialContent: translatedTutorialContent,
+    seoTitle: (product as any).seoTitle || null,
+    seoDescription: (product as any).seoDescription || null,
+    seoContent: (product as any).seoContent || null,
     createdAt: product.criadoEm
   }
 })
