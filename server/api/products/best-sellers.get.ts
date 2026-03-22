@@ -90,7 +90,15 @@ export default defineEventHandler(async (event) => {
         })
       : null
 
-    const manualSlugs = parseSlugs(settings?.homeBestSellerSlugs || legacySettings?.homeBestSellerSlugs)
+    // Fallback: if neither store-specific nor legacy has slugs, try any record
+    const fallbackSettings = (!settings?.homeBestSellerSlugs && !legacySettings?.homeBestSellerSlugs)
+      ? await (prisma as any).siteSettings.findFirst({
+          where: { homeBestSellerSlugs: { not: null } },
+          select: { homeBestSellerSlugs: true }
+        })
+      : null
+
+    const manualSlugs = parseSlugs(settings?.homeBestSellerSlugs || legacySettings?.homeBestSellerSlugs || fallbackSettings?.homeBestSellerSlugs)
 
     const productSelect = {
       id: true,
