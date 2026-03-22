@@ -74,46 +74,33 @@ export default defineEventHandler(async (event) => {
 
     const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
-    // Debug: list ALL siteSettings to understand the data
+    // Try store-specific first, then any record that has slugs
     const allSettings = await (prisma as any).siteSettings.findMany({
       select: { id: true, storeSlug: true, homeBestSellerSlugs: true }
     })
-    console.log('[best-sellers] storeSlug:', storeSlug)
-    console.log('[best-sellers] allSettings:', JSON.stringify(allSettings.map((s: any) => ({
-      id: s.id,
-      storeSlug: s.storeSlug,
-      hasSlugs: !!s.homeBestSellerSlugs,
-      slugsPreview: String(s.homeBestSellerSlugs || '').substring(0, 80)
-    }))))
 
-    const settings = storeSlug
-      ? await (prisma as any).siteSettings.findFirst({
-          where: { storeSlug },
-          select: { homeBestSellerSlugs: true }
-        })
-      : await prisma.siteSettings.findFirst({
-          select: { homeBestSellerSlugs: true }
-        })
+    let rawSlugsValue: string | null = null
 
-    const legacySettings = storeSlug
-      ? await (prisma as any).siteSettings.findFirst({
-          where: { storeSlug: null },
-          select: { homeBestSellerSlugs: true }
-        })
-      : null
+    // 1. Try store-specific record
+    if (storeSlug) {
+      const match = allSettings.find((s: any) => s.storeSlug === storeSlug && s.homeBestSellerSlugs)
+      if (match) rawSlugsValue = match.homeBestSellerSlugs
+    }
 
-    // Fallback: if neither store-specific nor legacy has slugs, try any record
-    const fallbackSettings = (!settings?.homeBestSellerSlugs && !legacySettings?.homeBestSellerSlugs)
-      ? await (prisma as any).siteSettings.findFirst({
-          where: { homeBestSellerSlugs: { not: null } },
-          select: { homeBestSellerSlugs: true }
-        })
-      : null
+    // 2. Try legacy (storeSlug null)
+    if (!rawSlugsValue) {
+      const legacy = allSettings.find((s: any) => s.storeSlug === null && s.homeBestSellerSlugs)
+      if (legacy) rawSlugsValue = legacy.homeBestSellerSlugs
+    }
 
-    const rawSlugsValue = settings?.homeBestSellerSlugs || legacySettings?.homeBestSellerSlugs || fallbackSettings?.homeBestSellerSlugs
+    // 3. Fallback: any record with slugs
+    if (!rawSlugsValue) {
+      const any = allSettings.find((s: any) => s.homeBestSellerSlugs)
+      if (any) rawSlugsValue = any.homeBestSellerSlugs
+    }
+
     const manualSlugs = parseSlugs(rawSlugsValue)
-    console.log('[best-sellers] rawSlugsValue:', JSON.stringify(rawSlugsValue))
-    console.log('[best-sellers] manualSlugs:', JSON.stringify(manualSlugs))
+    console.log('[best-sellers] storeSlug:', storeSlug, 'records:', allSettings.length, 'manualSlugs:', manualSlugs.length)
 
     const productSelect = {
       id: true,
