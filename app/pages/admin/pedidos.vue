@@ -25,17 +25,38 @@
     </div>
 
     <div class="bg-white rounded shadow p-4 mb-6">
-      <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-          <label class="block text-sm font-medium mb-2">Período</label>
-          <select v-model="period" class="border rounded-lg px-3 py-2">
-            <option value="day">Dia (últimas 24h)</option>
-            <option value="week">Semana (últimos 7 dias)</option>
-            <option value="month">Mês (últimos 30 dias)</option>
-          </select>
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-3 md:flex-row md:items-end">
+          <div>
+            <label class="block text-sm font-medium mb-1">De</label>
+            <input
+              type="date"
+              v-model="dateFrom"
+              class="border rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Até</label>
+            <input
+              type="date"
+              v-model="dateTo"
+              class="border rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+          <div class="flex items-end gap-2">
+            <button
+              v-for="btn in quickPeriods"
+              :key="btn.key"
+              class="px-3 py-2 text-sm rounded-lg border transition"
+              :class="activeQuick === btn.key ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 hover:bg-gray-50'"
+              @click="applyQuickPeriod(btn.key)"
+            >
+              {{ btn.label }}
+            </button>
+          </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 w-full md:w-auto">
+        <div class="grid grid-cols-2 gap-3 w-full md:w-64">
           <div class="border rounded-lg px-4 py-3">
             <div class="text-xs text-gray-500">Vendas (PAID)</div>
             <div class="text-lg font-semibold">{{ summary.countPaid }}</div>
@@ -503,7 +524,60 @@ type OrderDto = {
   licencas: { id: string; chave: string; status: string }[]
 }
 
-const period = ref<'day' | 'week' | 'month'>('day')
+function todayStr() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function daysAgoStr(n: number) {
+  const d = new Date()
+  d.setDate(d.getDate() - n)
+  return d.toISOString().slice(0, 10)
+}
+
+const dateFrom = ref(todayStr())
+const dateTo = ref(todayStr())
+const activeQuick = ref<string>('today')
+
+const quickPeriods = [
+  { key: 'today', label: 'Hoje' },
+  { key: 'yesterday', label: 'Ontem' },
+  { key: '7d', label: '7 dias' },
+  { key: '30d', label: '30 dias' },
+  { key: 'all', label: 'Tudo' }
+]
+
+function applyQuickPeriod(key: string) {
+  activeQuick.value = key
+  const today = todayStr()
+  switch (key) {
+    case 'today':
+      dateFrom.value = today
+      dateTo.value = today
+      break
+    case 'yesterday': {
+      const y = daysAgoStr(1)
+      dateFrom.value = y
+      dateTo.value = y
+      break
+    }
+    case '7d':
+      dateFrom.value = daysAgoStr(6)
+      dateTo.value = today
+      break
+    case '30d':
+      dateFrom.value = daysAgoStr(29)
+      dateTo.value = today
+      break
+    case 'all':
+      dateFrom.value = ''
+      dateTo.value = ''
+      break
+  }
+}
+
+watch([dateFrom, dateTo], () => {
+  activeQuick.value = ''
+})
 
 type SummaryDto = {
   countPaid: number
@@ -514,8 +588,11 @@ const { data, pending, error, refresh } = await useFetch<{ ok: true; orders: Ord
   '/api/admin/pedidos',
   {
     server: false,
-    query: computed(() => ({ period: period.value })),
-    watch: [period]
+    query: computed(() => ({
+      dateFrom: dateFrom.value || undefined,
+      dateTo: dateTo.value || undefined
+    })),
+    watch: [dateFrom, dateTo]
   }
 )
 

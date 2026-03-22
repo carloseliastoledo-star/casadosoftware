@@ -10,30 +10,57 @@ export default defineEventHandler(async (event) => {
 
   const q = getQuery(event)
   const period = String((q as any)?.period || '').trim().toLowerCase()
+  const dateFromRaw = String((q as any)?.dateFrom || '').trim()
+  const dateToRaw = String((q as any)?.dateTo || '').trim()
 
-  const now = Date.now()
-  const startMs =
-    period === 'day'
-      ? now - 24 * 60 * 60 * 1000
-      : period === 'week'
-        ? now - 7 * 24 * 60 * 60 * 1000
-        : period === 'month'
-          ? now - 30 * 24 * 60 * 60 * 1000
-          : null
+  let paidAfter: Date | null = null
+  let paidBefore: Date | null = null
 
-  const paidAfter = startMs ? new Date(startMs) : null
+  if (dateFromRaw) {
+    const d = new Date(dateFromRaw)
+    if (!isNaN(d.getTime())) {
+      d.setHours(0, 0, 0, 0)
+      paidAfter = d
+    }
+  }
+
+  if (dateToRaw) {
+    const d = new Date(dateToRaw)
+    if (!isNaN(d.getTime())) {
+      d.setHours(23, 59, 59, 999)
+      paidBefore = d
+    }
+  }
+
+  if (!paidAfter && period) {
+    const now = Date.now()
+    const startMs =
+      period === 'day'
+        ? now - 24 * 60 * 60 * 1000
+        : period === 'week'
+          ? now - 7 * 24 * 60 * 60 * 1000
+          : period === 'month'
+            ? now - 30 * 24 * 60 * 60 * 1000
+            : null
+    if (startMs) paidAfter = new Date(startMs)
+  }
+
+  const dateFilter: any = {}
+  if (paidAfter) dateFilter.gte = paidAfter
+  if (paidBefore) dateFilter.lte = paidBefore
+  const hasDateFilter = Object.keys(dateFilter).length > 0
 
   const paidWhere = whereForStore(
     {
       status: 'PAID',
-      pagoEm: paidAfter ? { gte: paidAfter } : undefined
+      pagoEm: hasDateFilter ? dateFilter : undefined
     },
     ctx
   ) as any
 
   const listWhere = whereForStore(
     {
-      criadoEm: paidAfter ? { gte: paidAfter } : undefined
+      criadoEm: hasDateFilter ? dateFilter : undefined
     },
     ctx
   ) as any
