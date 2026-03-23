@@ -40,7 +40,7 @@ const LANG_LABELS: Record<string, string> = {
 }
 
 const AVAILABLE_LABELS: Record<string, string> = {
-  pt: 'This page is also available in',
+  pt: 'Esta página também está disponível em',
   en: 'This page is also available in',
   es: 'Esta página también está disponible en',
   fr: 'Cette page est aussi disponible en',

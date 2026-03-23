@@ -101,7 +101,7 @@ function detectLanguageFromPath(): ClientIntl['language'] | null {
     if (path === '/es' || path.startsWith('/es/')) return 'es'
     if (path === '/fr' || path.startsWith('/fr/')) return 'fr'
     if (path === '/it' || path.startsWith('/it/')) return 'it'
-    return null
+    return 'pt'
   } catch {
     return null
   }
