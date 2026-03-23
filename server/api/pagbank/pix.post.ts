@@ -66,26 +66,55 @@ export default defineEventHandler(async (event) => {
   const reuseWindowMs = 10 * 60 * 1000
   const reuseAfter = new Date(Date.now() - reuseWindowMs)
 
-  if (!normalizedCoupon) {
-    const existing = await (prisma as any).order.findFirst({
+  const existingCustomer = await (prisma as any).customer.findUnique({
+    where: { email_storeSlug: { email, storeSlug } },
+    select: { id: true }
+  })
+
+  if (existingCustomer && !normalizedCoupon) {
+    const existingOrder = await (prisma as any).order.findFirst({
       where: {
         status: 'PENDING',
         storeSlug,
+        customerId: existingCustomer.id,
         produtoId: produto.id,
         cupomId: null,
-        criadoEm: { gte: reuseAfter },
-        customer: { email, storeSlug }
+        criadoEm: { gte: reuseAfter }
       },
       orderBy: { criadoEm: 'desc' },
-      select: { id: true, totalAmount: true, pagbankChargeId: true, customer: { select: { email: true } } }
+      select: { id: true, totalAmount: true, pagbankChargeId: true }
     })
 
-    if (existing?.pagbankChargeId) {
-      return {
-        ok: true,
-        orderId: existing.id,
-        chargeId: existing.pagbankChargeId,
-        reused: true
+    if (existingOrder) {
+      const existingChargeId = String(existingOrder.pagbankChargeId || '').trim()
+      if (existingChargeId) {
+        return { ok: true, orderId: existingOrder.id, chargeId: existingChargeId, reused: true }
+      }
+      // Reusa o pedido existente e cria novo PIX charge para ele (não cria novo pedido)
+      try {
+        const reuseResult = await createPagbankPix({
+          orderId: existingOrder.id,
+          amountBrl: Number(existingOrder.totalAmount),
+          description: (produto as any).nome,
+          customer: { name: nome || email.split('@')[0], email, document: cpfClean }
+        })
+        if (reuseResult.charge_id) {
+          await (prisma as any).order.update({
+            where: { id: existingOrder.id },
+            data: { pagbankChargeId: reuseResult.charge_id }
+          })
+        }
+        return {
+          ok: true,
+          orderId: existingOrder.id,
+          chargeId: reuseResult.charge_id,
+          qrCode: reuseResult.qr_code_text,
+          qrCodeUrl: reuseResult.qr_code_png_url,
+          expiresAt: reuseResult.expires_at
+        }
+      } catch (err: any) {
+        const msg = String(err?.message || 'Erro ao gerar PIX no PagBank')
+        throw createError({ statusCode: 502, statusMessage: msg })
       }
     }
   }
