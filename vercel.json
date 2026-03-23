@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npx prisma generate && nuxt build",
+  "installCommand": "npm install",
+  "framework": "nuxtjs",
+  "regions": ["gru1"]
+}
