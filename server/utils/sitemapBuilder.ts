@@ -78,7 +78,7 @@ export function escXml(s: string): string {
 }
 
 function safeSlug(s: unknown): string {
-  return String(s ?? '').trim()
+  return encodeURIComponent(String(s ?? '').trim())
 }
 
 function urlEntry(loc: string, lastmod?: string, priority = '0.8', changefreq = 'weekly'): string {
