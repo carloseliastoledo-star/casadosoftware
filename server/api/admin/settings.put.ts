@@ -48,6 +48,9 @@ export default defineEventHandler(async (event) => {
     ? null
     : String(body.footerPolicyLinks)
 
+  const rawPixGateway = String(body?.pixGateway || '').trim().toLowerCase()
+  const pixGateway = rawPixGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
+
   if (googleAdsConversionId && googleAdsConversionId.length > 64) {
     throw createError({ statusCode: 400, statusMessage: 'googleAdsConversionId inválido' })
   }
@@ -101,7 +104,8 @@ export default defineEventHandler(async (event) => {
             bodyCloseHtml,
             homeBestSellerSlugs,
             homeVideoUrl,
-            footerPolicyLinks
+            footerPolicyLinks,
+            pixGateway
           },
           select: {
             id: true,
@@ -113,7 +117,8 @@ export default defineEventHandler(async (event) => {
             bodyCloseHtml: true,
             homeBestSellerSlugs: true,
             homeVideoUrl: true,
-            footerPolicyLinks: true
+            footerPolicyLinks: true,
+            pixGateway: true
           }
         })
       : await prismaAny.siteSettings.create({
@@ -126,7 +131,8 @@ export default defineEventHandler(async (event) => {
             bodyCloseHtml,
             homeBestSellerSlugs,
             homeVideoUrl,
-            footerPolicyLinks
+            footerPolicyLinks,
+            pixGateway
           },
           select: {
             id: true,
@@ -138,7 +144,8 @@ export default defineEventHandler(async (event) => {
             bodyCloseHtml: true,
             homeBestSellerSlugs: true,
             homeVideoUrl: true,
-            footerPolicyLinks: true
+            footerPolicyLinks: true,
+            pixGateway: true
           }
         })
 
@@ -162,7 +169,8 @@ export default defineEventHandler(async (event) => {
           bodyCloseHtml,
           homeBestSellerSlugs,
           homeVideoUrl,
-          footerPolicyLinks
+          footerPolicyLinks,
+          pixGateway
         },
         select: {
           id: true,
@@ -174,7 +182,8 @@ export default defineEventHandler(async (event) => {
           bodyCloseHtml: true,
           homeBestSellerSlugs: true,
           homeVideoUrl: true,
-          footerPolicyLinks: true
+          footerPolicyLinks: true,
+          pixGateway: true
         }
       })
     : await prismaAny.siteSettings.create({
@@ -188,7 +197,8 @@ export default defineEventHandler(async (event) => {
           bodyCloseHtml,
           homeBestSellerSlugs,
           homeVideoUrl,
-          footerPolicyLinks
+          footerPolicyLinks,
+          pixGateway
         },
         select: {
           id: true,
@@ -200,7 +210,8 @@ export default defineEventHandler(async (event) => {
           bodyCloseHtml: true,
           homeBestSellerSlugs: true,
           homeVideoUrl: true,
-          footerPolicyLinks: true
+          footerPolicyLinks: true,
+          pixGateway: true
         }
       })
 

@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
         bodyCloseHtml: true,
         homeBestSellerSlugs: true,
         homeVideoUrl: true,
-        footerPolicyLinks: true
+        footerPolicyLinks: true,
+        pixGateway: true
       }
     })
 
@@ -40,7 +41,8 @@ export default defineEventHandler(async (event) => {
         bodyCloseHtml: true,
         homeBestSellerSlugs: true,
         homeVideoUrl: true,
-        footerPolicyLinks: true
+        footerPolicyLinks: true,
+        pixGateway: true
       }
     })
 
@@ -59,7 +61,8 @@ export default defineEventHandler(async (event) => {
       bodyCloseHtml: true,
       homeBestSellerSlugs: true,
       homeVideoUrl: true,
-      footerPolicyLinks: true
+      footerPolicyLinks: true,
+      pixGateway: true
     }
   })
 
@@ -76,7 +79,8 @@ export default defineEventHandler(async (event) => {
       bodyCloseHtml: true,
       homeBestSellerSlugs: true,
       homeVideoUrl: true,
-      footerPolicyLinks: true
+      footerPolicyLinks: true,
+      pixGateway: true
     }
   })
 
@@ -95,7 +99,8 @@ export default defineEventHandler(async (event) => {
       bodyCloseHtml: true,
       homeBestSellerSlugs: true,
       homeVideoUrl: true,
-      footerPolicyLinks: true
+      footerPolicyLinks: true,
+      pixGateway: true
     }
   })
 

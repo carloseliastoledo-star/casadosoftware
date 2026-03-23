@@ -578,6 +578,7 @@ watch(
 )
 
 const paymentTab = ref<'pix' | 'card'>('pix')
+const pixGateway = ref<'mercadopago' | 'pagarme'>('mercadopago')
 
 const customerEmail = ref('')
 const whatsapp = ref('')
@@ -599,6 +600,15 @@ const pixCopyError = ref('')
 
 const PIX_ORDER_STORAGE_KEY = 'checkout_pix_order_id'
 const PIX_PAYMENT_STORAGE_KEY = 'checkout_pix_payment_id'
+
+onMounted(async () => {
+  try {
+    const res: any = await $fetch('/api/pix-gateway')
+    if (res?.gateway === 'pagarme') pixGateway.value = 'pagarme'
+  } catch {
+    // fallback to mercadopago
+  }
+})
 
 const cpf = ref('')
 const acceptedTerms = ref(false)
@@ -1080,7 +1090,8 @@ async function goToPix() {
   pixPaymentId.value = ''
 
   try {
-    const res: any = await $api('/api/mercadopago/pix', {
+    const endpoint = pixGateway.value === 'pagarme' ? '/api/pagarme/pix' : '/api/mercadopago/pix'
+    const res: any = await $api(endpoint, {
       method: 'POST',
       body: {
         produtoId: product.value.id,

@@ -10,7 +10,8 @@ const form = reactive({
   bodyCloseHtml: '',
   homeBestSellerSlugs: '',
   homeVideoUrl: '',
-  footerPolicyLinks: ''
+  footerPolicyLinks: '',
+  pixGateway: 'mercadopago'
 })
 
 const loading = ref(true)
@@ -35,6 +36,7 @@ onMounted(async () => {
     form.homeBestSellerSlugs = s.homeBestSellerSlugs ?? ''
     form.homeVideoUrl = s.homeVideoUrl ?? ''
     form.footerPolicyLinks = s.footerPolicyLinks ?? ''
+    form.pixGateway = s.pixGateway ?? 'mercadopago'
   } catch (err: any) {
     errorMsg.value = err?.data?.statusMessage || err?.message || 'Erro ao carregar configurações'
   } finally {
@@ -59,7 +61,8 @@ async function salvar() {
         bodyCloseHtml: form.bodyCloseHtml,
         homeBestSellerSlugs: form.homeBestSellerSlugs,
         homeVideoUrl: form.homeVideoUrl,
-        footerPolicyLinks: form.footerPolicyLinks
+        footerPolicyLinks: form.footerPolicyLinks,
+        pixGateway: form.pixGateway
       }
     })
     message.value = 'Configurações salvas com sucesso.'
@@ -80,7 +83,54 @@ async function salvar() {
 
     <div v-if="loading" class="text-gray-500">Carregando...</div>
 
-    <div v-else class="bg-white rounded shadow p-6 space-y-4 max-w-2xl">
+    <div v-else class="space-y-6">
+
+    <div class="bg-white rounded shadow p-6 max-w-2xl">
+      <h2 class="text-lg font-semibold mb-4">Gateway PIX</h2>
+      <p class="text-sm text-gray-500 mb-4">Selecione qual gateway será usado para pagamentos PIX no checkout.</p>
+      <div class="flex gap-3">
+        <button
+          type="button"
+          @click="form.pixGateway = 'mercadopago'"
+          :class="form.pixGateway === 'mercadopago'
+            ? 'bg-blue-600 text-white border-blue-600'
+            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'"
+          class="flex-1 border-2 rounded-xl py-4 px-4 font-semibold transition text-center"
+        >
+          <div class="text-base">Mercado Pago</div>
+          <div class="text-xs font-normal mt-1 opacity-70">Padrão · aceito por padrão</div>
+        </button>
+        <button
+          type="button"
+          @click="form.pixGateway = 'pagarme'"
+          :class="form.pixGateway === 'pagarme'
+            ? 'bg-blue-600 text-white border-blue-600'
+            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'"
+          class="flex-1 border-2 rounded-xl py-4 px-4 font-semibold transition text-center"
+        >
+          <div class="text-base">Pagar.me</div>
+          <div class="text-xs font-normal mt-1 opacity-70">Alternativo</div>
+        </button>
+      </div>
+      <div class="mt-4 flex items-center gap-2 text-xs text-gray-500">
+        <span>Ativo:</span>
+        <span class="font-semibold text-gray-800">{{ form.pixGateway === 'pagarme' ? 'Pagar.me' : 'Mercado Pago' }}</span>
+      </div>
+
+      <div v-if="message" class="mt-3 text-sm text-green-700">{{ message }}</div>
+      <div v-if="errorMsg" class="mt-3 text-sm text-red-600">{{ errorMsg }}</div>
+
+      <button
+        type="button"
+        class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-60"
+        :disabled="saving"
+        @click="salvar"
+      >
+        {{ saving ? 'Salvando...' : 'Salvar Gateway' }}
+      </button>
+    </div>
+
+    <div class="bg-white rounded shadow p-6 space-y-4 max-w-2xl">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Google Analytics ID (GA4)</label>
         <input v-model="form.googleAnalyticsId" class="w-full border p-2 rounded" placeholder="Ex: G-XXXXXXXXXX" />
@@ -158,6 +208,8 @@ Terms of Service | /termos'
       >
         {{ saving ? 'Salvando...' : 'Salvar' }}
       </button>
+    </div>
+
     </div>
   </div>
 </template>
