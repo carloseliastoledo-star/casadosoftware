@@ -334,6 +334,7 @@ model SiteSettings {
   homeVideoUrl            String?  @db.Text
   footerPolicyLinks       String?  @db.Text
   pixGateway              String?  @default("mercadopago")
+  cardGateway             String?  @default("mercadopago")
   createdAt              DateTime @default(now()) @db.DateTime(0)
   updatedAt              DateTime @updatedAt @db.DateTime(0)
 }

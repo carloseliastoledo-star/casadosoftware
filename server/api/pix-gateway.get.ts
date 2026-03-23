@@ -8,12 +8,13 @@ export default defineEventHandler(async (event) => {
   try {
     const settings = await (prisma as any).siteSettings.findFirst({
       where: storeSlug ? { storeSlug } : undefined,
-      select: { pixGateway: true }
+      select: { pixGateway: true, cardGateway: true }
     })
 
-    const gateway = settings?.pixGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
-    return { gateway }
+    const pixGateway = settings?.pixGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
+    const cardGateway = settings?.cardGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
+    return { gateway: pixGateway, pixGateway, cardGateway }
   } catch {
-    return { gateway: 'mercadopago' }
+    return { gateway: 'mercadopago', pixGateway: 'mercadopago', cardGateway: 'mercadopago' }
   }
 })

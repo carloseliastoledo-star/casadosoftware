@@ -11,7 +11,8 @@ const form = reactive({
   homeBestSellerSlugs: '',
   homeVideoUrl: '',
   footerPolicyLinks: '',
-  pixGateway: 'mercadopago'
+  pixGateway: 'mercadopago',
+  cardGateway: 'mercadopago'
 })
 
 const loading = ref(true)
@@ -37,6 +38,7 @@ onMounted(async () => {
     form.homeVideoUrl = s.homeVideoUrl ?? ''
     form.footerPolicyLinks = s.footerPolicyLinks ?? ''
     form.pixGateway = s.pixGateway ?? 'mercadopago'
+    form.cardGateway = s.cardGateway ?? 'mercadopago'
   } catch (err: any) {
     errorMsg.value = err?.data?.statusMessage || err?.message || 'Erro ao carregar configurações'
   } finally {
@@ -62,7 +64,8 @@ async function salvar() {
         homeBestSellerSlugs: form.homeBestSellerSlugs,
         homeVideoUrl: form.homeVideoUrl,
         footerPolicyLinks: form.footerPolicyLinks,
-        pixGateway: form.pixGateway
+        pixGateway: form.pixGateway,
+        cardGateway: form.cardGateway
       }
     })
     message.value = 'Configurações salvas com sucesso.'
@@ -113,8 +116,41 @@ async function salvar() {
         </button>
       </div>
       <div class="mt-4 flex items-center gap-2 text-xs text-gray-500">
-        <span>Ativo:</span>
+        <span>PIX ativo:</span>
         <span class="font-semibold text-gray-800">{{ form.pixGateway === 'pagarme' ? 'Pagar.me' : 'Mercado Pago' }}</span>
+      </div>
+
+      <div class="mt-6 border-t pt-6">
+        <div class="font-semibold mb-2">Gateway Cartão de Crédito</div>
+        <p class="text-sm text-gray-500 mb-4">Selecione qual gateway será usado para pagamentos com cartão no checkout.</p>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            @click="form.cardGateway = 'mercadopago'"
+            :class="form.cardGateway === 'mercadopago'
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'"
+            class="flex-1 border-2 rounded-xl py-4 px-4 font-semibold transition text-center"
+          >
+            <div class="text-base">Mercado Pago</div>
+            <div class="text-xs font-normal mt-1 opacity-70">SDK oficial · tokenização no browser</div>
+          </button>
+          <button
+            type="button"
+            @click="form.cardGateway = 'pagarme'"
+            :class="form.cardGateway === 'pagarme'
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'"
+            class="flex-1 border-2 rounded-xl py-4 px-4 font-semibold transition text-center"
+          >
+            <div class="text-base">Pagar.me</div>
+            <div class="text-xs font-normal mt-1 opacity-70">Formulário nativo · sem SDK</div>
+          </button>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-gray-500">
+          <span>Cartão ativo:</span>
+          <span class="font-semibold text-gray-800">{{ form.cardGateway === 'pagarme' ? 'Pagar.me' : 'Mercado Pago' }}</span>
+        </div>
       </div>
 
       <div v-if="message" class="mt-3 text-sm text-green-700">{{ message }}</div>
@@ -126,7 +162,7 @@ async function salvar() {
         :disabled="saving"
         @click="salvar"
       >
-        {{ saving ? 'Salvando...' : 'Salvar Gateway' }}
+        {{ saving ? 'Salvando...' : 'Salvar Gateways' }}
       </button>
     </div>
 

@@ -23,7 +23,8 @@ export default defineEventHandler(async (event) => {
         homeBestSellerSlugs: true,
         homeVideoUrl: true,
         footerPolicyLinks: true,
-        pixGateway: true
+        pixGateway: true,
+        cardGateway: true
       }
     })
 
@@ -42,7 +43,8 @@ export default defineEventHandler(async (event) => {
         homeBestSellerSlugs: true,
         homeVideoUrl: true,
         footerPolicyLinks: true,
-        pixGateway: true
+        pixGateway: true,
+        cardGateway: true
       }
     })
 
@@ -62,7 +64,8 @@ export default defineEventHandler(async (event) => {
       homeBestSellerSlugs: true,
       homeVideoUrl: true,
       footerPolicyLinks: true,
-      pixGateway: true
+      pixGateway: true,
+      cardGateway: true
     }
   })
 
@@ -80,7 +83,8 @@ export default defineEventHandler(async (event) => {
       homeBestSellerSlugs: true,
       homeVideoUrl: true,
       footerPolicyLinks: true,
-      pixGateway: true
+      pixGateway: true,
+      cardGateway: true
     }
   })
 
@@ -100,7 +104,8 @@ export default defineEventHandler(async (event) => {
       homeBestSellerSlugs: true,
       homeVideoUrl: true,
       footerPolicyLinks: true,
-      pixGateway: true
+      pixGateway: true,
+      cardGateway: true
     }
   })
 

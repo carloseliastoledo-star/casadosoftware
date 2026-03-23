@@ -259,72 +259,149 @@
             </template>
 
             <template v-else>
-              <div v-if="cardSdkError" class="mt-4 text-sm text-red-600">
-                {{ cardSdkError }}
-              </div>
-
-              <div class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
-                <div class="font-semibold mb-3">Dados do cartão</div>
-                <form id="mp-card-form" class="space-y-3" @submit.prevent>
-                  <div class="grid grid-cols-1 gap-3">
+              <!-- ── Pagar.me native form ── -->
+              <template v-if="cardGateway === 'pagarme'">
+                <div class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                  <div class="font-semibold mb-3">Dados do cartão</div>
+                  <div class="space-y-3">
                     <div>
                       <label class="block text-xs font-semibold text-gray-700 mb-1">Número do cartão</label>
-                      <input id="form-cardNumber" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                      <input
+                        v-model="pagarmeCard.number"
+                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                        inputmode="numeric"
+                        placeholder="0000 0000 0000 0000"
+                        maxlength="19"
+                        autocomplete="cc-number"
+                      />
                     </div>
                     <div>
                       <label class="block text-xs font-semibold text-gray-700 mb-1">Nome no cartão</label>
-                      <input id="form-cardholderName" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                      <input
+                        v-model="pagarmeCard.holderName"
+                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                        placeholder="Como está no cartão"
+                        autocomplete="cc-name"
+                      />
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Mês</label>
+                        <input
+                          v-model="pagarmeCard.expMonth"
+                          class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                          inputmode="numeric"
+                          maxlength="2"
+                          placeholder="MM"
+                          autocomplete="cc-exp-month"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Ano</label>
+                        <input
+                          v-model="pagarmeCard.expYear"
+                          class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                          inputmode="numeric"
+                          maxlength="4"
+                          placeholder="AAAA"
+                          autocomplete="cc-exp-year"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">CVV</label>
+                        <input
+                          v-model="pagarmeCard.cvv"
+                          class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                          inputmode="numeric"
+                          maxlength="4"
+                          placeholder="CVV"
+                          autocomplete="cc-csc"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-700 mb-1">Parcelas</label>
+                      <select v-model="pagarmeCard.installments" class="w-full border border-gray-200 p-3 rounded-xl bg-white">
+                        <option :value="1">1x sem juros</option>
+                        <option :value="2">2x sem juros</option>
+                        <option :value="3">3x sem juros</option>
+                        <option :value="6">6x sem juros</option>
+                        <option :value="12">12x sem juros</option>
+                      </select>
                     </div>
                   </div>
+                </div>
+              </template>
 
-                  <div class="grid grid-cols-3 gap-3">
-                    <div>
-                      <label class="block text-xs font-semibold text-gray-700 mb-1">Mês</label>
-                      <input
-                        id="form-cardExpirationMonth"
-                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        maxlength="2"
-                        placeholder="MM"
-                        autocomplete="cc-exp-month"
-                      />
-                    </div>
-                    <div>
-                      <label class="block text-xs font-semibold text-gray-700 mb-1">Ano</label>
-                      <input
-                        id="form-cardExpirationYear"
-                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        maxlength="4"
-                        placeholder="AAAA"
-                        autocomplete="cc-exp-year"
-                      />
-                    </div>
-                    <div>
-                      <label class="block text-xs font-semibold text-gray-700 mb-1">CVV</label>
-                      <input
-                        id="form-securityCode"
-                        class="w-full border border-gray-200 p-3 rounded-xl bg-white"
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        maxlength="4"
-                        placeholder="CVV"
-                        autocomplete="cc-csc"
-                      />
-                    </div>
-                  </div>
+              <!-- ── MercadoPago SDK form ── -->
+              <template v-else>
+                <div v-if="cardSdkError" class="mt-4 text-sm text-red-600">
+                  {{ cardSdkError }}
+                </div>
 
-                  <div class="sr-only">
-                    <select id="form-paymentMethodId"></select>
-                    <select id="form-installments"></select>
-                    <select id="form-issuer"></select>
-                    <input id="form-identificationType" type="hidden" value="CPF" />
-                    <input id="form-identificationNumber" :value="cpf" type="hidden" />
-                  </div>
-                </form>
-              </div>
+                <div class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
+                  <div class="font-semibold mb-3">Dados do cartão</div>
+                  <form id="mp-card-form" class="space-y-3" @submit.prevent>
+                    <div class="grid grid-cols-1 gap-3">
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Número do cartão</label>
+                        <input id="form-cardNumber" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Nome no cartão</label>
+                        <input id="form-cardholderName" class="w-full border border-gray-200 p-3 rounded-xl bg-white" />
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Mês</label>
+                        <input
+                          id="form-cardExpirationMonth"
+                          class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                          inputmode="numeric"
+                          pattern="[0-9]*"
+                          maxlength="2"
+                          placeholder="MM"
+                          autocomplete="cc-exp-month"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Ano</label>
+                        <input
+                          id="form-cardExpirationYear"
+                          class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                          inputmode="numeric"
+                          pattern="[0-9]*"
+                          maxlength="4"
+                          placeholder="AAAA"
+                          autocomplete="cc-exp-year"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">CVV</label>
+                        <input
+                          id="form-securityCode"
+                          class="w-full border border-gray-200 p-3 rounded-xl bg-white"
+                          inputmode="numeric"
+                          pattern="[0-9]*"
+                          maxlength="4"
+                          placeholder="CVV"
+                          autocomplete="cc-csc"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="sr-only">
+                      <select id="form-paymentMethodId"></select>
+                      <select id="form-installments"></select>
+                      <select id="form-issuer"></select>
+                      <input id="form-identificationType" type="hidden" value="CPF" />
+                      <input id="form-identificationNumber" :value="cpf" type="hidden" />
+                    </div>
+                  </form>
+                </div>
+              </template>
 
               <div v-if="cardError" class="mt-4 text-sm text-red-600">
                 {{ cardError }}
@@ -579,6 +656,7 @@ watch(
 
 const paymentTab = ref<'pix' | 'card'>('pix')
 const pixGateway = ref<'mercadopago' | 'pagarme'>('mercadopago')
+const cardGateway = ref<'mercadopago' | 'pagarme'>('mercadopago')
 
 const customerEmail = ref('')
 const whatsapp = ref('')
@@ -604,7 +682,8 @@ const PIX_PAYMENT_STORAGE_KEY = 'checkout_pix_payment_id'
 onMounted(async () => {
   try {
     const res: any = await $fetch('/api/pix-gateway')
-    if (res?.gateway === 'pagarme') pixGateway.value = 'pagarme'
+    if (res?.pixGateway === 'pagarme') pixGateway.value = 'pagarme'
+    if (res?.cardGateway === 'pagarme') cardGateway.value = 'pagarme'
   } catch {
     // fallback to mercadopago
   }
@@ -867,6 +946,15 @@ const cardSdkError = ref('')
 let mpCardForm: any = null
 let mpCardSubmitResolver: ((data: any) => void) | null = null
 
+const pagarmeCard = reactive({
+  number: '',
+  holderName: '',
+  expMonth: '',
+  expYear: '',
+  cvv: '',
+  installments: 1
+})
+
 const couponInput = ref('')
 const appliedCoupon = ref<{ id: string; code: string; percent: number } | null>(null)
 const couponError = ref('')
@@ -943,7 +1031,7 @@ async function initCardForm() {
 }
 
 watch(paymentTab, async (tab) => {
-  if (tab === 'card') {
+  if (tab === 'card' && cardGateway.value === 'mercadopago') {
     await nextTick()
     await initCardForm()
   }
@@ -955,6 +1043,46 @@ async function payWithCard() {
   cardError.value = ''
 
   try {
+    if (cardGateway.value === 'pagarme') {
+      if (!pagarmeCard.number.replace(/\s/g, '') || pagarmeCard.number.replace(/\s/g, '').length < 13) {
+        throw new Error('Número do cartão inválido.')
+      }
+      if (!pagarmeCard.holderName.trim()) {
+        throw new Error('Informe o nome impresso no cartão.')
+      }
+      const expMonth = Number(pagarmeCard.expMonth)
+      const expYear = Number(pagarmeCard.expYear)
+      if (!expMonth || expMonth < 1 || expMonth > 12) throw new Error('Mês de validade inválido.')
+      if (!expYear || expYear < 2024) throw new Error('Ano de validade inválido.')
+      if (!pagarmeCard.cvv || pagarmeCard.cvv.length < 3) throw new Error('CVV inválido.')
+
+      const res: any = await $api('/api/pagarme/card', {
+        method: 'POST',
+        body: {
+          produtoId: product.value.id,
+          email: customerEmail.value,
+          nome: nome.value,
+          whatsapp: whatsapp.value,
+          cpf: cpf.value,
+          couponCode: appliedCoupon.value?.code || null,
+          ...attributionPayload.value,
+          card_number: pagarmeCard.number.replace(/\s/g, ''),
+          card_holder_name: pagarmeCard.holderName,
+          card_exp_month: expMonth,
+          card_exp_year: expYear,
+          card_cvv: pagarmeCard.cvv,
+          installments: pagarmeCard.installments
+        }
+      })
+
+      if (String(res.status || '').toLowerCase() === 'approved') {
+        navigateTo({ path: '/obrigado', query: { orderId: res.orderId, paymentId: res.paymentId } })
+      } else {
+        cardError.value = 'Pagamento enviado para análise. Aguarde a confirmação.'
+      }
+      return
+    }
+
     if (!mpCardForm) {
       await initCardForm()
     }
