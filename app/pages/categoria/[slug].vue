@@ -104,6 +104,7 @@ const slug = String(route.params.slug || '')
 
 const baseUrl = useSiteUrl()
 const { siteName } = useSiteBranding()
+const { canonicalUrl, hreflangLinks } = useSeoLocale({ pageType: 'category', slug })
 
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
