@@ -446,11 +446,11 @@
             </div>
 
             <button
-              :disabled="finalizeLoading || !acceptedTerms"
+              :disabled="finalizeLoading || !acceptedTerms || (paymentTab === 'pix' && !!pix.qrCode)"
               @click="finalizeCheckout"
               class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl shadow-sm transition disabled:opacity-60"
             >
-              {{ finalizeLoading ? 'Processando...' : 'Finalizar Compra' }}
+              {{ finalizeLoading ? 'Processando...' : (paymentTab === 'pix' && pix.qrCode ? 'PIX gerado ✓' : 'Finalizar Compra') }}
             </button>
 
             <div v-if="finalizeError" class="mt-3 text-sm text-red-600">
@@ -1063,6 +1063,8 @@ async function finalizeCheckout() {
 
 async function goToPix() {
   if (!product.value) return
+  if (pixLoading.value) return
+  if (pix.qrCode) return
 
   if (!cpf.value || cpf.value.replace(/\D/g, '').length < 11) {
     pixError.value = 'Informe um CPF válido para gerar o PIX.'

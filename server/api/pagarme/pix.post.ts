@@ -138,6 +138,59 @@ export default defineEventHandler(async (event) => {
 
   const reuseWindowMs = 10 * 60 * 1000
   const reuseAfter = new Date(Date.now() - reuseWindowMs)
+  const normalizedCouponCode = String(couponCode || '').trim().toUpperCase()
+
+  // Idempotency check OUTSIDE transaction — avoids PostgreSQL aborted-transaction state
+  const existingCustomer = await (prisma as any).customer.findUnique({
+    where: { email_storeSlug: { email, storeSlug } },
+    select: { id: true }
+  })
+
+  if (existingCustomer && !normalizedCouponCode) {
+    const existingOrder = await (prisma as any).order.findFirst({
+      where: {
+        status: 'PENDING',
+        storeSlug,
+        customerId: existingCustomer.id,
+        produtoId: produto.id,
+        cupomId: null,
+        criadoEm: { gte: reuseAfter }
+      },
+      orderBy: { criadoEm: 'desc' },
+      select: { id: true, totalAmount: true, pagarmeChargeId: true }
+    })
+
+    if (existingOrder) {
+      const existingChargeId = String(existingOrder.pagarmeChargeId || '').trim()
+      if (existingChargeId) {
+        try {
+          const charge = await getPagarmeCharge(existingChargeId)
+          const lastTx = charge?.last_transaction || charge
+          const qrCode = lastTx?.qr_code || ''
+          const qrCodeUrl = lastTx?.qr_code_url || ''
+          if (qrCode) {
+            return { ok: true, orderId: existingOrder.id, paymentId: existingChargeId, qrCode, qrCodeBase64: null, qrCodeUrl }
+          }
+        } catch {
+          // reuse failed, will create new charge below
+        }
+      }
+      // reuse order but create new charge
+      const whatsDigits2 = String(whatsapp || '').replace(/\D/g, '')
+      const mobilePhone2 = whatsDigits2.length >= 10 ? { country_code: '55', area_code: whatsDigits2.slice(0, 2), number: whatsDigits2.slice(2) } : undefined
+      const reusedResult = await createPagarmePix({
+        orderId: existingOrder.id,
+        amountBrl: Number(existingOrder.totalAmount),
+        description: produto.nome,
+        customer: { name: nome || email.split('@')[0], email, document: cpfClean, document_type: 'CPF', type: 'individual', ...(mobilePhone2 ? { phones: { mobile_phone: mobilePhone2 } } : {}) },
+        expiresInSeconds: 3600
+      })
+      if (reusedResult.charge_id) {
+        await (prisma as any).order.update({ where: { id: existingOrder.id }, data: { pagarmeChargeId: reusedResult.charge_id } })
+      }
+      return { ok: true, orderId: existingOrder.id, paymentId: reusedResult.charge_id || '', qrCode: reusedResult.qr_code || '', qrCodeBase64: null, qrCodeUrl: reusedResult.qr_code_url || '' }
+    }
+  }
 
   const { customer, order, coupon, reused } = await (prisma as any).$transaction(async (tx: any) => {
     let affiliateId: number | null = null
@@ -177,41 +230,7 @@ export default defineEventHandler(async (event) => {
     })
 
     let coupon: { id: string; code: string; percent: number } | null = null
-    const normalizedCode = String(couponCode || '').trim().toUpperCase()
-
-    if (!normalizedCode) {
-      try {
-        await tx.$queryRaw`SELECT id FROM Customer WHERE id = ${customer.id} FOR UPDATE`
-      } catch {
-        // fallback sem lock
-      }
-
-      const existing = await tx.order.findFirst({
-        where: {
-          status: 'PENDING',
-          storeSlug,
-          customerId: customer.id,
-          produtoId: produto.id,
-          cupomId: null,
-          criadoEm: { gte: reuseAfter }
-        },
-        orderBy: { criadoEm: 'desc' },
-        select: {
-          id: true,
-          totalAmount: true,
-          pagarmeChargeId: true
-        }
-      })
-
-      if (existing) {
-        return {
-          customer,
-          order: existing,
-          coupon: null,
-          reused: true
-        }
-      }
-    }
+    const normalizedCode = normalizedCouponCode
 
     if (normalizedCode) {
       const c = await tx.cupom.findUnique({

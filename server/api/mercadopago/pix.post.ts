@@ -136,6 +136,64 @@ export default defineEventHandler(async (event) => {
 
   const reuseWindowMs = 10 * 60 * 1000
   const reuseAfter = new Date(Date.now() - reuseWindowMs)
+  const normalizedCouponCode = String(couponCode || '').trim().toUpperCase()
+
+  // Idempotency check OUTSIDE transaction — avoids PostgreSQL aborted-transaction state
+  const existingCustomer = await (prisma as any).customer.findUnique({
+    where: { email_storeSlug: { email, storeSlug } },
+    select: { id: true }
+  })
+
+  if (existingCustomer && !normalizedCouponCode) {
+    const existingOrder = await (prisma as any).order.findFirst({
+      where: {
+        status: 'PENDING',
+        storeSlug,
+        customerId: existingCustomer.id,
+        produtoId: produto.id,
+        cupomId: null,
+        criadoEm: { gte: reuseAfter }
+      },
+      orderBy: { criadoEm: 'desc' },
+      select: { id: true, totalAmount: true, mercadoPagoPaymentId: true }
+    })
+
+    if (existingOrder) {
+      const existingMpId = String(existingOrder.mercadoPagoPaymentId || '').trim()
+      if (existingMpId) {
+        try {
+          const payment = getMpPayment()
+          const mpPayment = await payment.get({ id: existingMpId })
+          const qrCode = (mpPayment as any)?.point_of_interaction?.transaction_data?.qr_code || null
+          const qrCodeBase64Raw = (mpPayment as any)?.point_of_interaction?.transaction_data?.qr_code_base64 || null
+          if (qrCode) {
+            return { ok: true, orderId: existingOrder.id, paymentId: existingMpId, qrCode, qrCodeBase64: qrCodeBase64Raw ? `data:image/png;base64,${qrCodeBase64Raw}` : null }
+          }
+        } catch {
+          // reuse failed, will create new payment below
+        }
+      }
+      // reuse order but create new MP payment
+      const payment = getMpPayment()
+      const reusedResult = await payment.create({
+        body: {
+          transaction_amount: Number(existingOrder.totalAmount),
+          description: produto.nome,
+          payment_method_id: 'pix',
+          payer: { email },
+          metadata: { orderId: existingOrder.id, produtoId: produto.id },
+          external_reference: existingOrder.id
+        }
+      })
+      const newMpId = String((reusedResult as any)?.id || '').trim()
+      if (newMpId) {
+        await (prisma as any).order.update({ where: { id: existingOrder.id }, data: { mercadoPagoPaymentId: newMpId } })
+      }
+      const qrCode2 = (reusedResult as any)?.point_of_interaction?.transaction_data?.qr_code || null
+      const qrCodeBase64Raw2 = (reusedResult as any)?.point_of_interaction?.transaction_data?.qr_code_base64 || null
+      return { ok: true, orderId: existingOrder.id, paymentId: newMpId, qrCode: qrCode2, qrCodeBase64: qrCodeBase64Raw2 ? `data:image/png;base64,${qrCodeBase64Raw2}` : null }
+    }
+  }
 
   const { customer, order, coupon, reused } = await (prisma as any).$transaction(async (tx: any) => {
     let affiliateId: number | null = null
@@ -175,41 +233,7 @@ export default defineEventHandler(async (event) => {
     })
 
     let coupon: { id: string; code: string; percent: number } | null = null
-    const normalizedCode = String(couponCode || '').trim().toUpperCase()
-
-    if (!normalizedCode) {
-      try {
-        await tx.$queryRaw`SELECT id FROM Customer WHERE id = ${customer.id} FOR UPDATE`
-      } catch {
-        // fallback sem lock
-      }
-
-      const existing = await tx.order.findFirst({
-        where: {
-          status: 'PENDING',
-          storeSlug,
-          customerId: customer.id,
-          produtoId: produto.id,
-          cupomId: null,
-          criadoEm: { gte: reuseAfter }
-        },
-        orderBy: { criadoEm: 'desc' },
-        select: {
-          id: true,
-          totalAmount: true,
-          mercadoPagoPaymentId: true
-        }
-      })
-
-      if (existing) {
-        return {
-          customer,
-          order: existing,
-          coupon: null,
-          reused: true
-        }
-      }
-    }
+    const normalizedCode = normalizedCouponCode
 
     if (normalizedCode) {
       const c = await tx.cupom.findUnique({
