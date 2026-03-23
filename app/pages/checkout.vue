@@ -259,8 +259,8 @@
             </template>
 
             <template v-else>
-              <!-- ── Pagar.me native form ── -->
-              <template v-if="cardGateway === 'pagarme'">
+              <!-- ── Formulário nativo (Pagar.me / PagBank) ── -->
+              <template v-if="useNativeCardForm">
                 <div class="mt-4 bg-gray-50 border border-gray-200 rounded-xl p-4">
                   <div class="font-semibold mb-3">Dados do cartão</div>
                   <div class="space-y-3">
@@ -655,8 +655,8 @@ watch(
 )
 
 const paymentTab = ref<'pix' | 'card'>('pix')
-const pixGateway = ref<'mercadopago' | 'pagarme'>('mercadopago')
-const cardGateway = ref<'mercadopago' | 'pagarme'>('mercadopago')
+const pixGateway = ref<'mercadopago' | 'pagarme' | 'pagbank'>('mercadopago')
+const cardGateway = ref<'mercadopago' | 'pagarme' | 'pagbank'>('mercadopago')
 
 const customerEmail = ref('')
 const whatsapp = ref('')
@@ -682,8 +682,9 @@ const PIX_PAYMENT_STORAGE_KEY = 'checkout_pix_payment_id'
 onMounted(async () => {
   try {
     const res: any = await $fetch('/api/pix-gateway')
-    if (res?.pixGateway === 'pagarme') pixGateway.value = 'pagarme'
-    if (res?.cardGateway === 'pagarme') cardGateway.value = 'pagarme'
+    const validGw = ['mercadopago', 'pagarme', 'pagbank']
+    if (validGw.includes(res?.pixGateway)) pixGateway.value = res.pixGateway
+    if (validGw.includes(res?.cardGateway)) cardGateway.value = res.cardGateway
   } catch {
     // fallback to mercadopago
   }
@@ -1037,13 +1038,15 @@ watch(paymentTab, async (tab) => {
   }
 })
 
+const useNativeCardForm = computed(() => cardGateway.value === 'pagarme' || cardGateway.value === 'pagbank')
+
 async function payWithCard() {
   if (!product.value) return
   cardLoading.value = true
   cardError.value = ''
 
   try {
-    if (cardGateway.value === 'pagarme') {
+    if (cardGateway.value === 'pagarme' || cardGateway.value === 'pagbank') {
       if (!pagarmeCard.number.replace(/\s/g, '') || pagarmeCard.number.replace(/\s/g, '').length < 13) {
         throw new Error('Número do cartão inválido.')
       }
@@ -1056,7 +1059,8 @@ async function payWithCard() {
       if (!expYear || expYear < 2024) throw new Error('Ano de validade inválido.')
       if (!pagarmeCard.cvv || pagarmeCard.cvv.length < 3) throw new Error('CVV inválido.')
 
-      const res: any = await $api('/api/pagarme/card', {
+      const cardEndpoint = cardGateway.value === 'pagbank' ? '/api/pagbank/card' : '/api/pagarme/card'
+      const res: any = await $api(cardEndpoint, {
         method: 'POST',
         body: {
           produtoId: product.value.id,
@@ -1218,7 +1222,11 @@ async function goToPix() {
   pixPaymentId.value = ''
 
   try {
-    const endpoint = pixGateway.value === 'pagarme' ? '/api/pagarme/pix' : '/api/mercadopago/pix'
+    const endpoint = pixGateway.value === 'pagarme'
+      ? '/api/pagarme/pix'
+      : pixGateway.value === 'pagbank'
+        ? '/api/pagbank/pix'
+        : '/api/mercadopago/pix'
     const res: any = await $api(endpoint, {
       method: 'POST',
       body: {

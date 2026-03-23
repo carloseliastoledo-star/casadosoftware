@@ -214,6 +214,7 @@ model Order {
   mercadoPagoPaymentMethodId String?
   stripePaymentIntentId String? @unique
   pagarmeChargeId      String?  @unique
+  pagbankChargeId      String?  @unique
   orderBump            Boolean  @default(false)
   bumpProductId        String?
   parentOrderId        String?
@@ -333,8 +334,8 @@ model SiteSettings {
   homeBestSellerSlugs     String?  @db.Text
   homeVideoUrl            String?  @db.Text
   footerPolicyLinks       String?  @db.Text
-  pixGateway              String?  @default("mercadopago")
-  cardGateway             String?  @default("mercadopago")
+  pixGateway              String?  @default("mercadopago")  // mercadopago | pagarme | pagbank
+  cardGateway             String?  @default("mercadopago")  // mercadopago | pagarme | pagbank
   createdAt              DateTime @default(now()) @db.DateTime(0)
   updatedAt              DateTime @updatedAt @db.DateTime(0)
 }

@@ -11,8 +11,9 @@ export default defineEventHandler(async (event) => {
       select: { pixGateway: true, cardGateway: true }
     })
 
-    const pixGateway = settings?.pixGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
-    const cardGateway = settings?.cardGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
+    const validGateways = ['mercadopago', 'pagarme', 'pagbank']
+    const pixGateway = validGateways.includes(settings?.pixGateway) ? settings.pixGateway : 'mercadopago'
+    const cardGateway = validGateways.includes(settings?.cardGateway) ? settings.cardGateway : 'mercadopago'
     return { gateway: pixGateway, pixGateway, cardGateway }
   } catch {
     return { gateway: 'mercadopago', pixGateway: 'mercadopago', cardGateway: 'mercadopago' }

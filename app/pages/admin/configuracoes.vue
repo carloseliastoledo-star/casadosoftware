@@ -114,10 +114,21 @@ async function salvar() {
           <div class="text-base">Pagar.me</div>
           <div class="text-xs font-normal mt-1 opacity-70">Alternativo</div>
         </button>
+        <button
+          type="button"
+          @click="form.pixGateway = 'pagbank'"
+          :class="form.pixGateway === 'pagbank'
+            ? 'bg-blue-600 text-white border-blue-600'
+            : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'"
+          class="flex-1 border-2 rounded-xl py-4 px-4 font-semibold transition text-center"
+        >
+          <div class="text-base">PagBank</div>
+          <div class="text-xs font-normal mt-1 opacity-70">PagSeguro</div>
+        </button>
       </div>
       <div class="mt-4 flex items-center gap-2 text-xs text-gray-500">
         <span>PIX ativo:</span>
-        <span class="font-semibold text-gray-800">{{ form.pixGateway === 'pagarme' ? 'Pagar.me' : 'Mercado Pago' }}</span>
+        <span class="font-semibold text-gray-800">{{ form.pixGateway === 'pagarme' ? 'Pagar.me' : form.pixGateway === 'pagbank' ? 'PagBank' : 'Mercado Pago' }}</span>
       </div>
 
       <div class="mt-6 border-t pt-6">
@@ -146,10 +157,21 @@ async function salvar() {
             <div class="text-base">Pagar.me</div>
             <div class="text-xs font-normal mt-1 opacity-70">Formulário nativo · sem SDK</div>
           </button>
+          <button
+            type="button"
+            @click="form.cardGateway = 'pagbank'"
+            :class="form.cardGateway === 'pagbank'
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'"
+            class="flex-1 border-2 rounded-xl py-4 px-4 font-semibold transition text-center"
+          >
+            <div class="text-base">PagBank</div>
+            <div class="text-xs font-normal mt-1 opacity-70">PagSeguro · sem SDK</div>
+          </button>
         </div>
         <div class="mt-3 flex items-center gap-2 text-xs text-gray-500">
           <span>Cartão ativo:</span>
-          <span class="font-semibold text-gray-800">{{ form.cardGateway === 'pagarme' ? 'Pagar.me' : 'Mercado Pago' }}</span>
+          <span class="font-semibold text-gray-800">{{ form.cardGateway === 'pagarme' ? 'Pagar.me' : form.cardGateway === 'pagbank' ? 'PagBank' : 'Mercado Pago' }}</span>
         </div>
       </div>
 

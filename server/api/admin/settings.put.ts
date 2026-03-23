@@ -49,10 +49,10 @@ export default defineEventHandler(async (event) => {
     : String(body.footerPolicyLinks)
 
   const rawPixGateway = String(body?.pixGateway || '').trim().toLowerCase()
-  const pixGateway = rawPixGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
+  const pixGateway = ['pagarme', 'pagbank'].includes(rawPixGateway) ? rawPixGateway : 'mercadopago'
 
   const rawCardGateway = String(body?.cardGateway || '').trim().toLowerCase()
-  const cardGateway = rawCardGateway === 'pagarme' ? 'pagarme' : 'mercadopago'
+  const cardGateway = ['pagarme', 'pagbank'].includes(rawCardGateway) ? rawCardGateway : 'mercadopago'
 
   if (googleAdsConversionId && googleAdsConversionId.length > 64) {
     throw createError({ statusCode: 400, statusMessage: 'googleAdsConversionId inválido' })
