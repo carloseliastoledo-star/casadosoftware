@@ -57,22 +57,34 @@ export default defineEventHandler(async (event) => {
 
   const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
 
-  await sendMail({
-    to: customerEmail,
-    bcc,
-    subject: `Sua licença: ${produtoNome}`,
-    html
-  })
+  let emailSent = false
+  let emailError = ''
+  try {
+    await sendMail({
+      to: customerEmail,
+      bcc,
+      subject: `Sua licença: ${produtoNome}`,
+      html
+    })
+    emailSent = true
+  } catch (err: any) {
+    emailError = String(err?.message || err || 'Erro ao enviar email')
+    console.error('[resend] SMTP error:', emailError)
+  }
 
   await prisma.order.update({
     where: { id: order.id },
     data: {
-      emailEnviadoEm: new Date(),
-      fulfillmentStatus: 'RESENT',
-      fulfillmentError: null,
+      emailEnviadoEm: emailSent ? new Date() : undefined,
+      fulfillmentStatus: emailSent ? 'RESENT' : 'SMTP_ERROR',
+      fulfillmentError: emailSent ? null : emailError,
       fulfillmentUpdatedAt: new Date()
     }
   })
+
+  if (!emailSent) {
+    throw createError({ statusCode: 502, statusMessage: `Falha ao enviar email: ${emailError}` })
+  }
 
   return {
     ok: true,
