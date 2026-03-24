@@ -45,6 +45,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Pedido já possui licença vinculada' })
   }
 
+  // 1. Transaction: link license to order (no email inside tx)
   const result = await prisma.$transaction(async (tx) => {
     const licenca = await tx.licenca.findUnique({
       where: { id: licencaId },
@@ -91,33 +92,6 @@ export default defineEventHandler(async (event) => {
       select: { id: true, chave: true }
     })
 
-    const html = renderLicenseEmail({
-      produtoNome: produto.nome,
-      licenseKey: updatedLicenca.chave,
-      orderId: order.id
-    })
-
-    const bcc =
-      String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
-
-    await sendMail({
-      to: customer.email,
-      bcc,
-      subject: `Sua licença: ${produto.nome}`,
-      html
-    })
-
-    await tx.order.update({
-      where: { id: order.id },
-      data: {
-        emailEnviadoEm: new Date(),
-        fulfillmentStatus: 'SENT',
-        fulfillmentError: null,
-        fulfillmentUpdatedAt: new Date()
-      },
-      select: { id: true }
-    })
-
     return {
       customerEmail: customer.email,
       produtoNome: produto.nome,
@@ -125,11 +99,50 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  // 2. Send email OUTSIDE the transaction (so SMTP failure doesn't roll back license)
+  let emailSent = false
+  let emailError = ''
+  try {
+    const html = renderLicenseEmail({
+      produtoNome: result.produtoNome,
+      licenseKey: result.licenca.chave,
+      orderId: order.id
+    })
+
+    const bcc =
+      String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
+
+    await sendMail({
+      to: result.customerEmail,
+      bcc,
+      subject: `Sua licença: ${result.produtoNome}`,
+      html
+    })
+    emailSent = true
+  } catch (err: any) {
+    emailError = String(err?.message || err || 'Erro ao enviar email')
+    console.error('[fulfill] SMTP error:', emailError)
+  }
+
+  // 3. Update order fulfillment status
+  await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      emailEnviadoEm: emailSent ? new Date() : undefined,
+      fulfillmentStatus: emailSent ? 'SENT' : 'SMTP_ERROR',
+      fulfillmentError: emailSent ? null : emailError,
+      fulfillmentUpdatedAt: new Date()
+    },
+    select: { id: true }
+  })
+
   return {
     ok: true,
     orderId: id,
     customerEmail: result.customerEmail,
     produtoNome: result.produtoNome,
-    licenca: result.licenca
+    licenca: result.licenca,
+    emailSent,
+    emailError: emailSent ? undefined : emailError
   }
 })
