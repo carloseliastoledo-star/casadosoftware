@@ -62,7 +62,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   nitro: {
-    preset: process.env.VERCEL ? 'vercel' : 'node-server',
+    preset: 'node-server',
     publicAssets: [
       {
         baseURL: '/',
