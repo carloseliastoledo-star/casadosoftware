@@ -1,5 +1,3 @@
 {
-  "buildCommand": "npx prisma generate && npx nuxt build",
-  "installCommand": "npm install",
   "regions": ["gru1"]
 }
