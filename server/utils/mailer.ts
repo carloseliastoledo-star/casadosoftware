@@ -18,6 +18,9 @@ function getTransporter() {
   const user = process.env.SMTP_USER || ''
   const pass = process.env.SMTP_PASS || ''
 
+  const passPreview = pass.length > 6 ? `${pass.slice(0, 4)}...${pass.slice(-4)} (len=${pass.length})` : `(len=${pass.length})`
+  console.log(`[mailer] Creating SMTP transporter: host=${host}, port=${port}, user=${user}, pass=${passPreview}`)
+
   if (!host || !user || !pass) {
     throw createError({ statusCode: 500, statusMessage: 'SMTP não configurado' })
   }
