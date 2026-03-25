@@ -24,7 +24,20 @@ export default defineEventHandler(async (event) => {
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Slug obrigatório' })
 
   const decodedHtmlRaw = htmlRaw ? decodeHtmlEntities(htmlRaw) : ''
-  const html = decodedHtmlRaw ? sanitizeRichHtml(decodedHtmlRaw, { allowIframes: true }) : null
+  let html: string | null = null
+  if (decodedHtmlRaw) {
+    try {
+      html = sanitizeRichHtml(decodedHtmlRaw, { allowIframes: true })
+      if (!html && decodedHtmlRaw) {
+        console.warn('[blog/put] sanitizeRichHtml returned empty, using raw HTML')
+        html = decodedHtmlRaw
+      }
+    } catch (err) {
+      console.error('[blog/put] sanitizeRichHtml failed, using raw HTML:', err)
+      html = decodedHtmlRaw
+    }
+  }
+  console.log(`[blog/put] html input len=${String(htmlRaw || '').length}, sanitized len=${String(html || '').length}`)
 
   try {
     const post = await (prisma as any).blogPost.update({
