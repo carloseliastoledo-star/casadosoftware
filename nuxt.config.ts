@@ -63,6 +63,9 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'node-server',
+    externals: {
+      external: ['jsdom'],
+    },
     publicAssets: [
       {
         baseURL: '/',
