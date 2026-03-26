@@ -627,19 +627,21 @@ const editor = process.client
 
 function setEditorHtml(html: string) {
   const e: any = (editor as any).value
-  if (!e) return
+  if (!e) {
+    console.warn('[setEditorHtml] editor not ready')
+    return
+  }
   e.commands.setContent(html || '', false)
+  const result = e.getHTML()
+  console.log(`[setEditorHtml] input=${html.length}, result=${result.length}, first100=${result.substring(0, 100)}`)
 }
 
 watch(
   () => showModal.value,
-  async (open) => {
+  (open) => {
     if (!open) return
     uploadError.value = ''
     showHtmlSource.value = false
-    await nextTick()
-    await nextTick()
-    setEditorHtml(formHtml.value)
   }
 )
 
@@ -717,6 +719,7 @@ function openCreate() {
   importPaginaId.value = ''
   importError.value = ''
   showModal.value = true
+  setTimeout(() => setEditorHtml(''), 200)
 }
 
 async function openEdit(id: string) {
@@ -736,9 +739,9 @@ async function openEdit(id: string) {
     formFeaturedImage.value = res.post.featuredImage || ''
     formHtml.value = res.post.html || ''
     formPublicado.value = Boolean(res.post.publicado)
-    await nextTick()
-    await nextTick()
-    setEditorHtml(formHtml.value)
+    setTimeout(() => {
+      setEditorHtml(formHtml.value)
+    }, 200)
 
     await loadTranslation()
   } catch (err: any) {
