@@ -191,6 +191,26 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: `update failed: ${err.message}` })
   }
 
+  // Step 2.5: Also update ALL translations to clean HTML + featuredImage
+  let translationsUpdated = 0
+  try {
+    const translations = await (prisma as any).blogPostTranslation.findMany({
+      where: { postId: post.id },
+      select: { id: true, lang: true, html: true }
+    })
+    for (const tr of translations) {
+      if (tr.html && (tr.html.includes('<template') || tr.html.includes('<h1') || tr.html.includes('SEU_LINK_AQUI') || tr.html.includes('min-h-screen'))) {
+        await (prisma as any).blogPostTranslation.update({
+          where: { id: tr.id },
+          data: { html: CLEAN_HTML, featuredImage: FEATURED_IMAGE }
+        })
+        translationsUpdated++
+      }
+    }
+  } catch (err: any) {
+    errors.push(`translations update failed: ${err.message}`)
+  }
+
   // Step 3: Read-after-write verification
   let verified: any
   try {
@@ -234,6 +254,7 @@ export default defineEventHandler(async (event) => {
     slug,
     previousHtmlLength: (post.html || '').length,
     previousFeaturedImage: post.featuredImage,
+    translationsUpdated,
     checks,
     errors: errors.length ? errors : undefined,
     message: allGood
