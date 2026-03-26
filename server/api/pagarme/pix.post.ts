@@ -136,7 +136,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const reuseWindowMs = 10 * 60 * 1000
+  const reuseWindowMs = 60 * 60 * 1000
   const reuseAfter = new Date(Date.now() - reuseWindowMs)
   const normalizedCouponCode = String(couponCode || '').trim().toUpperCase()
 
