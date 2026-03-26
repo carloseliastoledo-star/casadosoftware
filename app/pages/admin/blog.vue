@@ -733,6 +733,7 @@ async function openEdit(id: string) {
     formSlug.value = res.post.slug
     formFeaturedImage.value = res.post.featuredImage || ''
     formHtml.value = res.post.html || ''
+    console.log('[blog/openEdit] GET returned html length:', String(res.post.html || '').length)
     formPublicado.value = Boolean(res.post.publicado)
     setEditorHtml(formHtml.value)
 
@@ -871,9 +872,8 @@ async function saveModal() {
       return
     }
 
-    modalMessage.value = `Post salvo com sucesso. (HTML: ${savedHtmlLen} chars)`
     await refresh()
-    closeModal()
+    modalMessage.value = `Post salvo! HTML enviado: ${String(payload.html || '').length} chars, servidor retornou: ${savedHtmlLen} chars. Feche manualmente.`
   } catch (err: any) {
     modalError.value = err?.data?.statusMessage || 'Erro ao salvar post'
   } finally {
