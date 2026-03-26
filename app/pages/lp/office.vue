@@ -1,9 +1,6 @@
 <template>
   <div class="min-h-screen bg-black text-white">
-
-    <!-- HERO -->
     <section class="px-4 py-12 text-center max-w-3xl mx-auto">
-      
       <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">
         ⚠️ Seu Office expirou e você perdeu acesso ao Word e Excel?
       </h1>
@@ -16,18 +13,18 @@
         ⚠️ Sem ativação, o Office pode bloquear edição, salvar arquivos ou limitar funções
       </div>
 
-      <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
-         class="mt-8 inline-block bg-green-500 text-black font-extrabold text-lg px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition">
+      <a
+        href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
+        class="mt-8 inline-block bg-green-500 text-black font-extrabold text-lg px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition"
+      >
         🔓 LIBERAR MEU OFFICE AGORA
       </a>
 
       <p class="mt-4 text-sm text-gray-400">
         ✔ Sem mensalidade • ✔ Entrega imediata • ✔ Suporte incluso
       </p>
-
     </section>
 
-    <!-- PROVA -->
     <section class="bg-white/5 py-8 text-center">
       <h2 class="text-2xl font-bold">
         +15.000 ativações realizadas com sucesso
@@ -35,9 +32,7 @@
       <p class="text-yellow-400 mt-2">⭐⭐⭐⭐⭐ Clientes satisfeitos</p>
     </section>
 
-    <!-- BENEFICIOS -->
     <section class="px-4 py-12 max-w-4xl mx-auto grid gap-6 md:grid-cols-2">
-      
       <div class="bg-white/5 p-6 rounded-xl">
         <h3 class="font-bold text-lg">⚡ Ativação imediata</h3>
         <p class="text-gray-300 mt-2">Receba e ative em poucos minutos</p>
@@ -57,18 +52,17 @@
         <h3 class="font-bold text-lg">🛠 Suporte</h3>
         <p class="text-gray-300 mt-2">Ajuda caso precise ativar</p>
       </div>
-
     </section>
 
-    <!-- CTA MEIO -->
     <section class="text-center py-10">
-      <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
-         class="bg-green-500 text-black font-extrabold text-lg px-10 py-5 rounded-xl hover:scale-105 transition">
+      <a
+        href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
+        class="bg-green-500 text-black font-extrabold text-lg px-10 py-5 rounded-xl hover:scale-105 transition"
+      >
         ATIVAR AGORA
       </a>
     </section>
 
-    <!-- COMPARAÇÃO -->
     <section class="px-4 py-12 max-w-4xl mx-auto">
       <h2 class="text-2xl font-bold text-center mb-6">
         O que acontece sem ativação?
@@ -97,9 +91,7 @@
       </div>
     </section>
 
-    <!-- DEPOIMENTOS -->
     <section class="px-4 py-12 max-w-4xl mx-auto grid gap-6 md:grid-cols-3">
-
       <div class="bg-white/5 p-6 rounded-xl">
         ⭐⭐⭐⭐⭐
         <p class="mt-3 text-gray-300">
@@ -120,10 +112,8 @@
           "Funcionou perfeito no meu notebook"
         </p>
       </div>
-
     </section>
 
-    <!-- URGÊNCIA FINAL -->
     <section class="text-center py-12 bg-red-500/10">
       <h2 class="text-2xl font-extrabold">
         ⚠️ Não espere seu Office travar totalmente
@@ -133,16 +123,21 @@
         Resolva agora e evite perder acesso aos seus arquivos
       </p>
 
-      <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
-         class="mt-6 inline-block bg-green-500 text-black font-extrabold text-lg px-10 py-5 rounded-xl hover:scale-105 transition">
+      <a
+        href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
+        class="mt-6 inline-block bg-green-500 text-black font-extrabold text-lg px-10 py-5 rounded-xl hover:scale-105 transition"
+      >
         LIBERAR AGORA
       </a>
     </section>
-
   </div>
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'lp'
+})
+
 useSeoMeta({
   title: 'Office expirado? Ative agora em minutos',
   description: 'Recupere acesso ao Word, Excel e PowerPoint agora mesmo sem mensalidade.'

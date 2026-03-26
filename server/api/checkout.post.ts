@@ -87,8 +87,24 @@ export default defineEventHandler(async (event) => {
     update: { nome: nome || undefined },
   })
 
-  // Cria pedido
-  const order = await (prisma as any).order.create({
+  // Deduplicação: reutiliza pedido PENDING recente do mesmo cliente/produto/valor
+  const dedupeWindow = new Date(Date.now() - 60 * 60 * 1000) // última hora
+  const existingOrder = await (prisma as any).order.findFirst({
+    where: {
+      customerId: customer.id,
+      produtoId: produto.id,
+      storeSlug,
+      status: 'PENDING',
+      totalAmount: totalBrl,
+      currency: currency.toUpperCase(),
+      criadoEm: { gte: dedupeWindow },
+    },
+    orderBy: { criadoEm: 'desc' },
+    select: { id: true },
+  })
+
+  // Cria pedido (ou reutiliza existente)
+  const order = existingOrder ?? await (prisma as any).order.create({
     data: {
       status: 'PENDING',
       storeSlug,
