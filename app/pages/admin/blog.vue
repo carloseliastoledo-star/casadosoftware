@@ -737,10 +737,12 @@ async function openEdit(id: string) {
     formTitulo.value = res.post.titulo
     formSlug.value = res.post.slug
     formFeaturedImage.value = res.post.featuredImage || ''
-    formHtml.value = res.post.html || ''
+    const loadedHtml = res.post.html || ''
+    formHtml.value = loadedHtml
     formPublicado.value = Boolean(res.post.publicado)
     setTimeout(() => {
-      setEditorHtml(formHtml.value)
+      setEditorHtml(loadedHtml)
+      formHtml.value = loadedHtml
     }, 200)
 
     await loadTranslation()
