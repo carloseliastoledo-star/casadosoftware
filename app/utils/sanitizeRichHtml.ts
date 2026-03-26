@@ -90,7 +90,8 @@ export function sanitizeRichHtml(input: unknown, options: SanitizeOptions = {}) 
       'autoplay',
       'muted',
       'loop',
-      'type'
+      'type',
+      'data-cta'
     ],
     FORBID_ATTR: ['style', 'id', 'onerror', 'onclick', 'onload']
   })

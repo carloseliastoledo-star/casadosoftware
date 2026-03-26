@@ -296,14 +296,43 @@ function buildToc() {
   toc.value = items
 }
 
+function applyUtmToCtaLinks() {
+  if (!process.client) return
+  const root = articleEl.value
+  if (!root) return
+
+  const ctaLinks = root.querySelectorAll('a[data-cta]') as NodeListOf<HTMLAnchorElement>
+  if (!ctaLinks.length) return
+
+  const currentUrl = new URL(window.location.href)
+  const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'device']
+  const hasUtm = utmKeys.some((k) => currentUrl.searchParams.has(k))
+  if (!hasUtm) return
+
+  ctaLinks.forEach((link) => {
+    try {
+      const dest = new URL(link.href)
+      utmKeys.forEach((k) => {
+        const v = currentUrl.searchParams.get(k)
+        if (v) dest.searchParams.set(k, v)
+      })
+      link.href = dest.toString()
+    } catch {}
+  })
+}
+
 onMounted(() => {
   buildToc()
+  applyUtmToCtaLinks()
 })
 
 watch(
   () => safePostHtml.value,
   () => {
-    setTimeout(() => buildToc(), 0)
+    setTimeout(() => {
+      buildToc()
+      applyUtmToCtaLinks()
+    }, 0)
   }
 )
 
