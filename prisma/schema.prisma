@@ -286,7 +286,7 @@ model BlogPost {
   id           String   @id @default(uuid())
   titulo       String
   slug         String   @unique
-  featuredImage String?
+  featuredImage String?  @db.Text
   excerpt      String?
   keyword      String?
   autoSeo      Boolean  @default(false)
@@ -304,7 +304,7 @@ model BlogPostTranslation {
   post          BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   lang          String
   titulo        String
-  featuredImage String?
+  featuredImage String?  @db.Text
   excerpt       String?
   html          String?  @db.Text
   criadoEm      DateTime @default(now()) @db.DateTime(0)
