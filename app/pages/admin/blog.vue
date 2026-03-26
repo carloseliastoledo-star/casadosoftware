@@ -733,7 +733,6 @@ async function openEdit(id: string) {
     formSlug.value = res.post.slug
     formFeaturedImage.value = res.post.featuredImage || ''
     formHtml.value = res.post.html || ''
-    console.log('[blog/openEdit] GET returned html length:', String(res.post.html || '').length)
     formPublicado.value = Boolean(res.post.publicado)
     setEditorHtml(formHtml.value)
 
@@ -849,31 +848,21 @@ async function saveModal() {
       publicado: formPublicado.value
     }
 
-    console.log('[blog/save] html length being sent:', String(payload.html || '').length)
-
-    let res: any
     if (editingId.value) {
-      res = await $fetch(`/api/admin/blog/${editingId.value}`, {
+      await $fetch(`/api/admin/blog/${editingId.value}`, {
         method: 'PUT',
         body: payload
       })
     } else {
-      res = await $fetch('/api/admin/blog', {
+      await $fetch('/api/admin/blog', {
         method: 'POST',
         body: payload
       })
     }
 
-    const savedHtmlLen = String(res?.post?.html || '').length
-    console.log('[blog/save] server returned html length:', savedHtmlLen)
-
-    if (payload.html && !res?.post?.html) {
-      modalError.value = `HTML enviado (${String(payload.html).length} chars) mas servidor retornou vazio. Verifique logs do servidor.`
-      return
-    }
-
+    modalMessage.value = 'Post salvo com sucesso.'
     await refresh()
-    modalMessage.value = `Post salvo! HTML enviado: ${String(payload.html || '').length} chars, servidor retornou: ${savedHtmlLen} chars. Feche manualmente.`
+    closeModal()
   } catch (err: any) {
     modalError.value = err?.data?.statusMessage || 'Erro ao salvar post'
   } finally {
