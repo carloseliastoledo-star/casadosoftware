@@ -627,13 +627,12 @@ const editor = process.client
 
 function setEditorHtml(html: string) {
   const e: any = (editor as any).value
-  if (!e) {
-    console.warn('[setEditorHtml] editor not ready')
-    return
-  }
+  if (!e) return
   e.commands.setContent(html || '', false)
-  const result = e.getHTML()
-  console.log(`[setEditorHtml] input=${html.length}, result=${result.length}, first100=${result.substring(0, 100)}`)
+}
+
+function isComplexHtml(html: string): boolean {
+  return /<(template|div|article|section|main|header|footer|nav|aside)\b/i.test(html)
 }
 
 watch(
@@ -740,10 +739,14 @@ async function openEdit(id: string) {
     const loadedHtml = res.post.html || ''
     formHtml.value = loadedHtml
     formPublicado.value = Boolean(res.post.publicado)
-    setTimeout(() => {
-      setEditorHtml(loadedHtml)
-      formHtml.value = loadedHtml
-    }, 200)
+    if (isComplexHtml(loadedHtml)) {
+      showHtmlSource.value = true
+    } else {
+      setTimeout(() => {
+        setEditorHtml(loadedHtml)
+        formHtml.value = loadedHtml
+      }, 200)
+    }
 
     await loadTranslation()
   } catch (err: any) {
