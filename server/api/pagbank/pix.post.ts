@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
   const trafficSourceType = inferTrafficSourceType()
 
   // Idempotência: verificar pedido recente antes da transação
-  const reuseWindowMs = 10 * 60 * 1000
+  const reuseWindowMs = 60 * 60 * 1000
   const reuseAfter = new Date(Date.now() - reuseWindowMs)
 
   const existingCustomer = await (prisma as any).customer.findUnique({
