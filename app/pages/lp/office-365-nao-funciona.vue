@@ -1,4 +1,9 @@
-<template>
+<script setup>
+definePageMeta({
+  layout: 'lp'
+})
+</script><
+template>
   <div class="bg-white text-gray-900">
 
     <!-- FAKE BLOG HEADER -->

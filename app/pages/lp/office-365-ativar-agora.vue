@@ -1,3 +1,8 @@
+<script setup>
+definePageMeta({
+  layout: 'lp'
+})
+</script>
 <template>
   <div class="min-h-screen bg-white text-gray-900">
 
