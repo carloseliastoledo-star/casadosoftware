@@ -1,14 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
-import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities.js'
-
-function stripScripts(html: string): string {
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
-    .replace(/\son\w+\s*=\s*[^\s>]*/gi, '')
-}
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -28,9 +20,8 @@ export default defineEventHandler(async (event) => {
   if (!titulo) throw createError({ statusCode: 400, statusMessage: 'Título obrigatório' })
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Slug obrigatório' })
 
-  const decodedHtmlRaw = htmlRaw ? decodeHtmlEntities(htmlRaw) : ''
-  const html = decodedHtmlRaw ? stripScripts(decodedHtmlRaw) : null
-  console.log(`[blog/put] html len=${String(html || '').length}`)
+  const html = htmlRaw || null
+  console.log(`[blog/put] htmlRaw type=${typeof body?.html}, html len=${String(html || '').length}`)
 
   try {
     const post = await (prisma as any).blogPost.update({

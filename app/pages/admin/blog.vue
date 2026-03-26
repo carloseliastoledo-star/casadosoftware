@@ -848,19 +848,30 @@ async function saveModal() {
       publicado: formPublicado.value
     }
 
+    console.log('[blog/save] html length being sent:', String(payload.html || '').length)
+
+    let res: any
     if (editingId.value) {
-      await $fetch(`/api/admin/blog/${editingId.value}`, {
+      res = await $fetch(`/api/admin/blog/${editingId.value}`, {
         method: 'PUT',
         body: payload
       })
     } else {
-      await $fetch('/api/admin/blog', {
+      res = await $fetch('/api/admin/blog', {
         method: 'POST',
         body: payload
       })
     }
 
-    modalMessage.value = 'Post salvo com sucesso.'
+    const savedHtmlLen = String(res?.post?.html || '').length
+    console.log('[blog/save] server returned html length:', savedHtmlLen)
+
+    if (payload.html && !res?.post?.html) {
+      modalError.value = `HTML enviado (${String(payload.html).length} chars) mas servidor retornou vazio. Verifique logs do servidor.`
+      return
+    }
+
+    modalMessage.value = `Post salvo com sucesso. (HTML: ${savedHtmlLen} chars)`
     await refresh()
     closeModal()
   } catch (err: any) {
