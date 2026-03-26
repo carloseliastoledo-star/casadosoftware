@@ -429,7 +429,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import DOMPurify from 'isomorphic-dompurify'
 import { EditorContent, useEditor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
@@ -633,10 +633,12 @@ function setEditorHtml(html: string) {
 
 watch(
   () => showModal.value,
-  (open) => {
+  async (open) => {
     if (!open) return
     uploadError.value = ''
     showHtmlSource.value = false
+    await nextTick()
+    await nextTick()
     setEditorHtml(formHtml.value)
   }
 )
@@ -734,6 +736,8 @@ async function openEdit(id: string) {
     formFeaturedImage.value = res.post.featuredImage || ''
     formHtml.value = res.post.html || ''
     formPublicado.value = Boolean(res.post.publicado)
+    await nextTick()
+    await nextTick()
     setEditorHtml(formHtml.value)
 
     await loadTranslation()
