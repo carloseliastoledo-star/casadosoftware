@@ -18,7 +18,7 @@
       </p>
 
       <!-- IMAGEM -->
-      <img src="/office-erro.jpg" class="rounded-xl mb-6" />
+     
 
       <!-- STORY -->
       <p class="mb-4">
