@@ -1,9 +1,14 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
-import DOMPurify from 'isomorphic-dompurify'
-import { sanitizeRichHtml } from '../../../utils/sanitizeRichHtml'
 import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities.js'
+
+function stripScripts(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/\son\w+\s*=\s*[^\s>]*/gi, '')
+}
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -24,20 +29,8 @@ export default defineEventHandler(async (event) => {
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Slug obrigatório' })
 
   const decodedHtmlRaw = htmlRaw ? decodeHtmlEntities(htmlRaw) : ''
-  let html: string | null = null
-  if (decodedHtmlRaw) {
-    try {
-      html = sanitizeRichHtml(decodedHtmlRaw, { allowIframes: true })
-      if (!html && decodedHtmlRaw) {
-        console.warn('[blog/put] sanitizeRichHtml returned empty, using raw HTML')
-        html = decodedHtmlRaw
-      }
-    } catch (err) {
-      console.error('[blog/put] sanitizeRichHtml failed, using raw HTML:', err)
-      html = decodedHtmlRaw
-    }
-  }
-  console.log(`[blog/put] html input len=${String(htmlRaw || '').length}, sanitized len=${String(html || '').length}`)
+  const html = decodedHtmlRaw ? stripScripts(decodedHtmlRaw) : null
+  console.log(`[blog/put] html len=${String(html || '').length}`)
 
   try {
     const post = await (prisma as any).blogPost.update({

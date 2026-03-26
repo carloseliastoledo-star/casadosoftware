@@ -2,7 +2,13 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../../../db/prisma.js'
 import { requireAdminSession } from '../../../../../utils/adminSession.js'
 import { decodeHtmlEntities } from '../../../../../utils/decodeHtmlEntities.js'
-import { sanitizeRichHtml } from '../../../../../utils/sanitizeRichHtml'
+
+function stripScripts(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/\son\w+\s*=\s*[^\s>]*/gi, '')
+}
 
 function normalizeLang(input: unknown): string {
   return String(input || '').trim().toLowerCase()
@@ -28,20 +34,8 @@ export default defineEventHandler(async (event) => {
   if (!titulo) throw createError({ statusCode: 400, statusMessage: 'Título obrigatório' })
 
   const decodedHtmlRaw = htmlRaw ? decodeHtmlEntities(htmlRaw) : ''
-  let html: string | null = null
-  if (decodedHtmlRaw) {
-    try {
-      html = sanitizeRichHtml(decodedHtmlRaw, { allowIframes: true })
-      if (!html && decodedHtmlRaw) {
-        console.warn('[blog/translation/put] sanitizeRichHtml returned empty, using raw HTML')
-        html = decodedHtmlRaw
-      }
-    } catch (err) {
-      console.error('[blog/translation/put] sanitizeRichHtml failed, using raw HTML:', err)
-      html = decodedHtmlRaw
-    }
-  }
-  console.log(`[blog/translation/put] lang=${lang}, html input len=${String(htmlRaw || '').length}, sanitized len=${String(html || '').length}`)
+  const html = decodedHtmlRaw ? stripScripts(decodedHtmlRaw) : null
+  console.log(`[blog/translation/put] lang=${lang}, html len=${String(html || '').length}`)
 
   try {
     const existing = await (prisma as any).blogPostTranslation.findFirst({
