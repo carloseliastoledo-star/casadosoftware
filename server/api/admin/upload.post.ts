@@ -1,6 +1,3 @@
-import { mkdir, writeFile } from 'fs/promises'
-import { existsSync } from 'fs'
-import { join } from 'path'
 import { createError, defineEventHandler, readMultipartFormData } from 'h3'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { requireAdminSession } from '../../utils/adminSession'
@@ -86,28 +83,10 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    try {
-      const outputPublicDir = join(process.cwd(), '.output/public')
-      const uploadsBase = existsSync(outputPublicDir) ? outputPublicDir : join(process.cwd(), 'app/public')
-      const uploadsDir = join(uploadsBase, 'uploads')
-      const filePath = join(uploadsDir, fileName)
-
-      await mkdir(uploadsDir, { recursive: true })
-      await writeFile(filePath, file.data)
-
-      return { url: `/uploads/${fileName}` }
-    } catch (err: any) {
-      console.error('[admin][upload] Local upload failed (no Spaces configured)', {
-        message: err?.message,
-        name: err?.name
-      })
-
-      throw createError({
-        statusCode: 500,
-        statusMessage:
-          'Falha ao salvar imagem no servidor. Configure SPACES_* no deploy para armazenar imagens no DigitalOcean Spaces.'
-      })
-    }
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Upload não configurado. Configure as variáveis SPACES_BUCKET, SPACES_ENDPOINT, SPACES_KEY e SPACES_SECRET no servidor.'
+    })
   } catch (err: any) {
     if (err?.statusCode) throw err
     console.error('[admin][upload] Unexpected failure', { message: err?.message, name: err?.name, stack: err?.stack })

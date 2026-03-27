@@ -1,6 +1,6 @@
 import { defineEventHandler, setHeader } from 'h3'
 
-const BASE = 'https://casadosoftware.com.br'
+const BASE = (process.env.SITE_URL || '').replace(/\/$/, '') || 'https://casadosoftware.com.br'
 const LANGS = ['pt', 'en', 'es', 'fr', 'it'] as const
 
 export default defineEventHandler((event) => {

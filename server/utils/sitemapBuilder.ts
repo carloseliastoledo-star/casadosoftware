@@ -106,7 +106,7 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
     // DB unavailable — return minimal valid sitemap
   }
 
-  const base = cfg.base
+  const base = (process.env.SITE_URL || '').replace(/\/$/, '') || cfg.base
   const entries: string[] = []
 
   // Home
