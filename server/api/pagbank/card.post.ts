@@ -90,6 +90,24 @@ export default defineEventHandler(async (event) => {
       update: { nome: nome || undefined, whatsapp: whatsapp || undefined, cpf: cpf || undefined }
     })
 
+    if (!normalizedCoupon) {
+      const existing = await tx.order.findFirst({
+        where: {
+          status: 'PENDING',
+          storeSlug,
+          customerId: customer.id,
+          produtoId: produto.id,
+          cupomId: null,
+          criadoEm: { gte: new Date(Date.now() - 60 * 60 * 1000) }
+        },
+        orderBy: { criadoEm: 'desc' },
+        select: { id: true, totalAmount: true }
+      })
+      if (existing) {
+        return { order: existing, coupon: null }
+      }
+    }
+
     let coupon: { id: string; code: string; percent: number } | null = null
     if (normalizedCoupon) {
       const c = await tx.cupom.findUnique({

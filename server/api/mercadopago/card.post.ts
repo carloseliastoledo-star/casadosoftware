@@ -116,7 +116,7 @@ export default defineEventHandler(async (event) => {
 
   const round2 = (n: number) => Math.round(n * 100) / 100
 
-  const reuseWindowMs = 10 * 60 * 1000
+  const reuseWindowMs = 60 * 60 * 1000
   const reuseAfter = new Date(Date.now() - reuseWindowMs)
 
   let order: any
