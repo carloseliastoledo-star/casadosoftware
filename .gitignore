@@ -6,6 +6,9 @@
 .cache
 dist
 
+# Vercel build output (never commit — Vercel builds this at deploy time)
+.vercel/output
+
 # Node dependencies
 node_modules
 
