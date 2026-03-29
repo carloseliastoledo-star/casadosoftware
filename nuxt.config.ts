@@ -72,6 +72,9 @@ export default defineNuxtConfig({
     alias: {
       '#root': resolve(__dirname),
     },
+    externals: {
+      external: ['@prisma/client', '.prisma/client'],
+    },
   },
 
   alias: {
