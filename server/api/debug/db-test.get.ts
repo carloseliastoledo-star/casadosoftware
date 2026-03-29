@@ -20,11 +20,11 @@ export default defineEventHandler(async (_event) => {
   }
 
   try {
-    const result = await prisma.$queryRaw`SELECT 1 as ok`
+    const rows = await prisma.$queryRaw`SELECT 1 as ok`
     return {
       status: 'ok',
       db: masked,
-      result
+      result: JSON.parse(JSON.stringify(rows, (_k: string, v: any) => (typeof v === 'bigint' ? v.toString() : v)))
     }
   } catch (err: any) {
     return {
