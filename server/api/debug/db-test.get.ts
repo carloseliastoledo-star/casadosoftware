@@ -1,5 +1,4 @@
 import { defineEventHandler } from 'h3'
-import prisma from '../../db/prisma'
 
 export default defineEventHandler(async (_event) => {
   const dbUrl = process.env.DATABASE_URL || ''
@@ -7,8 +6,21 @@ export default defineEventHandler(async (_event) => {
     ? dbUrl.replace(/:([^:@]+)@/, ':***@').substring(0, 80)
     : '(not set)'
 
+  let prisma: any
   try {
-    const result = await (prisma as any).$queryRaw`SELECT 1 as ok`
+    const mod = await import('../../db/prisma')
+    prisma = mod.default
+  } catch (importErr: any) {
+    return {
+      status: 'prisma-import-error',
+      db: masked,
+      errorMessage: importErr?.message || String(importErr),
+      errorCode: importErr?.code
+    }
+  }
+
+  try {
+    const result = await prisma.$queryRaw`SELECT 1 as ok`
     return {
       status: 'ok',
       db: masked,
@@ -16,7 +28,7 @@ export default defineEventHandler(async (_event) => {
     }
   } catch (err: any) {
     return {
-      status: 'error',
+      status: 'query-error',
       db: masked,
       errorMessage: err?.message || String(err),
       errorCode: err?.code,
