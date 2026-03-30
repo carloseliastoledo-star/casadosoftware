@@ -167,7 +167,15 @@ export function getIntlContext(event?: H3Event): IntlContext {
   const inferredHostCountry = host.endsWith('.com.br') || host.includes('.com.br:') ? 'BR' : ''
   const country = cookieCountry || headerCountry || (cookieCurrency ? '' : inferredHostCountry)
 
-  let language: 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de' = 'pt'
+  const isEnDomain =
+    !host.endsWith('.com.br') &&
+    !host.includes('.com.br:') &&
+    !host.includes('localhost') &&
+    !host.includes('127.0.0.1') &&
+    !host.includes('.vercel.app') &&
+    host.length > 0
+
+  let language: 'pt' | 'en' | 'es' | 'it' | 'fr' | 'de' = isEnDomain ? 'en' : 'pt'
   let currency: 'brl' | 'usd' | 'eur' = 'brl'
 
   if (subdomainLanguage) {
