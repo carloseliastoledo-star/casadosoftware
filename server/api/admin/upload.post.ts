@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
 
     if (spacesConfigured) {
       try {
-        const signingRegion = 'us-east-1'
+        const signingRegion = region || 'auto'
         const client = new S3Client({
           region: signingRegion,
           endpoint,
@@ -52,8 +52,7 @@ export default defineEventHandler(async (event) => {
             Bucket: bucket,
             Key: key,
             Body: file.data,
-            ContentType: file.type || 'application/octet-stream',
-            ACL: 'public-read'
+            ContentType: file.type || 'application/octet-stream'
           })
         )
 
