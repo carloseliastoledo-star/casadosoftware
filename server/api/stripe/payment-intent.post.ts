@@ -140,6 +140,8 @@ export default defineEventHandler(async (event) => {
         })
       }
 
+      const reuseAfter = new Date(Date.now() - 60 * 60 * 1000)
+
       const existing = await anyTx.order.findFirst({
         where: {
           status: 'PENDING',
@@ -164,7 +166,7 @@ export default defineEventHandler(async (event) => {
           orderId: existing.id,
           clientSecret: pi.client_secret,
           currency: currencyEffective,
-          amount: Number(existing.totalAmount ?? subtotalAmount)
+          amount: Number(existing.totalAmount ?? 0)
         }
       }
 
