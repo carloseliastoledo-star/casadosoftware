@@ -64,9 +64,7 @@ function detectHost(): string {
 
       if (!candidates.length) return ''
 
-      const publicDomain = 'casadosoftware.com.br'
-      const preferred = candidates.find((h) => h.includes(publicDomain))
-      return String(preferred || candidates[0] || '').toLowerCase()
+      return String(candidates[0] || '').toLowerCase()
     } catch {
       return ''
     }
@@ -101,7 +99,7 @@ function detectLanguageFromPath(): ClientIntl['language'] | null {
     if (path === '/es' || path.startsWith('/es/')) return 'es'
     if (path === '/fr' || path.startsWith('/fr/')) return 'fr'
     if (path === '/it' || path.startsWith('/it/')) return 'it'
-    return 'pt'
+    return null
   } catch {
     return null
   }
@@ -118,6 +116,18 @@ export function useIntlContext() {
 
   const countryCode = computed(() => String(countryCookie.value || '').trim().toUpperCase())
 
+  const isEnDomain = computed(() => {
+    const h = host.value
+    return (
+      h.length > 0 &&
+      !h.endsWith('.com.br') &&
+      !h.includes('.com.br:') &&
+      !h.includes('localhost') &&
+      !h.includes('127.0.0.1') &&
+      !h.includes('.vercel.app')
+    )
+  })
+
   const language = computed<ClientIntl['language']>(() => {
     const sub = detectSubdomainLanguage(host.value)
     if (subdomainMode.value && sub) return sub
@@ -129,6 +139,8 @@ export function useIntlContext() {
 
     const cookie = String(langCookie.value || '').trim()
     if (cookie) return normalizeLanguage(cookie)
+
+    if (isEnDomain.value) return 'en'
 
     if (!import.meta.server) {
       const n = detectLanguageFromNavigator()
@@ -190,6 +202,8 @@ export function useIntlContext() {
       if (eur.has(country)) return 'eur'
       return 'usd'
     }
+
+    if (isEnDomain.value) return 'usd'
 
     return 'brl'
   })
