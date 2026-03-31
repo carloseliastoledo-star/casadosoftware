@@ -124,9 +124,7 @@ function readHost(event?: H3Event): string {
 
   if (!candidates.length) return ''
 
-  const publicDomain = 'casadosoftware.com.br'
-  const preferred = candidates.find((h) => h.includes(publicDomain))
-  return (preferred || candidates[0] || '').toLowerCase()
+  return candidates[0].toLowerCase()
 }
 
 function isSubdomainModeEnabled(): boolean {
@@ -185,6 +183,7 @@ export function getIntlContext(event?: H3Event): IntlContext {
     if (subdomainMode && subdomainLanguage) {
       language = subdomainLanguage
     } else if (pathLang) language = pathLang
+    else if (isEnDomain) language = 'en'
     else if (cookieLang) language = cookieLang
     else if (acceptLang) language = acceptLang
     else if (subdomainLanguage) language = subdomainLanguage

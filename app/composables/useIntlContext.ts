@@ -137,10 +137,10 @@ export function useIntlContext() {
 
     if (sub) return sub
 
+    if (isEnDomain.value) return 'en'
+
     const cookie = String(langCookie.value || '').trim()
     if (cookie) return normalizeLanguage(cookie)
-
-    if (isEnDomain.value) return 'en'
 
     if (!import.meta.server) {
       const n = detectLanguageFromNavigator()
