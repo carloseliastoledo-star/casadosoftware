@@ -283,6 +283,7 @@ const includedItems = computed(() => {
     'Envio imediato após confirmação': 'Fast delivery after confirmation',
     'Envio rápido após confirmação': 'Fast delivery after confirmation',
     'Licença digital permanente': 'Permanent digital license',
+    'Licença digital com ativação permanente': 'Digital license with permanent activation',
     'Licença digital': 'Digital license',
     'Suporte 24/7': '24/7 support',
     'Suporte em horário comercial': 'Business hours support',
@@ -290,7 +291,20 @@ const includedItems = computed(() => {
     'Compatível Windows 10 e 11': 'Compatible with Windows 10 and 11',
     'Ativação permanente': 'Permanent activation',
     'Sem renovação necessária': 'No renewal required',
-    'Sem renovação': 'No renewal required'
+    'Sem renovação': 'No renewal required',
+    'Versão profissional com recursos avançados': 'Professional version with advanced features',
+    'Acesso digital com conta ativa': 'Digital access with active account',
+    'Uso durante o período contratado': 'Use during contracted period',
+    'Uso contínuo sem mensalidade': 'Continuous use, no monthly fee',
+    '5 PC , MAC , iOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    '5 PC, MAC , iOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    '5 PC, MAC, iOS, Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    'Atualização gratuita': 'Free updates',
+    'Atualizações gratuitas': 'Free updates',
+    'Sem mensalidade': 'No monthly fee',
+    'Uso vitalício': 'Lifetime use',
+    'Chave ESD': 'ESD Key',
+    'Instalação simples': 'Easy installation'
   }
 
   const dictEs: Record<string, string> = {
