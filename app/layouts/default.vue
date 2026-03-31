@@ -693,9 +693,23 @@ const refundPolicyPath = computed(() => (intl.language.value === 'en' ? '/refund
 const privacyPolicyPath = computed(() => (intl.language.value === 'en' ? '/privacy-policy' : '/privacidade'))
 const termsOfUsePath = computed(() => (intl.language.value === 'en' ? '/terms-of-use' : '/termos'))
 
+const contactLabel = computed(() => {
+  const lang = intl.language.value
+  if (lang === 'en') return 'Contact'
+  if (lang === 'es') return 'Contacto'
+  if (lang === 'fr') return 'Contact'
+  if (lang === 'it') return 'Contatti'
+  return 'Contato'
+})
+
 const mainMenu = computed(() => {
   const base = mainMenuBase.map((it) => {
-    if ('to' in it) return it
+    if ('to' in it) {
+      if (it.label === 'Contato') {
+        return { label: contactLabel.value, to: aboutUsPath.value }
+      }
+      return it
+    }
     const slug = String(it.slug || '').trim()
     const fallbackTo = categoriesIndexPath.value
     if (!slug) return { label: it.label, to: fallbackTo }
