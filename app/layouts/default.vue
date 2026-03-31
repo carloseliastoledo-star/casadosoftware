@@ -75,6 +75,7 @@
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
               <select
+                v-if="!isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
                 :value="intl.countryCode || 'AUTO'"
                 aria-label="Country"
@@ -168,6 +169,7 @@
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
               <select
+                v-if="!isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
                 :value="intl.countryCode || 'AUTO'"
                 aria-label="Country"
@@ -244,8 +246,9 @@
         </div>
 
         <nav class="p-5 flex-1 overflow-y-auto">
-          <div class="grid grid-cols-2 gap-3 mb-5">
+          <div class="grid gap-3 mb-5" :class="isEnDomain ? 'grid-cols-1' : 'grid-cols-2'">
             <select
+              v-if="!isEnDomain"
               class="h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
               :value="intl.countryCode || 'AUTO'"
               aria-label="Country"
@@ -508,6 +511,11 @@ const normalizedHost = computed(() => {
 const isLicencasDigitais = computed(() => {
   if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
   return storeSlug.value === 'licencasdigitais'
+})
+
+const isEnDomain = computed(() => {
+  const h = normalizedHost.value
+  return h.endsWith('.store') || h.includes('casadosoftware.store')
 })
 
 const logoWebpPath = computed(() => {
