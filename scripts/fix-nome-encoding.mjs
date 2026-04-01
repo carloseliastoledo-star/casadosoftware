@@ -25,6 +25,12 @@ const MOJIBAKE = {
   '\u251C\u00CD': '\u00C1',  // ├Í → Á  (Á maiúsculo)
   '\u251C\u00CE': '\u00C2',  // ├Î → Â  (Â maiúsculo)
   '\u251C\u00CC': '\u00C0',  // ├Ì → À  (À maiúsculo)
+  '\u251C\u2551': '\u00FA',  // ├║ → ú  (dúvida, única, público)
+  '\u251C\u2524': '\u00F4',  // ├┤ → ô  (econômica)
+  '\u251C\u00C7': '\u00C0',  // ├Ç → À  (às vezes)
+  '\u251C\u00E7': '\u00C7',  // ├ç → Ç  (ATENÇÃO uppercase Ç)
+  '\u251C\u00F4': '\u00D3',  // ├ô → Ó  (CÓDIGO uppercase Ó)
+  '\u252C\u2551': '\u00BA',  // ┬║ → º  (1º de outubro — C2 BA = ordinal masculino)
 }
 
 const MOJIBAKE_REGEX = new RegExp(
@@ -34,9 +40,22 @@ const MOJIBAKE_REGEX = new RegExp(
   'g'
 )
 
+// Second-pass patterns: different mojibake origin (CP437 / other double-encoding)
+const MOJIBAKE2 = [
+  [/\u00D4\u00C7\u00AA/g,          '\u2026'],  // ÔÇª  → …  (ellipsis)
+  [/\u00D4\u00E5\u00C6/g,          '\u2192'],  // ÔåÆ  → →  (arrow)
+  [/\u00AD\u0192\u00C6\u2557/g,    ''],         // ­ƒÆ╗ → '' (broken emoji)
+  [/\u00AD\u0192\u00F4\u00D1/g,    ''],         // ­ƒôÑ → '' (broken emoji)
+  [/\u00AD\u0192\u00C6\u255B/g,    ''],         // ­ƒÆ[ variants
+  [/\u00AD\u0192/g,                ''],         // remaining ­ƒ prefix (broken emoji start)
+]
+
 function fix(s) {
-  if (!s || !/\u251C/.test(s)) return s
-  return s.replace(MOJIBAKE_REGEX, m => MOJIBAKE[m] ?? m)
+  if (!s) return s
+  let out = s
+  if (/[\u251C\u252C]/.test(out)) out = out.replace(MOJIBAKE_REGEX, m => MOJIBAKE[m] ?? m)
+  for (const [rx, rep] of MOJIBAKE2) out = out.replace(rx, rep)
+  return out
 }
 
 async function fixField(table, field, records) {
