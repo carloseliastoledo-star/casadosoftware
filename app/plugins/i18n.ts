@@ -36,6 +36,7 @@ function detectSubdomainLanguage(host: string): Lang | null {
   if (h.startsWith('es.')) return 'es'
   if (h.startsWith('fr.')) return 'fr'
   if (h.startsWith('it.')) return 'it'
+  if (h.endsWith('.store') || h.includes('casadosoftware.store')) return 'en'
   return null
 }
 
