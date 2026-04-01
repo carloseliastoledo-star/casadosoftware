@@ -2,6 +2,7 @@ import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
 import { getIntlContext } from '../../utils/intl'
+import { autoTranslateText } from '../../utils/autoTranslate'
 
 export default defineEventHandler(async (event) => {
   const slug = String(event.context.params?.slug || '').trim()
@@ -53,11 +54,18 @@ export default defineEventHandler(async (event) => {
     ? post.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
     : null
 
+  const rawTitulo = tr?.titulo || post?.titulo || ''
+  const rawExcerpt = tr?.excerpt || post?.excerpt || null
+
   const normalized: any = {
-    titulo: tr?.titulo || post?.titulo,
+    titulo: (lang !== 'pt' && !tr)
+      ? (autoTranslateText(rawTitulo, { lang: lang as any }) || rawTitulo)
+      : rawTitulo,
     slug: post?.slug,
     featuredImage: tr?.featuredImage || post?.featuredImage || null,
-    excerpt: tr?.excerpt || post?.excerpt || null,
+    excerpt: (lang !== 'pt' && !tr && rawExcerpt)
+      ? (autoTranslateText(rawExcerpt, { lang: lang as any }) || rawExcerpt)
+      : rawExcerpt,
     keyword: post?.keyword || null,
     html: tr?.html || post?.html || null,
     criadoEm: post?.criadoEm,

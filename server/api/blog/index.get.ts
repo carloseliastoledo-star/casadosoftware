@@ -2,6 +2,7 @@ import { defineEventHandler } from 'h3'
 import prisma from '../../db/prisma.js'
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
 import { getIntlContext } from '../../utils/intl'
+import { autoTranslateText } from '../../utils/autoTranslate'
 
 function firstImageFromHtml(html: unknown): string | null {
   const raw = String(html ?? '')
@@ -61,39 +62,36 @@ export default defineEventHandler(async (event) => {
     const lang = String(getIntlContext(event).language || 'pt')
 
     const normalized = Array.isArray(posts)
-      ? posts.map((p: any) => ({
-          titulo:
-            (Array.isArray(p?.translations)
-              ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
-              : null)?.titulo || p?.titulo,
-          slug: p?.slug,
-          keyword: p?.keyword,
-          featuredImage:
-            (Array.isArray(p?.translations)
-              ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
-              : null)?.featuredImage ||
-            p?.featuredImage ||
-            firstImageFromHtml(
-              decodeHtmlEntities(
-                (Array.isArray(p?.translations)
-                  ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
-                  : null)?.html || p?.html
-              )
-            ) ||
-            null,
-          descricao:
-            (Array.isArray(p?.translations)
-              ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
-              : null)?.excerpt ||
-            p?.excerpt ||
-            excerptFromHtml(
-              (Array.isArray(p?.translations)
-                ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
-                : null)?.html || p?.html
-            ),
-          criadoEm: p?.criadoEm,
-          atualizadoEm: p?.atualizadoEm
-        }))
+      ? posts.map((p: any) => {
+          const translation = Array.isArray(p?.translations)
+            ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
+            : null
+
+          const rawTitulo = translation?.titulo || p?.titulo || ''
+          const titulo = (lang !== 'pt' && !translation)
+            ? (autoTranslateText(rawTitulo, { lang: lang as any }) || rawTitulo)
+            : rawTitulo
+
+          const rawExcerpt = translation?.excerpt || p?.excerpt ||
+            excerptFromHtml(translation?.html || p?.html)
+          const descricao = (lang !== 'pt' && !translation)
+            ? (autoTranslateText(rawExcerpt, { lang: lang as any }) || rawExcerpt)
+            : rawExcerpt
+
+          return {
+            titulo,
+            slug: p?.slug,
+            keyword: p?.keyword,
+            featuredImage:
+              translation?.featuredImage ||
+              p?.featuredImage ||
+              firstImageFromHtml(decodeHtmlEntities(translation?.html || p?.html)) ||
+              null,
+            descricao,
+            criadoEm: p?.criadoEm,
+            atualizadoEm: p?.atualizadoEm
+          }
+        })
       : []
 
     return { ok: true, posts: normalized }

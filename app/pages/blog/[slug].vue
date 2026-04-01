@@ -39,8 +39,8 @@
 
             <div v-if="relatedPosts.length" class="mt-10 border-t pt-8">
               <div class="flex items-center justify-between gap-4">
-                <h2 class="text-lg md:text-xl font-bold text-gray-900">Conteúdos relacionados</h2>
-                <NuxtLink :to="`${langPrefix}/blog`" class="text-sm text-blue-700 font-semibold hover:text-blue-800 transition">Ver todos</NuxtLink>
+                <h2 class="text-lg md:text-xl font-bold text-gray-900">{{ ui.related }}</h2>
+                <NuxtLink :to="`${langPrefix}/blog`" class="text-sm text-blue-700 font-semibold hover:text-blue-800 transition">{{ ui.viewAll }}</NuxtLink>
               </div>
 
               <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -106,7 +106,7 @@
           </div>
 
           <div v-if="toc.length" class="bg-white rounded-2xl border border-gray-100 p-5">
-            <div class="text-sm font-semibold text-gray-900">Sumário</div>
+            <div class="text-sm font-semibold text-gray-900">{{ ui.toc }}</div>
             <nav class="mt-3">
               <a
                 v-for="item in toc"
@@ -121,7 +121,7 @@
           </div>
 
           <div v-if="recentPosts.length" class="bg-white rounded-2xl border border-gray-100 p-5">
-            <div class="text-sm font-semibold text-gray-900">Posts recentes</div>
+            <div class="text-sm font-semibold text-gray-900">{{ ui.recent }}</div>
             <div class="mt-3 space-y-3">
               <NuxtLink v-for="p in recentPosts" :key="p.slug" :to="`${langPrefix}/blog/${p.slug}`" class="block group">
                 <div class="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition line-clamp-2">
@@ -143,6 +143,17 @@ import { sanitizeRichHtml } from '../../utils/sanitizeRichHtml'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
+const intl = useIntlContext()
+
+const ui = computed(() => {
+  const isEn = intl.language.value === 'en'
+  return {
+    related:   isEn ? 'Related content'  : 'Conteúdos relacionados',
+    viewAll:   isEn ? 'View all'          : 'Ver todos',
+    toc:       isEn ? 'Table of contents' : 'Sumário',
+    recent:    isEn ? 'Recent posts'      : 'Posts recentes',
+  }
+})
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))

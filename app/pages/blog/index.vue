@@ -2,25 +2,25 @@
   <div class="bg-gray-50 min-h-screen">
     <section class="bg-gradient-to-r from-blue-600 to-blue-500 text-white py-14 mb-10">
       <div class="max-w-6xl mx-auto px-6 text-center">
-        <h1 class="text-4xl font-extrabold">Blog Casa do Software</h1>
-        <p class="mt-3 text-blue-100 text-lg">Guias, tutoriais e novidades sobre Windows, Office e licenças digitais.</p>
+        <h1 class="text-4xl font-extrabold">{{ ui.heroTitle }}</h1>
+        <p class="mt-3 text-blue-100 text-lg">{{ ui.heroSub }}</p>
       </div>
     </section>
 
     <section class="max-w-6xl mx-auto px-6 mb-12">
-      <h2 class="text-2xl font-bold mb-6">🔥 Artigos populares</h2>
+      <h2 class="text-2xl font-bold mb-6">{{ ui.popular }}</h2>
       <div class="grid md:grid-cols-3 gap-6">
         <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
-          <h3 class="font-bold">Windows OEM vs Retail</h3>
-          <p class="text-sm text-gray-600 mt-2">Entenda as diferenças entre as licenças Windows e qual escolher.</p>
+          <h3 class="font-bold">{{ ui.p1Title }}</h3>
+          <p class="text-sm text-gray-600 mt-2">{{ ui.p1Desc }}</p>
         </div>
         <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
-          <h3 class="font-bold">Como ativar Windows 11</h3>
-          <p class="text-sm text-gray-600 mt-2">Aprenda a ativar o Windows 11 passo a passo.</p>
+          <h3 class="font-bold">{{ ui.p2Title }}</h3>
+          <p class="text-sm text-gray-600 mt-2">{{ ui.p2Desc }}</p>
         </div>
         <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
-          <h3 class="font-bold">Office 365 vale a pena?</h3>
-          <p class="text-sm text-gray-600 mt-2">Descubra se o Office 365 compensa em 2026.</p>
+          <h3 class="font-bold">{{ ui.p3Title }}</h3>
+          <p class="text-sm text-gray-600 mt-2">{{ ui.p3Desc }}</p>
         </div>
       </div>
     </section>
@@ -62,14 +62,14 @@
 
                   <div class="flex items-center justify-between mt-4 text-xs text-gray-500">
                     <span>{{ formatDate(post.atualizadoEm) }}</span>
-                    <span>5 min leitura</span>
+                    <span>{{ ui.readTime }}</span>
                   </div>
 
                   <div class="mt-5">
                     <span
                       class="inline-flex items-center gap-2 rounded-xl bg-blue-600 text-white font-semibold px-4 py-2 hover:bg-blue-700 transition"
                     >
-                      Ler artigo →
+                      {{ ui.readMore }}
                     </span>
                   </div>
                 </div>
@@ -88,6 +88,24 @@ import { useI18n } from 'vue-i18n'
 const { siteName } = useSiteBranding()
 
 const { t, locale } = useI18n()
+const intl = useIntlContext()
+
+const ui = computed(() => {
+  const isEn = intl.language.value === 'en'
+  return {
+    heroTitle:   isEn ? 'Casa do Software Blog'              : 'Blog Casa do Software',
+    heroSub:     isEn ? 'Guides, tutorials and news about Windows, Office and digital licenses.' : 'Guias, tutoriais e novidades sobre Windows, Office e licenças digitais.',
+    popular:     isEn ? '🔥 Popular articles'                : '🔥 Artigos populares',
+    readMore:    isEn ? 'Read article →'                     : 'Ler artigo →',
+    readTime:    isEn ? '5 min read'                         : '5 min leitura',
+    p1Title:     isEn ? 'Windows OEM vs Retail'              : 'Windows OEM vs Retail',
+    p1Desc:      isEn ? 'Understand the differences between Windows licenses and which to choose.' : 'Entenda as diferenças entre as licenças Windows e qual escolher.',
+    p2Title:     isEn ? 'How to activate Windows 11'         : 'Como ativar Windows 11',
+    p2Desc:      isEn ? 'Learn how to activate Windows 11 step by step.' : 'Aprenda a ativar o Windows 11 passo a passo.',
+    p3Title:     isEn ? 'Is Office 365 worth it?'            : 'Office 365 vale a pena?',
+    p3Desc:      isEn ? 'Find out if Office 365 is worth it in 2026.'   : 'Descubra se o Office 365 compensa em 2026.',
+  }
+})
 
 const route = useRoute()
 const langPrefix = computed(() => {
