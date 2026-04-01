@@ -51,7 +51,34 @@ const commonToEn: Array<[RegExp, string]> = [
   [/\bTutorial de Ativação\b/gi, 'Activation tutorial'],
   [/\bSem conteúdo\b/gi, 'No content.'],
   [/\bCarregando\b/gi, 'Loading'],
-  [/\bnão encontrado\b/gi, 'not found']
+  [/\bnão encontrado\b/gi, 'not found'],
+  [/\bInstantânea\b/gi, 'Instant'],
+  [/\binstantânea\b/gi, 'instant'],
+  [/\bImediata\b/gi, 'Instant'],
+  [/\bimediata\b/gi, 'instant'],
+  [/\bImediato\b/gi, 'Instant'],
+  [/\bimediato\b/gi, 'instant'],
+  [/\bpara PC e Mac\b/gi, 'for PC and Mac'],
+  [/\bpara PC\b/gi, 'for PC'],
+  [/\be Mac\b/gi, 'and Mac'],
+  [/\bOriginal\b/gi, 'Original'],
+  [/\bVitalícia\b/gi, 'Lifetime'],
+  [/\bvitalícia\b/gi, 'lifetime'],
+  [/\bVitalício\b/gi, 'Lifetime'],
+  [/\bvitalício\b/gi, 'lifetime'],
+  [/\bProfissional\b/gi, 'Professional'],
+  [/\bprofissional\b/gi, 'professional'],
+  [/\bEmpresarial\b/gi, 'Business'],
+  [/\bempresarial\b/gi, 'business'],
+  [/\bAnual\b/gi, 'Annual'],
+  [/\banual\b/gi, 'annual'],
+  [/\bMensal\b/gi, 'Monthly'],
+  [/\bmensal\b/gi, 'monthly'],
+  [/\bcom Ativação\b/gi, 'with Activation'],
+  [/\bAtivar\b/gi, 'Activate'],
+  [/\bAtivar agora\b/gi, 'Activate now'],
+  [/\bAtivar em poucos minutos\b/gi, 'Activate in minutes'],
+  [/\bAtivar Online\b/gi, 'Activate Online']
 ]
 
 const commonToEs: Array<[RegExp, string]> = [
@@ -187,6 +214,11 @@ const commonToFr: Array<[RegExp, string]> = [
 ]
 
 const phrasesToEn: Array<[RegExp, string]> = [
+  [/Entrega imediata após confirmação/gi, 'Fast delivery after confirmation'],
+  [/Entrega rápida após confirmação/gi, 'Fast delivery after confirmation'],
+  [/Entrega imediata/gi, 'Instant delivery'],
+  [/para PC e Mac/gi, 'for PC and Mac'],
+  [/Ative em poucos minutos/gi, 'Activate in minutes'],
   [/com Ativação Online/gi, 'with Online Activation'],
   [/Após a confirmação do pagamento,/gi, 'After payment confirmation,'],
   [/após a confirmação do pagamento/gi, 'after payment confirmation'],
