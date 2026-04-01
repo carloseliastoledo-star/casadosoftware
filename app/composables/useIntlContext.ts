@@ -158,6 +158,8 @@ export function useIntlContext() {
       return defaultCurrencyForLanguage(sub)
     }
 
+    if (isEnDomain.value) return 'usd'
+
     const fromCookie = normalizeCurrency(currencyCookie.value)
     if (fromCookie) return fromCookie
 

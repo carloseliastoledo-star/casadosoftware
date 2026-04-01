@@ -188,7 +188,9 @@ export function getIntlContext(event?: H3Event): IntlContext {
     else if (acceptLang) language = acceptLang
     else if (subdomainLanguage) language = subdomainLanguage
 
-    if (cookieCurrency) {
+    if (isEnDomain) {
+      currency = 'usd'
+    } else if (cookieCurrency) {
       currency = cookieCurrency
     } else if (subdomainMode && (subdomainLanguage || language)) {
       currency = defaultCurrencyForLanguage((subdomainLanguage || language) as any)
