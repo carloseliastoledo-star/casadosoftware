@@ -82,19 +82,21 @@ async function main() {
 
   // Fix BlogPost table
   const blogPosts = await prisma.blogPost.findMany({
-    select: { id: true, titulo: true, excerpt: true }
+    select: { id: true, titulo: true, excerpt: true, html: true }
   })
   console.log(`\n=== Checking ${blogPosts.length} blog posts ===\n`)
   total += await fixField('BlogPost', 'titulo', blogPosts)
   total += await fixField('BlogPost', 'excerpt', blogPosts)
+  total += await fixField('BlogPost', 'html', blogPosts)
 
   // Fix BlogPostTranslation table
   const blogTranslations = await prisma.blogPostTranslation.findMany({
-    select: { id: true, titulo: true, excerpt: true }
+    select: { id: true, titulo: true, excerpt: true, html: true }
   })
   console.log(`\n=== Checking ${blogTranslations.length} blog translations ===\n`)
   total += await fixField('BlogPostTranslation', 'titulo', blogTranslations)
   total += await fixField('BlogPostTranslation', 'excerpt', blogTranslations)
+  total += await fixField('BlogPostTranslation', 'html', blogTranslations)
 
   console.log(`\nTotal fixed: ${total} fields.`)
 }
