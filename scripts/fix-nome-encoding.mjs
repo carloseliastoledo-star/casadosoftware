@@ -17,6 +17,14 @@ const MOJIBAKE = {
   '\u251C\u00E1': '\u00E0',  // ├á → à  (à)
   '\u251C\u00E3': '\u00F4',  // ├ã → ô  (ô)
   '\u251C\u00E2': '\u00F2',  // ├â → ò  (ò)
+  '\u251C\u00AE': '\u00E9',  // ├® → é  (é)
+  '\u251C\u00AC': '\u00EA',  // ├¬ → ê  (você, português)
+  '\u251C\u00ED': '\u00E1',  // ├í → á  (já, Grátis)
+  '\u251C\u00CB': '\u00C9',  // ├Ë → É  (É confiável?)
+  '\u251C\u00EB': '\u00C9',  // ├ë → É  (variante minúscula)
+  '\u251C\u00CD': '\u00C1',  // ├Í → Á  (Á maiúsculo)
+  '\u251C\u00CE': '\u00C2',  // ├Î → Â  (Â maiúsculo)
+  '\u251C\u00CC': '\u00C0',  // ├Ì → À  (À maiúsculo)
 }
 
 const MOJIBAKE_REGEX = new RegExp(
