@@ -110,7 +110,7 @@ const ui = computed(() => isEn.value ? ({
   r1: '"Fixed it right away, was stuck here"',
   r2: '"Received and activated the same day"',
   r3: '"Worked perfectly on my laptop"',
-  urgH2: '⚠️ Don't wait for your Office to lock up completely',
+  urgH2: "⚠️ Don't wait for your Office to lock up completely",
   urgSub: 'Fix it now and avoid losing access to your files',
   cta3: 'UNLOCK NOW'
 }) : ({
