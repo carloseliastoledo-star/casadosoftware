@@ -67,15 +67,7 @@ export default defineEventHandler(async (event) => {
       ? (autoTranslateText(rawExcerpt, { lang: lang as any }) || rawExcerpt)
       : rawExcerpt,
     keyword: post?.keyword || null,
-    html: (() => {
-      const rawHtml = tr?.html || post?.html || null
-      if (!rawHtml || lang === 'pt' || tr?.html) return rawHtml
-      // Translate only text nodes (between > and <), preserving HTML structure
-      return rawHtml.replace(/>([^<]+)</g, (_m: string, text: string) => {
-        const translated = autoTranslateText(text, { lang: lang as any })
-        return '>' + translated + '<'
-      })
-    })(),
+    html: tr?.html || post?.html || null,
     criadoEm: post?.criadoEm,
     atualizadoEm: post?.atualizadoEm
   }
