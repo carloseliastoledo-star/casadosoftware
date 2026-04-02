@@ -40,14 +40,24 @@ const MOJIBAKE_REGEX = new RegExp(
   'g'
 )
 
-// Second-pass patterns: different mojibake origin (CP437 / other double-encoding)
+// Second-pass patterns: CP850 encoding of typographic chars & emoji
+// Each ÔÇX = 3 bytes E2 80 XX passed through CP850 (E2→Ô, 80→Ç, XX→char)
 const MOJIBAKE2 = [
-  [/\u00D4\u00C7\u00AA/g,          '\u2026'],  // ÔÇª  → …  (ellipsis)
-  [/\u00D4\u00E5\u00C6/g,          '\u2192'],  // ÔåÆ  → →  (arrow)
-  [/\u00AD\u0192\u00C6\u2557/g,    ''],         // ­ƒÆ╗ → '' (broken emoji)
-  [/\u00AD\u0192\u00F4\u00D1/g,    ''],         // ­ƒôÑ → '' (broken emoji)
-  [/\u00AD\u0192\u00C6\u255B/g,    ''],         // ­ƒÆ[ variants
-  [/\u00AD\u0192/g,                ''],         // remaining ­ƒ prefix (broken emoji start)
+  // Typographic punctuation (CP850 encoding of E2 80 XX smart chars)
+  [/\u00D4\u00C7\u00A3/g, '\u201C'],  // ÔÇ£ → " (left double quote)
+  [/\u00D4\u00C7\u00D8/g, '\u201D'],  // ÔÇØ → " (right double quote)
+  [/\u00D4\u00C7\u00F4/g, '\u2013'],  // ÔÇô → – (en dash)
+  [/\u00D4\u00C7\u00D6/g, '\u2019'],  // ÔÇÖ → ' (right single quote)
+  [/\u00D4\u00C7\u00FF/g, '\u2018'],  // ÔÇÿ → ' (left single quote)
+  // Broken emoji prefixes — remove (CP850 encoding of partial emoji bytes)
+  [/\u00F6\u00E6/g,                ''],  // öæ  → '' (broken 🔑 emoji suffix, bytes 94 91)
+  [/\u00D4\u00A3\u00F6/g,          ''],  // Ô£ö → '' (broken ✔  emoji, E2 9C 94)
+  [/\u00D4\u00A3\u00E0/g,          ''],  // Ô£à → '' (broken ✅ emoji, E2 9C 85)
+  [/\u00D4\u00DC\u00ED/g,          ''],  // ÔÜí → '' (broken ⚡ emoji, E2 9A A1)
+  [/\u00D4\u00A1\u00C9/g,          ''],  // Ô¡É → '' (broken emoji, D4 A1 C9)
+  // Legacy patterns (kept for safety, match nothing in current DB)
+  [/\u00D4\u00C7\u00AA/g, '\u2026'],  // ÔÇª → … (ellipsis)
+  [/\u00D4\u00E5\u00C6/g, '\u2192'],  // ÔåÆ → → (arrow)
 ]
 
 function fix(s) {
