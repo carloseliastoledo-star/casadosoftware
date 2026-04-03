@@ -75,7 +75,7 @@
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
               <select
-                v-if="!isEnDomain"
+                v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
                 :value="intl.countryCode || 'AUTO'"
                 aria-label="Country"
@@ -93,6 +93,7 @@
               </select>
 
               <select
+                v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
                 :value="intl.currencyLower"
                 aria-label="Currency"
@@ -169,7 +170,7 @@
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
               <select
-                v-if="!isEnDomain"
+                v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
                 :value="intl.countryCode || 'AUTO'"
                 aria-label="Country"
@@ -186,6 +187,7 @@
               </select>
 
               <select
+                v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
                 :value="intl.currencyLower"
                 aria-label="Currency"
@@ -246,9 +248,8 @@
         </div>
 
         <nav class="p-5 flex-1 overflow-y-auto">
-          <div class="grid gap-3 mb-5" :class="isEnDomain ? 'grid-cols-1' : 'grid-cols-2'">
+          <div v-if="isEnDomain" class="grid gap-3 mb-5 grid-cols-2">
             <select
-              v-if="!isEnDomain"
               class="h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
               :value="intl.countryCode || 'AUTO'"
               aria-label="Country"
@@ -266,6 +267,7 @@
             </select>
 
             <select
+              v-if="isEnDomain"
               class="h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
               :value="intl.currencyLower"
               aria-label="Currency"
