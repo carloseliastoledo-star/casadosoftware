@@ -182,11 +182,17 @@ export function getIntlContext(event?: H3Event): IntlContext {
   } else {
     if (subdomainMode && subdomainLanguage) {
       language = subdomainLanguage
-    } else if (pathLang) language = pathLang
-    else if (isEnDomain) language = 'en'
-    else if (cookieLang) language = cookieLang
-    else if (acceptLang) language = acceptLang
-    else if (subdomainLanguage) language = subdomainLanguage
+    } else if (pathLang) {
+      language = pathLang
+    } else if (isEnDomain) {
+      // EN domain (.store): allow cookie/accept-language to override
+      if (cookieLang) language = cookieLang
+      else if (acceptLang) language = acceptLang
+      else language = 'en'
+    } else {
+      // PT domain (.com.br, localhost): always Portuguese — never let Accept-Language override
+      language = 'pt'
+    }
 
     if (isEnDomain) {
       currency = 'usd'
