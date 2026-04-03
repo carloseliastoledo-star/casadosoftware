@@ -29,7 +29,6 @@ export default defineEventHandler(async (event) => {
     const key = `uploads/${fileName}`
 
     const bucket = process.env.SPACES_BUCKET || ''
-    const region = process.env.SPACES_REGION || ''
     const endpoint = process.env.SPACES_ENDPOINT || ''
     const accessKeyId = process.env.SPACES_KEY || ''
     const secretAccessKey = process.env.SPACES_SECRET || ''
@@ -39,11 +38,10 @@ export default defineEventHandler(async (event) => {
 
     if (spacesConfigured) {
       try {
-        const signingRegion = region || 'auto'
         const client = new S3Client({
-          region: signingRegion,
+          region: 'auto',
           endpoint,
-          forcePathStyle: true,
+          forcePathStyle: false,
           credentials: { accessKeyId, secretAccessKey }
         })
 
@@ -64,15 +62,12 @@ export default defineEventHandler(async (event) => {
       } catch (err: any) {
         console.error('[admin][upload] Spaces upload failed', {
           bucket,
-          region,
-          signingRegion: 'us-east-1',
           endpoint,
           hasPublicBaseUrl: Boolean(publicBaseUrl),
           message: err?.message,
           name: err?.name,
           code: err?.Code || err?.code,
-          httpStatusCode: err?.$metadata?.httpStatusCode,
-          $metadata: err?.$metadata
+          httpStatusCode: err?.$metadata?.httpStatusCode
         })
 
         throw createError({

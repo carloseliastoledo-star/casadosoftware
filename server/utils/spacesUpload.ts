@@ -14,11 +14,10 @@ export async function uploadPublicImageToSpaces(params: {
   const spacesConfigured = Boolean(bucket && endpoint && accessKeyId && secretAccessKey)
   if (!spacesConfigured) return null
 
-  const signingRegion = 'us-east-1'
   const client = new S3Client({
-    region: signingRegion,
+    region: 'auto',
     endpoint,
-    forcePathStyle: true,
+    forcePathStyle: false,
     credentials: { accessKeyId, secretAccessKey }
   })
 
@@ -28,7 +27,6 @@ export async function uploadPublicImageToSpaces(params: {
       Key: params.key,
       Body: params.data,
       ContentType: params.contentType,
-      ACL: 'public-read'
     })
   )
 

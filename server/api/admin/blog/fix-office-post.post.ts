@@ -2,7 +2,7 @@ import { defineEventHandler, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
 
-const FEATURED_IMAGE = 'https://fotoscasadosoftware.nyc3.digitaloceanspaces.com/uploads/1772999710931-office365.jpg'
+const FEATURED_IMAGE = 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1772999710931-office365.jpg'
 
 const PRODUCT_URL = 'https://casadosoftware.com.br/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive?utm_source=blog&utm_medium=article&utm_campaign=office-365-expirou-como-ativar'
 
