@@ -53,7 +53,10 @@ export default defineNuxtConfig({
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || '',
       googleAdsConversionId: process.env.GOOGLE_ADS_CONVERSION_ID || '',
       googleAdsConversionLabel: process.env.GOOGLE_ADS_CONVERSION_LABEL || '',
-      API_URL: process.env.API_URL || ''
+      API_URL: process.env.API_URL || '',
+      seoEnableEnDomain: String(process.env.SEO_ENABLE_EN_DOMAIN || '').trim().toLowerCase() === 'true',
+      enDomainUrl: process.env.EN_DOMAIN_URL || 'https://casadosoftware.store',
+      ptDomainUrl: process.env.PT_DOMAIN_URL || 'https://casadosoftware.com.br',
     },
   },
 

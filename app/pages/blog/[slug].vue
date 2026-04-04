@@ -179,23 +179,30 @@ const canonicalForHead = computed(() => {
   }
 })
 
-const hreflangLinks = computed(() => {
-  const origin = String(siteUrl || '').replace(/\/$/, '')
-  if (!origin) return [] as any[]
+const config = useRuntimeConfig()
+const seoEnableEnDomain = computed(() => Boolean((config.public as any)?.seoEnableEnDomain))
+const ptDomainBase = computed(() => String((config.public as any)?.ptDomainUrl || 'https://casadosoftware.com.br').replace(/\/$/, ''))
+const enDomainBase = computed(() => String((config.public as any)?.enDomainUrl || 'https://casadosoftware.store').replace(/\/$/, ''))
 
-  const langs = ['pt', 'en', 'es', 'fr', 'it', 'de']
+const hreflangLinks = computed(() => {
+  const SEO_ACTIVE_LANGS = ['pt', 'en', 'es', 'fr', 'it'] as const
+  const HREFLANG: Record<string, string> = { pt: 'pt-BR', en: 'en', es: 'es', fr: 'fr', it: 'it' }
+  const allLangPrefixes = ['pt', 'en', 'es', 'fr', 'it', 'de']
+
   const rawPath = String(route.fullPath || '/').split('?')[0].split('#')[0]
   const parts = rawPath.split('/').filter(Boolean)
   const first = parts[0] || ''
-  const baseParts = first && langs.includes(first) ? parts.slice(1) : parts
+  const baseParts = first && allLangPrefixes.includes(first) ? parts.slice(1) : parts
   const basePath = '/' + baseParts.join('/')
 
   const links: any[] = []
-  for (const l of langs) {
+  for (const l of SEO_ACTIVE_LANGS) {
+    if (l === 'en' && !seoEnableEnDomain.value) continue
+    const base = l === 'en' ? enDomainBase.value : ptDomainBase.value
     const prefix = l === 'pt' ? '' : `/${l}`
-    links.push({ rel: 'alternate', hreflang: l, href: `${origin}${prefix}${basePath}` })
+    links.push({ rel: 'alternate', hreflang: HREFLANG[l], href: `${base}${prefix}${basePath}` })
   }
-  links.push({ rel: 'alternate', hreflang: 'x-default', href: `${origin}${basePath}` })
+  links.push({ rel: 'alternate', hreflang: 'x-default', href: `${ptDomainBase.value}${basePath}` })
   return links
 })
 
@@ -236,6 +243,17 @@ const { data, pending, error } = await useFetch<{ ok: true; post: BlogPostDto }>
 })
 
 const post = computed(() => data.value?.post || null)
+
+if (process.server && !pending.value && !post.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Post não encontrado', fatal: true })
+}
+
+useHead(() => {
+  if (error.value || (!pending.value && !post.value)) {
+    return { meta: [{ name: 'robots', content: 'noindex, nofollow' }] }
+  }
+  return {}
+})
 
 const postHtml = computed(() => String(post.value?.html || ''))
 

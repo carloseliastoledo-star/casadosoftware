@@ -72,13 +72,21 @@ const ui = computed(() => isEn.value ? ({
   ctaNote: 'Sem menu • Sem distrações • Foco total em conversão'
 }))
 
+const CANONICAL_LP = 'https://casadosoftware.com.br/lp/office-365-ativar-agora'
+
 useSeoMeta(computed(() => ({
   title: ui.value.seoTitle,
   description: ui.value.seoDesc,
   ogTitle: ui.value.seoTitle,
   ogDescription: ui.value.seoDesc,
+  ogUrl: CANONICAL_LP,
+  ogType: 'website',
   robots: 'index,follow'
 })))
+
+useHead({
+  link: [{ rel: 'canonical', href: CANONICAL_LP }]
+})
 </script>
 
 <template>

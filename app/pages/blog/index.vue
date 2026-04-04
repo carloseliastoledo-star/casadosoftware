@@ -125,27 +125,7 @@ const canonicalUrl = computed(() => {
   return `${origin}${path}`
 })
 
-const hreflangLinks = computed(() => {
-  const origin = String(siteUrl || '').replace(/\/$/, '')
-  if (!origin) return [] as any[]
-
-  const langs = ['pt', 'en', 'es', 'fr', 'it', 'de']
-  const fullPath = typeof route.fullPath === 'string' ? route.fullPath : '/'
-  const noQuery = fullPath.split('?')[0] ?? '/'
-  const rawPath = (noQuery.split('#')[0] ?? '/') || '/'
-  const parts = rawPath.split('/').filter(Boolean)
-  const first = parts[0] || ''
-  const baseParts = first && langs.includes(first) ? parts.slice(1) : parts
-  const basePath = '/' + baseParts.join('/')
-
-  const links: any[] = []
-  for (const l of langs) {
-    const prefix = l === 'pt' ? '' : `/${l}`
-    links.push({ rel: 'alternate', hreflang: l, href: `${origin}${prefix}${basePath}` })
-  }
-  links.push({ rel: 'alternate', hreflang: 'x-default', href: `${origin}${basePath}` })
-  return links
-})
+const { hreflangLinks, canonicalUrl: blogIndexCanonical } = useSeoLocale({ pageType: 'blog-index' })
 
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
@@ -193,7 +173,7 @@ useSeoMeta(() => seoMeta.value)
 
 useHead(() => {
   const links: any[] = []
-  const canonical = String(canonicalUrl.value || '')
+  const canonical = String(blogIndexCanonical.value || canonicalUrl.value || '')
   if (canonical) links.push({ rel: 'canonical', href: canonical })
   links.push(...(hreflangLinks.value || []))
   return { link: links }

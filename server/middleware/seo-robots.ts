@@ -4,7 +4,7 @@
  */
 import { defineEventHandler, setHeader, getRequestURL } from 'h3'
 
-const NOINDEX_PREFIXES = ['/admin', '/checkout', '/obrigado', '/sucesso', '/upsell', '/api/']
+const NOINDEX_PREFIXES = ['/admin', '/checkout', '/obrigado', '/sucesso', '/upsell', '/api/', '/minha-conta/', '/minha-conta']
 
 export default defineEventHandler((event) => {
   try {

@@ -66,6 +66,17 @@ const { data, pending, error } = await useFetch<{ ok: true; pagina: PaginaDto }>
 
 const pagina = computed(() => data.value?.pagina || null)
 
+if (process.server && !pending.value && !pagina.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Página não encontrada', fatal: true })
+}
+
+useHead(() => {
+  if (error.value || (!pending.value && !pagina.value)) {
+    return { meta: [{ name: 'robots', content: 'noindex, nofollow' }] }
+  }
+  return {}
+})
+
 const looksLikeHtml = computed(() => {
   const raw = String(pagina.value?.conteudo || '')
   if (!raw.trim()) return false

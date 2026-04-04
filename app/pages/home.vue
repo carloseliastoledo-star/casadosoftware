@@ -111,40 +111,14 @@ if (applyCasaSeo.value) {
   })
 }
 
+const { canonicalUrl: homeCanonicaUrl, hreflangLinks: homeHreflang } = useSeoLocale({ pageType: 'home' })
+
 useHead(() => {
   if (!applyCasaSeo.value) return {}
-
-  let canonicalBase = ''
-  if (process.server) {
-    try {
-      const url = useRequestURL()
-      canonicalBase = String(url?.origin || '').trim()
-    } catch {
-      // ignore
-    }
-  } else {
-    try {
-      canonicalBase = String(window.location.origin || '').trim()
-    } catch {
-      // ignore
-    }
-  }
-
-  canonicalBase = canonicalBase.replace(/\/+$/, '')
-
-  const alternates = [
-    { hreflang: 'pt-BR', href: 'https://casadosoftware.com.br/' },
-    { hreflang: 'en', href: 'https://en.casadosoftware.com.br/' },
-    { hreflang: 'es', href: 'https://es.casadosoftware.com.br/' },
-    { hreflang: 'fr', href: 'https://fr.casadosoftware.com.br/' },
-    { hreflang: 'de', href: 'https://de.casadosoftware.com.br/' },
-    { hreflang: 'x-default', href: 'https://casadosoftware.com.br/' }
-  ]
-
   return {
     link: [
-      ...(canonicalBase ? [{ rel: 'canonical', href: `${canonicalBase}/` }] : []),
-      ...alternates.map((a) => ({ rel: 'alternate', hreflang: a.hreflang, href: a.href }))
+      { rel: 'canonical', href: homeCanonicaUrl.value },
+      ...(homeHreflang.value as any[])
     ],
     script: []
   }

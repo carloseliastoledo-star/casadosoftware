@@ -15,10 +15,17 @@ export type LangConfig = {
   blogIndexPath: string
 }
 
+const PT_BASE = 'https://casadosoftware.com.br'
+const EN_BASE = 'https://casadosoftware.store'
+
+export function isSeoEnEnDomainEnabled(): boolean {
+  return String(process.env.SEO_ENABLE_EN_DOMAIN || '').trim().toLowerCase() === 'true'
+}
+
 export const LANG_CONFIGS: LangConfig[] = [
   {
     lang: 'pt',
-    base: 'https://casadosoftware.com.br',
+    base: PT_BASE,
     productPath:  (s) => `/produto/${s}`,
     categoryPath: (s) => `/categoria/${s}`,
     blogPath:     (s) => `/blog/${s}`,
@@ -28,7 +35,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   },
   {
     lang: 'en',
-    base: 'https://casadosoftware.com.br',
+    base: EN_BASE,
     productPath:  (s) => `/en/product/${s}`,
     categoryPath: (s) => `/en/category/${s}`,
     blogPath:     (s) => `/en/blog/${s}`,
@@ -38,7 +45,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   },
   {
     lang: 'es',
-    base: 'https://casadosoftware.com.br',
+    base: PT_BASE,
     productPath:  (s) => `/es/producto/${s}`,
     categoryPath: (s) => `/es/categoria/${s}`,
     blogPath:     (s) => `/es/blog/${s}`,
@@ -48,7 +55,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   },
   {
     lang: 'fr',
-    base: 'https://casadosoftware.com.br',
+    base: PT_BASE,
     productPath:  (s) => `/fr/produit/${s}`,
     categoryPath: (s) => `/fr/categorie/${s}`,
     blogPath:     (s) => `/fr/blog/${s}`,
@@ -58,7 +65,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   },
   {
     lang: 'it',
-    base: 'https://casadosoftware.com.br',
+    base: PT_BASE,
     productPath:  (s) => `/it/prodotto/${s}`,
     categoryPath: (s) => `/it/categoria/${s}`,
     blogPath:     (s) => `/it/blog/${s}`,
@@ -106,7 +113,10 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
     // DB unavailable — return minimal valid sitemap
   }
 
-  const base = (process.env.SITE_URL || '').replace(/\/$/, '') || cfg.base
+  const envBase = (process.env.SITE_URL || '').replace(/\/$/, '')
+  const base = cfg.lang === 'en'
+    ? (process.env.EN_DOMAIN_URL || '').replace(/\/$/, '') || cfg.base
+    : envBase || cfg.base
   const entries: string[] = []
 
   // Home
