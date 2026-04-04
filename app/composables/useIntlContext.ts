@@ -108,7 +108,18 @@ function detectLanguageFromPath(): ClientIntl['language'] | null {
 export function useIntlContext() {
   const config = useRuntimeConfig()
   const subdomainMode = computed(() => Boolean((config.public as any)?.intlSubdomainMode))
-  const host = computed(() => detectHost())
+
+  // CRITICAL: detect host synchronously during setup() — NOT inside a computed.
+  // useRequestEvent() is only reliable when called synchronously in setup context.
+  // A computed(() => detectHost()) evaluates lazily (post-setup), when getCurrentInstance()
+  // may already be null, causing detectHost() to return '' and language to fall back to 'pt'.
+  const _initHost = detectHost()
+  const host = import.meta.server
+    ? shallowRef(_initHost)
+    : computed(() => detectHost())
+
+  // SSR priority: use language set synchronously by the i18n plugin (most reliable source)
+  const _pluginLang = useState<string | null>('ld_server_lang', () => null)
 
   const langCookie = useCookie<string | null>('ld_lang', { sameSite: 'lax', path: '/' })
   const currencyCookie = useCookie<string | null>('ld_currency', { sameSite: 'lax', path: '/' })
@@ -129,6 +140,13 @@ export function useIntlContext() {
   })
 
   const language = computed<ClientIntl['language']>(() => {
+    // SSR: use plugin-detected language as highest-priority source.
+    // The i18n plugin runs synchronously before any component setup, so it reliably
+    // captures the real host header (including casadosoftware.store → 'en').
+    if (import.meta.server && _pluginLang.value) {
+      return normalizeLanguage(_pluginLang.value)
+    }
+
     const sub = detectSubdomainLanguage(host.value)
     if (subdomainMode.value && sub) return sub
 

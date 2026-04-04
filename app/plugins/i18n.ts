@@ -49,6 +49,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   const initialLang = subdomainLang || normalizeLang(langCookie.value)
 
+  // Expose detected language to useIntlContext() via Nuxt state.
+  // This is the most reliable SSR language source: the plugin runs synchronously
+  // before any component setup, with full access to the request headers.
+  const langState = useState<Lang>('ld_server_lang', () => initialLang)
+  if (import.meta.server) langState.value = initialLang
+
   const i18n = createI18n({
     legacy: false,
     globalInjection: true,
