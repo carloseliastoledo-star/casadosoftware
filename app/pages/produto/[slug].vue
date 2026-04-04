@@ -979,6 +979,7 @@ const includedItems = computed(() => {
     'Envio imediato após confirmação': 'Fast delivery after confirmation',
     'Envio rápido após confirmação': 'Fast delivery after confirmation',
     'Licença digital permanente': 'Permanent digital license',
+    'Licença digital com ativação permanente': 'Digital license with permanent activation',
     'Licença digital': 'Digital license',
     'Suporte 24/7': '24/7 support',
     'Suporte em horário comercial': 'Business hours support',
@@ -986,13 +987,30 @@ const includedItems = computed(() => {
     'Compatível Windows 10 e 11': 'Compatible with Windows 10 and 11',
     'Ativação permanente': 'Permanent activation',
     'Sem renovação necessária': 'No renewal required',
-    'Sem renovação': 'No renewal required'
+    'Sem renovação': 'No renewal required',
+    'Versão profissional com recursos avançados': 'Professional version with advanced features',
+    'Acesso digital com conta ativa': 'Digital access with active account',
+    'Uso durante o período contratado': 'Use during contracted period',
+    'Uso contínuo sem mensalidade': 'Continuous use, no monthly fee',
+    '5 PC , MAC , IOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    '5 PC , MAC , iOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    '5 PC, MAC , IOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    '5 PC, MAC , iOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    '5 PC, MAC, iOS, Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    '5 PC, MAC, IOS, Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
+    'Atualização gratuita': 'Free updates',
+    'Atualizações gratuitas': 'Free updates',
+    'Sem mensalidade': 'No monthly fee',
+    'Uso vitalício': 'Lifetime use',
+    'Chave ESD': 'ESD Key',
+    'Instalação simples': 'Easy installation'
   }
 
   const dictEs: Record<string, string> = {
     'Envio imediato após confirmação': 'Envío rápido tras la confirmación',
     'Envio rápido após confirmação': 'Envío rápido tras la confirmación',
     'Licença digital permanente': 'Licencia digital permanente',
+    'Licença digital com ativação permanente': 'Licencia digital con activación permanente',
     'Licença digital': 'Licencia digital',
     'Suporte 24/7': 'Soporte 24/7',
     'Suporte em horário comercial': 'Soporte en horario comercial',
@@ -1000,13 +1018,24 @@ const includedItems = computed(() => {
     'Compatível Windows 10 e 11': 'Compatible con Windows 10 y 11',
     'Ativação permanente': 'Activación permanente',
     'Sem renovação necessária': 'Sin renovación',
-    'Sem renovação': 'Sin renovación'
+    'Sem renovação': 'Sin renovación',
+    'Versão profissional com recursos avançados': 'Versión profesional con funciones avanzadas',
+    'Acesso digital com conta ativa': 'Acceso digital con cuenta activa',
+    'Uso durante o período contratado': 'Uso durante el período contratado',
+    'Uso contínuo sem mensalidade': 'Uso continuo sin mensualidad',
+    'Atualização gratuita': 'Actualización gratuita',
+    'Atualizações gratuitas': 'Actualizaciones gratuitas',
+    'Sem mensalidade': 'Sin mensualidad',
+    'Uso vitalício': 'Uso de por vida',
+    'Chave ESD': 'Clave ESD',
+    'Instalação simples': 'Instalación sencilla'
   }
 
   const dictIt: Record<string, string> = {
     'Envio imediato após confirmação': 'Consegna rapida dopo la conferma',
     'Envio rápido após confirmação': 'Consegna rapida dopo la conferma',
     'Licença digital permanente': 'Licenza digitale permanente',
+    'Licença digital com ativação permanente': 'Licenza digitale con attivazione permanente',
     'Licença digital': 'Licenza digitale',
     'Suporte 24/7': 'Supporto 24/7',
     'Suporte em horário comercial': 'Supporto negli orari di ufficio',
@@ -1014,13 +1043,24 @@ const includedItems = computed(() => {
     'Compatível Windows 10 e 11': 'Compatibile con Windows 10 e 11',
     'Ativação permanente': 'Attivazione permanente',
     'Sem renovação necessária': 'Nessun rinnovo necessario',
-    'Sem renovação': 'Nessun rinnovo necessario'
+    'Sem renovação': 'Nessun rinnovo necessario',
+    'Versão profissional com recursos avançados': 'Versione professionale con funzionalità avanzate',
+    'Acesso digital com conta ativa': 'Accesso digitale con account attivo',
+    'Uso durante o período contratado': 'Utilizzo durante il periodo contrattuale',
+    'Uso contínuo sem mensalidade': 'Uso continuato senza canone mensile',
+    'Atualização gratuita': 'Aggiornamento gratuito',
+    'Atualizações gratuitas': 'Aggiornamenti gratuiti',
+    'Sem mensalidade': 'Nessun canone mensile',
+    'Uso vitalício': 'Uso a vita',
+    'Chave ESD': 'Chiave ESD',
+    'Instalação simples': 'Installazione semplice'
   }
 
   const dictFr: Record<string, string> = {
     'Envio imediato após confirmação': 'Livraison rapide après confirmation',
     'Envio rápido após confirmação': 'Livraison rapide après confirmation',
     'Licença digital permanente': 'Licence numérique permanente',
+    'Licença digital com ativação permanente': 'Licence numérique avec activation permanente',
     'Licença digital': 'Licence numérique',
     'Suporte 24/7': 'Support 24/7',
     'Suporte em horário comercial': 'Support pendant les heures ouvrées',
@@ -1028,12 +1068,29 @@ const includedItems = computed(() => {
     'Compatível Windows 10 e 11': 'Compatible avec Windows 10 et 11',
     'Ativação permanente': 'Activation permanente',
     'Sem renovação necessária': 'Aucun renouvellement requis',
-    'Sem renovação': 'Aucun renouvellement requis'
+    'Sem renovação': 'Aucun renouvellement requis',
+    'Versão profissional com recursos avançados': 'Version professionnelle avec fonctionnalités avancées',
+    'Acesso digital com conta ativa': 'Accès numérique avec compte actif',
+    'Uso durante o período contratado': "Utilisation pendant la durée du contrat",
+    'Uso contínuo sem mensalidade': 'Utilisation continue sans abonnement mensuel',
+    'Atualização gratuita': 'Mise à jour gratuite',
+    'Atualizações gratuitas': 'Mises à jour gratuites',
+    'Sem mensalidade': 'Sans abonnement mensuel',
+    'Uso vitalício': 'Utilisation à vie',
+    'Chave ESD': 'Clé ESD',
+    'Instalação simples': 'Installation simple'
   }
 
   const lang = intl.language.value
   const dict = lang === 'en' ? dictEn : lang === 'es' ? dictEs : lang === 'it' ? dictIt : dictFr
-  return items.map((it) => dict[it] || it)
+
+  function looksLikePt(s: string): boolean {
+    return /[ãçõ]|após|contratado|vitalí|mensalidade|imediato|horário|comercial|ativação|atualiz|instala|gratuita|simples|contínuo/i.test(s)
+  }
+
+  return items
+    .map((it) => dict[it] ?? (looksLikePt(it) ? '' : it))
+    .filter(Boolean)
 })
 
 const isMicrosoft365 = computed(() => {

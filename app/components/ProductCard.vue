@@ -1,19 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useIntlContext } from '#imports'
 
-let intl: any = {
-  language: { value: 'pt' },
-  locale: { value: 'pt-BR' },
-  currencyLower: { value: 'brl' }
-}
-
-if (import.meta.client) {
-  try {
-    const ctx = useIntlContext()
-    if (ctx) intl = ctx
-  } catch {}
-}
+const intl = useIntlContext()
 
 interface Product {
   id: number
@@ -64,7 +52,7 @@ const productPath = computed(() => {
   const s = String((props.product as any)?.slug || '').trim()
   if (!s) return '/'
 
-  const lang = intl?.language?.value || 'pt'
+  const lang = intl.language.value
 
   const segment =
     lang === 'en' ? 'product' :
@@ -354,7 +342,14 @@ const includedItems = computed(() => {
 
   const lang = intl.language.value
   const dict = lang === 'en' ? dictEn : lang === 'es' ? dictEs : lang === 'it' ? dictIt : dictFr
-  return items.map((it) => dict[it] || it)
+
+  function looksLikePt(s: string): boolean {
+    return /[ãçõ]|após|contratado|vitalí|mensalidade|imediato|horário|comercial|ativação|atualiz|instala|gratuita|simples|contínuo/i.test(s)
+  }
+
+  return items
+    .map((it) => dict[it] ?? (looksLikePt(it) ? '' : it))
+    .filter(Boolean)
 })
 
 function buyNow(event: Event) {
