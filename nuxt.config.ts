@@ -5,6 +5,10 @@ export default defineNuxtConfig({
 
   ssr: true,
 
+  experimental: {
+    asyncContext: true,
+  },
+
   sourcemap: {
     client: true,
     server: false,

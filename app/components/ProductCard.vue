@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const intl = useIntlContext()
+// useI18n() uses Vue's provide/inject — works in ALL child components across async
+// boundaries regardless of experimental.asyncContext, unlike useNuxtApp()-based composables.
+// The i18n plugin (i18n.ts) correctly sets locale='en' for .store domain.
+const { locale: _i18nLocale } = useI18n()
+
+const effectiveLang = computed<'pt' | 'en' | 'es' | 'fr' | 'it'>(() => {
+  const l = String(_i18nLocale.value || '').toLowerCase()
+  return (l === 'en' || l === 'es' || l === 'fr' || l === 'it') ? (l as any) : 'pt'
+})
 
 interface Product {
   id: number
@@ -52,7 +61,7 @@ const productPath = computed(() => {
   const s = String((props.product as any)?.slug || '').trim()
   if (!s) return '/'
 
-  const lang = intl.language.value
+  const lang = effectiveLang.value
 
   const segment =
     lang === 'en' ? 'product' :
@@ -72,7 +81,7 @@ function onImageError(e: Event) {
 const productName = computed(() => {
   const nomeRaw = String((props.product as any)?.nome ?? '')
   const nameRaw = String((props.product as any)?.name ?? '')
-  const v = intl.language.value === 'pt' ? nomeRaw || nameRaw : nameRaw || nomeRaw
+  const v = effectiveLang.value === 'pt' ? nomeRaw || nameRaw : nameRaw || nomeRaw
   return String(v || '')
 })
 
@@ -83,7 +92,7 @@ const productPrice = computed(() => {
 const productCurrencyLower = computed(() => {
   const c = String((props.product as any)?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
-  return intl.currencyLower.value
+  return effectiveLang.value === 'pt' ? 'brl' : 'usd'
 })
 
 const currencyUpper = computed(() => {
@@ -92,31 +101,38 @@ const currencyUpper = computed(() => {
   return 'BRL'
 })
 
-const locale = computed(() => intl.locale.value)
+const locale = computed(() => {
+  if (effectiveLang.value === 'pt') return 'pt-BR'
+  if (effectiveLang.value === 'en') return 'en-US'
+  if (effectiveLang.value === 'es') return 'es-ES'
+  if (effectiveLang.value === 'it') return 'it-IT'
+  if (effectiveLang.value === 'fr') return 'fr-FR'
+  return 'pt-BR'
+})
 
 const isBrl = computed(() => productCurrencyLower.value === 'brl')
 
 const installmentsLabel = computed(() => {
-  if (intl.language.value === 'en') return 'up to 12x of'
-  if (intl.language.value === 'es') return 'hasta 12x de'
-  if (intl.language.value === 'it') return 'fino a 12x da'
-  if (intl.language.value === 'fr') return "jusqu'à 12x de"
+  if (effectiveLang.value === 'en') return 'up to 12x of'
+  if (effectiveLang.value === 'es') return 'hasta 12x de'
+  if (effectiveLang.value === 'it') return 'fino a 12x da'
+  if (effectiveLang.value === 'fr') return "jusqu'à 12x de"
   return 'em até 12x de'
 })
 
 const pixLabel = computed(() => {
-  if (intl.language.value === 'en') return 'PIX upfront payment'
-  if (intl.language.value === 'es') return 'Pago al contado con PIX'
-  if (intl.language.value === 'it') return 'Pagamento in contanti con PIX'
-  if (intl.language.value === 'fr') return 'Paiement comptant avec PIX'
+  if (effectiveLang.value === 'en') return 'PIX upfront payment'
+  if (effectiveLang.value === 'es') return 'Pago al contado con PIX'
+  if (effectiveLang.value === 'it') return 'Pagamento in contanti con PIX'
+  if (effectiveLang.value === 'fr') return 'Paiement comptant avec PIX'
   return 'Pagamento à vista no PIX'
 })
 
 const buyNowLabel = computed(() => {
-  if (intl.language.value === 'en') return 'Buy now'
-  if (intl.language.value === 'es') return 'Comprar ahora'
-  if (intl.language.value === 'it') return 'Acquista ora'
-  if (intl.language.value === 'fr') return 'Acheter maintenant'
+  if (effectiveLang.value === 'en') return 'Buy now'
+  if (effectiveLang.value === 'es') return 'Comprar ahora'
+  if (effectiveLang.value === 'it') return 'Acquista ora'
+  if (effectiveLang.value === 'fr') return 'Acheter maintenant'
   return 'Comprar agora'
 })
 
@@ -192,7 +208,7 @@ const categoryLabel = computed(() => {
 })
 
 const defaultIncludedItems = computed(() => {
-  if (intl.language.value === 'en') {
+  if (effectiveLang.value === 'en') {
     return [
       'Fast delivery after confirmation',
       'Permanent digital license',
@@ -205,7 +221,7 @@ const defaultIncludedItems = computed(() => {
     ]
   }
 
-  if (intl.language.value === 'es') {
+  if (effectiveLang.value === 'es') {
     return [
       'Envío rápido tras la confirmación',
       'Licencia digital permanente',
@@ -218,7 +234,7 @@ const defaultIncludedItems = computed(() => {
     ]
   }
 
-  if (intl.language.value === 'it') {
+  if (effectiveLang.value === 'it') {
     return [
       'Consegna rapida dopo la conferma',
       'Licenza digitale permanente',
@@ -231,7 +247,7 @@ const defaultIncludedItems = computed(() => {
     ]
   }
 
-  if (intl.language.value === 'fr') {
+  if (effectiveLang.value === 'fr') {
     return [
       'Livraison rapide après confirmation',
       'Licence numérique permanente',
@@ -265,7 +281,7 @@ const includedItems = computed(() => {
     .filter(Boolean)
   if (!items.length) return defaultIncludedItems.value
 
-  if (intl.language.value === 'pt') return items
+  if (effectiveLang.value === 'pt') return items
 
   const dictEn: Record<string, string> = {
     'Envio imediato após confirmação': 'Fast delivery after confirmation',
@@ -340,7 +356,7 @@ const includedItems = computed(() => {
     'Sem renovação': 'Aucun renouvellement requis'
   }
 
-  const lang = intl.language.value
+  const lang = effectiveLang.value
   const dict = lang === 'en' ? dictEn : lang === 'es' ? dictEs : lang === 'it' ? dictIt : dictFr
 
   function looksLikePt(s: string): boolean {
