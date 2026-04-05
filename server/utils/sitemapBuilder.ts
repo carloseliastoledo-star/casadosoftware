@@ -118,16 +118,24 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
   let products: Array<{ slug: string; criadoEm: Date | null }> = []
   let categories: Array<{ slug: string }> = []
   let posts: Array<{ slug: string; atualizadoEm: Date | null }> = []
+  let seoPages: Array<{ slug: string; updatedAt: Date | null }> = []
+
+  const seoLocale = cfg.lang === 'en' ? 'en' : 'pt'
 
   try {
     const results = await Promise.all([
       prisma.produto.findMany({ where: { ativo: true }, select: { slug: true, criadoEm: true } }),
       prisma.categoria.findMany({ select: { slug: true } }),
-      (prisma as any).blogPost.findMany({ where: { publicado: true }, select: { slug: true, atualizadoEm: true } })
+      (prisma as any).blogPost.findMany({ where: { publicado: true }, select: { slug: true, atualizadoEm: true } }),
+      (prisma as any).seoPage.findMany({
+        where: { locale: seoLocale, status: 'published', noindex: false },
+        select: { slug: true, updatedAt: true }
+      })
     ])
     products = results[0] || []
     categories = results[1] || []
     posts = results[2] || []
+    seoPages = results[3] || []
   } catch {
     // DB unavailable — return minimal valid sitemap
   }
@@ -165,6 +173,14 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
     if (!s) continue
     const lastmod = post.atualizadoEm ? new Date(post.atualizadoEm).toISOString().slice(0, 10) : undefined
     entries.push(urlEntry(base + cfg.blogPath(s), lastmod, '0.7', 'monthly'))
+  }
+
+  // SEO Pages (published, not noindex, matching locale)
+  for (const sp of seoPages) {
+    const s = safeSlug(sp?.slug)
+    if (!s) continue
+    const lastmod = sp.updatedAt ? new Date(sp.updatedAt).toISOString().slice(0, 10) : undefined
+    entries.push(urlEntry(`${base}/lp/${s}`, lastmod, '0.8', 'weekly'))
   }
 
   const validEntries = entries.filter(Boolean)

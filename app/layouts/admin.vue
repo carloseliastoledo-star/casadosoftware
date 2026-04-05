@@ -57,6 +57,10 @@
           📝 Blog
         </NuxtLink>
 
+        <NuxtLink to="/admin/seo-pages" class="menu">
+          🎯 SEO Pages
+        </NuxtLink>
+
         <NuxtLink to="/admin/afiliados" class="menu">
           🤝 Afiliados
         </NuxtLink>

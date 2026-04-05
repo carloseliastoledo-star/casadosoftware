@@ -417,3 +417,28 @@ model PartnerApplication {
 
   @@index([email])
 }
+
+model SeoPage {
+  id                  String   @id @default(uuid())
+  locale              String
+  slug                String
+  title               String
+  seoTitle            String?
+  seoDescription      String?  @db.Text
+  h1                  String?
+  heroBadge           String?
+  heroDescription     String?  @db.Text
+  contentHtml         String?  @db.LongText
+  faqJson             String?  @db.Text
+  linkedProductSlug   String?
+  linkedCategorySlug  String?
+  templateKey         String   @default("default-money-page")
+  status              String   @default("draft")
+  noindex             Boolean  @default(false)
+  publishedAt         DateTime? @db.DateTime(0)
+  createdAt           DateTime @default(now()) @db.DateTime(0)
+  updatedAt           DateTime @updatedAt @db.DateTime(0)
+
+  @@unique([locale, slug])
+  @@index([locale, status])
+}
