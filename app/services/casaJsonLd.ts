@@ -11,6 +11,7 @@ function normalizeHost(host: string) {
 
 function getLangFromHost(host: string): CasaLang {
   const h = normalizeHost(host)
+  if (h.endsWith('.store')) return 'en'
   if (h.startsWith('en.')) return 'en'
   if (h.startsWith('es.')) return 'es'
   if (h.startsWith('fr.')) return 'fr'
@@ -19,10 +20,7 @@ function getLangFromHost(host: string): CasaLang {
 }
 
 function getBaseUrl(lang: CasaLang) {
-  if (lang === 'en') return 'https://en.casadosoftware.com.br'
-  if (lang === 'es') return 'https://es.casadosoftware.com.br'
-  if (lang === 'fr') return 'https://fr.casadosoftware.com.br'
-  if (lang === 'de') return 'https://de.casadosoftware.com.br'
+  if (lang === 'en') return 'https://casadosoftware.store'
   return 'https://casadosoftware.com.br'
 }
 
@@ -193,11 +191,12 @@ export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: strin
   const hostname = normalizeHost(host || baseUrl)
 
   const lang: CasaLang =
-    hostname.startsWith('en.') ? 'en' :
-      hostname.startsWith('es.') ? 'es' :
-        hostname.startsWith('fr.') ? 'fr' :
-          hostname.startsWith('de.') ? 'de' :
-            'pt-BR'
+    hostname.endsWith('.store') ? 'en' :
+      hostname.startsWith('en.') ? 'en' :
+        hostname.startsWith('es.') ? 'es' :
+          hostname.startsWith('fr.') ? 'fr' :
+            hostname.startsWith('de.') ? 'de' :
+              'pt-BR'
 
   const productsPath =
     lang === 'en' ? '/products' :

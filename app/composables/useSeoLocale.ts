@@ -133,6 +133,24 @@ export function pathForLang(pageType: SeoPageType, lang: SeoLang, slug?: string)
   }
 }
 
+/**
+ * Returns the canonical EN path on casadosoftware.store (no /en/ prefix).
+ * On .store the domain itself signals English, so paths are clean.
+ */
+export function enPathOnStoreDomain(pageType: SeoPageType, slug?: string): string {
+  const s = String(slug || '')
+  switch (pageType) {
+    case 'home': return '/'
+    case 'product': return `/product/${s}`
+    case 'category': return `/category/${s}`
+    case 'products': return '/products'
+    case 'categories': return '/categories'
+    case 'blog-post': return `/en/blog/${s}`
+    case 'blog-index': return '/en/blog'
+    default: return '/'
+  }
+}
+
 export function useSeoLocale(options: {
   pageType: SeoPageType
   slug?: string | Ref<string> | ComputedRef<string>
@@ -169,13 +187,25 @@ export function useSeoLocale(options: {
     return `${origin.value}${path}`
   })
 
+  // EN domain is active if the flag is set OR the current request is already on .store
+  const isOnEnDomain = computed(() =>
+    String(origin.value).endsWith('.store') || seoEnableEnDomain.value
+  )
+
   const hreflangLinks = computed(() => {
     const links: Array<{ rel: string; hreflang: string; href: string }> = []
     for (const lang of SEO_LANGS) {
-      if (!isLocaleVersionIndexable(lang, seoEnableEnDomain.value)) continue
-      const path = pathForLang(options.pageType, lang, slug.value)
-      const base = lang === 'en' ? enDomain.value : ptDomain.value
-      links.push({ rel: 'alternate', hreflang: HREFLANG_CODES[lang], href: `${base}${path}` })
+      if (lang === 'en' && !isOnEnDomain.value) continue
+      let href: string
+      if (lang === 'en') {
+        // Use canonical .store paths (no /en/ prefix — domain itself signals language)
+        const enPath = enPathOnStoreDomain(options.pageType, slug.value)
+        href = `${enDomain.value}${enPath}`
+      } else {
+        const path = pathForLang(options.pageType, lang, slug.value)
+        href = `${ptDomain.value}${path}`
+      }
+      links.push({ rel: 'alternate', hreflang: HREFLANG_CODES[lang], href })
     }
     links.push({
       rel: 'alternate',

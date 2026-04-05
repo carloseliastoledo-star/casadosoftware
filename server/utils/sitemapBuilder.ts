@@ -7,6 +7,7 @@ import prisma from '#root/server/db/prisma'
 export type LangConfig = {
   lang: 'pt' | 'en' | 'es' | 'fr' | 'it'
   base: string
+  homePath: string
   productPath: (slug: string) => string
   categoryPath: (slug: string) => string
   blogPath: (slug: string) => string
@@ -26,6 +27,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   {
     lang: 'pt',
     base: PT_BASE,
+    homePath:        '/',
     productPath:  (s) => `/produto/${s}`,
     categoryPath: (s) => `/categoria/${s}`,
     blogPath:     (s) => `/blog/${s}`,
@@ -36,6 +38,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   {
     lang: 'en',
     base: EN_BASE,
+    homePath:        '/en',
     productPath:  (s) => `/en/product/${s}`,
     categoryPath: (s) => `/en/category/${s}`,
     blogPath:     (s) => `/en/blog/${s}`,
@@ -46,6 +49,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   {
     lang: 'es',
     base: PT_BASE,
+    homePath:        '/es',
     productPath:  (s) => `/es/producto/${s}`,
     categoryPath: (s) => `/es/categoria/${s}`,
     blogPath:     (s) => `/es/blog/${s}`,
@@ -56,6 +60,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   {
     lang: 'fr',
     base: PT_BASE,
+    homePath:        '/fr',
     productPath:  (s) => `/fr/produit/${s}`,
     categoryPath: (s) => `/fr/categorie/${s}`,
     blogPath:     (s) => `/fr/blog/${s}`,
@@ -66,6 +71,7 @@ export const LANG_CONFIGS: LangConfig[] = [
   {
     lang: 'it',
     base: PT_BASE,
+    homePath:        '/it',
     productPath:  (s) => `/it/prodotto/${s}`,
     categoryPath: (s) => `/it/categoria/${s}`,
     blogPath:     (s) => `/it/blog/${s}`,
@@ -74,6 +80,19 @@ export const LANG_CONFIGS: LangConfig[] = [
     blogIndexPath:   '/it/blog'
   }
 ]
+
+/** EN config for casadosoftware.store — clean paths without /en/ prefix */
+export const EN_STORE_CONFIG: LangConfig = {
+  lang: 'en',
+  base: EN_BASE,
+  homePath:        '/',
+  productPath:  (s) => `/product/${s}`,
+  categoryPath: (s) => `/category/${s}`,
+  blogPath:     (s) => `/en/blog/${s}`,
+  productsPath:    '/products',
+  categoriesPath:  '/categories',
+  blogIndexPath:   '/en/blog'
+}
 
 export function escXml(s: string): string {
   return String(s ?? '')
@@ -120,8 +139,7 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
   const entries: string[] = []
 
   // Home
-  const homePath = cfg.lang === 'pt' ? '/' : `/${cfg.lang}`
-  entries.push(urlEntry(base + homePath, undefined, '1.0', 'daily'))
+  entries.push(urlEntry(base + cfg.homePath, undefined, '1.0', 'daily'))
 
   // Blog index
   entries.push(urlEntry(base + cfg.blogIndexPath, undefined, '0.9', 'daily'))

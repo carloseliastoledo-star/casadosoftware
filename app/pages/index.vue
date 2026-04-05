@@ -40,7 +40,10 @@ const reqHostname = computed(() => {
   }
 })
 
-const isEN = computed(() => reqHostname.value.startsWith('en.'))
+const isEN = computed(() => {
+  const h = reqHostname.value
+  return h.endsWith('.store') || h.startsWith('en.')
+})
 
 const CASA_HOME_TITLE = computed(() =>
   isEN.value
@@ -98,6 +101,7 @@ const normalizedHost = computed(() => {
 
 const isCasaDoSoftware = computed(() => {
   if (normalizedHost.value.includes('casadosoftware.com.br')) return true
+  if (normalizedHost.value.endsWith('.store')) return true
   return storeSlug.value === 'casadosoftware'
 })
 
@@ -127,6 +131,7 @@ if (applyCasaSeo.value) {
     ogDescription: CASA_HOME_DESCRIPTION.value,
     ogImage,
     ogType: 'website',
+    ogUrl: homeCanonical.value,
     twitterTitle: CASA_HOME_TITLE.value,
     twitterDescription: CASA_HOME_DESCRIPTION.value,
     twitterImage: ogImage
