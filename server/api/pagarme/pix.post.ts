@@ -153,14 +153,13 @@ export default defineEventHandler(async (event) => {
     select: { id: true }
   })
 
-  if (existingCustomer && !normalizedCouponCode) {
+  if (existingCustomer) {
     const existingOrder = await (prisma as any).order.findFirst({
       where: {
         status: 'PENDING',
         storeSlug,
         customerId: existingCustomer.id,
         produtoId: produto.id,
-        cupomId: null,
         criadoEm: { gte: reuseAfter }
       },
       orderBy: { criadoEm: 'desc' },
