@@ -678,6 +678,7 @@ const pixCopyError = ref('')
 
 const PIX_ORDER_STORAGE_KEY = 'checkout_pix_order_id'
 const PIX_PAYMENT_STORAGE_KEY = 'checkout_pix_payment_id'
+const PIX_QRCODE_STORAGE_KEY = 'checkout_pix_qrcode'
 
 onMounted(async () => {
   try {
@@ -1270,6 +1271,10 @@ async function goToPix() {
     pix.qrCodeBase64 = res.qrCodeBase64 || null
     pix.qrCodeUrl = res.qrCodeUrl || null
 
+    if (pix.qrCode && typeof window !== 'undefined') {
+      try { window.localStorage.setItem(PIX_QRCODE_STORAGE_KEY, pix.qrCode) } catch {}
+    }
+
     if (pixOrderId.value) {
       startPixStatusPolling()
     }
@@ -1343,6 +1348,7 @@ async function startPixStatusPolling() {
           try {
             window.localStorage.removeItem(PIX_ORDER_STORAGE_KEY)
             window.localStorage.removeItem(PIX_PAYMENT_STORAGE_KEY)
+            window.localStorage.removeItem(PIX_QRCODE_STORAGE_KEY)
           } catch {
             // ignore
           }
@@ -1417,9 +1423,11 @@ onMounted(() => {
   try {
     const savedOrderId = String(window.localStorage.getItem(PIX_ORDER_STORAGE_KEY) || '').trim()
     const savedPaymentId = String(window.localStorage.getItem(PIX_PAYMENT_STORAGE_KEY) || '').trim()
+    const savedQrCode = String(window.localStorage.getItem(PIX_QRCODE_STORAGE_KEY) || '').trim()
     if (savedOrderId) {
       pixOrderId.value = savedOrderId
       if (savedPaymentId) pixPaymentId.value = savedPaymentId
+      if (savedQrCode) pix.qrCode = savedQrCode
       startPixStatusPolling()
     }
   } catch {

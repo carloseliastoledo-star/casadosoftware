@@ -80,6 +80,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (!String(process.env.PAGARME_API_KEY || '').trim()) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'PAGARME_API_KEY não configurado no servidor. Configure a variável de ambiente no Vercel.'
+    })
+  }
+
   if (!produtoId) {
     throw createError({
       statusCode: 400,
@@ -178,17 +185,21 @@ export default defineEventHandler(async (event) => {
       // reuse order but create new charge
       const whatsDigits2 = String(whatsapp || '').replace(/\D/g, '')
       const mobilePhone2 = whatsDigits2.length >= 10 ? { country_code: '55', area_code: whatsDigits2.slice(0, 2), number: whatsDigits2.slice(2) } : undefined
-      const reusedResult = await createPagarmePix({
-        orderId: existingOrder.id,
-        amountBrl: Number(existingOrder.totalAmount),
-        description: produto.nome,
-        customer: { name: nome || email.split('@')[0], email, document: cpfClean, document_type: 'CPF', type: 'individual', ...(mobilePhone2 ? { phones: { mobile_phone: mobilePhone2 } } : {}) },
-        expiresInSeconds: 3600
-      })
-      if (reusedResult.charge_id) {
-        await (prisma as any).order.update({ where: { id: existingOrder.id }, data: { pagarmeChargeId: reusedResult.charge_id } })
+      try {
+        const reusedResult = await createPagarmePix({
+          orderId: existingOrder.id,
+          amountBrl: Number(existingOrder.totalAmount),
+          description: produto.nome,
+          customer: { name: nome || email.split('@')[0], email, document: cpfClean, document_type: 'CPF', type: 'individual', ...(mobilePhone2 ? { phones: { mobile_phone: mobilePhone2 } } : {}) },
+          expiresInSeconds: 3600
+        })
+        if (reusedResult.charge_id) {
+          await (prisma as any).order.update({ where: { id: existingOrder.id }, data: { pagarmeChargeId: reusedResult.charge_id } })
+        }
+        return { ok: true, orderId: existingOrder.id, paymentId: reusedResult.charge_id || '', qrCode: reusedResult.qr_code || '', qrCodeBase64: null, qrCodeUrl: reusedResult.qr_code_url || '' }
+      } catch (reuseErr: any) {
+        throw createError({ statusCode: 502, statusMessage: reuseErr?.message || 'Erro ao gerar PIX para pedido existente' })
       }
-      return { ok: true, orderId: existingOrder.id, paymentId: reusedResult.charge_id || '', qrCode: reusedResult.qr_code || '', qrCodeBase64: null, qrCodeUrl: reusedResult.qr_code_url || '' }
     }
   }
 
