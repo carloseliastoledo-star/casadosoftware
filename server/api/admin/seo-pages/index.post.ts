@@ -77,6 +77,6 @@ export default defineEventHandler(async (event) => {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       throw createError({ statusCode: 400, statusMessage: `Já existe uma página com slug "${slug}" para locale "${locale}"` })
     }
-    throw err
+    throw createError({ statusCode: 500, statusMessage: err?.message || 'Erro interno ao salvar SEO Page' })
   }
 })

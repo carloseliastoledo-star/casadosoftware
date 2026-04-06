@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "nuxt build",
-    "vercel-build": "prisma migrate deploy && nuxt build",
+    "vercel-build": "prisma generate && prisma migrate deploy && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",

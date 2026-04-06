@@ -31,3 +31,4 @@ logs
 /app/generated/prisma
 
 /_lovable_eletrokeys_digital/
+.vercel

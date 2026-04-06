@@ -92,8 +92,9 @@ function openCreate() {
 // ─── Open edit ────────────────────────────────────────────────────────────────
 async function openEdit(id) {
   saveError.value = ''
-  const res = await $fetch(`/api/admin/seo-pages/${id}`, { headers })
-  const p = res.page
+  const res = await $fetch(`/api/admin/seo-pages/${id}`, { headers }).catch(e => { alert(e?.data?.statusMessage || e?.statusMessage || 'Erro ao carregar página'); return null })
+  if (!res) return
+  const p = res?.page
   form.value = {
     id: p.id,
     locale: p.locale,
@@ -145,7 +146,7 @@ async function save(targetStatus) {
     showEditor.value = false
     refresh()
   } catch (e) {
-    saveError.value = e?.data?.message || e?.statusMessage || 'Erro ao salvar'
+    saveError.value = e?.data?.statusMessage || e?.data?.message || e?.statusMessage || String(e?.message || 'Erro ao salvar')
   } finally {
     isSaving.value = false
   }
