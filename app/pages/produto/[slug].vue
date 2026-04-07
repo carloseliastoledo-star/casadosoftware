@@ -404,14 +404,13 @@ const { data: product, pending, error } = await useAsyncData(
   }
 )
 
-if (process.server && !product.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado', fatal: true })
-}
-
 if (process.server) {
   const statusCode = Number((error.value as any)?.statusCode || (error.value as any)?.status || 0)
-  if (statusCode === 404 || (!error.value && !pending.value && !product.value)) {
-    throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
+  if (statusCode && statusCode !== 404) {
+    throw createError({ statusCode, statusMessage: (error.value as any)?.statusMessage || 'Erro no servidor', fatal: true })
+  }
+  if (!product.value) {
+    throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado', fatal: true })
   }
 }
 

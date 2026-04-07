@@ -58,11 +58,30 @@ function createPrismaMock() {
   return new Proxy({}, handler)
 }
 
+function buildDatabaseUrl(raw: string): string {
+  try {
+    const url = new URL(raw)
+    if (!url.searchParams.has('connection_limit')) {
+      url.searchParams.set('connection_limit', '1')
+    }
+    if (!url.searchParams.has('pool_timeout')) {
+      url.searchParams.set('pool_timeout', '20')
+    }
+    return url.toString()
+  } catch {
+    const sep = raw.includes('?') ? '&' : '?'
+    if (!raw.includes('connection_limit')) {
+      return `${raw}${sep}connection_limit=1&pool_timeout=20`
+    }
+    return raw
+  }
+}
+
 const prisma = hasDatabaseUrl
   ? new PrismaClient({
       datasources: {
         db: {
-          url: process.env.DATABASE_URL
+          url: buildDatabaseUrl(process.env.DATABASE_URL as string)
         }
       },
       log: ['error']

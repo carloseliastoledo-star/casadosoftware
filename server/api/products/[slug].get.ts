@@ -80,57 +80,66 @@ export default defineEventHandler(async (event) => {
     .replace(/[^a-z0-9-]/g, '')
     .replace(/-+/g, '-')
 
-  const product = await (prisma as any).produto.findUnique({
-    where: { slug },
-    select: {
-      id: true,
-      nome: true,
-      nomeEn: true,
-      nomeEs: true,
-      nomeIt: true,
-      nomeFr: true,
-      slug: true,
-      finalUrl: true,
-      descricao: true,
-      descricaoEn: true,
-      descricaoEs: true,
-      descricaoIt: true,
-      descricaoFr: true,
-      preco: true,
-      precoAntigo: true,
-      ativo: true,
-      imagem: true,
-      tutorialTitulo: true,
-      tutorialTituloEn: true,
-      tutorialTituloEs: true,
-      tutorialTituloIt: true,
-      tutorialTituloFr: true,
-      tutorialSubtitulo: true,
-      tutorialSubtituloEn: true,
-      tutorialSubtituloEs: true,
-      tutorialSubtituloIt: true,
-      tutorialSubtituloFr: true,
-      tutorialConteudo: true,
-      tutorialConteudoEn: true,
-      tutorialConteudoEs: true,
-      tutorialConteudoIt: true,
-      tutorialConteudoFr: true,
-      criadoEm: true,
-      precosLoja: {
-        where: { storeSlug: storeSlug || undefined },
-        select: { preco: true, precoAntigo: true }
-      },
-      precosMoeda: {
-        where: { storeSlug: storeSlug || undefined },
-        select: { currency: true, amount: true, oldAmount: true }
-      },
-      produtoCategorias: { select: { categoria: { select: { slug: true } } } },
-      cardItems: true,
-      seoTitle: true,
-      seoDescription: true,
-      seoContent: true
-    }
-  })
+  let product: any
+  try {
+    product = await (prisma as any).produto.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        nome: true,
+        nomeEn: true,
+        nomeEs: true,
+        nomeIt: true,
+        nomeFr: true,
+        slug: true,
+        finalUrl: true,
+        descricao: true,
+        descricaoEn: true,
+        descricaoEs: true,
+        descricaoIt: true,
+        descricaoFr: true,
+        preco: true,
+        precoAntigo: true,
+        ativo: true,
+        imagem: true,
+        tutorialTitulo: true,
+        tutorialTituloEn: true,
+        tutorialTituloEs: true,
+        tutorialTituloIt: true,
+        tutorialTituloFr: true,
+        tutorialSubtitulo: true,
+        tutorialSubtituloEn: true,
+        tutorialSubtituloEs: true,
+        tutorialSubtituloIt: true,
+        tutorialSubtituloFr: true,
+        tutorialConteudo: true,
+        tutorialConteudoEn: true,
+        tutorialConteudoEs: true,
+        tutorialConteudoIt: true,
+        tutorialConteudoFr: true,
+        criadoEm: true,
+        precosLoja: {
+          where: { storeSlug: storeSlug || undefined },
+          select: { preco: true, precoAntigo: true }
+        },
+        precosMoeda: {
+          where: { storeSlug: storeSlug || undefined },
+          select: { currency: true, amount: true, oldAmount: true }
+        },
+        produtoCategorias: { select: { categoria: { select: { slug: true } } } },
+        cardItems: true,
+        seoTitle: true,
+        seoDescription: true,
+        seoContent: true
+      }
+    })
+  } catch (dbError: any) {
+    console.error('[api][products][slug] db error', dbError?.message || dbError)
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Serviço temporariamente indisponível'
+    })
+  }
 
   if (!product || !product.ativo) {
     throw createError({
