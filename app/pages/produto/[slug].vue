@@ -244,7 +244,6 @@
 
 <script setup lang="ts">
 import { useIntlContext } from '#imports'
-import { createError } from 'h3'
 import DOMPurify from 'isomorphic-dompurify'
 import { trackViewItem } from '~/services/analytics'
 
