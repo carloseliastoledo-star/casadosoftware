@@ -2,99 +2,55 @@ import { defineEventHandler } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { getStoreContext } from '#root/server/utils/store'
 
+const EMPTY = { ok: true, settings: null }
+
+const SELECT = {
+  id: true,
+  googleAnalyticsId: true,
+  googleAdsConversionId: true,
+  googleAdsConversionLabel: true,
+  headHtml: true,
+  bodyOpenHtml: true,
+  bodyCloseHtml: true,
+  homeBestSellerSlugs: true,
+  homeVideoUrl: true,
+  footerPolicyLinks: true
+}
+
 export default defineEventHandler(async () => {
   const { storeSlug } = getStoreContext()
 
   const prismaAny = prisma as any
 
-  if (!storeSlug) {
-    const existing = await prismaAny.siteSettings.findFirst({
-      select: {
-        id: true,
-        googleAnalyticsId: true,
-        googleAdsConversionId: true,
-        googleAdsConversionLabel: true,
-        headHtml: true,
-        bodyOpenHtml: true,
-        bodyCloseHtml: true,
-        homeBestSellerSlugs: true,
-        homeVideoUrl: true,
-        footerPolicyLinks: true
-      }
-    })
+  try {
+    if (!storeSlug) {
+      const existing = await prismaAny.siteSettings.findFirst({ select: SELECT })
+      if (existing) return { ok: true, settings: existing }
 
+      try {
+        const created = await prismaAny.siteSettings.create({ data: {}, select: SELECT })
+        return { ok: true, settings: created }
+      } catch {
+        return EMPTY
+      }
+    }
+
+    const existing = await prismaAny.siteSettings.findFirst({ where: { storeSlug }, select: SELECT })
     if (existing) return { ok: true, settings: existing }
 
-    const created = await prismaAny.siteSettings.create({
-      data: {},
-      select: {
-        id: true,
-        googleAnalyticsId: true,
-        googleAdsConversionId: true,
-        googleAdsConversionLabel: true,
-        headHtml: true,
-        bodyOpenHtml: true,
-        bodyCloseHtml: true,
-        homeBestSellerSlugs: true,
-        homeVideoUrl: true,
-        footerPolicyLinks: true
-      }
-    })
+    const legacy = await prismaAny.siteSettings.findFirst({ where: { storeSlug: null }, select: SELECT })
 
-    return { ok: true, settings: created }
+    try {
+      const created = await prismaAny.siteSettings.create({
+        data: { storeSlug, ...(legacy || {}) },
+        select: SELECT
+      })
+      return { ok: true, settings: created }
+    } catch {
+      return legacy ? { ok: true, settings: legacy } : EMPTY
+    }
+  } catch (err: any) {
+    console.error('[api][site-settings] db error', err?.message || err)
+    return EMPTY
   }
-
-  const existing = await prismaAny.siteSettings.findFirst({
-    where: { storeSlug },
-    select: {
-      id: true,
-      googleAnalyticsId: true,
-      googleAdsConversionId: true,
-      googleAdsConversionLabel: true,
-      headHtml: true,
-      bodyOpenHtml: true,
-      bodyCloseHtml: true,
-      homeBestSellerSlugs: true,
-      homeVideoUrl: true,
-      footerPolicyLinks: true
-    }
-  })
-
-  if (existing) return { ok: true, settings: existing }
-
-  const legacy = await prismaAny.siteSettings.findFirst({
-    where: { storeSlug: null },
-    select: {
-      googleAnalyticsId: true,
-      googleAdsConversionId: true,
-      googleAdsConversionLabel: true,
-      headHtml: true,
-      bodyOpenHtml: true,
-      bodyCloseHtml: true,
-      homeBestSellerSlugs: true,
-      homeVideoUrl: true,
-      footerPolicyLinks: true
-    }
-  })
-
-  const created = await prismaAny.siteSettings.create({
-    data: {
-      storeSlug,
-      ...(legacy || {})
-    },
-    select: {
-      id: true,
-      googleAnalyticsId: true,
-      googleAdsConversionId: true,
-      googleAdsConversionLabel: true,
-      headHtml: true,
-      bodyOpenHtml: true,
-      bodyCloseHtml: true,
-      homeBestSellerSlugs: true,
-      homeVideoUrl: true,
-      footerPolicyLinks: true
-    }
-  })
-
-  return { ok: true, settings: created }
 })
