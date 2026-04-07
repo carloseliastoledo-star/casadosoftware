@@ -32,26 +32,29 @@ export default defineEventHandler(async (event: H3Event) => {
   const requestedSlug = decodeURIComponent(m[2] || '').trim()
   if (!requestedSlug) return
 
-  // If a product with this slug exists, do nothing
-  const direct = await prisma.produto.findUnique({ where: { slug: requestedSlug }, select: { id: true } })
-  if (direct) return
+  try {
+    // If a product with this slug exists, do nothing
+    const direct = await prisma.produto.findUnique({ where: { slug: requestedSlug }, select: { id: true } })
+    if (direct) return
 
-  // Try to find product by old WP permalink stored in finalUrl
-  const like1 = `/produto/${requestedSlug}/`
-  const like2 = `/produto/${requestedSlug}`
+    // Try to find product by old WP permalink stored in finalUrl
+    const like2 = `/produto/${requestedSlug}`
 
-  const byFinalUrl = await prisma.produto.findFirst({
-    where: {
-      finalUrl: {
-        contains: like2
-      }
-    },
-    select: { slug: true }
-  })
+    const byFinalUrl = await prisma.produto.findFirst({
+      where: {
+        finalUrl: {
+          contains: like2
+        }
+      },
+      select: { slug: true }
+    })
 
-  if (!byFinalUrl?.slug) return
+    if (!byFinalUrl?.slug) return
 
-  const targetPath = `${localePrefix}/produto/${byFinalUrl.slug}`
-  const location = query ? `${targetPath}?${query}` : targetPath
-  return sendRedirect(event, location, 301)
+    const targetPath = `${localePrefix}/produto/${byFinalUrl.slug}`
+    const location = query ? `${targetPath}?${query}` : targetPath
+    return sendRedirect(event, location, 301)
+  } catch (err: any) {
+    console.error('[middleware][wp-permalink-redirect] db error', err?.message || err)
+  }
 })
