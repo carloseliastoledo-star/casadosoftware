@@ -244,8 +244,15 @@
 
 <script setup lang="ts">
 import { useIntlContext } from '#imports'
-import DOMPurify from 'isomorphic-dompurify'
 import { trackViewItem } from '~/services/analytics'
+
+function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[]; USE_PROFILES?: any }): string {
+  const str = String(html || '')
+  if (options?.ALLOWED_TAGS?.length === 0) {
+    return str.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+  }
+  return str
+}
 
 definePageMeta({ ssr: true })
 
@@ -631,7 +638,7 @@ const seoDescription = computed(() => {
   const raw = rawShort || rawLong
   if (!raw) return ''
 
-  const textOnly = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
+  const textOnly = safeSanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
     .replace(/\s+/g, ' ')
     .trim()
 
@@ -832,7 +839,7 @@ const safeDescriptionHtml = computed(() => {
     return raw
   })()
 
-  return DOMPurify.sanitize(normalized, {
+  return safeSanitize(normalized, {
     USE_PROFILES: { html: true }
   })
 })
@@ -840,7 +847,7 @@ const safeDescriptionHtml = computed(() => {
 const safeSeoContentHtml = computed(() => {
   const raw = String((safeProduct.value as any)?.seoContent || '').trim()
   if (!raw) return ''
-  return DOMPurify.sanitize(raw, {
+  return safeSanitize(raw, {
     USE_PROFILES: { html: true }
   })
 })
