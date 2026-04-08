@@ -5,6 +5,7 @@ import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
 import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
 import { autoTranslateText } from '#root/server/utils/autoTranslate'
+import { fixCp850 } from '#root/server/utils/fixEncoding'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -273,9 +274,9 @@ export default defineEventHandler(async (event) => {
     tutorialTitle: translatedTutorialTitle,
     tutorialSubtitle: translatedTutorialSubtitle,
     tutorialContent: translatedTutorialContent,
-    seoTitle: (product as any).seoTitle || null,
-    seoDescription: (product as any).seoDescription || null,
-    seoContent: (product as any).seoContent || null,
+    seoTitle: fixCp850((product as any).seoTitle) || null,
+    seoDescription: fixCp850((product as any).seoDescription) || null,
+    seoContent: fixCp850((product as any).seoContent) || null,
     createdAt: product.criadoEm
   }
   } catch (err: any) {
