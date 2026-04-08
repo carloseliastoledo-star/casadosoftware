@@ -54,6 +54,7 @@ function normalizeFinalUrl(input: unknown): string | null {
 }
 
 export default defineEventHandler(async (event) => {
+  try {
   setHeader(event, 'cache-control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0')
   setHeader(event, 'pragma', 'no-cache')
   setHeader(event, 'expires', '0')
@@ -273,5 +274,10 @@ export default defineEventHandler(async (event) => {
     seoDescription: (product as any).seoDescription || null,
     seoContent: (product as any).seoContent || null,
     createdAt: product.criadoEm
+  }
+  } catch (err: any) {
+    if (err?.statusCode) throw err
+    console.error('[api][products][slug] unexpected error', err?.message || err)
+    throw createError({ statusCode: 503, statusMessage: 'Serviço temporariamente indisponível' })
   }
 })
