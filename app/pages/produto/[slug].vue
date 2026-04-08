@@ -399,14 +399,25 @@ const { data: product, pending, error } = await useAsyncData(
   {
     server: true,
     lazy: false,
-    watch: [lang]
+    watch: [lang],
+    default: () => null
   }
 )
 
 if (process.server) {
-  const statusCode = Number((error.value as any)?.statusCode || (error.value as any)?.status || 0)
+  const statusCode = Number(
+    (error.value as any)?.statusCode ||
+    (error.value as any)?.status ||
+    (error.value as any)?.data?.statusCode ||
+    (error.value as any)?.response?.status ||
+    0
+  )
+  const statusMessage =
+    (error.value as any)?.statusMessage ||
+    (error.value as any)?.data?.statusMessage ||
+    'Erro no servidor'
   if (statusCode && statusCode !== 404) {
-    throw createError({ statusCode, statusMessage: (error.value as any)?.statusMessage || 'Erro no servidor', fatal: true })
+    throw createError({ statusCode, statusMessage, fatal: true })
   }
   if (!product.value) {
     throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado', fatal: true })
