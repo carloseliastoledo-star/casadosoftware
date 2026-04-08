@@ -67,13 +67,20 @@ function buildDatabaseUrl(raw: string): string {
     if (!url.searchParams.has('pool_timeout')) {
       url.searchParams.set('pool_timeout', '20')
     }
+    if (!url.searchParams.has('charset')) {
+      url.searchParams.set('charset', 'utf8mb4')
+    }
     return url.toString()
   } catch {
     const sep = raw.includes('?') ? '&' : '?'
+    let result = raw
     if (!raw.includes('connection_limit')) {
-      return `${raw}${sep}connection_limit=1&pool_timeout=20`
+      result += `${sep}connection_limit=1&pool_timeout=20`
     }
-    return raw
+    if (!result.includes('charset')) {
+      result += '&charset=utf8mb4'
+    }
+    return result
   }
 }
 

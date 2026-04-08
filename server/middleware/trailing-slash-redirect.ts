@@ -35,23 +35,27 @@ export default defineEventHandler(async (event: H3Event) => {
     const localePrefix = m[1] ? `/${m[1]}` : ''
     const requestedSlug = decodeURIComponent(String(m[2] || '')).trim()
     if (requestedSlug) {
-      const direct = await prisma.produto.findUnique({ where: { slug: requestedSlug }, select: { id: true } })
-      if (!direct) {
-        const byFinalUrl = await prisma.produto.findFirst({
-          where: {
-            finalUrl: {
-              contains: `/produto/${requestedSlug}`
-            }
-          },
-          select: { slug: true }
-        })
+      try {
+        const direct = await prisma.produto.findUnique({ where: { slug: requestedSlug }, select: { id: true } })
+        if (!direct) {
+          const byFinalUrl = await prisma.produto.findFirst({
+            where: {
+              finalUrl: {
+                contains: `/produto/${requestedSlug}`
+              }
+            },
+            select: { slug: true }
+          })
 
-        if (byFinalUrl?.slug) {
-          const search = event.node.req.url?.split('?')[1]
-          const target = `${localePrefix}/produto/${byFinalUrl.slug}`
-          const location = search ? `${target}?${search}` : target
-          return sendRedirect(event, location, 301)
+          if (byFinalUrl?.slug) {
+            const search = event.node.req.url?.split('?')[1]
+            const target = `${localePrefix}/produto/${byFinalUrl.slug}`
+            const location = search ? `${target}?${search}` : target
+            return sendRedirect(event, location, 301)
+          }
         }
+      } catch (err: any) {
+        console.error('[middleware][trailing-slash-redirect] db error', err?.message || err)
       }
     }
   }
