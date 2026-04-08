@@ -24,7 +24,7 @@ const route = useRoute()
 const { companyLegalName, siteName, logoPath } = useSiteBranding()
 const siteUrl = useSiteUrl()
 
-const { data: siteSettings } = await useFetch('/api/site-settings')
+const { data: siteSettings } = await useFetch('/api/site-settings', { default: () => null })
 
 const isPublicSite = computed(() => !String(route.path || '').startsWith('/admin'))
 

@@ -70,6 +70,9 @@ function buildDatabaseUrl(raw: string): string {
     if (!url.searchParams.has('charset')) {
       url.searchParams.set('charset', 'utf8mb4')
     }
+    if (!url.searchParams.has('connect_timeout')) {
+      url.searchParams.set('connect_timeout', '5')
+    }
     return url.toString()
   } catch {
     const sep = raw.includes('?') ? '&' : '?'
@@ -79,6 +82,9 @@ function buildDatabaseUrl(raw: string): string {
     }
     if (!result.includes('charset')) {
       result += '&charset=utf8mb4'
+    }
+    if (!result.includes('connect_timeout')) {
+      result += '&connect_timeout=5'
     }
     return result
   }

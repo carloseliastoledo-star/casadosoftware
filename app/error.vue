@@ -35,6 +35,7 @@ if (import.meta.server) {
     <p class="text-6xl font-extrabold text-blue-600 mb-4">{{ statusCode }}</p>
     <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ heading }}</h1>
     <p class="text-gray-500 mb-8 max-w-md">{{ message }}</p>
+    <p v-if="props.error?.message" class="text-xs text-red-400 mb-4 max-w-lg font-mono break-all">{{ props.error.message }}</p>
     <NuxtLink
       to="/"
       class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition"
