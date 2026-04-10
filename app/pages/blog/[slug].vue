@@ -239,13 +239,26 @@ type BlogPostDto = {
 const { data, pending, error } = await useFetch<{ ok: true; post: BlogPostDto }>(() => `/api/blog/${slug.value}`, {
   server: true,
   key: () => `blog-post-${slug.value}`,
-  watch: [slug]
+  watch: [slug],
+  default: () => null
 })
 
 const post = computed(() => data.value?.post || null)
 
-if (process.server && !pending.value && !post.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Post não encontrado', fatal: true })
+if (process.server) {
+  const statusCode = Number(
+    (error.value as any)?.statusCode ||
+    (error.value as any)?.status ||
+    (error.value as any)?.data?.statusCode ||
+    (error.value as any)?.response?.status ||
+    0
+  )
+  if (statusCode && statusCode !== 404) {
+    throw createError({ statusCode, statusMessage: (error.value as any)?.statusMessage || 'Erro no servidor', fatal: true })
+  }
+  if (!post.value) {
+    throw createError({ statusCode: 404, statusMessage: 'Post não encontrado', fatal: true })
+  }
 }
 
 useHead(() => {
@@ -376,7 +389,8 @@ type BlogPostListDto = {
 }
 
 const { data: recentData } = await useFetch<{ ok: true; posts: BlogPostListDto[] }>('/api/blog', {
-  server: true
+  server: true,
+  default: () => null
 })
 
 const recentPosts = computed(() => {

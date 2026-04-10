@@ -42,7 +42,8 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, statusMessage: 'Post não encontrado' })
     }
 
-    throw err
+    console.error('[api][blog][slug] db error', err?.message || err)
+    throw createError({ statusCode: 503, statusMessage: 'Serviço temporariamente indisponível' })
   }
 
   if (!post || !post.publicado) {
