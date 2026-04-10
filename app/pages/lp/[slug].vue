@@ -24,7 +24,8 @@ const { data, error } = await useFetch('/api/seo-pages/by-slug', {
     locale,
     preview: previewToken.value || undefined
   })),
-  key: `seo-page-${locale}-${slug.value}`
+  key: `seo-page-${locale}-${slug.value}`,
+  default: () => null
 })
 
 if (error.value || !data.value?.page) {

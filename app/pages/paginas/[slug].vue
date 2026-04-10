@@ -61,7 +61,8 @@ type PaginaDto = {
 }
 
 const { data, pending, error } = await useFetch<{ ok: true; pagina: PaginaDto }>(() => `/api/paginas/${slug.value}`, {
-  server: true
+  server: true,
+  default: () => null
 })
 
 const pagina = computed(() => data.value?.pagina || null)

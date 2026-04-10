@@ -78,7 +78,8 @@ useHead(() => ({
 }))
 
 const { data, pending, error } = await useFetch('/api/products', {
-  server: true
+  server: true,
+  default: () => null
 })
 
 const products = computed(() => data.value || [])

@@ -43,11 +43,13 @@ type BlogPostDto = {
 }
 
 const { data, pending, error } = await useFetch<{ ok: true; post: BlogPostDto }>(() => `/api/blog/${slug.value}`, {
-  server: true
+  server: true,
+  default: () => null
 })
 
 if (process.server && error.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Página não encontrada' })
+  const statusCode = Number((error.value as any)?.statusCode || (error.value as any)?.status || 404)
+  throw createError({ statusCode, statusMessage: 'Página não encontrada' })
 }
 
 const post = computed(() => data.value?.post || null)
