@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
 import { getIntlContext } from '../../utils/intl'
@@ -103,6 +103,7 @@ export default defineEventHandler(async (event) => {
       return { ok: true, posts: [] }
     }
 
-    throw err
+    console.error('[api][blog][index] db error', err?.message || err)
+    throw createError({ statusCode: 503, statusMessage: 'Serviço temporariamente indisponível' })
   }
 })

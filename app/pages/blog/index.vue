@@ -190,7 +190,8 @@ type BlogPostListDto = {
 }
 
 const { data, pending, error } = await useFetch<{ ok: true; posts: BlogPostListDto[] }>('/api/blog', {
-  server: true
+  server: true,
+  default: () => null
 })
 
 const posts = computed(() => data.value?.posts || [])
