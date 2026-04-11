@@ -1,136 +1,257 @@
 <template>
-  <div class="bg-white min-h-screen">
+  <div class="bg-white min-h-screen font-sans">
 
-    <!-- Hero -->
-    <section class="bg-gradient-to-b from-blue-700 to-blue-900 text-white">
-      <div class="max-w-4xl mx-auto px-6 py-16 text-center">
-        <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-sm font-semibold text-blue-100 mb-6">
-          <span class="h-2 w-2 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
-          {{ ui.badge }}
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 1 — HERO (dobra principal)
+    ════════════════════════════════════════════════ -->
+    <section class="bg-[#0a1628] text-white relative overflow-hidden">
+      <!-- Detalhe decorativo de fundo -->
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-transparent to-indigo-900/30 pointer-events-none" aria-hidden="true" />
+
+      <div class="relative max-w-3xl mx-auto px-5 pt-10 pb-12 text-center">
+
+        <!-- Badge urgência -->
+        <div class="inline-flex items-center gap-2 rounded-full bg-red-600/20 border border-red-500/40 px-4 py-1.5 text-sm font-bold text-red-300 mb-6 uppercase tracking-wide">
+          <span class="h-2 w-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" aria-hidden="true" />
+          {{ t.heroBadge }}
         </div>
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight mb-5">
-          {{ ui.h1 }}
+
+        <!-- Headline principal -->
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-[1.08] tracking-tight mb-4">
+          {{ t.heroH1Line1 }}<br />
+          <span class="text-green-400">{{ t.heroH1Line2 }}</span>
         </h1>
-        <p class="text-blue-100 text-lg max-w-2xl mx-auto mb-8">
-          {{ ui.sub }}
+
+        <!-- Subheadline -->
+        <p class="text-blue-200 text-lg md:text-xl mb-8 leading-relaxed">
+          {{ t.heroSub }}
         </p>
-        <a
-          :href="productUrl"
-          class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-400 text-white font-extrabold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-green-900/30 transition hover:scale-[1.02] active:scale-[0.99]"
-        >
-          <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
-          </svg>
-          {{ ui.cta1 }}
-        </a>
-        <p class="mt-4 text-sm text-blue-200">{{ ui.trust }}</p>
-      </div>
-    </section>
 
-    <!-- Barra de prova social -->
-    <section class="bg-gray-50 border-y">
-      <div class="max-w-4xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-center sm:text-left">
-        <div class="flex -space-x-2">
-          <div v-for="i in 5" :key="i" class="w-9 h-9 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-white font-bold text-xs">
-            {{ i }}
+        <!-- Bloco de preço -->
+        <div class="inline-flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-8 py-5 mb-7">
+          <span class="text-sm text-gray-400 line-through mb-1">{{ t.priceOld }}</span>
+          <div class="flex items-end gap-2 leading-none">
+            <span class="text-green-400 text-5xl md:text-6xl font-black">{{ t.priceNew }}</span>
+            <span class="text-green-300 text-lg font-bold mb-1">{{ t.priceLabel }}</span>
+          </div>
+          <span class="mt-2 text-xs text-yellow-300 font-semibold uppercase tracking-widest">{{ t.priceUrgency }}</span>
+        </div>
+
+        <!-- Botão CTA principal -->
+        <div class="flex flex-col items-center gap-3">
+          <a
+            :href="productUrl"
+            class="w-full max-w-sm inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 active:bg-green-600 text-white font-black text-xl py-5 px-8 rounded-2xl shadow-xl shadow-green-900/40 transition-all hover:scale-[1.02] active:scale-[0.99]"
+          >
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+            </svg>
+            {{ t.heroCta }}
+          </a>
+
+          <!-- Subtexto de confiança -->
+          <p class="text-sm text-blue-200 leading-relaxed">{{ t.heroTrust }}</p>
+
+          <!-- Alerta de escassez -->
+          <div class="flex items-center gap-2 text-yellow-300 text-sm font-semibold">
+            <span aria-hidden="true">⚠</span>{{ t.heroScarcity }}
           </div>
         </div>
-        <div>
-          <div class="flex items-center gap-1 text-yellow-500 text-lg justify-center sm:justify-start">
-            <span v-for="i in 5" :key="i">★</span>
-          </div>
-          <div class="text-sm font-semibold text-gray-800 mt-0.5">{{ ui.socialProof }}</div>
-        </div>
+
       </div>
     </section>
 
-    <!-- Benefícios principais -->
-    <section class="max-w-5xl mx-auto px-6 py-16">
-      <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 text-center mb-3">{{ ui.featuresTitle }}</h2>
-      <p class="text-gray-500 text-center mb-10">{{ ui.featuresSub }}</p>
-
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div v-for="f in features" :key="f.icon" class="rounded-2xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-100 transition p-6 text-center">
-          <div class="text-3xl mb-3">{{ f.icon }}</div>
-          <div class="font-bold text-gray-900 mb-1">{{ f.title }}</div>
-          <div class="text-sm text-gray-500 leading-relaxed">{{ f.desc }}</div>
-        </div>
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 2 — PROVA SOCIAL
+    ════════════════════════════════════════════════ -->
+    <section class="bg-gray-900 border-b border-gray-800">
+      <div class="max-w-3xl mx-auto px-5 py-5 flex items-center justify-center gap-3 text-center">
+        <span class="text-yellow-400 text-xl tracking-tight">★★★★★</span>
+        <span class="text-gray-200 font-bold text-sm md:text-base">{{ t.socialProof }}</span>
       </div>
     </section>
 
-    <!-- CTA do meio -->
-    <section class="bg-blue-600 py-12 text-center">
-      <div class="max-w-2xl mx-auto px-6">
-        <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-4">{{ ui.midCtaTitle }}</h2>
-        <a
-          :href="productUrl"
-          class="inline-flex items-center gap-2 bg-white hover:bg-blue-50 text-blue-700 font-extrabold text-lg px-10 py-4 rounded-2xl transition shadow-lg"
-        >
-          {{ ui.cta2 }}
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-          </svg>
-        </a>
-      </div>
-    </section>
-
-    <!-- O que está incluído -->
-    <section class="max-w-4xl mx-auto px-6 py-16">
-      <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 text-center mb-10">{{ ui.includedTitle }}</h2>
-      <div class="grid md:grid-cols-2 gap-4">
-        <div
-          v-for="item in includedItems"
-          :key="item"
-          class="flex items-center gap-3 rounded-xl bg-green-50 border border-green-100 px-5 py-4"
-        >
-          <span class="flex-shrink-0 w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm">✓</span>
-          <span class="text-gray-800 font-medium text-sm">{{ item }}</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Depoimentos -->
-    <section class="bg-gray-50 border-y">
-      <div class="max-w-4xl mx-auto px-6 py-14">
-        <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-8">{{ ui.reviewsTitle }}</h2>
-        <div class="grid md:grid-cols-3 gap-5">
-          <div v-for="r in reviews" :key="r.name" class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-            <div class="flex items-center gap-0.5 text-yellow-500 mb-3">
-              <span v-for="i in 5" :key="i">★</span>
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 3 — DOR DO USUÁRIO
+    ════════════════════════════════════════════════ -->
+    <section class="bg-red-50 border-y border-red-100">
+      <div class="max-w-3xl mx-auto px-5 py-12">
+        <h2 class="text-2xl md:text-3xl font-black text-gray-900 text-center mb-2">{{ t.painTitle }}</h2>
+        <p class="text-center text-gray-500 mb-8 text-sm">{{ t.painSub }}</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div
+            v-for="pain in painItems"
+            :key="pain.icon"
+            class="flex items-start gap-3 bg-white rounded-xl border border-red-100 px-5 py-4 shadow-sm"
+          >
+            <span class="text-red-500 text-xl flex-shrink-0 mt-0.5" aria-hidden="true">{{ pain.icon }}</span>
+            <div>
+              <div class="font-bold text-gray-900 text-sm">{{ pain.title }}</div>
+              <div class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ pain.desc }}</div>
             </div>
-            <p class="text-gray-700 text-sm leading-relaxed mb-4">"{{ r.text }}"</p>
-            <div class="text-xs font-bold text-gray-500">— {{ r.name }}</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FAQ compacto -->
-    <section class="max-w-3xl mx-auto px-6 py-14">
-      <h2 class="text-2xl font-extrabold text-gray-900 text-center mb-8">{{ ui.faqTitle }}</h2>
-      <div class="space-y-4">
-        <div v-for="q in faq" :key="q.q" class="rounded-xl border border-gray-100 bg-white p-5">
-          <div class="font-bold text-gray-900 mb-1">{{ q.q }}</div>
-          <div class="text-sm text-gray-600 leading-relaxed">{{ q.a }}</div>
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 4 — SOLUÇÃO
+    ════════════════════════════════════════════════ -->
+    <section class="bg-white border-b">
+      <div class="max-w-3xl mx-auto px-5 py-12">
+        <h2 class="text-2xl md:text-3xl font-black text-gray-900 text-center mb-2">{{ t.solutionTitle }}</h2>
+        <p class="text-center text-gray-500 mb-8 text-sm">{{ t.solutionSub }}</p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div
+            v-for="(step, i) in solutionSteps"
+            :key="i"
+            class="flex items-start gap-4 bg-blue-50 rounded-xl border border-blue-100 px-5 py-4"
+          >
+            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-black text-sm">
+              {{ i + 1 }}
+            </div>
+            <div>
+              <div class="font-bold text-gray-900 text-sm">{{ step.title }}</div>
+              <div class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ step.desc }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA dentro da solução -->
+        <div class="text-center mt-10">
+          <a
+            :href="productUrl"
+            class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-black text-lg px-10 py-4 rounded-2xl transition shadow-lg shadow-green-200/60"
+          >
+            {{ t.solutionCta }}
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- CTA final -->
-    <section class="bg-gradient-to-b from-blue-50 to-white border-t py-16 text-center">
-      <div class="max-w-2xl mx-auto px-6">
-        <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3">{{ ui.finalCtaTitle }}</h2>
-        <p class="text-gray-500 mb-8">{{ ui.finalCtaSub }}</p>
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 5 — BENEFÍCIOS (cards)
+    ════════════════════════════════════════════════ -->
+    <section class="bg-gray-50 border-b">
+      <div class="max-w-3xl mx-auto px-5 py-12">
+        <h2 class="text-2xl font-black text-gray-900 text-center mb-8">{{ t.benefitsTitle }}</h2>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div
+            v-for="b in benefits"
+            :key="b.icon"
+            class="rounded-xl border border-gray-200 bg-white p-5 text-center hover:border-blue-300 hover:bg-blue-50 transition"
+          >
+            <div class="text-3xl mb-2" aria-hidden="true">{{ b.icon }}</div>
+            <div class="font-bold text-gray-900 text-sm leading-snug mb-1">{{ b.title }}</div>
+            <div class="text-xs text-gray-500 leading-relaxed">{{ b.desc }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 6 — O QUE ESTÁ INCLUSO
+    ════════════════════════════════════════════════ -->
+    <section class="bg-white border-b">
+      <div class="max-w-3xl mx-auto px-5 py-12">
+        <h2 class="text-2xl font-black text-gray-900 text-center mb-8">{{ t.includedTitle }}</h2>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div
+            v-for="item in includedItems"
+            :key="item.name"
+            class="flex items-start gap-3 rounded-xl bg-green-50 border border-green-100 px-5 py-4"
+          >
+            <span class="flex-shrink-0 w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center font-black text-sm mt-0.5">✓</span>
+            <div>
+              <div class="font-bold text-gray-900 text-sm">{{ item.name }}</div>
+              <div class="text-xs text-gray-500 leading-relaxed mt-0.5">{{ item.use }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 7 — DEPOIMENTOS
+    ════════════════════════════════════════════════ -->
+    <section class="bg-gray-50 border-b">
+      <div class="max-w-3xl mx-auto px-5 py-12">
+        <h2 class="text-2xl font-black text-gray-900 text-center mb-8">{{ t.reviewsTitle }}</h2>
+        <div class="grid md:grid-cols-3 gap-5">
+          <div
+            v-for="r in reviews"
+            :key="r.name"
+            class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex flex-col"
+          >
+            <div class="text-yellow-400 text-lg tracking-tight mb-3">★★★★★</div>
+            <p class="text-gray-700 text-sm leading-relaxed flex-1 mb-4">"{{ r.text }}"</p>
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-black flex items-center justify-center flex-shrink-0">
+                {{ r.name.charAt(0) }}
+              </div>
+              <span class="text-xs font-bold text-gray-600">{{ r.name }}</span>
+              <span class="text-xs text-green-600 font-semibold ml-auto">{{ t.reviewVerified }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 8 — QUEBRA DE OBJEÇÃO
+    ════════════════════════════════════════════════ -->
+    <section class="bg-blue-700 text-white">
+      <div class="max-w-3xl mx-auto px-5 py-12 text-center">
+        <h2 class="text-2xl font-black mb-6">{{ t.objectionTitle }}</h2>
+        <div class="grid sm:grid-cols-3 gap-4 mb-8">
+          <div
+            v-for="obj in objections"
+            :key="obj.title"
+            class="bg-white/10 border border-white/20 rounded-xl px-5 py-5"
+          >
+            <div class="text-green-300 text-2xl mb-2" aria-hidden="true">{{ obj.icon }}</div>
+            <div class="font-bold text-white text-sm mb-1">{{ obj.title }}</div>
+            <div class="text-blue-200 text-xs leading-relaxed">{{ obj.desc }}</div>
+          </div>
+        </div>
         <a
           :href="productUrl"
-          class="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-lg px-10 py-4 rounded-2xl transition shadow-lg shadow-blue-200/60 hover:scale-[1.02]"
+          class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-black text-lg px-10 py-4 rounded-2xl transition shadow-xl"
         >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
-          </svg>
-          {{ ui.cta3 }}
+          {{ t.objectionCta }}
         </a>
-        <p class="mt-4 text-xs text-gray-400">{{ ui.guarantee }}</p>
+        <p class="mt-3 text-blue-200 text-xs">{{ t.objectionSub }}</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         SEÇÃO 9 — CTA FINAL
+    ════════════════════════════════════════════════ -->
+    <section class="bg-[#0a1628] text-white">
+      <div class="max-w-2xl mx-auto px-5 py-16 text-center">
+        <div class="text-yellow-400 text-3xl mb-4" aria-hidden="true">⚡</div>
+        <h2 class="text-2xl md:text-3xl font-black mb-3">{{ t.finalCtaTitle }}</h2>
+        <p class="text-blue-200 mb-8 text-sm leading-relaxed">{{ t.finalCtaSub }}</p>
+
+        <!-- Preço repetido -->
+        <div class="inline-flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-8 py-4 mb-7">
+          <span class="text-gray-400 line-through text-sm mb-1">{{ t.priceOld }}</span>
+          <span class="text-green-400 text-4xl font-black">{{ t.priceNew }}</span>
+          <span class="text-xs text-yellow-300 font-semibold uppercase tracking-widest mt-1">{{ t.priceUrgency }}</span>
+        </div>
+
+        <div class="flex flex-col items-center gap-3">
+          <a
+            :href="productUrl"
+            class="w-full max-w-sm inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 active:bg-green-600 text-white font-black text-xl py-5 px-8 rounded-2xl shadow-xl shadow-green-900/40 transition-all hover:scale-[1.02]"
+          >
+            <svg class="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+            </svg>
+            {{ t.finalCta }}
+          </a>
+          <p class="text-blue-300 text-xs">{{ t.finalSub }}</p>
+        </div>
       </div>
     </section>
 
@@ -145,113 +266,145 @@ const productUrl = '/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-an
 const intl = useIntlContext()
 const isEn = computed(() => intl.language.value === 'en')
 
-const ui = computed(() => isEn.value ? {
-  badge: 'Official Original License',
-  h1: 'Microsoft 365 — Genuine License for PC, Mac and Mobile',
-  sub: 'Install Word, Excel, PowerPoint, Outlook and more on up to 5 devices. 1TB OneDrive included. Instant delivery.',
-  cta1: 'Get my license now',
-  trust: '✔ No subscription  •  ✔ Instant email delivery  •  ✔ Support included',
-  socialProof: '+15,000 activations — rated 5 stars by customers',
-  featuresTitle: 'Everything you need, all in one place',
-  featuresSub: 'The most complete Microsoft 365 package available',
-  midCtaTitle: 'Ready to install Office on all your devices?',
-  cta2: 'Buy now',
-  includedTitle: "What's included",
-  reviewsTitle: 'What our customers say',
-  faqTitle: 'Frequently asked questions',
-  finalCtaTitle: "Don't miss this",
-  finalCtaSub: 'Get your Microsoft 365 license now with instant email delivery.',
-  cta3: 'Buy Microsoft 365',
-  guarantee: '30-day money-back guarantee  •  Secure payment',
+const t = computed(() => isEn.value ? {
+  heroBadge: '⚠ Limited offer today',
+  heroH1Line1: 'YOUR OFFICE STOPPED WORKING?',
+  heroH1Line2: 'Activate in under 5 minutes',
+  heroSub: 'Original license — no subscription, no monthly fees. Works on PC, Mac, Android and iOS.',
+  priceOld: 'Was $49',
+  priceNew: '$9',
+  priceLabel: 'today',
+  priceUrgency: '⚡ Last discounted licenses',
+  heroCta: 'ACTIVATE NOW',
+  heroTrust: '✔ Instant delivery  •  ✔ Works on PC & mobile  •  ✔ Support included',
+  heroScarcity: 'Last discounted licenses available',
+  socialProof: '+15,000 customers already activated successfully',
+  painTitle: 'What happens without an activated Office?',
+  painSub: 'If your Office is blocked, you lose time and productivity every single day.',
+  solutionTitle: 'Solve it in just a few minutes',
+  solutionSub: 'Simple, fast, no technical knowledge required.',
+  solutionCta: 'ACTIVATE NOW',
+  benefitsTitle: 'What you get with this license',
+  includedTitle: "What's included in the package",
+  reviewsTitle: 'Customers who already activated',
+  reviewVerified: '✔ Verified',
+  objectionTitle: 'Still have doubts?',
+  objectionCta: 'YES, I WANT MY LICENSE',
+  objectionSub: 'Secure payment • Instant delivery after confirmation',
+  finalCtaTitle: "Don't miss this opportunity",
+  finalCtaSub: 'Get your Microsoft 365 license right now. Instant delivery after payment.',
+  finalCta: 'ACTIVATE NOW',
+  finalSub: 'Instant delivery after payment confirmation',
 } : {
-  badge: 'Licença Original Oficial',
-  h1: 'Microsoft 365 — Licença Genuína para PC, Mac e Celular',
-  sub: 'Instale Word, Excel, PowerPoint, Outlook e mais em até 5 dispositivos. 1TB no OneDrive incluído. Entrega imediata.',
-  cta1: 'Quero minha licença agora',
-  trust: '✔ Sem mensalidade  •  ✔ Entrega imediata por e-mail  •  ✔ Suporte incluso',
-  socialProof: '+15.000 ativações — avaliado com 5 estrelas pelos clientes',
-  featuresTitle: 'Tudo o que você precisa, em um só lugar',
-  featuresSub: 'O pacote Microsoft 365 mais completo disponível',
-  midCtaTitle: 'Pronto para instalar o Office em todos os seus dispositivos?',
-  cta2: 'Comprar agora',
-  includedTitle: 'O que está incluído',
-  reviewsTitle: 'O que nossos clientes dizem',
-  faqTitle: 'Perguntas frequentes',
+  heroBadge: '⚠ Oferta limitada hoje',
+  heroH1Line1: 'SEU OFFICE PAROU DE FUNCIONAR?',
+  heroH1Line2: 'Ative em menos de 5 minutos',
+  heroSub: 'Licença original — sem mensalidade, sem renovação. Funciona em PC, Mac, Android e iOS.',
+  priceOld: 'De R$199',
+  priceNew: 'R$29',
+  priceLabel: 'hoje',
+  priceUrgency: '⚡ Últimas licenças com desconto',
+  heroCta: 'ATIVAR AGORA',
+  heroTrust: '✔ Entrega imediata  •  ✔ Funciona em PC e celular  •  ✔ Suporte incluso',
+  heroScarcity: 'Últimas licenças com desconto disponíveis',
+  socialProof: '+15.000 clientes já ativaram com sucesso',
+  painTitle: 'O que acontece quando o Office não está ativado?',
+  painSub: 'Se o seu Office está bloqueado, você perde tempo e produtividade todos os dias.',
+  solutionTitle: 'Resolva em poucos minutos',
+  solutionSub: 'Simples, rápido e sem precisar de conhecimento técnico.',
+  solutionCta: 'ATIVAR AGORA',
+  benefitsTitle: 'O que você leva com essa licença',
+  includedTitle: 'O que está incluso no pacote',
+  reviewsTitle: 'Clientes que já ativaram',
+  reviewVerified: '✔ Verificado',
+  objectionTitle: 'Ainda tem dúvidas?',
+  objectionCta: 'SIM, QUERO MINHA LICENÇA',
+  objectionSub: 'Pagamento seguro • Entrega imediata após confirmação',
   finalCtaTitle: 'Não perca esta oportunidade',
-  finalCtaSub: 'Receba sua licença Microsoft 365 agora mesmo com entrega imediata por e-mail.',
-  cta3: 'Comprar Microsoft 365',
-  guarantee: 'Garantia de 30 dias  •  Pagamento seguro',
+  finalCtaSub: 'Receba sua licença Microsoft 365 agora mesmo. Entrega imediata após o pagamento.',
+  finalCta: 'ATIVAR AGORA',
+  finalSub: 'Entrega imediata após confirmação do pagamento',
 })
 
-const features = computed(() => isEn.value ? [
-  { icon: '⚡', title: 'Instant delivery', desc: 'Receive your license by email in minutes' },
-  { icon: '💻', title: 'Up to 5 devices', desc: 'Install on PC, Mac, Android and iOS' },
-  { icon: '☁️', title: '1TB OneDrive', desc: 'Cloud storage included in the package' },
-  { icon: '🔒', title: 'Genuine license', desc: 'Official activation, no blocks or errors' },
+const painItems = computed(() => isEn.value ? [
+  { icon: '🚫', title: 'Blocked programs', desc: 'Word, Excel and PowerPoint stop working or show constant warnings.' },
+  { icon: '⚠️', title: 'Constant error messages', desc: '"Unlicensed Product" warnings interrupt your work every hour.' },
+  { icon: '📉', title: 'Loss of productivity', desc: 'Without Office you lose time with slow or limited alternatives.' },
+  { icon: '💾', title: 'Risk of losing files', desc: 'Without OneDrive your files are not backed up automatically.' },
 ] : [
-  { icon: '⚡', title: 'Entrega imediata', desc: 'Receba sua licença por e-mail em minutos' },
-  { icon: '💻', title: 'Até 5 dispositivos', desc: 'Instale em PC, Mac, Android e iOS' },
-  { icon: '☁️', title: '1TB no OneDrive', desc: 'Armazenamento em nuvem incluso no pacote' },
-  { icon: '🔒', title: 'Licença genuína', desc: 'Ativação oficial, sem bloqueios ou erros' },
+  { icon: '🚫', title: 'Programas bloqueados', desc: 'Word, Excel e PowerPoint param de funcionar ou exibem alertas constantes.' },
+  { icon: '⚠️', title: 'Mensagens de erro constantes', desc: 'Avisos de "Produto sem licença" interrompem o seu trabalho toda hora.' },
+  { icon: '📉', title: 'Perda de produtividade', desc: 'Sem Office você perde tempo com alternativas lentas e limitadas.' },
+  { icon: '💾', title: 'Risco de perder arquivos', desc: 'Sem o OneDrive seus arquivos não ficam salvos automaticamente na nuvem.' },
+])
+
+const solutionSteps = computed(() => isEn.value ? [
+  { title: 'Receive by email', desc: 'After payment you receive your license in your inbox in minutes.' },
+  { title: 'Activate quickly', desc: 'Follow the simple step-by-step — we send it together with the license.' },
+  { title: 'Use without limits', desc: 'Full Word, Excel, PowerPoint, Outlook, Teams and 1TB OneDrive.' },
+  { title: 'Works everywhere', desc: 'Install on up to 5 devices: PC, Mac, Android and iOS.' },
+] : [
+  { title: 'Receba por e-mail', desc: 'Após o pagamento você recebe sua licença na caixa de entrada em minutos.' },
+  { title: 'Ative rapidamente', desc: 'Siga o passo a passo simples — enviamos junto com a licença.' },
+  { title: 'Use sem limitações', desc: 'Word, Excel, PowerPoint, Outlook, Teams e 1TB OneDrive completos.' },
+  { title: 'Funciona em tudo', desc: 'Instale em até 5 dispositivos: PC, Mac, Android e iOS.' },
+])
+
+const benefits = computed(() => isEn.value ? [
+  { icon: '⚡', title: 'Instant delivery', desc: 'In your inbox in minutes' },
+  { icon: '💻', title: 'Up to 5 devices', desc: 'PC, Mac, Android, iOS' },
+  { icon: '☁️', title: '1TB OneDrive', desc: 'Cloud storage included' },
+  { icon: '🔒', title: 'Official license', desc: 'No blocks or errors' },
+] : [
+  { icon: '⚡', title: 'Entrega imediata', desc: 'Na sua caixa de entrada em minutos' },
+  { icon: '💻', title: 'Até 5 dispositivos', desc: 'PC, Mac, Android, iOS' },
+  { icon: '☁️', title: '1TB OneDrive', desc: 'Armazenamento em nuvem incluso' },
+  { icon: '🔒', title: 'Licença oficial', desc: 'Sem bloqueios ou erros' },
 ])
 
 const includedItems = computed(() => isEn.value ? [
-  'Microsoft Word — Full version',
-  'Microsoft Excel — Full version',
-  'Microsoft PowerPoint — Full version',
-  'Microsoft Outlook — E-mail and calendar',
-  'Microsoft OneNote — Notes and organization',
-  'Microsoft Teams — Meetings and collaboration',
-  'Microsoft OneDrive — 1TB cloud storage',
-  'Works on PC and Mac',
-  'Works on Android and iOS',
-  'Up to 5 devices simultaneously',
-  'Regular updates included',
-  'Email support included',
+  { name: 'Microsoft Word', use: 'Create and edit documents, letters and reports' },
+  { name: 'Microsoft Excel', use: 'Spreadsheets, charts and financial analysis' },
+  { name: 'Microsoft PowerPoint', use: 'Professional presentations for any occasion' },
+  { name: 'Microsoft Outlook', use: 'E-mail, calendar and contacts in one place' },
+  { name: 'Microsoft Teams', use: 'Video meetings and collaboration with your team' },
+  { name: 'Microsoft OneDrive', use: '1TB cloud storage — automatic backup' },
 ] : [
-  'Microsoft Word — Versão completa',
-  'Microsoft Excel — Versão completa',
-  'Microsoft PowerPoint — Versão completa',
-  'Microsoft Outlook — E-mail e calendário',
-  'Microsoft OneNote — Notas e organização',
-  'Microsoft Teams — Reuniões e colaboração',
-  'Microsoft OneDrive — 1TB de armazenamento',
-  'Funciona em PC e Mac',
-  'Funciona em Android e iOS',
-  'Até 5 dispositivos simultâneos',
-  'Atualizações regulares inclusas',
-  'Suporte por e-mail incluso',
+  { name: 'Microsoft Word', use: 'Crie e edite documentos, cartas e relatórios' },
+  { name: 'Microsoft Excel', use: 'Planilhas, gráficos e análises financeiras' },
+  { name: 'Microsoft PowerPoint', use: 'Apresentações profissionais para qualquer ocasião' },
+  { name: 'Microsoft Outlook', use: 'E-mail, calendário e contatos em um só lugar' },
+  { name: 'Microsoft Teams', use: 'Reuniões em vídeo e colaboração com sua equipe' },
+  { name: 'Microsoft OneDrive', use: '1TB de armazenamento na nuvem — backup automático' },
 ])
 
 const reviews = computed(() => isEn.value ? [
-  { name: 'Lucas M.', text: 'Received the license in less than 5 minutes. Installation was super easy and everything works perfectly.' },
-  { name: 'Ana S.', text: 'Installed on PC, notebook and cell phone. Excellent value for money. Support responded quickly.' },
-  { name: 'Carlos R.', text: 'Was very hesitant but it worked. Word, Excel, everything is activated and running normally.' },
+  { name: 'Lucas M.', text: 'I was skeptical but it worked perfectly. Received in 3 minutes and activated on the first try. Would buy again!' },
+  { name: 'Ana S.', text: 'Installed on my PC, notebook and cell phone with the same license. Incredible value. Support answered within minutes.' },
+  { name: 'Carlos R.', text: 'Was afraid to buy online, but the support team guided me through every step. Everything activated and working great.' },
 ] : [
-  { name: 'Lucas M.', text: 'Recebi a licença em menos de 5 minutos. A instalação foi super fácil e tudo funcionou perfeitamente.' },
-  { name: 'Ana S.', text: 'Instalei no PC, no notebook e no celular. Ótimo custo-benefício. O suporte respondeu rápido.' },
-  { name: 'Carlos R.', text: 'Desconfiado no início, mas funcionou. Word, Excel, tudo ativado e rodando normalmente.' },
+  { name: 'Lucas M.', text: 'Estava desconfiado mas funcionou perfeitamente. Recebi em 3 minutos e ativei de primeira. Compraria de novo!' },
+  { name: 'Ana S.', text: 'Instalei no PC, notebook e celular com a mesma licença. Custo-benefício incrível. O suporte respondeu em minutos.' },
+  { name: 'Carlos R.', text: 'Tinha medo de comprar online, mas o suporte me acompanhou em cada etapa. Tudo ativado e funcionando perfeitamente.' },
 ])
 
-const faq = computed(() => isEn.value ? [
-  { q: 'How do I receive the license?', a: 'After payment confirmation, we send the license and activation instructions to your email in minutes.' },
-  { q: 'Does it work on Mac?', a: 'Yes! Microsoft 365 works on Windows PC and Mac, as well as Android and iOS mobile devices.' },
-  { q: 'Do I need to renew it?', a: 'No. This is a permanent license — you pay once and use it without monthly fees.' },
-  { q: 'How many devices can I install on?', a: 'You can install on up to 5 devices simultaneously, between PCs, Macs, smartphones and tablets.' },
+const objections = computed(() => isEn.value ? [
+  { icon: '🛡️', title: '30-day guarantee', desc: "If it doesn't work, we'll refund you — no questions asked." },
+  { icon: '💬', title: 'Post-purchase support', desc: 'Our team assists you step by step through activation if needed.' },
+  { icon: '⚡', title: 'Simple activation', desc: 'Follow the instructions we send and activate in minutes.' },
 ] : [
-  { q: 'Como recebo a licença?', a: 'Após confirmação do pagamento, enviamos a licença e as instruções de ativação para o seu e-mail em minutos.' },
-  { q: 'Funciona no Mac?', a: 'Sim! O Microsoft 365 funciona em PC Windows e Mac, além de dispositivos móveis Android e iOS.' },
-  { q: 'Preciso renovar?', a: 'Não. Esta é uma licença permanente — você paga uma vez e usa sem mensalidades.' },
-  { q: 'Quantos dispositivos posso instalar?', a: 'Você pode instalar em até 5 dispositivos simultaneamente, entre PCs, Macs, smartphones e tablets.' },
+  { icon: '🛡️', title: 'Garantia de 30 dias', desc: 'Se não funcionar, devolvemos o seu dinheiro — sem burocracia.' },
+  { icon: '💬', title: 'Suporte após a compra', desc: 'Nosso time te acompanha passo a passo na ativação se precisar.' },
+  { icon: '⚡', title: 'Ativação simples', desc: 'Siga o tutorial que enviamos e ative em minutos, sem complicação.' },
 ])
 
 useSeoMeta(computed(() => ({
   title: isEn.value
-    ? 'Buy Microsoft 365 – Genuine License for 5 Devices | Instant Delivery'
-    : 'Comprar Microsoft 365 – Licença Genuína para 5 Dispositivos | Entrega Imediata',
+    ? 'Buy Microsoft 365 – Activate in 5 Minutes | Original License | Instant Delivery'
+    : 'Comprar Microsoft 365 – Ative em 5 Minutos | Licença Original | Entrega Imediata',
   description: isEn.value
-    ? 'Get original Microsoft 365 with Word, Excel, PowerPoint for up to 5 devices. 1TB OneDrive included. Instant email delivery and 30-day guarantee.'
-    : 'Obtenha o Microsoft 365 original com Word, Excel, PowerPoint para até 5 dispositivos. 1TB OneDrive incluso. Entrega imediata por e-mail e garantia de 30 dias.',
+    ? 'Did your Office stop working? Get original Microsoft 365 for up to 5 devices. Word, Excel, PowerPoint, 1TB OneDrive. Instant delivery and 30-day guarantee.'
+    : 'Seu Office parou de funcionar? Obtenha o Microsoft 365 original para até 5 dispositivos. Word, Excel, PowerPoint, 1TB OneDrive. Entrega imediata e garantia de 30 dias.',
   robots: 'index,follow',
 })))
 </script>
