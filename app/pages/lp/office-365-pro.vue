@@ -345,7 +345,7 @@ const t = computed(() => isEn.value ? {
   heroH1Line2: 'Ative em menos de 5 minutos — sem mensalidade',
   heroSub: 'Licença original — sem mensalidade, sem renovação. Funciona em PC, Mac, Android e iOS.',
   priceOld: 'De R$199',
-  priceNew: 'R$29',
+  priceNew: 'R$99',
   priceLabel: 'hoje',
   priceUrgency: '⚡ Últimas licenças com desconto',
   heroCta: 'ATIVAR AGORA',
@@ -390,30 +390,28 @@ const painItems = computed(() => isEn.value ? [
   { icon: '🚫', title: 'Programas bloqueados', desc: 'Word, Excel e PowerPoint param de funcionar ou exibem alertas constantes.' },
   { icon: '⚠️', title: 'Mensagens de erro constantes', desc: 'Avisos de "Produto sem licença" interrompem o seu trabalho toda hora.' },
   { icon: '📉', title: 'Perda de produtividade', desc: 'Sem Office você perde tempo com alternativas lentas e limitadas.' },
-  { icon: '💾', title: 'Risco de perder arquivos', desc: 'Sem o OneDrive seus arquivos não ficam salvos automaticamente na nuvem.' },
+  { icon: '💾', title: 'Risco de perder arquivos', desc: 'Seus arquivos podem ser perdidos sem um sistema de backup adequado.' },
 ])
 
 const solutionSteps = computed(() => isEn.value ? [
   { title: 'Receive by email', desc: 'After payment you receive your license in your inbox in minutes.' },
   { title: 'Activate quickly', desc: 'Follow the simple step-by-step — we send it together with the license.' },
-  { title: 'Use without limits', desc: 'Full Word, Excel, PowerPoint, Outlook, Teams and 1TB OneDrive.' },
+  { title: 'Use without limits', desc: 'Full Word, Excel, PowerPoint, Outlook and Teams — with no restrictions.' },
   { title: 'Works everywhere', desc: 'Install on up to 5 devices: PC, Mac, Android and iOS.' },
 ] : [
   { title: 'Receba por e-mail', desc: 'Após o pagamento você recebe sua licença na caixa de entrada em minutos.' },
   { title: 'Ative rapidamente', desc: 'Siga o passo a passo simples — enviamos junto com a licença.' },
-  { title: 'Use sem limitações', desc: 'Word, Excel, PowerPoint, Outlook, Teams e 1TB OneDrive completos.' },
+  { title: 'Use sem limitações', desc: 'Word, Excel, PowerPoint, Outlook e Teams completos — sem restrições.' },
   { title: 'Funciona em tudo', desc: 'Instale em até 5 dispositivos: PC, Mac, Android e iOS.' },
 ])
 
 const benefits = computed(() => isEn.value ? [
   { icon: '⚡', title: 'Instant delivery', desc: 'In your inbox in minutes' },
   { icon: '💻', title: 'Up to 5 devices', desc: 'PC, Mac, Android, iOS' },
-  { icon: '☁️', title: '1TB OneDrive', desc: 'Cloud storage included' },
   { icon: '🔒', title: 'Official license', desc: 'No blocks or errors' },
 ] : [
   { icon: '⚡', title: 'Entrega imediata', desc: 'Na sua caixa de entrada em minutos' },
   { icon: '💻', title: 'Até 5 dispositivos', desc: 'PC, Mac, Android, iOS' },
-  { icon: '☁️', title: '1TB OneDrive', desc: 'Armazenamento em nuvem incluso' },
   { icon: '🔒', title: 'Licença oficial', desc: 'Sem bloqueios ou erros' },
 ])
 
@@ -423,14 +421,12 @@ const includedItems = computed(() => isEn.value ? [
   { name: 'Microsoft PowerPoint', use: 'Professional presentations for any occasion' },
   { name: 'Microsoft Outlook', use: 'E-mail, calendar and contacts in one place' },
   { name: 'Microsoft Teams', use: 'Video meetings and collaboration with your team' },
-  { name: 'Microsoft OneDrive', use: '1TB cloud storage — automatic backup' },
 ] : [
   { name: 'Microsoft Word', use: 'Crie e edite documentos, cartas e relatórios' },
   { name: 'Microsoft Excel', use: 'Planilhas, gráficos e análises financeiras' },
   { name: 'Microsoft PowerPoint', use: 'Apresentações profissionais para qualquer ocasião' },
   { name: 'Microsoft Outlook', use: 'E-mail, calendário e contatos em um só lugar' },
   { name: 'Microsoft Teams', use: 'Reuniões em vídeo e colaboração com sua equipe' },
-  { name: 'Microsoft OneDrive', use: '1TB de armazenamento na nuvem — backup automático' },
 ])
 
 const reviews = computed(() => isEn.value ? [
@@ -458,8 +454,8 @@ useSeoMeta(computed(() => ({
     ? 'Buy Microsoft 365 – Activate in 5 Minutes | Original License | Instant Delivery'
     : 'Comprar Microsoft 365 – Ative em 5 Minutos | Licença Original | Entrega Imediata',
   description: isEn.value
-    ? 'Did your Office stop working? Get original Microsoft 365 for up to 5 devices. Word, Excel, PowerPoint, 1TB OneDrive. Instant delivery and 30-day guarantee.'
-    : 'Seu Office parou de funcionar? Obtenha o Microsoft 365 original para até 5 dispositivos. Word, Excel, PowerPoint, 1TB OneDrive. Entrega imediata e garantia de 30 dias.',
+    ? 'Did your Office stop working? Get original Microsoft 365 for up to 5 devices. Word, Excel, PowerPoint and Outlook. Instant delivery and 30-day guarantee.'
+    : 'Seu Office parou de funcionar? Obtenha o Microsoft 365 original para até 5 dispositivos. Word, Excel, PowerPoint e Outlook. Entrega imediata e garantia de 30 dias.',
   robots: 'index,follow',
 })))
 </script>
