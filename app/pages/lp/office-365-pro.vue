@@ -52,6 +52,9 @@
           <!-- Subtexto de confiança -->
           <p class="text-sm text-blue-200 leading-relaxed">{{ t.heroTrust }}</p>
 
+          <!-- Contador de ativações recentes -->
+          <div class="text-orange-300 text-sm font-bold">{{ t.heroActivity }}</div>
+
           <!-- Alerta de escassez -->
           <div class="flex items-center gap-2 text-yellow-300 text-sm font-semibold">
             <span aria-hidden="true">⚠</span>{{ t.heroScarcity }}
@@ -72,12 +75,26 @@
     </section>
 
     <!-- ═══════════════════════════════════════════
+         PROVA SOCIAL STRIP (FASE 2)
+    ════════════════════════════════════════════════ -->
+    <section class="bg-blue-50 border-b border-blue-100">
+      <div class="max-w-3xl mx-auto px-5 py-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-8 text-center">
+        <span class="text-blue-700 text-sm font-semibold">✔ {{ t.proofItem1 }}</span>
+        <span class="hidden sm:block text-blue-200 text-xs">|</span>
+        <span class="text-blue-700 text-sm font-semibold">✔ {{ t.proofItem2 }}</span>
+        <span class="hidden sm:block text-blue-200 text-xs">|</span>
+        <span class="text-blue-700 text-sm font-semibold">✔ {{ t.proofItem3 }}</span>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
          SEÇÃO 3 — DOR DO USUÁRIO
     ════════════════════════════════════════════════ -->
     <section class="bg-red-50 border-y border-red-100">
       <div class="max-w-3xl mx-auto px-5 py-12">
         <h2 class="text-2xl md:text-3xl font-black text-gray-900 text-center mb-2">{{ t.painTitle }}</h2>
-        <p class="text-center text-gray-500 mb-8 text-sm">{{ t.painSub }}</p>
+        <p class="text-center text-gray-500 mb-2 text-sm">{{ t.painSub }}</p>
+        <p class="text-center text-red-600 font-semibold text-sm mb-8">{{ t.painWarning }}</p>
         <div class="grid sm:grid-cols-2 gap-4">
           <div
             v-for="pain in painItems"
@@ -100,7 +117,8 @@
     <section class="bg-white border-b">
       <div class="max-w-3xl mx-auto px-5 py-12">
         <h2 class="text-2xl md:text-3xl font-black text-gray-900 text-center mb-2">{{ t.solutionTitle }}</h2>
-        <p class="text-center text-gray-500 mb-8 text-sm">{{ t.solutionSub }}</p>
+        <p class="text-center text-gray-500 mb-1 text-sm">{{ t.solutionSub }}</p>
+        <p class="text-center text-blue-600 font-semibold text-sm mb-8">{{ t.solutionNote }}</p>
         <div class="grid sm:grid-cols-2 gap-4">
           <div
             v-for="(step, i) in solutionSteps"
@@ -172,6 +190,19 @@
     </section>
 
     <!-- ═══════════════════════════════════════════
+         SEGURANÇA
+    ════════════════════════════════════════════════ -->
+    <section class="bg-white border-b">
+      <div class="max-w-3xl mx-auto px-5 py-5 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-8 text-center">
+        <div class="flex items-center gap-2 text-gray-700 text-sm font-semibold">🔒 {{ t.secLock }}</div>
+        <div class="hidden sm:block w-px h-4 bg-gray-200" aria-hidden="true" />
+        <div class="flex items-center gap-2 text-gray-700 text-sm font-semibold">💳 {{ t.secPayment }}</div>
+        <div class="hidden sm:block w-px h-4 bg-gray-200" aria-hidden="true" />
+        <div class="flex items-center gap-2 text-gray-700 text-sm font-semibold">🛡️ {{ t.secGuarantee }}</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
          SEÇÃO 7 — DEPOIMENTOS
     ════════════════════════════════════════════════ -->
     <section class="bg-gray-50 border-b">
@@ -229,9 +260,10 @@
     ════════════════════════════════════════════════ -->
     <section class="bg-[#0a1628] text-white">
       <div class="max-w-2xl mx-auto px-5 py-16 text-center">
-        <div class="text-yellow-400 text-3xl mb-4" aria-hidden="true">⚡</div>
+        <div class="text-yellow-400 text-3xl mb-4" aria-hidden="true">⏳</div>
         <h2 class="text-2xl md:text-3xl font-black mb-3">{{ t.finalCtaTitle }}</h2>
-        <p class="text-blue-200 mb-8 text-sm leading-relaxed">{{ t.finalCtaSub }}</p>
+        <p class="text-blue-200 mb-3 text-sm leading-relaxed">{{ t.finalCtaSub }}</p>
+        <p class="text-yellow-300 text-sm font-bold mb-8">{{ t.finalCtaAfter }}</p>
 
         <!-- Preço repetido -->
         <div class="inline-flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-8 py-4 mb-7">
@@ -241,6 +273,7 @@
         </div>
 
         <div class="flex flex-col items-center gap-3">
+          <div class="text-red-400 text-xs font-bold tracking-wide">{{ t.finalScarcity }}</div>
           <a
             :href="productUrl"
             class="w-full max-w-sm inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 active:bg-green-600 text-white font-black text-xl py-5 px-8 rounded-2xl shadow-xl shadow-green-900/40 transition-all hover:scale-[1.02]"
@@ -267,38 +300,49 @@ const intl = useIntlContext()
 const isEn = computed(() => intl.language.value === 'en')
 
 const t = computed(() => isEn.value ? {
-  heroBadge: '⚠ Limited offer today',
-  heroH1Line1: 'YOUR OFFICE STOPPED WORKING?',
-  heroH1Line2: 'Activate in under 5 minutes',
-  heroSub: 'Original license — no subscription, no monthly fees. Works on PC, Mac, Android and iOS.',
+  heroBadge: '⏳ DISCOUNT EXPIRES TODAY',
+  heroH1Line1: 'IS YOUR OFFICE BLOCKED?',
+  heroH1Line2: 'Activate in under 5 minutes — no subscription',
+  heroSub: 'Original license — no monthly fees, no renewal. Works on PC, Mac, Android and iOS.',
   priceOld: 'Was $49',
   priceNew: '$9',
   priceLabel: 'today',
   priceUrgency: '⚡ Last discounted licenses',
   heroCta: 'ACTIVATE NOW',
   heroTrust: '✔ Instant delivery  •  ✔ Works on PC & mobile  •  ✔ Support included',
-  heroScarcity: 'Last discounted licenses available',
+  heroActivity: '🔥 Over 150 activations in the last 24h',
+  heroScarcity: 'Only 23 discounted licenses remaining',
+  proofItem1: '+15,000 satisfied customers',
+  proofItem2: 'Average rating 5 stars',
+  proofItem3: 'Delivery in under 5 minutes',
   socialProof: '+15,000 customers already activated successfully',
   painTitle: 'What happens without an activated Office?',
-  painSub: 'If your Office is blocked, you lose time and productivity every single day.',
+  painSub: 'If your Office is blocked, you lose access to everything.',
+  painWarning: 'Without activation, you lose time and productivity every single day.',
   solutionTitle: 'Solve it in just a few minutes',
-  solutionSub: 'Simple, fast, no technical knowledge required.',
+  solutionSub: 'Simple and fast activation process.',
+  solutionNote: 'Even if you have no technical knowledge.',
   solutionCta: 'ACTIVATE NOW',
   benefitsTitle: 'What you get with this license',
   includedTitle: "What's included in the package",
+  secLock: '100% secure purchase',
+  secPayment: 'Protected payment',
+  secGuarantee: '30-day guarantee',
   reviewsTitle: 'Customers who already activated',
   reviewVerified: '✔ Verified',
   objectionTitle: 'Still have doubts?',
   objectionCta: 'YES, I WANT MY LICENSE',
   objectionSub: 'Secure payment • Instant delivery after confirmation',
-  finalCtaTitle: "Don't miss this opportunity",
+  finalCtaTitle: '⏳ Last chance to activate with discount',
   finalCtaSub: 'Get your Microsoft 365 license right now. Instant delivery after payment.',
+  finalCtaAfter: 'After today, the price may return to its normal value.',
+  finalScarcity: '⚠ Only 23 licenses remaining with discount',
   finalCta: 'ACTIVATE NOW',
   finalSub: 'Instant delivery after payment confirmation',
 } : {
-  heroBadge: '⚠ Oferta limitada hoje',
-  heroH1Line1: 'SEU OFFICE PAROU DE FUNCIONAR?',
-  heroH1Line2: 'Ative em menos de 5 minutos',
+  heroBadge: '⏳ DESCONTO EXPIRA HOJE',
+  heroH1Line1: 'SEU OFFICE FOI BLOQUEADO?',
+  heroH1Line2: 'Ative em menos de 5 minutos — sem mensalidade',
   heroSub: 'Licença original — sem mensalidade, sem renovação. Funciona em PC, Mac, Android e iOS.',
   priceOld: 'De R$199',
   priceNew: 'R$29',
@@ -306,22 +350,33 @@ const t = computed(() => isEn.value ? {
   priceUrgency: '⚡ Últimas licenças com desconto',
   heroCta: 'ATIVAR AGORA',
   heroTrust: '✔ Entrega imediata  •  ✔ Funciona em PC e celular  •  ✔ Suporte incluso',
-  heroScarcity: 'Últimas licenças com desconto disponíveis',
+  heroActivity: '🔥 Mais de 150 ativações nas últimas 24h',
+  heroScarcity: 'Apenas 23 licenças restantes com desconto',
+  proofItem1: '+15.000 clientes satisfeitos',
+  proofItem2: 'Avaliação média 5 estrelas',
+  proofItem3: 'Entrega em menos de 5 minutos',
   socialProof: '+15.000 clientes já ativaram com sucesso',
   painTitle: 'O que acontece quando o Office não está ativado?',
-  painSub: 'Se o seu Office está bloqueado, você perde tempo e produtividade todos os dias.',
+  painSub: 'Se o seu Office está bloqueado, você perde acesso a tudo.',
+  painWarning: 'Sem ativação, você perde tempo e produtividade todos os dias.',
   solutionTitle: 'Resolva em poucos minutos',
-  solutionSub: 'Simples, rápido e sem precisar de conhecimento técnico.',
+  solutionSub: 'Processo de ativação simples e rápido.',
+  solutionNote: 'Mesmo que você não tenha conhecimento técnico.',
   solutionCta: 'ATIVAR AGORA',
   benefitsTitle: 'O que você leva com essa licença',
   includedTitle: 'O que está incluso no pacote',
+  secLock: 'Compra 100% segura',
+  secPayment: 'Pagamento protegido',
+  secGuarantee: 'Garantia de 30 dias',
   reviewsTitle: 'Clientes que já ativaram',
   reviewVerified: '✔ Verificado',
   objectionTitle: 'Ainda tem dúvidas?',
   objectionCta: 'SIM, QUERO MINHA LICENÇA',
   objectionSub: 'Pagamento seguro • Entrega imediata após confirmação',
-  finalCtaTitle: 'Não perca esta oportunidade',
+  finalCtaTitle: '⏳ Última chance de ativar com desconto',
   finalCtaSub: 'Receba sua licença Microsoft 365 agora mesmo. Entrega imediata após o pagamento.',
+  finalCtaAfter: 'Após hoje, o preço pode voltar ao valor normal.',
+  finalScarcity: '⚠ Apenas 23 licenças restantes com desconto',
   finalCta: 'ATIVAR AGORA',
   finalSub: 'Entrega imediata após confirmação do pagamento',
 })
