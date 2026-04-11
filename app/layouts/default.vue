@@ -31,7 +31,7 @@
     </div>
 
     <!-- HEADER -->
-    <header v-if="!isLicencasDigitais" class="border-b bg-white sticky top-0 z-40">
+    <header v-if="!isLicencasDigitais" class="border-b bg-white shadow-sm sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6">
         <div class="h-16 md:h-20 flex items-center justify-between gap-4">
           <div class="flex items-center gap-4 min-w-0">
@@ -129,8 +129,8 @@
           </div>
         </div>
 
-        <div class="hidden md:flex items-center gap-6 h-12 border-t">
-          <NuxtLink to="/" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-blue-600">
+        <nav class="hidden md:flex items-center gap-1 h-11 border-t">
+          <NuxtLink to="/" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition">
             <span aria-hidden="true">🏠</span>
             {{ t.home }}
           </NuxtLink>
@@ -138,12 +138,11 @@
             v-for="it in mainMenu"
             :key="it.label"
             :to="it.to"
-            class="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-blue-600"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition"
           >
-            <span aria-hidden="true">{{ menuIcon(it.label) }}</span>
             {{ it.label }}
           </NuxtLink>
-        </div>
+        </nav>
       </div>
     </header>
 
@@ -415,61 +414,65 @@
       </div>
     </footer>
 
-    <footer v-else class="bg-gray-100 border-t mt-20">
-      <div class="max-w-7xl mx-auto px-6 py-10 grid md:grid-cols-3 gap-8 text-sm text-gray-600">
+    <footer v-else class="bg-gray-900 text-gray-300 mt-20">
+      <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-2 lg:grid-cols-4 gap-10">
 
         <div>
-          <h3 class="font-semibold text-gray-800 mb-2">{{ siteName }}</h3>
-          <p>
-            {{ footerDescriptionText }}
-          </p>
+          <div class="font-extrabold text-white text-lg mb-3">{{ siteName }}</div>
+          <p class="text-sm text-gray-400 leading-relaxed">{{ footerDescriptionText }}</p>
+          <div v-if="whatsappHref" class="mt-4">
+            <a :href="whatsappHref" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 text-sm font-semibold text-green-400 hover:text-green-300 transition">
+              {{ t.whatsappPrefix }} {{ whatsappLabel }}
+            </a>
+          </div>
+          <div v-if="supportEmail" class="mt-2">
+            <a :href="`mailto:${supportEmail}`" class="text-sm text-gray-400 hover:text-white transition">{{ supportEmail }}</a>
+          </div>
         </div>
 
         <div>
-          <h3 class="font-semibold text-gray-800 mb-2">{{ footerLinksTitleText }}</h3>
-          <ul class="space-y-2">
-            <li><NuxtLink :to="productsIndexPath" class="hover:text-blue-600">{{ t.footerProducts }}</NuxtLink></li>
-            <li><NuxtLink to="/tutoriais" class="hover:text-blue-600">{{ t.footerTutorials }}</NuxtLink></li>
-            <li><NuxtLink :to="blogMenuTo" class="hover:text-blue-600">{{ t.footerBlog }}</NuxtLink></li>
-            <li><NuxtLink :to="affiliateMenuTo" class="hover:text-blue-600">{{ affiliateMenuLabel }}</NuxtLink></li>
-            <li v-if="showAffiliateSeoFooterLink"><NuxtLink to="/en/affiliate-program" class="hover:text-blue-600">Affiliate Program</NuxtLink></li>
-            <li><NuxtLink :to="aboutUsPath" class="hover:text-blue-600">{{ t.footerAbout }}</NuxtLink></li>
-            <li><NuxtLink :to="digitalDeliveryPath" class="hover:text-blue-600">{{ t.footerDigitalDelivery }}</NuxtLink></li>
-            <li><NuxtLink :to="refundPolicyPath" class="hover:text-blue-600">{{ t.footerRefundPolicy }}</NuxtLink></li>
-            <li><NuxtLink :to="privacyPolicyPath" class="hover:text-blue-600">{{ t.footerPrivacy }}</NuxtLink></li>
-            <li><NuxtLink :to="termsOfUsePath" class="hover:text-blue-600">{{ t.footerTerms }}</NuxtLink></li>
+          <div class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">{{ footerLinksTitleText }}</div>
+          <ul class="space-y-2 text-sm">
+            <li><NuxtLink :to="productsIndexPath" class="hover:text-white transition">{{ t.footerProducts }}</NuxtLink></li>
+            <li><NuxtLink to="/tutoriais" class="hover:text-white transition">{{ t.footerTutorials }}</NuxtLink></li>
+            <li><NuxtLink :to="blogMenuTo" class="hover:text-white transition">{{ t.footerBlog }}</NuxtLink></li>
+            <li><NuxtLink :to="affiliateMenuTo" class="hover:text-white transition">{{ affiliateMenuLabel }}</NuxtLink></li>
+            <li><NuxtLink :to="aboutUsPath" class="hover:text-white transition">{{ t.footerAbout }}</NuxtLink></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">{{ t.footerSupportTitle }}</div>
+          <ul class="space-y-2 text-sm">
+            <li><NuxtLink :to="digitalDeliveryPath" class="hover:text-white transition">{{ t.footerDigitalDelivery }}</NuxtLink></li>
+            <li><NuxtLink :to="refundPolicyPath" class="hover:text-white transition">{{ t.footerRefundPolicy }}</NuxtLink></li>
+            <li><NuxtLink :to="privacyPolicyPath" class="hover:text-white transition">{{ t.footerPrivacy }}</NuxtLink></li>
+            <li><NuxtLink :to="termsOfUsePath" class="hover:text-white transition">{{ t.footerTerms }}</NuxtLink></li>
             <li v-for="p in paginas" :key="p.slug">
-              <NuxtLink :to="`/paginas/${p.slug}`" class="hover:text-blue-600">{{ p.titulo }}</NuxtLink>
+              <NuxtLink :to="`/paginas/${p.slug}`" class="hover:text-white transition">{{ p.titulo }}</NuxtLink>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 class="font-semibold text-gray-800 mb-2">{{ t.footerSupportTitle }}</h3>
-          <p>{{ t.footerSupportSubtitle }}</p>
-          <p class="mt-2">{{ t.footerIntlSupport }}</p>
-          <p v-if="supportEmail" class="mt-2 font-medium text-gray-800">
-            {{ supportEmail }}
-          </p>
-          <p v-if="whatsappHref" class="mt-2 font-medium text-gray-800">
-            <a class="hover:underline" :href="whatsappHref" target="_blank" rel="noopener noreferrer">
-              {{ t.whatsappPrefix }} {{ whatsappLabel }}
-            </a>
-          </p>
-          <div v-if="!isEnDomain" class="mt-4 text-xs text-gray-500 space-y-1">
-            <p><span class="font-semibold">Razão Social:</span> {{ companyLegalName }}</p>
-            <p><span class="font-semibold">CNPJ:</span> {{ companyCnpj }}</p>
-            <p>
-              <span class="font-semibold">Endereço:</span> {{ companyAddress }}
-            </p>
-            <p><span class="font-semibold">Telefone/Whatsapp:</span> {{ companyPhone }}</p>
-            <p><span class="font-semibold">E-mail:</span> {{ companyEmail }}</p>
+          <div class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">{{ t.footerSupportTitle }}</div>
+          <p class="text-sm text-gray-400 mb-4">{{ t.footerIntlSupport }}</p>
+          <div v-if="!isEnDomain" class="text-xs text-gray-500 space-y-1">
+            <p v-if="companyLegalName"><span class="font-semibold text-gray-400">Razão Social:</span> {{ companyLegalName }}</p>
+            <p v-if="companyCnpj"><span class="font-semibold text-gray-400">CNPJ:</span> {{ companyCnpj }}</p>
+            <p v-if="companyAddress"><span class="font-semibold text-gray-400">Endereço:</span> {{ companyAddress }}</p>
+            <p v-if="companyPhone"><span class="font-semibold text-gray-400">Telefone:</span> {{ companyPhone }}</p>
+            <p v-if="companyEmail"><span class="font-semibold text-gray-400">E-mail:</span> {{ companyEmail }}</p>
           </div>
         </div>
-      </div>
 
-      <div class="text-center text-xs text-gray-500 py-4 border-t">
-        © {{ new Date().getFullYear() }} {{ siteName }} — {{ t.rightsReserved }}
+      </div>
+      <div class="border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+          <span>© {{ new Date().getFullYear() }} {{ siteName }} — {{ t.rightsReserved }}</span>
+          <span class="text-gray-600">{{ t.footerDisclaimer1 }}</span>
+        </div>
       </div>
     </footer>
 

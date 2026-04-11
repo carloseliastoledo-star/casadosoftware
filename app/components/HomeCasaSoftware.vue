@@ -1,275 +1,36 @@
 <template>
-  <section class="bg-gray-50">
-    <div class="max-w-7xl mx-auto px-6 pt-12 pb-10">
-      <div class="grid lg:grid-cols-2 gap-10 items-center">
-        <div class="space-y-6">
-          <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold border border-blue-100">
-            <span class="text-blue-600">⚡</span>
-            {{ $t('home.badge_instant_email') }}
-          </div>
+  <section>
+    <!-- 1. Hero -->
+    <HomeHeroNew :products-index-path="productsIndexPath" />
 
-          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
-            {{ $t('home.hero_title') }}
-          </h1>
+    <!-- 2. Por que escolher -->
+    <HomeBenefitsNew />
 
-          <p class="text-gray-600 text-lg leading-relaxed">
-            {{ $t('home.hero_description') }}
-          </p>
-
-          <div class="flex flex-col sm:flex-row gap-3">
-            <NuxtLink
-              :to="productsIndexPath"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
-            >
-              {{ $t('home.view_products') }}
-            </NuxtLink>
-
-            <NuxtLink
-              to="/tutoriais"
-              class="border border-blue-600 text-blue-700 hover:bg-blue-50 font-semibold px-6 py-3 rounded-lg transition text-center"
-            >
-              {{ $t('view_tutorials') }}
-            </NuxtLink>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 text-sm text-gray-700 pt-2">
-            <div class="bg-white border rounded-lg p-3">🔒 {{ $t('home.trust_secure_purchase') }}</div>
-            <div class="bg-white border rounded-lg p-3">💳 {{ $t('home.trust_online_payment') }}</div>
-            <div class="bg-white border rounded-lg p-3">⚡ {{ $t('home.trust_instant_delivery') }}</div>
-            <div class="bg-white border rounded-lg p-3">💬 {{ $t('home.trust_fast_support') }}</div>
-          </div>
-        </div>
-
-        <div class="relative">
-          <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 text-white shadow-lg">
-            <div class="text-sm font-semibold text-blue-100">{{ $t('home.featured_badge') }}</div>
-            <div class="mt-2 text-2xl font-extrabold">{{ $t('home.featured_title') }}</div>
-            <p class="mt-3 text-blue-100">
-              {{ $t('home.featured_description') }}
-            </p>
-            <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
-              <div class="bg-white/10 rounded-xl p-4">
-                <div class="font-bold">Windows</div>
-                <div class="text-blue-100 mt-1">10/11 Pro</div>
-              </div>
-              <div class="bg-white/10 rounded-xl p-4">
-                <div class="font-bold">Office</div>
-                <div class="text-blue-100 mt-1">2021 / 365</div>
-              </div>
-            </div>
-            <div class="mt-6">
-              <NuxtLink
-                :to="productsIndexPath"
-                class="inline-flex items-center justify-center w-full bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition"
-              >
-                {{ $t('home.start_now') }}
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white border-y">
-      <div class="max-w-7xl mx-auto px-6 py-10">
-        <h2 class="text-2xl font-extrabold text-gray-900 text-center">{{ $t('home.why_title') }}</h2>
-        <p class="text-gray-600 text-center mt-2">
-          {{ $t('home.why_subtitle') }}
-        </p>
-
-        <div class="mt-8 grid md:grid-cols-4 gap-5">
-          <div class="bg-gray-50 border rounded-2xl p-6">
-            <div class="text-2xl">✅</div>
-            <div class="font-bold mt-3">{{ $t('home.why_card1_title') }}</div>
-            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card1_body') }}</div>
-          </div>
-          <div class="bg-gray-50 border rounded-2xl p-6">
-            <div class="text-2xl">⚡</div>
-            <div class="font-bold mt-3">{{ $t('home.why_card2_title') }}</div>
-            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card2_body') }}</div>
-          </div>
-          <div class="bg-gray-50 border rounded-2xl p-6">
-            <div class="text-2xl">📘</div>
-            <div class="font-bold mt-3">{{ $t('home.why_card3_title') }}</div>
-            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card3_body') }}</div>
-          </div>
-          <div class="bg-gray-50 border rounded-2xl p-6">
-            <div class="text-2xl">💬</div>
-            <div class="font-bold mt-3">{{ $t('home.why_card4_title') }}</div>
-            <div class="text-sm text-gray-600 mt-1">{{ $t('home.why_card4_body') }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-6 py-12">
-      <div class="flex items-end justify-between gap-6 flex-wrap">
-        <div>
-          <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.best_sellers_title') }}</h2>
-          <p class="text-gray-600 mt-2">{{ $t('home.best_sellers_subtitle') }}</p>
-        </div>
-        <NuxtLink
-          :to="productsIndexPath"
-          class="text-blue-700 font-semibold hover:underline"
-        >
-          {{ $t('home.view_all') }} →
-        </NuxtLink>
-      </div>
-
+    <!-- 3. Melhores produtos -->
+    <HomeCategoriesNew :products-index-path="productsIndexPath">
       <div v-if="pending" class="text-center py-16 text-gray-500">
         {{ $t('home.loading_products') }}
       </div>
-
       <div v-else-if="hasError" class="text-center py-16 text-red-600">
         {{ $t('home.error_loading_products') }}
       </div>
-
-      <div v-else-if="products.length === 0" class="text-center py-16 text-gray-500">
+      <div v-else-if="products.length === 0" class="text-center py-16 text-gray-400">
         {{ $t('home.no_best_sellers') }}
       </div>
-
-      <div v-else class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <ProductCard
           v-for="product in products.slice(0, 8)"
           :key="product.id"
           :product="product"
         />
       </div>
-    </div>
+    </HomeCategoriesNew>
 
-    <div class="bg-white border-t">
-      <div class="max-w-7xl mx-auto px-6 py-12">
-        <div class="grid lg:grid-cols-2 gap-10 items-center">
-          <div>
-            <h2 class="text-3xl font-extrabold text-gray-900">{{ $t('home.how_title') }}</h2>
-            <p class="text-gray-600 mt-2">
-              {{ $t('home.how_subtitle') }}
-            </p>
+    <!-- 4. Como funciona -->
+    <HomeStepsNew :products-index-path="productsIndexPath" />
 
-            <div class="mt-6 space-y-4">
-              <div class="flex gap-4">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">1</div>
-                <div>
-                  <div class="font-bold text-gray-900">{{ $t('home.step1_title') }}</div>
-                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step1_body') }}</div>
-                </div>
-              </div>
-              <div class="flex gap-4">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">2</div>
-                <div>
-                  <div class="font-bold text-gray-900">{{ $t('home.step2_title') }}</div>
-                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step2_body') }}</div>
-                </div>
-              </div>
-              <div class="flex gap-4">
-                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">3</div>
-                <div>
-                  <div class="font-bold text-gray-900">{{ $t('home.step3_title') }}</div>
-                  <div class="text-gray-600 text-sm mt-1">{{ $t('home.step3_body') }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-blue-50 border border-blue-100 rounded-3xl p-8">
-            <div class="text-blue-700 font-semibold">{{ $t('home.help_need_help') }}</div>
-            <div class="text-2xl font-extrabold text-gray-900 mt-2">{{ $t('home.help_title') }}</div>
-            <p class="text-gray-700 mt-3">
-              {{ $t('home.help_body') }}
-            </p>
-            <div class="mt-6 flex flex-col sm:flex-row gap-3">
-              <NuxtLink
-                :to="productsIndexPath"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition text-center"
-              >
-                {{ $t('buy_now') }}
-              </NuxtLink>
-              <NuxtLink
-                to="/tutoriais"
-                class="border border-blue-600 text-blue-700 hover:bg-white font-semibold px-6 py-3 rounded-lg transition text-center"
-              >
-                {{ $t('view_tutorials') }}
-              </NuxtLink>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="border-t bg-gradient-to-b from-blue-50 via-white to-white">
-      <div class="max-w-7xl mx-auto px-6 py-14">
-        <div class="relative overflow-hidden rounded-3xl border bg-white">
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10" />
-          <div class="relative p-8 md:p-10">
-            <div class="grid lg:grid-cols-2 gap-10 items-center">
-              <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-800">
-                  {{ affiliateCtaKicker }}
-                  <span class="h-1 w-1 rounded-full bg-blue-400" aria-hidden="true" />
-                  <span class="text-blue-700">{{ affiliateCtaHighlight }}</span>
-                </div>
-
-                <h2 class="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900">
-                  {{ affiliateCtaTitle }}
-                </h2>
-
-                <p class="mt-3 text-gray-700 text-base leading-7">
-                  {{ affiliateCtaSubtitle }}
-                </p>
-
-                <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                  <NuxtLink
-                    :to="affiliateLandingTo"
-                    class="group inline-flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 transition text-center shadow-sm hover:shadow"
-                  >
-                    <span>{{ affiliateCtaButton }}</span>
-                    <span class="ml-2 transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
-                  </NuxtLink>
-
-                  <div class="hidden sm:flex items-center text-sm text-gray-600">
-                    <span class="font-semibold text-gray-900">{{ affiliateCtaNoFees }}</span>
-                    <span class="ml-1">{{ affiliateCtaStartToday }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="rounded-3xl border bg-gray-50 p-8">
-                <div class="flex items-center justify-between gap-3">
-                  <div class="text-sm font-semibold text-gray-900">{{ affiliateCtaAudienceTitle }}</div>
-                  <div class="text-xs font-semibold text-blue-700 rounded-full bg-blue-100 px-3 py-1">{{ affiliateCtaWorldwide }}</div>
-                </div>
-
-                <ul class="mt-5 grid gap-3">
-                  <li class="flex items-center gap-3 text-gray-800">
-                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
-                    <span class="font-medium">{{ affiliateCtaAudience1 }}</span>
-                  </li>
-                  <li class="flex items-center gap-3 text-gray-800">
-                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
-                    <span class="font-medium">{{ affiliateCtaAudience2 }}</span>
-                  </li>
-                  <li class="flex items-center gap-3 text-gray-800">
-                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border text-blue-700" aria-hidden="true">✓</span>
-                    <span class="font-medium">{{ affiliateCtaAudience3 }}</span>
-                  </li>
-                </ul>
-
-                <div class="mt-6 grid grid-cols-2 gap-3 text-sm">
-                  <div class="rounded-xl border bg-white p-4">
-                    <div class="text-gray-500">{{ affiliateCtaStatCommissionLabel }}</div>
-                    <div class="mt-1 font-extrabold text-gray-900">20%–30%</div>
-                  </div>
-                  <div class="rounded-xl border bg-white p-4">
-                    <div class="text-gray-500">{{ affiliateCtaStatProductsLabel }}</div>
-                    <div class="mt-1 font-extrabold text-gray-900">{{ affiliateCtaStatProductsValue }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- 5. CTA afiliados -->
+    <HomeCtaNew :cta="affiliateCta" />
   </section>
 </template>
 
@@ -497,4 +258,21 @@ const products = computed(() =>
 )
 
 const hasError = computed(() => false)
+
+const affiliateCta = computed(() => ({
+  to: affiliateLandingTo.value,
+  kicker: affiliateCtaKicker.value,
+  highlight: affiliateCtaHighlight.value,
+  title: affiliateCtaTitle.value,
+  subtitle: affiliateCtaSubtitle.value,
+  button: affiliateCtaButton.value,
+  noFees: affiliateCtaNoFees.value,
+  startToday: affiliateCtaStartToday.value,
+  worldwide: affiliateCtaWorldwide.value,
+  audienceTitle: affiliateCtaAudienceTitle.value,
+  audiences: [affiliateCtaAudience1.value, affiliateCtaAudience2.value, affiliateCtaAudience3.value],
+  statCommissionLabel: affiliateCtaStatCommissionLabel.value,
+  statProductsLabel: affiliateCtaStatProductsLabel.value,
+  statProductsValue: affiliateCtaStatProductsValue.value,
+}))
 </script>

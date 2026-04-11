@@ -311,7 +311,7 @@ const isLicencasDigitais = computed(() => {
 })
 
 const sectionClass = computed(() => {
-  return isLicencasDigitais.value ? 'bg-white min-h-screen' : 'bg-gray-100 min-h-screen py-12'
+  return isLicencasDigitais.value ? 'bg-white min-h-screen' : 'bg-gray-50 min-h-screen py-10'
 })
 
 const containerClass = computed(() => {
@@ -331,11 +331,11 @@ const titleClass = computed(() => {
 const mainCardClass = computed(() => {
   return isLicencasDigitais.value
     ? 'bg-white border rounded-2xl p-6 md:p-8 grid lg:grid-cols-2 gap-10'
-    : 'bg-white rounded-2xl shadow p-8 grid lg:grid-cols-2 gap-10'
+    : 'bg-white rounded-2xl border border-gray-100 shadow-sm p-8 grid lg:grid-cols-2 gap-10'
 })
 
 const imageWrapClass = computed(() => {
-  return isLicencasDigitais.value ? 'flex items-center justify-center bg-gray-50 border rounded-2xl p-6' : 'flex items-center justify-center'
+  return isLicencasDigitais.value ? 'flex items-center justify-center bg-gray-50 border rounded-2xl p-6' : 'flex items-center justify-center bg-gray-50 rounded-2xl p-6'
 })
 
 const buyColumnClass = computed(() => {
@@ -345,7 +345,7 @@ const buyColumnClass = computed(() => {
 const buyButtonClass = computed(() => {
   return isLicencasDigitais.value
     ? 'w-full bg-blue-600 hover:bg-blue-700 text-white text-base font-bold py-3.5 rounded-md transition'
-    : 'w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-4 rounded-xl transition'
+    : 'w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-lg font-bold py-4 rounded-xl transition shadow-md shadow-blue-200/60'
 })
 
 const tutorialCardClass = computed(() => {
@@ -355,11 +355,11 @@ const tutorialCardClass = computed(() => {
 })
 
 const descriptionCardClass = computed(() => {
-  return isLicencasDigitais.value ? 'bg-white border rounded-2xl mt-10 p-6 md:p-8 space-y-10' : 'bg-white rounded-2xl shadow mt-12 p-8 space-y-10'
+  return isLicencasDigitais.value ? 'bg-white border rounded-2xl mt-10 p-6 md:p-8 space-y-10' : 'bg-white rounded-2xl border border-gray-100 shadow-sm mt-10 p-8 space-y-10'
 })
 
 const whyPriceCardClass = computed(() => {
-  return isLicencasDigitais.value ? 'bg-white border rounded-2xl mt-8 p-6 md:p-8' : 'bg-white rounded-2xl shadow mt-8 p-8'
+  return isLicencasDigitais.value ? 'bg-white border rounded-2xl mt-8 p-6 md:p-8' : 'bg-white rounded-2xl border border-gray-100 shadow-sm mt-8 p-8'
 })
 
 const route = useRoute()
