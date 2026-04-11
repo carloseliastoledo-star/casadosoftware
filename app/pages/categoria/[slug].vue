@@ -57,46 +57,75 @@
     </div>
   </section>
 
-  <section v-else class="bg-gray-100 min-h-screen py-12">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="mb-8">
-        <h1 class="text-3xl font-extrabold text-gray-900">
-          {{ categoria?.nome || 'Categoria' }}
-        </h1>
-        <p v-if="categoria?.slug" class="text-sm text-gray-600 mt-1">
-          /categoria/{{ categoria.slug }}/
-        </p>
+  <section v-else class="bg-slate-50 min-h-screen">
+    <!-- Header visual premium -->
+    <CategoryHeaderPremium
+      :category-name="categoria?.nome || 'Softwares'"
+      :product-count="produtos.length"
+    />
+
+    <!-- Conteúdo principal -->
+    <div class="max-w-7xl mx-auto px-5 py-8">
+      <div class="flex flex-col lg:flex-row gap-7 items-start">
+
+        <!-- Sidebar -->
+        <CategorySidebarPremium :current-slug="String(categoria?.slug || '')" />
+
+        <!-- Área de grid -->
+        <div class="flex-1 min-w-0">
+
+          <!-- Loading state -->
+          <div v-if="pending" class="flex items-center justify-center py-20 text-gray-400">
+            <svg class="animate-spin w-6 h-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+            </svg>
+            Carregando produtos...
+          </div>
+
+          <!-- Categoria não encontrada -->
+          <div v-else-if="!categoria" class="flex flex-col items-center justify-center py-20 text-center">
+            <div class="text-4xl mb-4" aria-hidden="true">🔍</div>
+            <h2 class="text-lg font-bold text-gray-800 mb-1">Categoria não encontrada</h2>
+            <p class="text-sm text-gray-500 mb-5">Verifique o link ou volte para a página inicial.</p>
+            <NuxtLink
+              to="/"
+              class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-5 rounded-xl transition"
+            >
+              Ir para o início
+            </NuxtLink>
+          </div>
+
+          <!-- Grid vazio (categoria existe mas sem produtos) -->
+          <div v-else-if="produtos.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+            <div class="text-4xl mb-4" aria-hidden="true">📦</div>
+            <h2 class="text-lg font-bold text-gray-800 mb-1">Nenhum produto encontrado</h2>
+            <p class="text-sm text-gray-500">Esta categoria ainda não tem produtos cadastrados.</p>
+          </div>
+
+          <!-- Grid de produtos premium -->
+          <CategoryGridPremium v-else>
+            <ProductCardPremium
+              v-for="p in produtos"
+              :key="p.id + (p.imagem || p.image || '')"
+              :product="p"
+            />
+          </CategoryGridPremium>
+        </div>
       </div>
 
-      <div v-if="pending" class="text-center py-16 text-gray-500">
-        Carregando...
-      </div>
-
-      <div v-else-if="!categoria" class="text-center py-16 text-red-600">
-        Categoria não encontrada.
-      </div>
-
-      <div v-else class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        <ProductCard
-          v-for="p in produtos"
-          :key="p.id + (p.imagem || p.image || '')"
-          :product="p"
-        />
-      </div>
-
+      <!-- Language Switcher -->
       <IntlLanguageSwitcher
         v-if="categoria"
         page-type="category"
         :slug="String(categoria?.slug || '')"
-        class="mt-6"
+        class="mt-10"
       />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import ProductCard from '~/components/ProductCard.vue'
-
 const route = useRoute()
 const slug = String(route.params.slug || '')
   .trim()
