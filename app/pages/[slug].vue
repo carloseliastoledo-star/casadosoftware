@@ -28,8 +28,19 @@
 </template>
 
 <script setup lang="ts">
-import DOMPurify from 'isomorphic-dompurify'
 import { createError } from 'h3'
+
+function safeSanitize(raw: string): string {
+  if (!raw) return ''
+  if (import.meta.server) {
+    return raw.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<[^>]+\bon\w+\s*=[^>]*>/gi, (m) => m.replace(/\bon\w+\s*=["'][^"']*["']/gi, ''))
+  }
+  try {
+    const D = (window as any).DOMPurify
+    if (D?.sanitize) return D.sanitize(raw, { USE_PROFILES: { html: true } })
+  } catch {}
+  return raw
+}
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
@@ -59,7 +70,7 @@ const postHtml = computed(() => String(post.value?.html || ''))
 const safePostHtml = computed(() => {
   const raw = postHtml.value
   if (!raw) return ''
-  return DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } })
+  return safeSanitize(raw)
 })
 
 const { siteName } = useSiteBranding()

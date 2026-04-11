@@ -438,7 +438,7 @@ import Link from '@tiptap/extension-link'
 import Underline from '@tiptap/extension-underline'
 import Placeholder from '@tiptap/extension-placeholder'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'admin', ssr: false })
 
 type BlogPostListItem = {
   id: string

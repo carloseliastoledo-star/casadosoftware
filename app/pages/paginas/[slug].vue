@@ -22,7 +22,18 @@
 </template>
 
 <script setup lang="ts">
-import DOMPurify from 'isomorphic-dompurify'
+
+function safeSanitize(raw: string): string {
+  if (!raw) return ''
+  if (import.meta.server) {
+    return raw.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<[^>]+\bon\w+\s*=[^>]*>/gi, (m) => m.replace(/\bon\w+\s*=["'][^"']*["']/gi, ''))
+  }
+  try {
+    const D = (window as any).DOMPurify
+    if (D?.sanitize) return D.sanitize(raw, { USE_PROFILES: { html: true } })
+  } catch {}
+  return raw
+}
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
@@ -87,7 +98,7 @@ const looksLikeHtml = computed(() => {
 const conteudoHtml = computed(() => {
   if (!looksLikeHtml.value) return ''
   const raw = String(pagina.value?.conteudo || '')
-  return DOMPurify.sanitize(raw)
+  return safeSanitize(raw)
 })
 
 const { siteName } = useSiteBranding()

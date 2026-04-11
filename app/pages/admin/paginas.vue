@@ -151,7 +151,7 @@
 <script setup lang="ts">
 import DOMPurify from 'isomorphic-dompurify'
 
-definePageMeta({ layout: 'admin' })
+definePageMeta({ layout: 'admin', ssr: false })
 
 type PaginaListItem = {
   id: string
