@@ -35,6 +35,7 @@
             <span class="text-green-300 text-lg font-bold mb-1">{{ t.priceLabel }}</span>
           </div>
           <span class="mt-2 text-xs text-yellow-300 font-semibold uppercase tracking-widest">{{ t.priceUrgency }}</span>
+          <span class="mt-1 text-xs text-blue-300 font-medium">{{ t.priceAnchor }}</span>
         </div>
 
         <!-- Botão CTA principal -->
@@ -189,6 +190,13 @@
       </div>
     </section>
 
+    <!-- PROVA SOCIAL EXTRA (FASE 4) -->
+    <section class="bg-orange-50 border-y border-orange-100">
+      <div class="max-w-3xl mx-auto px-5 py-4 text-center">
+        <span class="text-orange-700 font-bold text-sm">{{ t.socialProofExtra }}</span>
+      </div>
+    </section>
+
     <!-- ═══════════════════════════════════════════
          SEGURANÇA
     ════════════════════════════════════════════════ -->
@@ -255,6 +263,14 @@
       </div>
     </section>
 
+    <!-- BLOCO DECISÃO (FASE 5) -->
+    <section class="bg-slate-100 border-y border-slate-200">
+      <div class="max-w-2xl mx-auto px-5 py-10 text-center">
+        <p class="text-gray-400 text-base mb-2 line-through decoration-gray-400">{{ t.decisionNegative }}</p>
+        <p class="text-blue-700 text-xl md:text-2xl font-black">{{ t.decisionOr }} {{ t.decisionPositive }}</p>
+      </div>
+    </section>
+
     <!-- ═══════════════════════════════════════════
          SEÇÃO 9 — CTA FINAL
     ════════════════════════════════════════════════ -->
@@ -284,6 +300,7 @@
             {{ t.finalCta }}
           </a>
           <p class="text-blue-300 text-xs">{{ t.finalSub }}</p>
+          <p class="text-red-400 text-xs font-bold mt-1 max-w-xs text-center">{{ t.finalUrgency }}</p>
         </div>
       </div>
     </section>
@@ -308,9 +325,10 @@ const t = computed(() => isEn.value ? {
   priceNew: '$9',
   priceLabel: 'today',
   priceUrgency: '⚡ Last discounted licenses',
-  heroCta: 'ACTIVATE NOW',
+  heroCta: 'UNLOCK MY OFFICE NOW',
   heroTrust: '✔ Instant delivery  •  ✔ Works on PC & mobile  •  ✔ Support included',
   heroActivity: '🔥 Over 150 activations in the last 24h',
+  priceAnchor: 'Less than $0.50 per day',
   heroScarcity: 'Only 23 discounted licenses remaining',
   proofItem1: '+15,000 satisfied customers',
   proofItem2: 'Average rating 5 stars',
@@ -322,7 +340,8 @@ const t = computed(() => isEn.value ? {
   solutionTitle: 'Solve it in just a few minutes',
   solutionSub: 'Simple and fast activation process.',
   solutionNote: 'Even if you have no technical knowledge.',
-  solutionCta: 'ACTIVATE NOW',
+  socialProofExtra: '🔥 327 activations in the last 24h',
+  solutionCta: 'UNLOCK MY OFFICE NOW',
   benefitsTitle: 'What you get with this license',
   includedTitle: "What's included in the package",
   secLock: '100% secure purchase',
@@ -331,26 +350,31 @@ const t = computed(() => isEn.value ? {
   reviewsTitle: 'Customers who already activated',
   reviewVerified: '✔ Verified',
   objectionTitle: 'Still have doubts?',
-  objectionCta: 'YES, I WANT MY LICENSE',
+  objectionCta: 'UNLOCK MY OFFICE NOW',
   objectionSub: 'Secure payment • Instant delivery after confirmation',
+  decisionNegative: 'You can keep Office blocked...',
+  decisionOr: 'OR',
+  decisionPositive: 'solve it now in just a few minutes',
   finalCtaTitle: '⏳ Last chance to activate with discount',
   finalCtaSub: 'Get your Microsoft 365 license right now. Instant delivery after payment.',
   finalCtaAfter: 'After today, the price may return to its normal value.',
   finalScarcity: '⚠ Only 23 licenses remaining with discount',
-  finalCta: 'ACTIVATE NOW',
+  finalCta: 'UNLOCK MY OFFICE NOW',
   finalSub: 'Instant delivery after payment confirmation',
+  finalUrgency: '⚠ If you leave this page, the discount may no longer be available',
 } : {
   heroBadge: '⏳ DESCONTO EXPIRA HOJE',
   heroH1Line1: 'SEU OFFICE FOI BLOQUEADO?',
   heroH1Line2: 'Ative em menos de 5 minutos — sem mensalidade',
   heroSub: 'Licença original — sem mensalidade, sem renovação. Funciona em PC, Mac, Android e iOS.',
   priceOld: 'De R$199',
-  priceNew: 'R$99',
+  priceNew: 'R$49',
   priceLabel: 'hoje',
   priceUrgency: '⚡ Últimas licenças com desconto',
-  heroCta: 'ATIVAR AGORA',
+  heroCta: 'LIBERAR MEU OFFICE AGORA',
   heroTrust: '✔ Entrega imediata  •  ✔ Funciona em PC e celular  •  ✔ Suporte incluso',
   heroActivity: '🔥 Mais de 150 ativações nas últimas 24h',
+  priceAnchor: 'Menos de R$2 por dia',
   heroScarcity: 'Apenas 23 licenças restantes com desconto',
   proofItem1: '+15.000 clientes satisfeitos',
   proofItem2: 'Avaliação média 5 estrelas',
@@ -362,7 +386,8 @@ const t = computed(() => isEn.value ? {
   solutionTitle: 'Resolva em poucos minutos',
   solutionSub: 'Processo de ativação simples e rápido.',
   solutionNote: 'Mesmo que você não tenha conhecimento técnico.',
-  solutionCta: 'ATIVAR AGORA',
+  socialProofExtra: '🔥 327 ativações nas últimas 24h',
+  solutionCta: 'LIBERAR MEU OFFICE AGORA',
   benefitsTitle: 'O que você leva com essa licença',
   includedTitle: 'O que está incluso no pacote',
   secLock: 'Compra 100% segura',
@@ -371,14 +396,18 @@ const t = computed(() => isEn.value ? {
   reviewsTitle: 'Clientes que já ativaram',
   reviewVerified: '✔ Verificado',
   objectionTitle: 'Ainda tem dúvidas?',
-  objectionCta: 'SIM, QUERO MINHA LICENÇA',
+  objectionCta: 'LIBERAR MEU OFFICE AGORA',
   objectionSub: 'Pagamento seguro • Entrega imediata após confirmação',
+  decisionNegative: 'Você pode continuar com o Office bloqueado...',
+  decisionOr: 'OU',
+  decisionPositive: 'resolver agora em poucos minutos',
   finalCtaTitle: '⏳ Última chance de ativar com desconto',
   finalCtaSub: 'Receba sua licença Microsoft 365 agora mesmo. Entrega imediata após o pagamento.',
   finalCtaAfter: 'Após hoje, o preço pode voltar ao valor normal.',
   finalScarcity: '⚠ Apenas 23 licenças restantes com desconto',
-  finalCta: 'ATIVAR AGORA',
+  finalCta: 'LIBERAR MEU OFFICE AGORA',
   finalSub: 'Entrega imediata após confirmação do pagamento',
+  finalUrgency: '⚠ Se você sair desta página, o desconto pode não estar mais disponível',
 })
 
 const painItems = computed(() => isEn.value ? [
