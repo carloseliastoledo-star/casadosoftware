@@ -1,7 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
-import DOMPurify from 'isomorphic-dompurify'
 import { Prisma } from '@prisma/client'
 
 function sanitizeSlug(raw: string) {
@@ -27,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const h1 = String(body?.h1 || '').trim() || null
   const heroBadge = String(body?.heroBadge || '').trim() || null
   const heroDescription = String(body?.heroDescription || '').trim() || null
-  const contentHtml = body?.contentHtml != null ? DOMPurify.sanitize(String(body.contentHtml)) : null
+  const contentHtml = body?.contentHtml != null ? String(body.contentHtml) : null
   const faqJson = body?.faqJson != null ? String(body.faqJson) : null
   const linkedProductSlug = String(body?.linkedProductSlug || '').trim() || null
   const linkedCategorySlug = String(body?.linkedCategorySlug || '').trim() || null

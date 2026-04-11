@@ -1,7 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
-import DOMPurify from 'isomorphic-dompurify'
 import { Prisma } from '@prisma/client'
 
 export default defineEventHandler(async (event) => {
@@ -24,7 +23,7 @@ export default defineEventHandler(async (event) => {
     .replace(/\-+/g, '-')
     .replace(/^\-+|\-+$/g, '')
   const conteudoRaw = body?.conteudo != null ? String(body.conteudo) : null
-  const conteudo = conteudoRaw != null ? DOMPurify.sanitize(conteudoRaw) : null
+  const conteudo = conteudoRaw ?? null
   const publicado = Boolean(body?.publicado)
   const showInFooter = Boolean(body?.showInFooter)
   const footerOrder = body?.footerOrder === null || body?.footerOrder === undefined || body?.footerOrder === ''
