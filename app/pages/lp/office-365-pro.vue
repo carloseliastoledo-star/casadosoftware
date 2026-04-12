@@ -311,7 +311,7 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lp' })
 
-const productUrl = '/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
+const productUrl = '/checkout'
 
 const intl = useIntlContext()
 const isEn = computed(() => intl.language.value === 'en')
