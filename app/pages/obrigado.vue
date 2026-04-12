@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { trackPurchase } from '~/services/analytics'
+
 const route = useRoute()
 const config = useRuntimeConfig()
-import { trackPurchase } from '~/services/analytics'
 
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
@@ -23,6 +24,38 @@ const affiliateEnabled = computed(() => Boolean((config.public as any)?.affiliat
 
 const orderId = computed(() => String(route.query.orderId || ''))
 const paymentId = computed(() => String(route.query.paymentId || ''))
+const upsellParam = computed(() => String(route.query.upsell || ''))
+
+const { trackMeta, trackGtag } = useMarketing()
+
+const funnelOrder = ref<Record<string, any> | null>(null)
+
+function loadFunnelOrder() {
+  if (!import.meta.client) return
+  try {
+    const raw = localStorage.getItem('funnelOrder')
+    if (raw) funnelOrder.value = JSON.parse(raw)
+  } catch {}
+}
+
+function fireFunnelPurchaseTracking() {
+  if (!import.meta.client) return
+  const order = funnelOrder.value
+  if (!order) return
+  const purchaseKey = 'funnel_purchase_tracked'
+  try {
+    if (localStorage.getItem(purchaseKey)) return
+    localStorage.setItem(purchaseKey, '1')
+  } catch {}
+  const total = Number(order.total ?? 0)
+  trackMeta('Purchase', { value: total, content_name: order.produto ?? 'Office 365 Pro' })
+  trackGtag('purchase', {
+    value: total,
+    currency: 'BRL',
+    transaction_id: `funnel_${Date.now()}`,
+    items: [{ item_name: order.produto ?? 'Office 365 Pro', price: order.preco ?? 49, quantity: 1 }]
+  })
+}
 
 const googleAdsConversionId = computed(() => {
   const fromDb = (siteSettings.value as any)?.settings?.googleAdsConversionId
@@ -35,6 +68,9 @@ const googleAdsConversionLabel = computed(() => {
 })
 
 onMounted(async () => {
+  loadFunnelOrder()
+  fireFunnelPurchaseTracking()
+
   // Check for upsell opportunity first
   const oid = String(orderId.value || '').trim()
   const hasUpsell = String(route.query.upsell || '') !== '1'
@@ -143,6 +179,12 @@ onMounted(async () => {
   <section class="bg-gray-50 min-h-screen py-16">
     <div class="max-w-3xl mx-auto px-6">
       <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+        <!-- Upsell accepted banner -->
+        <div v-if="upsellParam === 'accepted'" class="mb-4 flex items-center gap-2 text-blue-700 bg-blue-50 border border-blue-100 px-4 py-3 rounded-xl text-sm font-semibold">
+          <span>🎁</span>
+          Windows 11 Pro adicionado ao seu pedido!
+        </div>
+
         <div class="inline-flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl text-sm font-semibold">
           <span>✔</span>
           Pagamento confirmado
