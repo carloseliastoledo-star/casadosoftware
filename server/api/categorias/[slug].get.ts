@@ -4,6 +4,7 @@ import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
 import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
 import { autoTranslateText } from '#root/server/utils/autoTranslate'
+import { fixCp850 } from '#root/server/utils/fixEncoding'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -90,7 +91,7 @@ export default defineEventHandler(async (event) => {
     ok: true,
     categoria: {
       id: categoria.id,
-      nome: categoria.nome,
+      nome: fixCp850(categoria.nome) ?? categoria.nome,
       slug: categoria.slug
     },
     produtos: ((categoria as any).produtoCategorias || [])
