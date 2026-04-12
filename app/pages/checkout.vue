@@ -76,6 +76,73 @@
             </div>
           </div>
 
+          <!-- Pagamento -->
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h2 class="font-bold text-gray-800 mb-3 text-xs uppercase tracking-widest">Forma de pagamento</h2>
+
+            <!-- Tabs PIX / Cartão -->
+            <div class="grid grid-cols-2 gap-2 mb-4">
+              <button type="button" @click="paymentMethod = 'pix'"
+                :class="paymentMethod === 'pix'
+                  ? 'border-2 border-green-500 bg-green-50 text-green-700'
+                  : 'border-2 border-gray-200 bg-white text-gray-500 hover:border-gray-300'"
+                class="rounded-xl py-3 flex flex-col items-center gap-0.5 transition font-semibold text-sm">
+                <span class="text-xl">⚡</span>
+                <span>PIX</span>
+                <span class="text-xs font-normal opacity-70">Instantâneo</span>
+              </button>
+              <button type="button" @click="paymentMethod = 'credit_card'"
+                :class="paymentMethod === 'credit_card'
+                  ? 'border-2 border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-2 border-gray-200 bg-white text-gray-500 hover:border-gray-300'"
+                class="rounded-xl py-3 flex flex-col items-center gap-0.5 transition font-semibold text-sm">
+                <span class="text-xl">💳</span>
+                <span>Cartão</span>
+                <span class="text-xs font-normal opacity-70">Crédito</span>
+              </button>
+            </div>
+
+            <!-- PIX info -->
+            <div v-if="paymentMethod === 'pix'" class="rounded-xl bg-green-50 border border-green-100 px-4 py-3">
+              <p class="text-xs font-semibold text-green-800 mb-1">Como funciona:</p>
+              <ol class="text-xs text-green-700 list-decimal list-inside space-y-0.5">
+                <li>Clique em &quot;Gerar PIX&quot;</li>
+                <li>Escaneie o QR Code que aparecerá</li>
+                <li>Aprovação em segundos — licença por e-mail</li>
+              </ol>
+            </div>
+
+            <!-- Campos cartão -->
+            <div v-if="paymentMethod === 'credit_card'" class="space-y-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Número do cartão</label>
+                <input v-model="cardNumber" type="text" placeholder="0000 0000 0000 0000"
+                  inputmode="numeric" maxlength="19" @input="formatCardNumber"
+                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nome no cartão</label>
+                <input v-model="cardHolder" type="text" placeholder="Como aparece no cartão"
+                  autocomplete="cc-name"
+                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Validade (MM/AA)</label>
+                  <input v-model="cardExpiry" type="text" placeholder="MM/AA"
+                    inputmode="numeric" maxlength="5" @input="formatExpiry"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                  <input v-model="cardCvv" type="text" placeholder="000"
+                    inputmode="numeric" maxlength="4"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Order Bump (só modo funnel) -->
           <div
             v-if="isFunnelMode"
@@ -164,8 +231,29 @@
               </div>
             </div>
 
+            <!-- QR Code PIX -->
+            <div v-if="pixQrCode" class="mb-4 text-center">
+              <p class="text-xs font-semibold text-green-700 mb-2">✅ PIX gerado! Escaneie para pagar:</p>
+              <img :src="`data:image/png;base64,${pixQrCode}`" alt="QR Code PIX" class="w-40 h-40 mx-auto rounded-xl border border-gray-200" />
+              <div class="mt-2 flex gap-1">
+                <input :value="pixQrUrl" readonly class="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-gray-50 text-gray-600 truncate" />
+                <button @click="copiarPix" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                  {{ pixCopiado ? '✔' : 'Copiar' }}
+                </button>
+              </div>
+              <button @click="handleAposPix" class="mt-3 w-full bg-green-500 hover:bg-green-400 text-white font-bold py-3 rounded-xl text-sm transition">
+                Já realizei o pagamento →
+              </button>
+            </div>
+
+            <!-- Erro -->
+            <div v-if="paymentError" class="mb-3 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700">
+              {{ paymentError }}
+            </div>
+
             <!-- CTA principal -->
             <button
+              v-if="!pixQrCode"
               :disabled="loading || !nome.trim() || !emailValido"
               @click="handleFinalize"
               class="w-full bg-green-500 hover:bg-green-400 active:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-base py-4 rounded-2xl shadow-lg shadow-green-200 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2"
@@ -178,7 +266,8 @@
                 Processando...
               </template>
               <template v-else>
-                🔒 FINALIZAR COMPRA
+                <span v-if="paymentMethod === 'pix'">⚡ GERAR PIX</span>
+                <span v-else>🔒 FINALIZAR COMPRA</span>
               </template>
             </button>
 
@@ -217,6 +306,17 @@ const orderBump = ref(false)
 const loading = ref(false)
 const showValidation = ref(false)
 const productLoading = ref(false)
+
+const paymentMethod = ref<'pix' | 'credit_card'>('pix')
+const cardNumber = ref('')
+const cardHolder = ref('')
+const cardExpiry = ref('')
+const cardCvv = ref('')
+const pixQrCode = ref('')
+const pixQrUrl = ref('')
+const pixCopiado = ref(false)
+const paymentError = ref('')
+const funnelOrderId = ref('')
 
 const productSlug = computed(() => String(route.query.product || ''))
 const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
@@ -270,46 +370,116 @@ function formatCpf(e: Event) {
   cpf.value = v
 }
 
+function formatCardNumber(e: Event) {
+  let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 16)
+  cardNumber.value = v.replace(/(.{4})/g, '$1 ').trim()
+}
+
+function formatExpiry(e: Event) {
+  let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 4)
+  cardExpiry.value = v.length > 2 ? `${v.slice(0, 2)}/${v.slice(2)}` : v
+}
+
+async function copiarPix() {
+  if (!import.meta.client) return
+  try {
+    await navigator.clipboard.writeText(pixQrUrl.value)
+    pixCopiado.value = true
+    setTimeout(() => { pixCopiado.value = false }, 2000)
+  } catch {}
+}
+
+function saveFunnelOrder(orderId: string) {
+  if (!import.meta.client) return
+  try {
+    localStorage.setItem('funnelOrder', JSON.stringify({
+      orderId,
+      produto: productName.value,
+      preco: basePrice.value,
+      orderBump: isFunnelMode.value && orderBump.value,
+      bumpProduto: (isFunnelMode.value && orderBump.value) ? 'Suporte premium de instalação' : null,
+      bumpPreco: (isFunnelMode.value && orderBump.value) ? 19 : 0,
+      total: totalPrice.value,
+      totalFinal: null,
+      nome: nome.value.trim(),
+      email: email.value.trim(),
+      telefone: telefone.value.trim(),
+      cpf: cpf.value.trim(),
+      upsell: null
+    }))
+  } catch {}
+}
+
+async function handleAposPix() {
+  saveFunnelOrder(funnelOrderId.value || ('cs-' + Date.now()))
+  if (isFunnelMode.value) {
+    await navigateTo('/upsell/windows-11')
+  } else {
+    await navigateTo({ path: '/obrigado', query: { orderId: funnelOrderId.value } })
+  }
+}
+
 async function handleFinalize() {
   showValidation.value = true
   if (!nome.value.trim() || !emailValido.value || loading.value) return
 
   loading.value = true
+  paymentError.value = ''
+
   try {
     const total = totalPrice.value
-
     trackMeta('InitiateCheckout', { value: total, currency: 'BRL' })
     trackGtag('begin_checkout', { value: total, currency: 'BRL' })
 
-    const orderId = 'cs-' + Date.now()
-
-    if (import.meta.client) {
-      try {
-        localStorage.setItem('funnelOrder', JSON.stringify({
-          orderId,
-          produto: productName.value,
-          preco: basePrice.value,
-          orderBump: isFunnelMode.value && orderBump.value,
-          bumpProduto: (isFunnelMode.value && orderBump.value) ? 'Suporte premium de instalação' : null,
-          bumpPreco: (isFunnelMode.value && orderBump.value) ? 19 : 0,
-          total,
-          totalFinal: null,
-          nome: nome.value.trim(),
-          email: email.value.trim(),
-          telefone: telefone.value.trim(),
-          cpf: cpf.value.trim(),
-          upsell: null
-        }))
-      } catch {}
+    const expiryParts = cardExpiry.value.split('/')
+    const body: Record<string, unknown> = {
+      produtoId: produtoId.value,
+      email: email.value.trim(),
+      nome: nome.value.trim(),
+      document: cpf.value.replace(/\D/g, ''),
+      phone: telefone.value.replace(/\D/g, ''),
+      method: paymentMethod.value,
+      orderBump: isFunnelMode.value && orderBump.value,
+      currency: 'BRL'
     }
 
-    await new Promise(r => setTimeout(r, 1400))
+    if (paymentMethod.value === 'credit_card') {
+      body.card = {
+        number: cardNumber.value.replace(/\s/g, ''),
+        holder_name: cardHolder.value.trim(),
+        exp_month: parseInt(expiryParts[0] || '0', 10),
+        exp_year: parseInt('20' + (expiryParts[1] || '0'), 10),
+        cvv: cardCvv.value.trim()
+      }
+    }
 
-    if (isFunnelMode.value) {
-      await navigateTo('/upsell/windows-11')
+    const result: any = await $fetch('/api/checkout', { method: 'POST', body })
+    funnelOrderId.value = String(result?.orderId || 'cs-' + Date.now())
+
+    if (paymentMethod.value === 'pix') {
+      pixQrCode.value = result?.qrCode || ''
+      pixQrUrl.value = result?.qrCodeUrl || result?.qrCode || ''
+      if (!pixQrCode.value) {
+        saveFunnelOrder(funnelOrderId.value)
+        await handleAposPix()
+      }
     } else {
-      await navigateTo({ path: '/obrigado', query: { orderId } })
+      const status = String(result?.status || '').toLowerCase()
+      if (status === 'paid' || status === 'approved') {
+        saveFunnelOrder(funnelOrderId.value)
+        trackMeta('Purchase', { value: total, currency: 'BRL' })
+        trackGtag('purchase', { value: total, currency: 'BRL', transaction_id: funnelOrderId.value })
+        if (isFunnelMode.value) {
+          await navigateTo('/upsell/windows-11')
+        } else {
+          await navigateTo({ path: '/obrigado', query: { orderId: funnelOrderId.value } })
+        }
+      } else {
+        paymentError.value = result?.message || 'Pagamento não aprovado. Verifique os dados do cartão.'
+      }
     }
+  } catch (e: any) {
+    paymentError.value = e?.data?.statusMessage || e?.message || 'Erro ao processar. Tente novamente.'
   } finally {
     loading.value = false
   }
