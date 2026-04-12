@@ -1,4 +1,6 @@
 <script setup lang="ts">
+definePageMeta({ layout: false })
+
 useHead({
   title: 'Melhor Programa para Trabalho em 2026 | Casa do Software',
   meta: [
