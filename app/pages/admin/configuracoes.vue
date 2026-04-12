@@ -5,6 +5,8 @@ const form = reactive({
   googleAnalyticsId: '',
   googleAdsConversionId: '',
   googleAdsConversionLabel: '',
+  metaPixelId: '',
+  tiktokPixelId: '',
   headHtml: '',
   bodyOpenHtml: '',
   bodyCloseHtml: '',
@@ -31,6 +33,8 @@ onMounted(async () => {
     form.googleAnalyticsId = s.googleAnalyticsId ?? ''
     form.googleAdsConversionId = s.googleAdsConversionId ?? ''
     form.googleAdsConversionLabel = s.googleAdsConversionLabel ?? ''
+    form.metaPixelId = s.metaPixelId ?? ''
+    form.tiktokPixelId = s.tiktokPixelId ?? ''
     form.headHtml = s.headHtml ?? ''
     form.bodyOpenHtml = s.bodyOpenHtml ?? ''
     form.bodyCloseHtml = s.bodyCloseHtml ?? ''
@@ -58,6 +62,8 @@ async function salvar() {
         googleAnalyticsId: form.googleAnalyticsId,
         googleAdsConversionId: form.googleAdsConversionId,
         googleAdsConversionLabel: form.googleAdsConversionLabel,
+        metaPixelId: form.metaPixelId,
+        tiktokPixelId: form.tiktokPixelId,
         headHtml: form.headHtml,
         bodyOpenHtml: form.bodyOpenHtml,
         bodyCloseHtml: form.bodyCloseHtml,
@@ -189,19 +195,44 @@ async function salvar() {
     </div>
 
     <div class="bg-white rounded shadow p-6 space-y-4 max-w-2xl">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Google Analytics ID (GA4)</label>
-        <input v-model="form.googleAnalyticsId" class="w-full border p-2 rounded" placeholder="Ex: G-XXXXXXXXXX" />
+      <h2 class="text-lg font-semibold">Tracking &amp; Pixels</h2>
+
+      <div class="grid sm:grid-cols-2 gap-4 pb-4 border-b">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            📊 Meta Pixel ID
+          </label>
+          <input v-model="form.metaPixelId" class="w-full border p-2 rounded" placeholder="Ex: 1234567890123456" />
+          <p class="text-xs text-gray-400 mt-1">Facebook / Instagram Ads</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            🎵 TikTok Pixel ID
+          </label>
+          <input v-model="form.tiktokPixelId" class="w-full border p-2 rounded" placeholder="Ex: CABCDE1234567890" />
+          <p class="text-xs text-gray-400 mt-1">TikTok Ads Manager</p>
+        </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Google Ads Conversion ID</label>
-        <input v-model="form.googleAdsConversionId" class="w-full border p-2 rounded" placeholder="Ex: AW-123456789" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Google Ads Conversion Label</label>
-        <input v-model="form.googleAdsConversionLabel" class="w-full border p-2 rounded" placeholder="Ex: AbCdEfGhIjkLmNoPqRsT" />
+      <div class="grid sm:grid-cols-3 gap-4 pb-4 border-b">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            📊 Google Analytics ID (GA4)
+          </label>
+          <input v-model="form.googleAnalyticsId" class="w-full border p-2 rounded" placeholder="G-XXXXXXXXXX" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            💰 Google Ads Conversion ID
+          </label>
+          <input v-model="form.googleAdsConversionId" class="w-full border p-2 rounded" placeholder="AW-123456789" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            🏷️ Google Ads Label
+          </label>
+          <input v-model="form.googleAdsConversionLabel" class="w-full border p-2 rounded" placeholder="AbCdEfGhIjkL" />
+        </div>
       </div>
 
       <div class="pt-4 border-t">

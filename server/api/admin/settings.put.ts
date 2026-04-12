@@ -36,6 +36,14 @@ export default defineEventHandler(async (event) => {
     ? null
     : String(body.googleAdsConversionLabel).trim()
 
+  const metaPixelId = body?.metaPixelId === null || body?.metaPixelId === undefined
+    ? null
+    : String(body.metaPixelId).trim()
+
+  const tiktokPixelId = body?.tiktokPixelId === null || body?.tiktokPixelId === undefined
+    ? null
+    : String(body.tiktokPixelId).trim()
+
   const homeBestSellerSlugs = body?.homeBestSellerSlugs === null || body?.homeBestSellerSlugs === undefined
     ? null
     : String(body.homeBestSellerSlugs)
@@ -64,6 +72,14 @@ export default defineEventHandler(async (event) => {
 
   if (googleAdsConversionLabel && googleAdsConversionLabel.length > 64) {
     throw createError({ statusCode: 400, statusMessage: 'googleAdsConversionLabel inválido' })
+  }
+
+  if (metaPixelId && metaPixelId.length > 64) {
+    throw createError({ statusCode: 400, statusMessage: 'metaPixelId inválido' })
+  }
+
+  if (tiktokPixelId && tiktokPixelId.length > 64) {
+    throw createError({ statusCode: 400, statusMessage: 'tiktokPixelId inválido' })
   }
 
   if (headHtml && headHtml.length > 20000) {
@@ -102,6 +118,8 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: googleAnalyticsId || null,
             googleAdsConversionId: googleAdsConversionId || null,
             googleAdsConversionLabel: googleAdsConversionLabel || null,
+            metaPixelId: metaPixelId || null,
+            tiktokPixelId: tiktokPixelId || null,
             headHtml,
             bodyOpenHtml,
             bodyCloseHtml,
@@ -116,6 +134,8 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: true,
             googleAdsConversionId: true,
             googleAdsConversionLabel: true,
+            metaPixelId: true,
+            tiktokPixelId: true,
             headHtml: true,
             bodyOpenHtml: true,
             bodyCloseHtml: true,
@@ -131,6 +151,8 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: googleAnalyticsId || null,
             googleAdsConversionId: googleAdsConversionId || null,
             googleAdsConversionLabel: googleAdsConversionLabel || null,
+            metaPixelId: metaPixelId || null,
+            tiktokPixelId: tiktokPixelId || null,
             headHtml,
             bodyOpenHtml,
             bodyCloseHtml,
@@ -145,6 +167,8 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: true,
             googleAdsConversionId: true,
             googleAdsConversionLabel: true,
+            metaPixelId: true,
+            tiktokPixelId: true,
             headHtml: true,
             bodyOpenHtml: true,
             bodyCloseHtml: true,
@@ -171,6 +195,8 @@ export default defineEventHandler(async (event) => {
           googleAnalyticsId: googleAnalyticsId || null,
           googleAdsConversionId: googleAdsConversionId || null,
           googleAdsConversionLabel: googleAdsConversionLabel || null,
+          metaPixelId: metaPixelId || null,
+          tiktokPixelId: tiktokPixelId || null,
           headHtml,
           bodyOpenHtml,
           bodyCloseHtml,
@@ -185,6 +211,8 @@ export default defineEventHandler(async (event) => {
           googleAnalyticsId: true,
           googleAdsConversionId: true,
           googleAdsConversionLabel: true,
+          metaPixelId: true,
+          tiktokPixelId: true,
           headHtml: true,
           bodyOpenHtml: true,
           bodyCloseHtml: true,
@@ -201,6 +229,8 @@ export default defineEventHandler(async (event) => {
           googleAnalyticsId: googleAnalyticsId || null,
           googleAdsConversionId: googleAdsConversionId || null,
           googleAdsConversionLabel: googleAdsConversionLabel || null,
+          metaPixelId: metaPixelId || null,
+          tiktokPixelId: tiktokPixelId || null,
           headHtml,
           bodyOpenHtml,
           bodyCloseHtml,
@@ -215,6 +245,8 @@ export default defineEventHandler(async (event) => {
           googleAnalyticsId: true,
           googleAdsConversionId: true,
           googleAdsConversionLabel: true,
+          metaPixelId: true,
+          tiktokPixelId: true,
           headHtml: true,
           bodyOpenHtml: true,
           bodyCloseHtml: true,
