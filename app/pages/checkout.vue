@@ -15,7 +15,7 @@
       <!-- Header -->
       <div class="text-center mb-8">
         <h1 class="text-2xl md:text-3xl font-black text-gray-900">Finalize seu pedido</h1>
-        <p class="text-gray-500 text-sm mt-1">Você está a um passo do seu Office 365 Pro</p>
+        <p class="text-gray-500 text-sm mt-1">Você está a um passo do seu {{ productName }}</p>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-6">
@@ -76,8 +76,9 @@
             </div>
           </div>
 
-          <!-- Order Bump -->
+          <!-- Order Bump (só modo funnel) -->
           <div
+            v-if="isFunnelMode"
             :class="[
               'rounded-2xl border-2 p-5 cursor-pointer select-none transition-all',
               orderBump
@@ -125,12 +126,12 @@
 
             <!-- Produto principal -->
             <div class="flex items-start gap-3 pb-3 border-b border-gray-100">
-              <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">O</div>
+              <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">{{ productName.charAt(0) }}</div>
               <div class="flex-1 min-w-0">
-                <div class="text-sm font-semibold text-gray-900">Office 365 Pro</div>
-                <div class="text-xs text-gray-500 mt-0.5">Licença vitalícia • Entrega digital</div>
+                <div class="text-sm font-semibold text-gray-900">{{ productName }}</div>
+                <div class="text-xs text-gray-500 mt-0.5">Licença digital • Entrega imediata</div>
               </div>
-              <div class="text-sm font-bold text-gray-900 whitespace-nowrap">R$ 49,00</div>
+              <div class="text-sm font-bold text-gray-900 whitespace-nowrap">R$ {{ basePrice.toFixed(2).replace('.', ',') }}</div>
             </div>
 
             <!-- Order bump (linha condicional) -->
@@ -200,42 +201,74 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lp' })
 
-useSeoMeta({
-  title: 'Checkout — Office 365 Pro | Casa do Software',
-  robots: 'noindex,nofollow'
-})
-
+const route = useRoute()
 const { trackMeta, trackGtag } = useMarketing()
+
+const FUNNEL_SLUG = 'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
 
 const nome = ref('')
 const email = ref('')
 const telefone = ref('')
 const cpf = ref('')
 const basePrice = ref(49)
+const productName = ref('Office 365 Pro')
+const produtoId = ref('')
 const orderBump = ref(false)
 const loading = ref(false)
 const showValidation = ref(false)
+const productLoading = ref(false)
+
+const productSlug = computed(() => String(route.query.product || ''))
+const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
+const totalPrice = computed(() => basePrice.value + (isFunnelMode.value && orderBump.value ? 19 : 0))
+
+useSeoMeta(computed(() => ({
+  title: `Checkout — ${productName.value} | Casa do Software`,
+  robots: 'noindex,nofollow'
+})))
+
+onMounted(async () => {
+  if (productSlug.value && productSlug.value !== FUNNEL_SLUG) {
+    productLoading.value = true
+    try {
+      const res: any = await $fetch(`/api/products/${productSlug.value}`)
+      const p = res?.product || res
+      productName.value = String(p?.nome || p?.name || productName.value)
+      const price = Number(p?.preco ?? p?.price ?? p?.effectivePrice ?? 49)
+      basePrice.value = price
+      produtoId.value = String(p?.id || '')
+    } catch {
+      await navigateTo('/')
+    } finally {
+      productLoading.value = false
+    }
+  } else {
+    productName.value = 'Office 365 Pro'
+    basePrice.value = 49
+  }
+
+  trackMeta('InitiateCheckout', { value: totalPrice.value })
+  trackGtag('begin_checkout', { value: totalPrice.value })
+})
 
 function formatTelefone(e: Event) {
   let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 11)
-  if (v.length > 10) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`
-  else if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`
-  else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`
+  if (v.length > 10) v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`
+  else if (v.length > 6) v = `(${v.slice(0, 2)}) ${v.slice(2, 6)}-${v.slice(6)}`
+  else if (v.length > 2) v = `(${v.slice(0, 2)}) ${v.slice(2)}`
   else if (v.length > 0) v = `(${v}`
   telefone.value = v
 }
 
 function formatCpf(e: Event) {
   let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 11)
-  if (v.length > 9) v = `${v.slice(0,3)}.${v.slice(3,6)}.${v.slice(6,9)}-${v.slice(9)}`
-  else if (v.length > 6) v = `${v.slice(0,3)}.${v.slice(3,6)}.${v.slice(6)}`
-  else if (v.length > 3) v = `${v.slice(0,3)}.${v.slice(3)}`
+  if (v.length > 9) v = `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6, 9)}-${v.slice(9)}`
+  else if (v.length > 6) v = `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6)}`
+  else if (v.length > 3) v = `${v.slice(0, 3)}.${v.slice(3)}`
   cpf.value = v
 }
-
-const totalPrice = computed(() => basePrice.value + (orderBump.value ? 19 : 0))
 
 async function handleFinalize() {
   showValidation.value = true
@@ -254,11 +287,11 @@ async function handleFinalize() {
       try {
         localStorage.setItem('funnelOrder', JSON.stringify({
           orderId,
-          produto: 'Office 365 Pro',
+          produto: productName.value,
           preco: basePrice.value,
-          orderBump: orderBump.value,
-          bumpProduto: orderBump.value ? 'Suporte premium de instalação' : null,
-          bumpPreco: orderBump.value ? 19 : 0,
+          orderBump: isFunnelMode.value && orderBump.value,
+          bumpProduto: (isFunnelMode.value && orderBump.value) ? 'Suporte premium de instalação' : null,
+          bumpPreco: (isFunnelMode.value && orderBump.value) ? 19 : 0,
           total,
           totalFinal: null,
           nome: nome.value.trim(),
@@ -271,7 +304,12 @@ async function handleFinalize() {
     }
 
     await new Promise(r => setTimeout(r, 1400))
-    await navigateTo('/upsell/windows-11')
+
+    if (isFunnelMode.value) {
+      await navigateTo('/upsell/windows-11')
+    } else {
+      await navigateTo({ path: '/obrigado', query: { orderId } })
+    }
   } finally {
     loading.value = false
   }
