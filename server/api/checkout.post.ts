@@ -147,7 +147,7 @@ export default defineEventHandler(async (event) => {
       product: produto.nome,
       pixGateway,
       cardGateway,
-      customer: { name: nome || email, email, document },
+      customer: { name: nome || email, email, document, phone: body.telefone || body.phone || undefined },
       card: card ?? undefined,
       installments,
       affiliateRecipientId,

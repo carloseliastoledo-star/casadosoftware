@@ -23,6 +23,7 @@ export interface RouterInput {
     name: string
     email: string
     document?: string
+    phone?: string
   }
   card?: {
     number: string
@@ -44,6 +45,15 @@ export type RouterResult =
   | { gateway: 'mercadopago'; method: 'credit_card'; paymentId: string;   status: string }
   | { gateway: 'stripe';       method: 'stripe_card'; clientSecret: string; publishableKey: string; currency: string; amount: number }
 
+function parsePhone(raw?: string): PagarmeCustomer['phones'] | undefined {
+  if (!raw) return undefined
+  const digits = raw.replace(/\D/g, '')
+  if (digits.length < 10) return undefined
+  const area   = digits.slice(0, 2)
+  const number = digits.slice(2)
+  return { mobile_phone: { country_code: '55', area_code: area, number } }
+}
+
 function buildPagarmeCustomer(c: RouterInput['customer']): PagarmeCustomer {
   return {
     name: c.name,
@@ -51,6 +61,7 @@ function buildPagarmeCustomer(c: RouterInput['customer']): PagarmeCustomer {
     document: (c.document || '00000000000').replace(/\D/g, ''),
     document_type: 'CPF',
     type: 'individual',
+    phones: parsePhone(c.phone),
   }
 }
 
