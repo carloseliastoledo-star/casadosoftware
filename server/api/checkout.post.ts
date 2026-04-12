@@ -121,6 +121,19 @@ export default defineEventHandler(async (event) => {
     select: { id: true },
   })
 
+  // Ler gateways configurados no admin
+  const validGateways = ['mercadopago', 'pagarme', 'pagbank'] as const
+  let pixGateway: 'mercadopago' | 'pagarme' | 'pagbank' = 'mercadopago'
+  let cardGateway: 'mercadopago' | 'pagarme' | 'pagbank' = 'mercadopago'
+  try {
+    const settings = await (prisma as any).siteSettings.findFirst({
+      where: storeSlug ? { storeSlug } : undefined,
+      select: { pixGateway: true, cardGateway: true }
+    })
+    if (validGateways.includes(settings?.pixGateway))  pixGateway  = settings.pixGateway
+    if (validGateways.includes(settings?.cardGateway)) cardGateway = settings.cardGateway
+  } catch {}
+
   // Roteamento de pagamento
   const result = await routePayment({
     orderId: order.id,
@@ -130,6 +143,8 @@ export default defineEventHandler(async (event) => {
     country,
     method,
     product: produto.nome,
+    pixGateway,
+    cardGateway,
     customer: { name: nome || email, email, document },
     card: card ?? undefined,
     installments,

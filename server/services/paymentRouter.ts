@@ -1,11 +1,13 @@
 /**
- * Payment Router — BR → Pagar.me (com fallback Stripe), INT → Stripe (com fallback Pagar.me)
+ * Payment Router — BR → Pagar.me / MercadoPago (com fallback Stripe), INT → Stripe
  */
 import Stripe from 'stripe'
 import { createPagarmePix, createPagarmeCard } from './pagarme'
 import type { PagarmeCustomer, PagarmeSplitRule } from './pagarme'
+import { createMercadoPagoPix, createMercadoPagoCard } from './mercadopago'
 
 export type PaymentMethod = 'pix' | 'credit_card' | 'stripe_card'
+export type GatewayName = 'mercadopago' | 'pagarme' | 'pagbank'
 
 export interface RouterInput {
   orderId: string
@@ -15,6 +17,8 @@ export interface RouterInput {
   country: string
   method: PaymentMethod
   product: string
+  pixGateway?: GatewayName
+  cardGateway?: GatewayName
   customer: {
     name: string
     email: string
@@ -34,9 +38,11 @@ export interface RouterInput {
 }
 
 export type RouterResult =
-  | { gateway: 'pagarme'; method: 'pix'; chargeId: string; qrCode: string; qrCodeUrl: string; expiresAt: string }
-  | { gateway: 'pagarme'; method: 'credit_card'; chargeId: string; status: string }
-  | { gateway: 'stripe'; method: 'stripe_card'; clientSecret: string; publishableKey: string; currency: string; amount: number }
+  | { gateway: 'pagarme';      method: 'pix';         chargeId: string;    qrCode: string; qrCodeUrl: string; expiresAt: string }
+  | { gateway: 'mercadopago'; method: 'pix';         paymentId: string;   qrCode: string; qrCodeUrl: string; expiresAt: string }
+  | { gateway: 'pagarme';      method: 'credit_card'; chargeId: string;    status: string }
+  | { gateway: 'mercadopago'; method: 'credit_card'; paymentId: string;   status: string }
+  | { gateway: 'stripe';       method: 'stripe_card'; clientSecret: string; publishableKey: string; currency: string; amount: number }
 
 function buildPagarmeCustomer(c: RouterInput['customer']): PagarmeCustomer {
   return {
@@ -100,8 +106,32 @@ async function routeStripeCard(input: RouterInput): Promise<RouterResult> {
 export async function routePayment(input: RouterInput): Promise<RouterResult> {
   const isBR = input.country === 'BR'
   const split = buildSplitRules(input.affiliateRecipientId, input.affiliatePercentage)
+  const pixGw  = input.pixGateway  || 'mercadopago'
+  const cardGw = input.cardGateway || 'mercadopago'
 
   if (input.method === 'pix') {
+    // ── MercadoPago PIX ──────────────────────────────────────────────────────
+    if (pixGw === 'mercadopago') {
+      try {
+        const res = await createMercadoPagoPix({
+          orderId: input.orderId,
+          amountBrl: input.amountBrl,
+          description: input.product,
+          customer: {
+            name: input.customer.name,
+            email: input.customer.email,
+            document: input.customer.document || '00000000000',
+          },
+        })
+        const qrCodeUrl = res.qr_code_base64
+          ? `data:image/png;base64,${res.qr_code_base64}`
+          : ''
+        return { gateway: 'mercadopago', method: 'pix', paymentId: res.payment_id, qrCode: res.qr_code, qrCodeUrl, expiresAt: res.expires_at }
+      } catch (err) {
+        console.warn('[paymentRouter] PIX MercadoPago falhou, tentando Pagar.me:', err)
+      }
+    }
+    // ── Pagar.me PIX (padrão ou fallback) ───────────────────────────────────
     try {
       const res = await createPagarmePix({
         orderId: input.orderId,
@@ -111,13 +141,29 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
       })
       return { gateway: 'pagarme', method: 'pix', chargeId: res.charge_id, qrCode: res.qr_code, qrCodeUrl: res.qr_code_url, expiresAt: res.expires_at }
     } catch (err) {
-      console.error('[paymentRouter] pix via pagarme falhou, sem fallback para PIX:', err)
+      console.error('[paymentRouter] PIX Pagar.me também falhou:', err)
       throw err
     }
   }
 
   if (input.method === 'credit_card' && isBR) {
     if (!input.card) throw new Error('Dados do cartão obrigatórios')
+    // ── MercadoPago card (requer token do SDK frontend) ──────────────────────
+    if (cardGw === 'mercadopago' && input.card?.token) {
+      try {
+        const res = await createMercadoPagoCard({
+          orderId: input.orderId,
+          amountBrl: input.amountBrl,
+          installments: input.installments ?? 1,
+          customer: { name: input.customer.name, email: input.customer.email, document: input.customer.document || '' },
+          token: input.card.token,
+        })
+        return { gateway: 'mercadopago', method: 'credit_card', paymentId: res.payment_id, status: res.status }
+      } catch (err) {
+        console.warn('[paymentRouter] cartão MercadoPago falhou, tentando Pagar.me:', err)
+      }
+    }
+    // ── Pagar.me card (padrão ou fallback) ──────────────────────────────────
     try {
       const res = await createPagarmeCard({
         orderId: input.orderId,
@@ -129,7 +175,6 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
       })
       return { gateway: 'pagarme', method: 'credit_card', chargeId: res.charge_id, status: res.status }
     } catch (err) {
-      // fallback automático para Stripe
       console.warn('[paymentRouter] cartão BR via pagarme falhou, tentando Stripe:', err)
       return await routeStripeCard(input)
     }

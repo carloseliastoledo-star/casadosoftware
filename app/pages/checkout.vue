@@ -234,9 +234,9 @@
             <!-- QR Code PIX -->
             <div v-if="pixQrCode" class="mb-4 text-center">
               <p class="text-xs font-semibold text-green-700 mb-2">✅ PIX gerado! Escaneie para pagar:</p>
-              <img :src="`data:image/png;base64,${pixQrCode}`" alt="QR Code PIX" class="w-40 h-40 mx-auto rounded-xl border border-gray-200" />
+              <img :src="pixQrUrl" alt="QR Code PIX" class="w-44 h-44 mx-auto rounded-xl border border-gray-200" />
               <div class="mt-2 flex gap-1">
-                <input :value="pixQrUrl" readonly class="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-gray-50 text-gray-600 truncate" />
+                <input :value="pixQrCode" readonly class="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-gray-50 text-gray-600 truncate" />
                 <button @click="copiarPix" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
                   {{ pixCopiado ? '✔' : 'Copiar' }}
                 </button>
@@ -383,7 +383,7 @@ function formatExpiry(e: Event) {
 async function copiarPix() {
   if (!import.meta.client) return
   try {
-    await navigator.clipboard.writeText(pixQrUrl.value)
+    await navigator.clipboard.writeText(pixQrCode.value)
     pixCopiado.value = true
     setTimeout(() => { pixCopiado.value = false }, 2000)
   } catch {}
@@ -458,8 +458,8 @@ async function handleFinalize() {
 
     if (paymentMethod.value === 'pix') {
       pixQrCode.value = result?.qrCode || ''
-      pixQrUrl.value = result?.qrCodeUrl || result?.qrCode || ''
-      if (!pixQrCode.value) {
+      pixQrUrl.value = result?.qrCodeUrl || ''
+      if (!pixQrCode.value && !pixQrUrl.value) {
         saveFunnelOrder(funnelOrderId.value)
         await handleAposPix()
       }
