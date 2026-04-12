@@ -339,6 +339,9 @@ model SiteSettings {
   tiktokPixelId           String?
   pixGateway              String?  @default("mercadopago")  // mercadopago | pagarme | pagbank
   cardGateway             String?  @default("mercadopago")  // mercadopago | pagarme | pagbank
+  orderBumpTitle          String?
+  orderBumpDescription    String?  @db.Text
+  orderBumpPrice          Float?   @default(19)
   createdAt              DateTime @default(now()) @db.DateTime(0)
   updatedAt              DateTime @updatedAt @db.DateTime(0)
 }

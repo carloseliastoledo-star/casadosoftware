@@ -62,6 +62,18 @@ export default defineEventHandler(async (event) => {
   const rawCardGateway = String(body?.cardGateway || '').trim().toLowerCase()
   const cardGateway = ['pagarme', 'pagbank'].includes(rawCardGateway) ? rawCardGateway : 'mercadopago'
 
+  const orderBumpTitle = body?.orderBumpTitle === null || body?.orderBumpTitle === undefined
+    ? null
+    : String(body.orderBumpTitle).trim().slice(0, 200) || null
+
+  const orderBumpDescription = body?.orderBumpDescription === null || body?.orderBumpDescription === undefined
+    ? null
+    : String(body.orderBumpDescription).trim().slice(0, 1000) || null
+
+  const orderBumpPrice = body?.orderBumpPrice === null || body?.orderBumpPrice === undefined || body?.orderBumpPrice === ''
+    ? null
+    : Math.max(0, Number(body.orderBumpPrice) || 0) || null
+
   if (googleAdsConversionId && googleAdsConversionId.length > 64) {
     throw createError({ statusCode: 400, statusMessage: 'googleAdsConversionId inválido' })
   }
@@ -127,7 +139,10 @@ export default defineEventHandler(async (event) => {
             homeVideoUrl,
             footerPolicyLinks,
             pixGateway,
-            cardGateway
+            cardGateway,
+            orderBumpTitle,
+            orderBumpDescription,
+            orderBumpPrice
           },
           select: {
             id: true,
@@ -143,7 +158,10 @@ export default defineEventHandler(async (event) => {
             homeVideoUrl: true,
             footerPolicyLinks: true,
             pixGateway: true,
-            cardGateway: true
+            cardGateway: true,
+            orderBumpTitle: true,
+            orderBumpDescription: true,
+            orderBumpPrice: true
           }
         })
       : await prismaAny.siteSettings.create({
@@ -160,7 +178,10 @@ export default defineEventHandler(async (event) => {
             homeVideoUrl,
             footerPolicyLinks,
             pixGateway,
-            cardGateway
+            cardGateway,
+            orderBumpTitle,
+            orderBumpDescription,
+            orderBumpPrice
           },
           select: {
             id: true,
@@ -176,7 +197,10 @@ export default defineEventHandler(async (event) => {
             homeVideoUrl: true,
             footerPolicyLinks: true,
             pixGateway: true,
-            cardGateway: true
+            cardGateway: true,
+            orderBumpTitle: true,
+            orderBumpDescription: true,
+            orderBumpPrice: true
           }
         })
 
@@ -204,7 +228,10 @@ export default defineEventHandler(async (event) => {
           homeVideoUrl,
           footerPolicyLinks,
           pixGateway,
-          cardGateway
+          cardGateway,
+          orderBumpTitle,
+          orderBumpDescription,
+          orderBumpPrice
         },
         select: {
           id: true,
@@ -220,7 +247,10 @@ export default defineEventHandler(async (event) => {
           homeVideoUrl: true,
           footerPolicyLinks: true,
           pixGateway: true,
-          cardGateway: true
+          cardGateway: true,
+          orderBumpTitle: true,
+          orderBumpDescription: true,
+          orderBumpPrice: true
         }
       })
     : await prismaAny.siteSettings.create({
@@ -238,7 +268,10 @@ export default defineEventHandler(async (event) => {
           homeVideoUrl,
           footerPolicyLinks,
           pixGateway,
-          cardGateway
+          cardGateway,
+          orderBumpTitle,
+          orderBumpDescription,
+          orderBumpPrice
         },
         select: {
           id: true,
@@ -254,7 +287,10 @@ export default defineEventHandler(async (event) => {
           homeVideoUrl: true,
           footerPolicyLinks: true,
           pixGateway: true,
-          cardGateway: true
+          cardGateway: true,
+          orderBumpTitle: true,
+          orderBumpDescription: true,
+          orderBumpPrice: true
         }
       })
 

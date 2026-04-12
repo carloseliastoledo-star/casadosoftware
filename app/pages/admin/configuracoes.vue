@@ -14,7 +14,10 @@ const form = reactive({
   homeVideoUrl: '',
   footerPolicyLinks: '',
   pixGateway: 'mercadopago',
-  cardGateway: 'mercadopago'
+  cardGateway: 'mercadopago',
+  orderBumpTitle: '',
+  orderBumpDescription: '',
+  orderBumpPrice: '19'
 })
 
 const loading = ref(true)
@@ -43,6 +46,9 @@ onMounted(async () => {
     form.footerPolicyLinks = s.footerPolicyLinks ?? ''
     form.pixGateway = s.pixGateway ?? 'mercadopago'
     form.cardGateway = s.cardGateway ?? 'mercadopago'
+    form.orderBumpTitle = s.orderBumpTitle ?? ''
+    form.orderBumpDescription = s.orderBumpDescription ?? ''
+    form.orderBumpPrice = s.orderBumpPrice != null ? String(s.orderBumpPrice) : '19'
   } catch (err: any) {
     errorMsg.value = err?.data?.statusMessage || err?.message || 'Erro ao carregar configurações'
   } finally {
@@ -71,7 +77,10 @@ async function salvar() {
         homeVideoUrl: form.homeVideoUrl,
         footerPolicyLinks: form.footerPolicyLinks,
         pixGateway: form.pixGateway,
-        cardGateway: form.cardGateway
+        cardGateway: form.cardGateway,
+        orderBumpTitle: form.orderBumpTitle || null,
+        orderBumpDescription: form.orderBumpDescription || null,
+        orderBumpPrice: form.orderBumpPrice !== '' ? Number(form.orderBumpPrice) : null
       }
     })
     message.value = 'Configurações salvas com sucesso.'
@@ -191,6 +200,54 @@ async function salvar() {
         @click="salvar"
       >
         {{ saving ? 'Salvando...' : 'Salvar Gateways' }}
+      </button>
+    </div>
+
+    <div class="bg-white rounded shadow p-6 max-w-2xl">
+      <h2 class="text-lg font-semibold mb-1">Order Bump</h2>
+      <p class="text-sm text-gray-500 mb-4">Oferta adicional exibida no checkout do funil (Office 365 Pro).</p>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Título da oferta</label>
+          <input
+            v-model="form.orderBumpTitle"
+            class="w-full border p-2 rounded"
+            placeholder="Ex: Suporte premium de instalação"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+          <textarea
+            v-model="form.orderBumpDescription"
+            class="w-full border p-2 rounded text-sm"
+            rows="3"
+            placeholder="Ex: Receba ajuda prioritária por WhatsApp em até 2h após a compra."
+          />
+        </div>
+        <div class="max-w-xs">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Preço adicional (R$)</label>
+          <input
+            v-model="form.orderBumpPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            class="w-full border p-2 rounded"
+            placeholder="19.00"
+          />
+        </div>
+      </div>
+
+      <div v-if="message" class="mt-3 text-sm text-green-700">{{ message }}</div>
+      <div v-if="errorMsg" class="mt-3 text-sm text-red-600">{{ errorMsg }}</div>
+
+      <button
+        type="button"
+        class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:opacity-60"
+        :disabled="saving"
+        @click="salvar"
+      >
+        {{ saving ? 'Salvando...' : 'Salvar Order Bump' }}
       </button>
     </div>
 

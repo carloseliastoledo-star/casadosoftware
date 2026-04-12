@@ -173,13 +173,11 @@
                 <div class="flex items-start justify-between gap-2 flex-wrap">
                   <div class="flex items-center gap-2 flex-wrap">
                     <span class="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full">SIM! QUERO</span>
-                    <span class="font-bold text-gray-900 text-sm">Suporte premium de instalação</span>
+                    <span class="font-bold text-gray-900 text-sm">{{ bumpConfig.title }}</span>
                   </div>
-                  <span class="font-black text-green-700 text-sm whitespace-nowrap">+ R$ 19,00</span>
+                  <span class="font-black text-green-700 text-sm whitespace-nowrap">+ R$ {{ bumpConfig.price.toFixed(2).replace('.', ',') }}</span>
                 </div>
-                <p class="mt-1.5 text-xs text-gray-600 leading-relaxed">
-                  Receba ajuda prioritária para ativar seu Office sem complicação. Atendimento por WhatsApp em até 2h após a compra.
-                </p>
+                <p class="mt-1.5 text-xs text-gray-600 leading-relaxed">{{ bumpConfig.description }}</p>
               </div>
             </div>
           </div>
@@ -203,8 +201,8 @@
 
             <!-- Order bump (linha condicional) -->
             <div v-if="orderBump" class="flex items-center justify-between py-2.5 border-b border-gray-100">
-              <span class="text-sm text-gray-700">Suporte premium</span>
-              <span class="text-sm font-semibold text-green-700">+ R$ 19,00</span>
+              <span class="text-sm text-gray-700">{{ bumpConfig.title }}</span>
+              <span class="text-sm font-semibold text-green-700">+ R$ {{ bumpConfig.price.toFixed(2).replace('.', ',') }}</span>
             </div>
 
             <!-- Total -->
@@ -303,6 +301,7 @@ const basePrice = ref(49)
 const productName = ref('Office 365 Pro')
 const produtoId = ref('')
 const orderBump = ref(false)
+const bumpConfig = ref({ title: 'Suporte premium de instalação', description: 'Receba ajuda prioritária para ativar seu produto sem complicação. Atendimento por WhatsApp em até 2h após a compra.', price: 19 })
 const loading = ref(false)
 const showValidation = ref(false)
 const productLoading = ref(false)
@@ -322,7 +321,7 @@ const productSlug = computed(() => String(route.query.product || ''))
 const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
-const totalPrice = computed(() => basePrice.value + (isFunnelMode.value && orderBump.value ? 19 : 0))
+const totalPrice = computed(() => basePrice.value + (isFunnelMode.value && orderBump.value ? bumpConfig.value.price : 0))
 
 useSeoMeta({
   title: computed(() => `Checkout — ${productName.value} | Casa do Software`),
@@ -364,6 +363,11 @@ function restorePIXSession() {
 onMounted(async () => {
   restorePIXSession()
   if (pixQrCode.value || pixQrUrl.value) return
+
+  try {
+    const cfg: any = await $fetch('/api/checkout-config')
+    if (cfg?.orderBump) bumpConfig.value = { ...bumpConfig.value, ...cfg.orderBump }
+  } catch {}
 
   if (productSlug.value && productSlug.value !== FUNNEL_SLUG) {
     productLoading.value = true
@@ -432,8 +436,8 @@ function saveFunnelOrder(orderId: string) {
       produto: productName.value,
       preco: basePrice.value,
       orderBump: isFunnelMode.value && orderBump.value,
-      bumpProduto: (isFunnelMode.value && orderBump.value) ? 'Suporte premium de instalação' : null,
-      bumpPreco: (isFunnelMode.value && orderBump.value) ? 19 : 0,
+      bumpProduto: (isFunnelMode.value && orderBump.value) ? bumpConfig.value.title : null,
+      bumpPreco: (isFunnelMode.value && orderBump.value) ? bumpConfig.value.price : 0,
       total: totalPrice.value,
       totalFinal: null,
       nome: nome.value.trim(),

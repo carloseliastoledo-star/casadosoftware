@@ -26,7 +26,10 @@ export default defineEventHandler(async (event) => {
         homeVideoUrl: true,
         footerPolicyLinks: true,
         pixGateway: true,
-        cardGateway: true
+        cardGateway: true,
+        orderBumpTitle: true,
+        orderBumpDescription: true,
+        orderBumpPrice: true
       }
     })
 
@@ -48,7 +51,10 @@ export default defineEventHandler(async (event) => {
         homeVideoUrl: true,
         footerPolicyLinks: true,
         pixGateway: true,
-        cardGateway: true
+        cardGateway: true,
+        orderBumpTitle: true,
+        orderBumpDescription: true,
+        orderBumpPrice: true
       }
     })
 
@@ -71,7 +77,10 @@ export default defineEventHandler(async (event) => {
       homeVideoUrl: true,
       footerPolicyLinks: true,
       pixGateway: true,
-      cardGateway: true
+      cardGateway: true,
+      orderBumpTitle: true,
+      orderBumpDescription: true,
+      orderBumpPrice: true
     }
   })
 
@@ -92,7 +101,10 @@ export default defineEventHandler(async (event) => {
       homeVideoUrl: true,
       footerPolicyLinks: true,
       pixGateway: true,
-      cardGateway: true
+      cardGateway: true,
+      orderBumpTitle: true,
+      orderBumpDescription: true,
+      orderBumpPrice: true
     }
   })
 
@@ -115,7 +127,10 @@ export default defineEventHandler(async (event) => {
       homeVideoUrl: true,
       footerPolicyLinks: true,
       pixGateway: true,
-      cardGateway: true
+      cardGateway: true,
+      orderBumpTitle: true,
+      orderBumpDescription: true,
+      orderBumpPrice: true
     }
   })
 
