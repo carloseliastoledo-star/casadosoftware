@@ -329,7 +329,42 @@ useSeoMeta({
   robots: 'noindex,nofollow'
 })
 
+const PIX_SESSION_KEY = 'checkout_pix_session'
+
+function savePIXSession() {
+  if (!import.meta.client) return
+  try {
+    sessionStorage.setItem(PIX_SESSION_KEY, JSON.stringify({
+      pixQrCode: pixQrCode.value,
+      pixQrUrl: pixQrUrl.value,
+      funnelOrderId: funnelOrderId.value
+    }))
+  } catch {}
+}
+
+function clearPIXSession() {
+  if (!import.meta.client) return
+  try { sessionStorage.removeItem(PIX_SESSION_KEY) } catch {}
+}
+
+function restorePIXSession() {
+  if (!import.meta.client) return
+  try {
+    const raw = sessionStorage.getItem(PIX_SESSION_KEY)
+    if (!raw) return
+    const saved = JSON.parse(raw)
+    if (saved?.pixQrCode || saved?.pixQrUrl) {
+      pixQrCode.value = saved.pixQrCode || ''
+      pixQrUrl.value = saved.pixQrUrl || ''
+      funnelOrderId.value = saved.funnelOrderId || ''
+    }
+  } catch {}
+}
+
 onMounted(async () => {
+  restorePIXSession()
+  if (pixQrCode.value || pixQrUrl.value) return
+
   if (productSlug.value && productSlug.value !== FUNNEL_SLUG) {
     productLoading.value = true
     try {
@@ -411,6 +446,7 @@ function saveFunnelOrder(orderId: string) {
 }
 
 async function handleAposPix() {
+  clearPIXSession()
   saveFunnelOrder(funnelOrderId.value || ('cs-' + Date.now()))
   if (isFunnelMode.value) {
     await navigateTo('/upsell/windows-11')
@@ -461,7 +497,10 @@ async function handleFinalize() {
       pixQrUrl.value = result?.qrCodeUrl || ''
       if (!pixQrCode.value && !pixQrUrl.value) {
         saveFunnelOrder(funnelOrderId.value)
+        clearPIXSession()
         await handleAposPix()
+      } else {
+        savePIXSession()
       }
     } else {
       const status = String(result?.status || '').toLowerCase()
