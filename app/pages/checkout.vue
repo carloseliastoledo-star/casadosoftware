@@ -224,10 +224,10 @@ const isFunnelMode = computed(() => !productSlug.value || productSlug.value === 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
 const totalPrice = computed(() => basePrice.value + (isFunnelMode.value && orderBump.value ? 19 : 0))
 
-useSeoMeta(computed(() => ({
-  title: `Checkout — ${productName.value} | Casa do Software`,
+useSeoMeta({
+  title: computed(() => `Checkout — ${productName.value} | Casa do Software`),
   robots: 'noindex,nofollow'
-})))
+})
 
 onMounted(async () => {
   if (productSlug.value && productSlug.value !== FUNNEL_SLUG) {
