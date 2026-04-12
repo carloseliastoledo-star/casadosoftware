@@ -7,13 +7,13 @@
         <span aria-hidden="true">/</span>
         <NuxtLink to="/categorias" class="hover:text-blue-600 transition-colors">Softwares</NuxtLink>
         <span aria-hidden="true">/</span>
-        <span class="text-gray-700 font-medium truncate max-w-[200px]">{{ categoryName }}</span>
+        <span class="text-gray-700 font-medium">{{ displayName }}</span>
       </nav>
 
       <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <h1 class="text-2xl md:text-3xl font-black text-gray-900 leading-tight">
-            {{ categoryName || 'Softwares em destaque' }}
+            {{ displayName || 'Softwares em destaque' }}
           </h1>
           <p class="mt-1.5 text-sm text-gray-500">
             <template v-if="productCount > 0">
@@ -53,8 +53,12 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   categoryName: string
   productCount: number
 }>()
+
+const displayName = computed(() =>
+  String(props.categoryName || '').normalize('NFC')
+)
 </script>
