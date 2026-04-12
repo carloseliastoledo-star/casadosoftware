@@ -192,29 +192,35 @@ const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value
 
 const totalPrice = computed(() => basePrice.value + (orderBump.value ? 19 : 0))
 
-onMounted(() => {
-  trackMeta('InitiateCheckout', { value: totalPrice.value })
-  trackGtag('begin_checkout', { value: totalPrice.value })
-})
-
 async function handleFinalize() {
   showValidation.value = true
   if (!nome.value.trim() || !emailValido.value || loading.value) return
 
   loading.value = true
   try {
+    const total = totalPrice.value
+
+    trackMeta('InitiateCheckout', { value: total, currency: 'BRL' })
+    trackGtag('begin_checkout', { value: total, currency: 'BRL' })
+
+    const orderId = 'cs-' + Date.now()
+
     if (import.meta.client) {
-      localStorage.setItem('funnelOrder', JSON.stringify({
-        produto: 'Office 365 Pro',
-        preco: basePrice.value,
-        orderBump: orderBump.value,
-        bumpProduto: orderBump.value ? 'Suporte premium de instalação' : null,
-        bumpPreco: orderBump.value ? 19 : 0,
-        total: totalPrice.value,
-        nome: nome.value.trim(),
-        email: email.value.trim(),
-        upsell: null
-      }))
+      try {
+        localStorage.setItem('funnelOrder', JSON.stringify({
+          orderId,
+          produto: 'Office 365 Pro',
+          preco: basePrice.value,
+          orderBump: orderBump.value,
+          bumpProduto: orderBump.value ? 'Suporte premium de instalação' : null,
+          bumpPreco: orderBump.value ? 19 : 0,
+          total,
+          totalFinal: null,
+          nome: nome.value.trim(),
+          email: email.value.trim(),
+          upsell: null
+        }))
+      } catch {}
     }
 
     await new Promise(r => setTimeout(r, 1400))

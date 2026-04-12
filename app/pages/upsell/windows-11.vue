@@ -106,9 +106,18 @@ function saveFunnelUpsell(status: 'accepted' | 'declined') {
   try {
     const raw = localStorage.getItem('funnelOrder')
     const existing = raw ? JSON.parse(raw) : {}
+    const baseTotal = Number(existing.total ?? 0)
     const extra = status === 'accepted'
-      ? { upsell: 'accepted', upsellProduto: 'Windows 11 Pro', upsellPreco: 97, total: (existing.total ?? 0) + 97 }
-      : { upsell: 'declined' }
+      ? {
+          upsell: 'accepted',
+          upsellProduto: 'Windows 11 Pro',
+          upsellPreco: 97,
+          totalFinal: baseTotal + 97
+        }
+      : {
+          upsell: 'declined',
+          totalFinal: baseTotal
+        }
     localStorage.setItem('funnelOrder', JSON.stringify({ ...existing, ...extra }))
   } catch {}
 }

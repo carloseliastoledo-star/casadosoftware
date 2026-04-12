@@ -41,20 +41,30 @@ function loadFunnelOrder() {
 function fireFunnelPurchaseTracking() {
   if (!import.meta.client) return
   const order = funnelOrder.value
-  if (!order) return
-  const purchaseKey = 'funnel_purchase_tracked'
+  if (!order?.orderId) return
+
+  const purchaseKey = `funnel_purchase_${order.orderId}`
   try {
     if (localStorage.getItem(purchaseKey)) return
     localStorage.setItem(purchaseKey, '1')
   } catch {}
-  const total = Number(order.total ?? 0)
-  trackMeta('Purchase', { value: total, content_name: order.produto ?? 'Office 365 Pro' })
+
+  const total = Number(order.totalFinal ?? order.total ?? 0)
+  const transactionId = String(order.orderId)
+  const produto = String(order.produto ?? 'Office 365 Pro')
+
+  trackMeta('Purchase', { value: total, currency: 'BRL', content_name: produto })
   trackGtag('purchase', {
     value: total,
     currency: 'BRL',
-    transaction_id: `funnel_${Date.now()}`,
-    items: [{ item_name: order.produto ?? 'Office 365 Pro', price: order.preco ?? 49, quantity: 1 }]
+    transaction_id: transactionId,
+    items: [{ item_name: produto, price: Number(order.preco ?? 49), quantity: 1 }]
   })
+
+  try {
+    localStorage.setItem('funnelOrderLastCompleted', JSON.stringify(order))
+    localStorage.removeItem('funnelOrder')
+  } catch {}
 }
 
 const googleAdsConversionId = computed(() => {
