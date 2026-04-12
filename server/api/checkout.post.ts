@@ -135,22 +135,28 @@ export default defineEventHandler(async (event) => {
   } catch {}
 
   // Roteamento de pagamento
-  const result = await routePayment({
-    orderId: order.id,
-    amountBrl: totalBrl,
-    amountUsd: totalForeign ?? undefined,
-    currency: currency === 'brl' ? undefined : currency,
-    country,
-    method,
-    product: produto.nome,
-    pixGateway,
-    cardGateway,
-    customer: { name: nome || email, email, document },
-    card: card ?? undefined,
-    installments,
-    affiliateRecipientId,
-    affiliatePercentage,
-  })
+  let result: Awaited<ReturnType<typeof routePayment>>
+  try {
+    result = await routePayment({
+      orderId: order.id,
+      amountBrl: totalBrl,
+      amountUsd: totalForeign ?? undefined,
+      currency: currency === 'brl' ? undefined : currency,
+      country,
+      method,
+      product: produto.nome,
+      pixGateway,
+      cardGateway,
+      customer: { name: nome || email, email, document },
+      card: card ?? undefined,
+      installments,
+      affiliateRecipientId,
+      affiliatePercentage,
+    })
+  } catch (e: any) {
+    const msg = e?.data?.message || e?.data?.statusMessage || e?.message || 'Erro ao processar pagamento'
+    throw createError({ statusCode: 502, statusMessage: msg })
+  }
 
   // Salva ID do gateway no pedido
   if (result.gateway === 'pagarme') {
