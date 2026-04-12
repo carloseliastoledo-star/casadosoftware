@@ -34,7 +34,7 @@
                   type="text"
                   placeholder="Como está no documento"
                   autocomplete="name"
-                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
               </div>
               <div>
@@ -44,8 +44,34 @@
                   type="email"
                   placeholder="Licença será enviada para este e-mail"
                   autocomplete="email"
-                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                  <input
+                    v-model="telefone"
+                    type="tel"
+                    placeholder="(11) 99999-9999"
+                    autocomplete="tel"
+                    maxlength="15"
+                    @input="formatTelefone"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                  <input
+                    v-model="cpf"
+                    type="text"
+                    placeholder="000.000.000-00"
+                    inputmode="numeric"
+                    maxlength="14"
+                    @input="formatCpf"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -183,12 +209,31 @@ const { trackMeta, trackGtag } = useMarketing()
 
 const nome = ref('')
 const email = ref('')
+const telefone = ref('')
+const cpf = ref('')
 const basePrice = ref(49)
 const orderBump = ref(false)
 const loading = ref(false)
 const showValidation = ref(false)
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
+
+function formatTelefone(e: Event) {
+  let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 11)
+  if (v.length > 10) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`
+  else if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`
+  else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`
+  else if (v.length > 0) v = `(${v}`
+  telefone.value = v
+}
+
+function formatCpf(e: Event) {
+  let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 11)
+  if (v.length > 9) v = `${v.slice(0,3)}.${v.slice(3,6)}.${v.slice(6,9)}-${v.slice(9)}`
+  else if (v.length > 6) v = `${v.slice(0,3)}.${v.slice(3,6)}.${v.slice(6)}`
+  else if (v.length > 3) v = `${v.slice(0,3)}.${v.slice(3)}`
+  cpf.value = v
+}
 
 const totalPrice = computed(() => basePrice.value + (orderBump.value ? 19 : 0))
 
@@ -218,6 +263,8 @@ async function handleFinalize() {
           totalFinal: null,
           nome: nome.value.trim(),
           email: email.value.trim(),
+          telefone: telefone.value.trim(),
+          cpf: cpf.value.trim(),
           upsell: null
         }))
       } catch {}
