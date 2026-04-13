@@ -384,8 +384,24 @@ onMounted(async () => {
       productLoading.value = false
     }
   } else {
-    productName.value = 'Office 365 Pro'
-    basePrice.value = 49
+    productLoading.value = true
+    try {
+      const res: any = await $fetch(`/api/products/${FUNNEL_SLUG}`)
+      const p = res?.product || res
+      if (p?.id) {
+        produtoId.value = String(p.id)
+        productName.value = String(p?.nome || p?.name || 'Office 365 Pro')
+        basePrice.value = Number(p?.preco ?? p?.price ?? p?.effectivePrice ?? 49)
+      } else {
+        productName.value = 'Office 365 Pro'
+        basePrice.value = 49
+      }
+    } catch {
+      productName.value = 'Office 365 Pro'
+      basePrice.value = 49
+    } finally {
+      productLoading.value = false
+    }
   }
 
   trackMeta('InitiateCheckout', { value: totalPrice.value })
