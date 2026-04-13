@@ -176,6 +176,13 @@
                   Reenviar
                 </button>
                 <button
+                  v-if="canCheckPayment(o)"
+                  class="text-amber-600 hover:text-amber-800"
+                  @click="checkPayment(o)"
+                >
+                  Verificar
+                </button>
+                <button
                   v-if="canManualFulfill(o)"
                   class="text-emerald-700 hover:text-emerald-900"
                   @click="openFulfillModal(o)"
@@ -672,6 +679,21 @@ function openImportModal() {
 
 function closeImportModal() {
   showImport.value = false
+}
+
+function canCheckPayment(o: OrderDto) {
+  return String(o.status || '').toUpperCase() === 'PENDING'
+}
+
+async function checkPayment(o: OrderDto) {
+  if (!o?.id) return
+  try {
+    const res: any = await $fetch(`/api/admin/pedidos/${o.id}/check-payment`, { method: 'POST' })
+    alert(res?.message || 'Verificação concluída.')
+    await refresh()
+  } catch (err: any) {
+    alert(err?.data?.statusMessage || 'Erro ao verificar pagamento')
+  }
 }
 
 function canManualFulfill(o: OrderDto) {
