@@ -27,6 +27,25 @@ export default defineEventHandler(async (event) => {
   const installments  = Number(body?.installments) || 1
   const card          = body?.card ?? null
 
+  const utmSource   = body?.utm_source   ? String(body.utm_source).trim()   : null
+  const utmMedium   = body?.utm_medium   ? String(body.utm_medium).trim()   : null
+  const utmCampaign = body?.utm_campaign ? String(body.utm_campaign).trim() : null
+  const utmTerm     = body?.utm_term     ? String(body.utm_term).trim()     : null
+  const utmContent  = body?.utm_content  ? String(body.utm_content).trim()  : null
+  const gclid       = body?.gclid        ? String(body.gclid).trim()        : null
+  const fbclid      = body?.fbclid       ? String(body.fbclid).trim()       : null
+  const referrer    = body?.referrer     ? String(body.referrer).trim()     : null
+  const landingPage = body?.landingPage  ? String(body.landingPage).trim()  : null
+
+  function inferTrafficSourceType() {
+    if (gclid || utmMedium === 'cpc' || utmMedium === 'ppc' || utmMedium === 'paid' || utmMedium === 'paidsearch') return 'cpc'
+    if (utmMedium === 'organic') return 'organic'
+    if (!referrer) return 'direct'
+    if (/google\.|bing\.|yahoo\.|duckduckgo\.|yandex\./.test(referrer)) return 'organic'
+    return 'referral'
+  }
+  const trafficSourceType = inferTrafficSourceType()
+
   if (!produtoId) throw createError({ statusCode: 400, statusMessage: 'produtoId obrigatório' })
   if (!email || !email.includes('@')) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
   if (!storeSlug) throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
@@ -117,6 +136,16 @@ export default defineEventHandler(async (event) => {
       totalAmount: totalBrl,
       orderBump,
       bumpProductId: bumpProduto?.id ?? null,
+      trafficSourceType,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmTerm,
+      utmContent,
+      gclid,
+      fbclid,
+      referrer,
+      landingPage,
     },
     select: { id: true },
   })

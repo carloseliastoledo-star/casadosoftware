@@ -291,6 +291,18 @@ definePageMeta({ layout: 'lp' })
 const route = useRoute()
 const { trackMeta, trackGtag } = useMarketing()
 
+const trackingData = computed(() => ({
+  utm_source:   String(route.query.utm_source   || '').trim() || undefined,
+  utm_medium:   String(route.query.utm_medium   || '').trim() || undefined,
+  utm_campaign: String(route.query.utm_campaign || '').trim() || undefined,
+  utm_term:     String(route.query.utm_term     || '').trim() || undefined,
+  utm_content:  String(route.query.utm_content  || '').trim() || undefined,
+  gclid:        String(route.query.gclid        || '').trim() || undefined,
+  fbclid:       String(route.query.fbclid       || '').trim() || undefined,
+  referrer:     import.meta.client ? (document.referrer || undefined) : undefined,
+  landingPage:  import.meta.client ? (window.location.href || undefined) : undefined,
+}))
+
 const FUNNEL_SLUG = 'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
 
 const nome = ref('')
@@ -496,7 +508,8 @@ async function handleFinalize() {
       phone: telefone.value.replace(/\D/g, ''),
       method: paymentMethod.value,
       orderBump: isFunnelMode.value && orderBump.value,
-      currency: 'BRL'
+      currency: 'BRL',
+      ...trackingData.value
     }
 
     if (paymentMethod.value === 'credit_card') {
