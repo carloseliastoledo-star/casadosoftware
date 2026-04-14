@@ -378,59 +378,43 @@ function buyNow(event: Event) {
 <template>
   <NuxtLink
     :to="productPath"
-    class="group relative flex flex-col overflow-hidden rounded-xl border border-cyan-500/50 bg-[#07071a] hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-200"
+    class="group flex flex-col rounded-xl border border-cyan-500/50 bg-[#07071a] hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-200 overflow-hidden"
   >
-    <!-- Imagem -->
-    <div class="relative w-full overflow-hidden bg-[#06061a] h-32">
+    <!-- Imagem: altura fixa, nunca sobrepõe o conteúdo -->
+    <div class="relative h-36 w-full shrink-0 bg-[#06061a]">
       <img
         :src="productImage"
         :alt="productName"
         loading="lazy"
         decoding="async"
-        width="400"
-        height="160"
-        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+        class="absolute inset-0 h-full w-full object-cover"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
-
-      <!-- Badge desconto -->
-      <div v-if="discountPercent" class="absolute top-2 right-2">
+      <div v-if="discountPercent" class="absolute top-2 right-2 z-10">
         <span class="inline-flex items-center rounded-md bg-red-600 px-2 py-0.5 text-[11px] font-black text-white tracking-wider shadow">
           {{ discountPercent }}% OFF
         </span>
       </div>
     </div>
 
-    <!-- Conteúdo -->
-    <div class="flex flex-col flex-1 px-3 pt-2.5 pb-3">
-      <!-- Nome -->
-      <h3 class="font-semibold text-white text-xs leading-snug line-clamp-2 min-h-[2.25rem]">
+    <!-- Conteúdo: sempre abaixo da imagem -->
+    <div class="flex flex-col gap-1 px-3 py-3">
+      <h3 class="text-xs font-semibold text-white leading-snug line-clamp-2">
         {{ productName }}
       </h3>
-
-      <!-- Subtítulo LICENÇA DIGITAL -->
-      <p class="mt-0.5 text-[10px] font-black tracking-widest uppercase text-cyan-400">
+      <p class="text-[10px] font-black tracking-widest uppercase text-cyan-400">
         LICENÇA DIGITAL
       </p>
-
-      <!-- Bloco de preço -->
-      <div class="mt-1.5 space-y-0.5">
-        <div class="text-[1.35rem] font-black text-green-400 leading-none tracking-tight">
-          {{ formattedPrice }}
-        </div>
-        <div v-if="formattedOldPrice" class="text-[11px] text-red-400 line-through leading-none">
-          {{ formattedOldPrice }}
-        </div>
+      <div class="text-[1.2rem] font-black text-green-400 leading-none mt-1">
+        {{ formattedPrice }}
       </div>
-
-      <!-- Spacer -->
-      <div class="flex-1" />
-
-      <!-- Botão -->
+      <div v-if="formattedOldPrice" class="text-[11px] text-red-400 line-through leading-none">
+        {{ formattedOldPrice }}
+      </div>
       <button
         type="button"
-        class="mt-3 w-full rounded-lg border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/10 active:bg-cyan-500/20 text-white text-[11px] font-black uppercase tracking-widest py-2 transition-colors duration-150"
+        class="mt-2 w-full rounded-lg border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/10 active:bg-cyan-500/20 text-white text-[11px] font-black uppercase tracking-widest py-2 transition-colors duration-150"
         @click="buyNow"
       >
         {{ buyNowLabel }}
