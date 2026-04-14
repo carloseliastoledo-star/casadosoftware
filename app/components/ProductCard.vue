@@ -381,15 +381,15 @@ function buyNow(event: Event) {
     class="group relative flex flex-col overflow-hidden rounded-2xl border border-cyan-500/60 bg-[#07071a] hover:border-cyan-400 hover:shadow-[0_0_18px_2px_rgba(0,230,230,0.18)] transition-all duration-200"
   >
     <!-- Imagem -->
-    <div class="relative w-full overflow-hidden bg-[#06061a]" style="aspect-ratio:16/10">
+    <div class="relative w-full overflow-hidden bg-[#06061a] h-40">
       <img
         :src="productImage"
         :alt="productName"
         loading="lazy"
         decoding="async"
         width="400"
-        height="250"
-        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        height="160"
+        class="w-full h-full object-contain p-1 transition-transform duration-300 group-hover:scale-[1.02]"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
@@ -403,23 +403,23 @@ function buyNow(event: Event) {
     </div>
 
     <!-- Conteúdo -->
-    <div class="flex flex-col flex-1 px-4 pt-3 pb-4">
+    <div class="flex flex-col flex-1 px-3 pt-2.5 pb-3">
       <!-- Nome -->
-      <h3 class="font-bold text-white text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
+      <h3 class="font-semibold text-white text-xs leading-snug line-clamp-2 min-h-[2.25rem]">
         {{ productName }}
       </h3>
 
       <!-- Subtítulo LICENÇA DIGITAL -->
-      <p class="mt-0.5 text-[11px] font-black tracking-widest uppercase text-cyan-400">
+      <p class="mt-0.5 text-[10px] font-black tracking-widest uppercase text-cyan-400">
         LICENÇA DIGITAL
       </p>
 
       <!-- Bloco de preço -->
-      <div class="mt-2 space-y-0.5">
-        <div class="text-[1.7rem] font-black text-green-400 leading-none tracking-tight">
+      <div class="mt-1.5 space-y-0.5">
+        <div class="text-[1.35rem] font-black text-green-400 leading-none tracking-tight">
           {{ formattedPrice }}
         </div>
-        <div v-if="formattedOldPrice" class="text-xs text-red-400 line-through leading-none">
+        <div v-if="formattedOldPrice" class="text-[11px] text-red-400 line-through leading-none">
           {{ formattedOldPrice }}
         </div>
       </div>
@@ -430,7 +430,7 @@ function buyNow(event: Event) {
       <!-- Botão -->
       <button
         type="button"
-        class="mt-4 w-full rounded-xl border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/10 active:bg-cyan-500/20 text-white text-sm font-black uppercase tracking-widest py-2.5 transition-colors duration-150"
+        class="mt-3 w-full rounded-lg border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/10 active:bg-cyan-500/20 text-white text-[11px] font-black uppercase tracking-widest py-2 transition-colors duration-150"
         @click="buyNow"
       >
         {{ buyNowLabel }}
