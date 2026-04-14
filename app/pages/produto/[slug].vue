@@ -1277,49 +1277,19 @@ function buyNow() {
 </script>
 
 <style scoped>
-/* Forçar texto visível e fundo transparente em v-html com estilos inline */
+/* Forçar fundo transparente em v-html com estilos inline - Tailwind prose-invert cuida das cores */
 .prose :deep(*) {
-  color: #cbd5e1 !important;
   background-color: transparent !important;
   background: transparent !important;
 }
-.prose :deep(h1),
-.prose :deep(h2),
-.prose :deep(h3),
-.prose :deep(h4),
-.prose :deep(h5),
-.prose :deep(h6) {
-  color: #f1f5f9 !important;
-  background-color: transparent !important;
-}
-.prose :deep(strong),
-.prose :deep(b) {
-  color: #f8fafc !important;
-}
-.prose :deep(a) {
-  color: #22d3ee !important;
-}
-.prose :deep(table) {
-  background-color: transparent !important;
-}
+.prose :deep(table),
 .prose :deep(td),
 .prose :deep(th) {
   background-color: transparent !important;
-  color: #cbd5e1 !important;
   border-color: rgba(148,163,184,0.2) !important;
 }
 .seo-content-dark :deep(*) {
-  color: #cbd5e1 !important;
   background-color: transparent !important;
   background: transparent !important;
-}
-.seo-content-dark :deep(h1),
-.seo-content-dark :deep(h2),
-.seo-content-dark :deep(h3),
-.seo-content-dark :deep(h4) {
-  color: #f1f5f9 !important;
-}
-.seo-content-dark :deep(a) {
-  color: #22d3ee !important;
 }
 </style>
