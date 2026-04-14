@@ -154,72 +154,63 @@ function buyNow(event: Event) {
 <template>
   <NuxtLink
     :to="productPath"
-    class="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 flex flex-col overflow-hidden"
+    class="group relative flex flex-col overflow-hidden rounded-2xl border border-cyan-500/60 bg-[#07071a] hover:border-cyan-400 hover:shadow-[0_0_18px_2px_rgba(0,230,230,0.18)] transition-all duration-200"
   >
     <!-- Imagem -->
-    <div class="relative bg-slate-50 flex items-center justify-center overflow-hidden" style="aspect-ratio:4/3">
+    <div class="relative w-full overflow-hidden bg-[#06061a]" style="aspect-ratio:16/10">
       <img
         :src="productImage"
         :alt="productName"
         loading="lazy"
         decoding="async"
-        width="320"
-        height="240"
-        class="w-full h-full object-contain p-5 transition-transform duration-300 group-hover:scale-[1.04]"
+        width="400"
+        height="250"
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
 
-      <!-- Selo Licença Digital -->
-      <div class="absolute top-2.5 left-2.5">
-        <span class="inline-flex items-center rounded-md bg-blue-600 px-2 py-0.5 text-[10px] font-black text-white tracking-wider uppercase shadow-sm">
-          Licença Digital
-        </span>
-      </div>
-
-      <!-- Badge de desconto -->
-      <div v-if="discountPercent" class="absolute top-2.5 right-2.5">
-        <span class="inline-flex items-center rounded-md bg-green-500 px-2 py-0.5 text-[10px] font-black text-white tracking-wider shadow-sm">
+      <!-- Badge desconto -->
+      <div v-if="discountPercent" class="absolute top-2 right-2">
+        <span class="inline-flex items-center rounded-md bg-red-600 px-2 py-0.5 text-[11px] font-black text-white tracking-wider shadow">
           {{ discountPercent }}% OFF
         </span>
       </div>
     </div>
 
     <!-- Conteúdo -->
-    <div class="flex flex-col flex-1 p-4">
-      <!-- Nome do produto -->
-      <h3 class="font-bold text-gray-900 text-sm leading-snug line-clamp-2 min-h-[2.75rem]">
+    <div class="flex flex-col flex-1 px-4 pt-3 pb-4">
+      <!-- Nome -->
+      <h3 class="font-bold text-white text-sm leading-snug line-clamp-2 min-h-[2.5rem]">
         {{ productName }}
       </h3>
 
+      <!-- Subtítulo LICENÇA DIGITAL -->
+      <p class="mt-0.5 text-[11px] font-black tracking-widest uppercase text-cyan-400">
+        LICENÇA DIGITAL
+      </p>
+
       <!-- Bloco de preço -->
-      <div class="mt-3 space-y-0.5">
-        <div v-if="formattedOldPrice" class="text-xs text-gray-400 line-through leading-none">
-          {{ formattedOldPrice }}
-        </div>
-        <div class="text-[1.65rem] font-black text-green-600 leading-none tracking-tight">
+      <div class="mt-2 space-y-0.5">
+        <div class="text-[1.7rem] font-black text-green-400 leading-none tracking-tight">
           {{ formattedPrice }}
         </div>
-        <div v-if="isBrl" class="text-[11px] text-gray-400 leading-none pt-0.5">
-          {{ installmentsLabel }}
+        <div v-if="formattedOldPrice" class="text-xs text-red-400 line-through leading-none">
+          {{ formattedOldPrice }}
         </div>
       </div>
 
       <!-- Spacer -->
       <div class="flex-1" />
 
-      <!-- Botão CTA -->
-      <div class="mt-4 space-y-1.5">
-        <button
-          type="button"
-          class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-colors shadow-sm shadow-blue-200/60"
-          @click="buyNow"
-        >
-          {{ buyNowLabel }}
-        </button>
-        <!-- Microcopy -->
-        <p class="text-[10px] text-gray-400 text-center leading-tight">{{ microCopy }}</p>
-      </div>
+      <!-- Botão -->
+      <button
+        type="button"
+        class="mt-4 w-full rounded-xl border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/10 active:bg-cyan-500/20 text-white text-sm font-black uppercase tracking-widest py-2.5 transition-colors duration-150"
+        @click="buyNow"
+      >
+        {{ buyNowLabel }}
+      </button>
     </div>
   </NuxtLink>
 </template>
