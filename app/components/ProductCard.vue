@@ -393,7 +393,7 @@ function buyNow(event: Event) {
     <!-- Bloco de imagem: proporção fixa, overlay unificador -->
     <div
       class="relative w-full shrink-0 overflow-hidden"
-      :style="`height:280px; background-color:${categoryBg}`"
+      :style="`height:300px; background-color:${categoryBg}`"
     >
       <img
         :src="productImage"
@@ -404,8 +404,8 @@ function buyNow(event: Event) {
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
-      <!-- overlay: gradiente de baixo para cima para dar contraste e aspecto premium -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
+      <!-- overlay: funde imagem com fundo do card sem linha visível -->
+      <div class="absolute inset-0 bg-gradient-to-t from-[#021326] via-[#021326]/70 to-transparent pointer-events-none" />
       <!-- badge topo direito -->
       <div v-if="discountPercent" class="absolute top-2.5 right-2.5 z-10">
         <span class="inline-flex items-center rounded-full bg-red-600/90 px-2.5 py-0.5 text-[10px] font-black text-white tracking-widest">
@@ -415,20 +415,20 @@ function buyNow(event: Event) {
     </div>
 
     <!-- Conteúdo centralizado -->
-    <div class="flex flex-col flex-1 items-center text-center px-3 pt-2 pb-3">
+    <div class="flex flex-col flex-1 items-center text-center px-3 pt-0 pb-3">
       <!-- Título: 2 linhas max, altura uniforme -->
-      <h3 class="text-[12px] font-bold text-white leading-snug line-clamp-2 min-h-[2.4rem] w-full">
+      <h3 class="text-[12px] font-bold text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)] leading-snug line-clamp-2 min-h-[2.4rem] w-full">
         {{ productName }}
       </h3>
 
       <!-- Subtítulo -->
-      <p class="mt-1 text-[9px] font-extrabold tracking-[0.22em] uppercase text-cyan-400">
+      <p class="mt-0.5 text-[9px] font-extrabold tracking-[0.22em] uppercase text-cyan-400">
         LICENÇA DIGITAL
       </p>
 
       <!-- Preço -->
       <div class="mt-1.5">
-        <div class="text-[1.5rem] font-black text-[#00e676] leading-none">
+        <div class="text-[1.5rem] font-black text-[#00e676] drop-shadow-[0_0_8px_rgba(0,230,118,0.5)] leading-none">
           {{ formattedPrice }}
         </div>
         <div v-if="formattedOldPrice" class="mt-1 text-[11px] text-red-400/75 line-through leading-none">
