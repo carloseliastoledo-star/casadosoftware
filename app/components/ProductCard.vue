@@ -400,7 +400,7 @@ function buyNow(event: Event) {
         :alt="productName"
         loading="lazy"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover brightness-110 contrast-110 saturate-110 transition-transform duration-500 group-hover:scale-105"
+        class="absolute inset-0 h-full w-full object-cover brightness-110 contrast-115 saturate-120 transition-transform duration-500 group-hover:scale-105"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
