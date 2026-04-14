@@ -58,8 +58,11 @@ export async function createPagarmePix(opts: {
 }): Promise<PagarmePixResult> {
   const amountCents = Math.round(opts.amountBrl * 100)
 
+  const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+
   const body: any = {
     code: `order_${opts.orderId}`,
+    ...(siteUrl ? { notification_url: `${siteUrl}/api/webhook/pagarme` } : {}),
     items: [
       {
         amount: amountCents,
@@ -162,11 +165,14 @@ export async function createPagarmeCard(opts: {
 }): Promise<PagarmeCardResult> {
   const amountCents = Math.round(opts.amountBrl * 100)
 
+  const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+
   const body: any = {
     code: `order_${opts.orderId}`,
     amount: amountCents,
     currency: 'BRL',
     payment_method: 'credit_card',
+    ...(siteUrl ? { notification_url: `${siteUrl}/api/webhook/pagarme` } : {}),
     customer: {
       name: opts.customer.name,
       email: opts.customer.email,
@@ -217,11 +223,14 @@ export async function createPagarmeUpsell(opts: {
 }): Promise<PagarmeCardResult> {
   const amountCents = Math.round(opts.amountBrl * 100)
 
+  const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+
   const body: any = {
     code: `upsell_${opts.orderId}`,
     amount: amountCents,
     currency: 'BRL',
     payment_method: 'credit_card',
+    ...(siteUrl ? { notification_url: `${siteUrl}/api/webhook/pagarme` } : {}),
     customer: {
       name: opts.customer.name,
       email: opts.customer.email,
