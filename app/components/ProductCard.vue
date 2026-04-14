@@ -378,43 +378,48 @@ function buyNow(event: Event) {
 <template>
   <NuxtLink
     :to="productPath"
-    class="group flex flex-col rounded-xl border border-cyan-500/40 bg-[#07071a] hover:border-cyan-400 hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-200 overflow-hidden"
+    class="group relative flex flex-col rounded-2xl overflow-hidden bg-[#06091c] border border-blue-600/40 transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/30"
   >
-    <!-- Imagem: altura generosa, topo do card -->
-    <div class="relative w-full shrink-0 bg-[#06061a]" style="height:200px">
+    <!-- Imagem -->
+    <div class="relative w-full shrink-0 overflow-hidden" style="height:200px">
       <img
         :src="productImage"
         :alt="productName"
         loading="lazy"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
-      <div v-if="discountPercent" class="absolute top-2 right-2 z-10">
-        <span class="inline-flex items-center rounded-md bg-red-600 px-2 py-0.5 text-[11px] font-black text-white tracking-wide shadow">
+      <!-- fade bottom para fundir com o card -->
+      <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#06091c] to-transparent" />
+      <!-- Badge desconto -->
+      <div v-if="discountPercent" class="absolute top-3 right-3 z-10">
+        <span class="inline-flex items-center rounded-full bg-red-600 px-3 py-1 text-[11px] font-black text-white tracking-wider shadow-lg shadow-red-900/60">
           {{ discountPercent }}% OFF
         </span>
       </div>
     </div>
 
-    <!-- Conteúdo: sempre abaixo da imagem, nunca sobrepõe -->
-    <div class="flex flex-col px-3 pt-3 pb-4 gap-1">
-      <h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 min-h-[2.5rem]">
+    <!-- Conteúdo -->
+    <div class="flex flex-col flex-1 px-4 pt-3 pb-4 gap-1.5">
+      <h3 class="text-sm font-bold text-white leading-snug line-clamp-2 min-h-[2.5rem]">
         {{ productName }}
       </h3>
-      <p class="text-[10px] font-black tracking-widest uppercase text-cyan-400 mt-0.5">
+      <p class="text-[10px] font-extrabold tracking-[0.18em] uppercase text-cyan-400">
         LICENÇA DIGITAL
       </p>
-      <div class="text-xl font-black text-green-400 leading-none mt-1">
-        {{ formattedPrice }}
-      </div>
-      <div v-if="formattedOldPrice" class="text-[11px] text-red-400 line-through leading-none">
-        {{ formattedOldPrice }}
+      <div class="mt-1.5">
+        <div class="text-2xl font-black text-green-400 leading-none tracking-tight">
+          {{ formattedPrice }}
+        </div>
+        <div v-if="formattedOldPrice" class="text-xs text-red-400/90 line-through mt-0.5 leading-none">
+          {{ formattedOldPrice }}
+        </div>
       </div>
       <button
         type="button"
-        class="mt-3 w-full rounded-lg border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/15 active:bg-cyan-500/25 text-white text-[11px] font-black uppercase tracking-widest py-2.5 transition-colors duration-150"
+        class="mt-auto pt-2.5 w-full rounded-full bg-blue-700 hover:bg-blue-500 active:bg-blue-800 text-white text-[11px] font-black uppercase tracking-[0.15em] py-3 transition-all duration-200 shadow-lg shadow-blue-900/50 hover:shadow-blue-500/40"
         @click="buyNow"
       >
         {{ buyNowLabel }}
