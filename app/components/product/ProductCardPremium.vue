@@ -176,12 +176,13 @@ function buyNow(event: Event) {
         :alt="productName"
         loading="lazy"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        class="absolute inset-0 h-full w-full object-cover brightness-105 contrast-105 transition-transform duration-500 group-hover:scale-105"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
-      <!-- overlay: funde imagem com fundo do card sem linha visível -->
-      <div class="absolute inset-0 bg-gradient-to-t from-[#021326] via-[#021326]/70 to-transparent pointer-events-none" />
+      <!-- overlay leve: preserva a thumbnail, escurece apenas o bottom -->
+      <div class="absolute inset-0 bg-black/10 pointer-events-none" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#021326]/80 via-[#021326]/30 to-transparent pointer-events-none" />
       <!-- badge topo direito -->
       <div v-if="discountPercent" class="absolute top-2.5 right-2.5 z-10">
         <span class="inline-flex items-center rounded-full bg-red-600/90 px-2.5 py-0.5 text-[10px] font-black text-white tracking-widest">
