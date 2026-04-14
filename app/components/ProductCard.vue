@@ -389,7 +389,7 @@ function buyNow(event: Event) {
         decoding="async"
         width="400"
         height="160"
-        class="w-full h-full object-contain p-1 transition-transform duration-300 group-hover:scale-[1.02]"
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
