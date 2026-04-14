@@ -1,245 +1,249 @@
 <template>
-  <section :class="sectionClass">
-    <div :class="containerClass">
-
-      <!-- Breadcrumb -->
-      <div v-if="safeProduct.nome" :class="breadcrumbClass">
-        <NuxtLink to="/" class="hover:underline">{{ t.home }}</NuxtLink>
-        <span class="mx-2">/</span>
-        <NuxtLink :to="productsIndexPath" class="hover:underline">{{ t.products }}</NuxtLink>
-        <template v-if="primaryCategorySlug">
-          <span class="mx-2">/</span>
-          <NuxtLink :to="`${categoryPathPrefix}/${primaryCategorySlug}`" class="hover:underline">{{ primaryCategoryLabel }}</NuxtLink>
-        </template>
-        <span class="mx-2">/</span>
-        <span class="text-gray-700 font-medium">{{ safeProduct.nome }}</span>
-      </div>
-
-      <!-- Título -->
-      <h1 v-if="pending || safeProduct.nome" :class="titleClass">
-        {{ pageH1 }}
-      </h1>
+  <section class="bg-[#010d1a] min-h-screen text-white">
+    <div class="max-w-6xl mx-auto px-4 py-10">
 
       <!-- Loading -->
-      <div v-if="pending" class="text-center py-20 text-gray-500">
+      <div v-if="pending" class="flex items-center justify-center py-32 text-cyan-400">
+        <svg class="animate-spin w-7 h-7 mr-3" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+        </svg>
         {{ t.loading }}
       </div>
 
-      <!-- Erro -->
-      <!-- Card principal -->
-      <div
-        v-else-if="safeProduct.nome"
-        :class="mainCardClass"
-      >
+      <!-- Produto -->
+      <div v-else-if="safeProduct.nome">
 
-        <!-- Imagem -->
-        <div :class="imageWrapClass">
-          <img
-            :src="safeImage"
-            :alt="safeProduct.nome"
-            fetchpriority="high"
-            loading="eager"
-            decoding="async"
-            width="520"
-            height="520"
-            sizes="(max-width: 1024px) 100vw, 520px"
-            class="w-full max-w-[520px] max-h-[520px] object-contain"
-            referrerpolicy="no-referrer"
-            @error="onImageError"
-          />
-        </div>
+        <!-- ── HERO ── -->
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-        <!-- Coluna compra -->
-        <div :class="buyColumnClass">
-          <div v-if="safeProduct.descricaoCurta" class="text-gray-600">
-            {{ safeProduct.descricaoCurta }}
-          </div>
-
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <div v-if="formattedOldPrice" class="text-gray-400 line-through">
-                {{ formattedOldPrice }}
-              </div>
-
-              <span
-                v-if="discountPercent"
-                class="inline-flex items-center rounded-full bg-green-100 text-green-700 text-xs font-semibold px-3 py-1"
-              >
+          <!-- Imagem -->
+          <div class="relative rounded-2xl overflow-hidden bg-[#021326] border border-cyan-500/20 flex items-center justify-center p-6 min-h-[320px] lg:min-h-[480px]">
+            <img
+              :src="safeImage"
+              :alt="safeProduct.nome"
+              fetchpriority="high"
+              loading="eager"
+              decoding="async"
+              class="w-full max-h-[440px] object-contain brightness-110 contrast-110 saturate-110"
+              referrerpolicy="no-referrer"
+              @error="onImageError"
+            />
+            <div v-if="discountPercent" class="absolute top-3 right-3">
+              <span class="inline-flex items-center rounded-full bg-red-600 px-3 py-1 text-sm font-black text-white tracking-wider">
                 {{ discountPercent }}% OFF
               </span>
             </div>
-
-            <div class="text-4xl font-extrabold text-gray-900">
-              {{ formattedPrice }}
-            </div>
-
-            <div v-if="installments12" class="text-sm text-gray-600">
-              {{ t.installmentsPrefix }} {{ installments12 }}
-            </div>
-
-            <div v-if="isBrl" class="text-sm text-blue-600">
-              {{ t.pixLabel }}
-              <span v-if="formattedPixPrice" class="text-gray-500">({{ formattedPixPrice }})</span>
-            </div>
           </div>
 
-          <div class="space-y-2 text-sm text-gray-700">
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-600">✔</span>
-              {{ t.digitalDelivery }}
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-600">✔</span>
-              {{ t.freeRefund }}
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-600">✔</span>
-              {{ t.guarantee }}
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-emerald-600">✔</span>
-              {{ t.emailDelivery }}
-            </div>
-          </div>
+          <!-- Coluna compra -->
+          <div class="flex flex-col gap-5">
 
-          <div class="space-y-3">
+            <!-- Urgência topo -->
+            <div class="inline-flex items-center gap-2 bg-orange-500/15 border border-orange-500/40 rounded-full px-4 py-1.5 text-sm font-bold text-orange-400 w-fit">
+              🔥 Oferta por tempo limitado
+            </div>
+
+            <!-- Título -->
+            <h1 class="text-2xl md:text-3xl font-extrabold text-white leading-tight">
+              {{ pageH1 }}
+            </h1>
+
+            <!-- Desc curta -->
+            <p v-if="safeProduct.descricaoCurta" class="text-sm text-slate-400 leading-relaxed">
+              {{ safeProduct.descricaoCurta }}
+            </p>
+
+            <!-- Preço -->
+            <div class="flex flex-col gap-1">
+              <div v-if="formattedOldPrice" class="flex items-center gap-3">
+                <span class="text-slate-500 line-through text-lg">{{ formattedOldPrice }}</span>
+                <span v-if="discountPercent" class="text-xs font-black text-red-400 bg-red-400/10 rounded-full px-2 py-0.5">-{{ discountPercent }}%</span>
+              </div>
+              <div class="text-5xl font-black text-[#00e676] drop-shadow-[0_0_20px_rgba(0,230,118,0.5)] leading-none">
+                {{ formattedPrice }}
+              </div>
+              <div v-if="installments12" class="text-sm text-slate-400 mt-1">
+                {{ t.installmentsPrefix }} {{ installments12 }} sem juros
+              </div>
+              <div v-if="isBrl && formattedPixPrice" class="text-sm font-semibold text-cyan-400 mt-0.5">
+                💰 PIX à vista: <span class="text-white">{{ formattedPixPrice }}</span>
+              </div>
+            </div>
+
+            <!-- CTA principal -->
             <button
               type="button"
+              class="w-full bg-[#00e676] hover:bg-[#00ff87] active:scale-[0.98] text-[#010d1a] text-lg font-black uppercase tracking-widest py-4 rounded-xl transition-all duration-200 shadow-[0_0_30px_rgba(0,230,118,0.35)]"
               @click="buyNow"
-              :class="buyButtonClass"
             >
-              {{ t.buy }}
+              🛒 COMPRAR AGORA
             </button>
-          </div>
 
-          <div class="pt-2">
-            <div class="text-lg font-semibold text-gray-900 mb-3">{{ t.included }}</div>
-            <ul class="mt-6 space-y-2 text-gray-700">
-              <li v-for="item in includedItems" :key="item" class="flex items-start gap-3">
-                <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100">
-                  <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-green-600">
-                    <path
-                      fill-rule="evenodd"
-                      d="M16.704 5.29a1 1 0 010 1.415l-7.25 7.25a1 1 0 01-1.415 0L3.296 9.21a1 1 0 011.415-1.415l3.018 3.018 6.543-6.543a1 1 0 011.432.02z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </span>
-                <span class="text-sm">{{ item }}</span>
-              </li>
-            </ul>
-          </div>
+            <!-- Microcopy -->
+            <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-400">
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> Entrega imediata</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> Ativação em minutos</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> Compra segura</span>
+            </div>
 
-          <div
-            v-if="isMicrosoft365"
-            class="rounded-xl border bg-gray-50 p-5 text-sm text-gray-700"
-          >
-            <div class="font-semibold text-gray-900">{{ t.ms365HowTitle }}</div>
-            <ul class="mt-3 list-disc pl-6 text-sm text-gray-700 space-y-1">
-              <li>{{ t.ms365Bullet1 }}</li>
-              <li>{{ t.ms365Bullet2 }}</li>
-              <li>{{ t.ms365Bullet3 }}</li>
-            </ul>
-            <div class="mt-3">
-              {{ t.ms365HelpPrefix }} <NuxtLink class="text-blue-600 hover:underline" :to="digitalDeliveryPath">{{ t.ms365HelpLink }}</NuxtLink>.
+            <!-- Benefícios -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
+                <span class="text-[#00e676]">✔</span> Licença original
+              </div>
+              <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
+                <span class="text-[#00e676]">✔</span> Entrega automática
+              </div>
+              <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
+                <span class="text-[#00e676]">✔</span> Suporte incluso
+              </div>
+              <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
+                <span class="text-[#00e676]">✔</span> Garantia de 7 dias
+              </div>
+            </div>
+
+            <!-- Trust badges -->
+            <div class="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
+              <div class="flex flex-col items-center text-center gap-1">
+                <span class="text-2xl">🔒</span>
+                <span class="text-[10px] font-semibold text-slate-400">Compra segura</span>
+              </div>
+              <div class="flex flex-col items-center text-center gap-1">
+                <span class="text-2xl">⭐</span>
+                <span class="text-[10px] font-semibold text-slate-400">Produto verificado</span>
+              </div>
+              <div class="flex flex-col items-center text-center gap-1">
+                <span class="text-2xl">💬</span>
+                <span class="text-[10px] font-semibold text-slate-400">+1000 clientes</span>
+              </div>
+              <div class="flex flex-col items-center text-center gap-1">
+                <span class="text-2xl">⚡</span>
+                <span class="text-[10px] font-semibold text-slate-400">Envio imediato</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div v-else class="text-center py-20 text-red-600" />
+        <!-- ── BANNER URGÊNCIA ── -->
+        <div class="mt-10 flex items-center justify-center gap-3 bg-red-600/10 border border-red-500/30 rounded-2xl px-6 py-4">
+          <span class="text-xl">⚡</span>
+          <span class="text-sm font-bold text-red-400">Estoque digital limitado — garanta o seu agora antes que acabe!</span>
+        </div>
 
-      <!-- BLOCO AZUL TUTORIAL -->
-      <div
-        v-if="safeProduct.nome && safeProduct.tutorialTitulo"
-        :class="tutorialCardClass"
-      >
-        <div class="flex items-center gap-5">
-          <div class="bg-blue-600 text-white p-4 rounded-xl text-xl">
-            📘
+        <!-- ── O QUE ESTÁ INCLUÍDO ── -->
+        <div class="mt-10 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 md:p-8">
+          <div class="text-lg font-bold text-white mb-5">{{ t.included }}</div>
+          <ul class="grid sm:grid-cols-2 gap-3">
+            <li v-for="item in includedItems" :key="item" class="flex items-start gap-3">
+              <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#00e676]/20">
+                <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-[#00e676]">
+                  <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.415l-7.25 7.25a1 1 0 01-1.415 0L3.296 9.21a1 1 0 011.415-1.415l3.018 3.018 6.543-6.543a1 1 0 011.432.02z" clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span class="text-sm text-slate-300">{{ item }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Microsoft 365 info -->
+        <div v-if="isMicrosoft365" class="mt-6 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 text-sm text-slate-300">
+          <div class="font-bold text-white mb-3">{{ t.ms365HowTitle }}</div>
+          <ul class="list-disc pl-5 space-y-1">
+            <li>{{ t.ms365Bullet2 }}</li>
+            <li>{{ t.ms365Bullet3 }}</li>
+          </ul>
+          <div class="mt-3 text-slate-400">
+            {{ t.ms365HelpPrefix }} <NuxtLink class="text-cyan-400 hover:underline" :to="digitalDeliveryPath">{{ t.ms365HelpLink }}</NuxtLink>.
           </div>
+        </div>
 
+        <!-- ── CTA REPETIDO ── -->
+        <div class="mt-10 flex flex-col items-center text-center gap-4">
+          <p class="text-sm text-slate-500">🔥 Não perca esta oferta — preço pode mudar a qualquer momento</p>
+          <button
+            type="button"
+            class="inline-flex items-center gap-3 bg-[#00e676] hover:bg-[#00ff87] active:scale-[0.98] text-[#010d1a] text-lg font-black uppercase tracking-widest px-12 py-4 rounded-xl transition-all duration-200 shadow-[0_0_30px_rgba(0,230,118,0.35)]"
+            @click="buyNow"
+          >
+            🛒 COMPRAR AGORA
+          </button>
+          <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-slate-500">
+            <span>🔒 Pagamento seguro</span>
+            <span>📧 Entrega por e-mail</span>
+            <span>↩️ 7 dias de garantia</span>
+          </div>
+        </div>
+
+        <!-- ── TUTORIAL ── -->
+        <div
+          v-if="safeProduct.tutorialTitulo"
+          class="mt-10 bg-[#021326] border border-blue-500/30 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+        >
+          <div class="flex items-center gap-5">
+            <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">📘</div>
+            <div>
+              <h3 class="text-lg font-bold text-white">{{ t.tutorialCardTitle }}</h3>
+              <p class="text-slate-400 text-sm mt-1">{{ safeProduct.tutorialSubtitulo }}</p>
+            </div>
+          </div>
+          <NuxtLink
+            :to="`/tutoriais/${safeProduct.slug}`"
+            class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
+          >
+            → {{ t.viewTutorial }}
+          </NuxtLink>
+        </div>
+
+        <!-- ── DESCRIÇÃO DETALHADA ── -->
+        <div class="bg-[#021326] border border-cyan-500/10 rounded-2xl mt-8 p-6 md:p-8">
+          <h2 class="text-xl font-bold text-white mb-4">{{ t.detailedDescription }}</h2>
+          <div class="prose prose-invert prose-sm max-w-none text-slate-300" v-html="safeDescriptionHtml" />
+        </div>
+
+        <!-- ── POR QUE O PREÇO É BOM ── -->
+        <div class="bg-[#021326] border border-cyan-500/10 rounded-2xl mt-6 p-6 md:p-8">
+          <h2 class="text-xl font-bold text-white mb-3">{{ t.whyPriceTitle }}</h2>
+          <p class="text-slate-400 leading-relaxed text-sm">{{ t.whyPriceP1 }}</p>
+          <p class="text-slate-400 leading-relaxed text-sm mt-3">{{ t.whyPriceP2 }}</p>
+        </div>
+
+        <!-- SEO content -->
+        <div v-if="safeSeoContentHtml" class="mt-8">
+          <section class="prose prose-invert prose-sm max-w-none text-slate-300" v-html="safeSeoContentHtml" />
+        </div>
+
+        <!-- Language switcher -->
+        <IntlLanguageSwitcher
+          page-type="product"
+          :slug="String((safeProduct as any)?.slug || slug || '')"
+          class="mt-8 w-full"
+        />
+
+        <!-- Afiliados -->
+        <div
+          v-if="affiliateEnabled"
+          class="mt-8 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+        >
           <div>
-            <h3 class="text-xl font-bold text-blue-700">
-              {{ t.tutorialCardTitle }}
-            </h3>
-            <p class="text-blue-700 text-sm mt-1">
-              {{ safeProduct.tutorialSubtitulo }}
-            </p>
+            <div class="text-xl font-extrabold text-white">Ganhe dinheiro indicando este produto.</div>
+            <div class="mt-1 text-slate-400 text-sm">Torne-se afiliado.</div>
           </div>
+          <NuxtLink
+            to="/partner-apply"
+            class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
+          >
+            Quero me inscrever
+          </NuxtLink>
         </div>
 
-        <NuxtLink
-          :to="`/tutoriais/${safeProduct.slug}`"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition"
-        >
-          → {{ t.viewTutorial }}
-        </NuxtLink>
       </div>
 
-      <!-- DESCRIÇÃO DETALHADA -->
-      <div
-        v-if="safeProduct.nome"
-        :class="descriptionCardClass"
-      >
-        <section>
-          <h2 class="text-2xl font-bold mb-3">
-            {{ t.detailedDescription }}
-          </h2>
-
-          <div
-            class="prose prose-gray max-w-none"
-            v-html="safeDescriptionHtml"
-          />
-        </section>
-      </div>
-
-      <div
-        v-if="safeProduct.nome"
-        :class="whyPriceCardClass"
-      >
-        <h2 class="text-2xl font-bold mb-3">{{ t.whyPriceTitle }}</h2>
-        <p class="text-gray-700 leading-relaxed">
-          {{ t.whyPriceP1 }}
-        </p>
-        <p class="text-gray-700 leading-relaxed mt-4">
-          {{ t.whyPriceP2 }}
-        </p>
-      </div>
-
-      <div
-        v-if="safeSeoContentHtml"
-        class="mt-8"
-      >
-        <section class="max-w-5xl mx-auto px-4 prose prose-gray max-w-none blog-content" v-html="safeSeoContentHtml" />
-      </div>
-
-      <IntlLanguageSwitcher
-        v-if="safeProduct.nome"
-        page-type="product"
-        :slug="String((safeProduct as any)?.slug || slug || '')"
-        class="max-w-5xl mx-auto px-4 w-full"
-      />
-
-      <div
-        v-if="safeProduct.nome && affiliateEnabled"
-        class="mt-8 bg-white rounded-2xl shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6"
-      >
-        <div>
-          <div class="text-2xl font-extrabold text-gray-900">Ganhe dinheiro indicando este produto.</div>
-          <div class="mt-2 text-gray-700">Torne-se afiliado.</div>
-        </div>
-        <NuxtLink
-          to="/partner-apply"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
-        >
-          Quero me inscrever
-        </NuxtLink>
-      </div>
+      <!-- Produto não encontrado -->
+      <div v-else class="text-center py-32 text-slate-500">{{ t.notFound }}</div>
 
     </div>
   </section>
-
 </template>
 
 <script setup lang="ts">
