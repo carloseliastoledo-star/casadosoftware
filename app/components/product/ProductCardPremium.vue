@@ -144,6 +144,16 @@ const installmentsLabel = computed(() => {
   return 'ou em até 12x no cartão'
 })
 
+const categoryBg = computed(() => {
+  const n = productName.value.toLowerCase()
+  if (n.includes('office') || n.includes('365') || n.includes('microsoft 365')) return '#1a0a00'
+  if (n.includes('windows server') || n.includes('server')) return '#1a0004'
+  if (n.includes('windows')) return '#00091a'
+  if (n.includes('project')) return '#001a06'
+  if (n.includes('visio')) return '#0d001a'
+  return '#061b33'
+})
+
 function buyNow(event: Event) {
   event.preventDefault()
   event.stopPropagation()
@@ -154,10 +164,13 @@ function buyNow(event: Event) {
 <template>
   <NuxtLink
     :to="productPath"
-    class="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-[#031427] border border-blue-700/50 transition-all duration-300 hover:-translate-y-2 hover:border-blue-400 hover:shadow-[0_8px_40px_rgba(59,130,246,0.4)]"
+    class="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-[#021326] border border-cyan-500/30 transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400/90 hover:shadow-[0_0_36px_rgba(6,182,212,0.4)]"
   >
-    <!-- Imagem: proporção fixa, fundo escuro dedicado -->
-    <div class="relative w-full shrink-0 overflow-hidden bg-[#061b33]" style="height:200px">
+    <!-- Bloco de imagem: proporção fixa, overlay unificador -->
+    <div
+      class="relative w-full shrink-0 overflow-hidden"
+      :style="`height:200px; background-color:${categoryBg}`"
+    >
       <img
         :src="productImage"
         :alt="productName"
@@ -167,39 +180,42 @@ function buyNow(event: Event) {
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
-      <!-- fade bottom alinhado com o fundo do card -->
-      <div class="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#031427] to-transparent" />
-      <!-- Badge desconto: sempre topo direito -->
-      <div v-if="discountPercent" class="absolute top-3 right-3 z-10">
-        <span class="inline-flex items-center rounded-full bg-red-600 px-3 py-1 text-[11px] font-black text-white tracking-wider shadow-lg shadow-red-900/70">
+      <!-- overlay escuro para uniformizar todas as thumbs -->
+      <div class="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-[#021326]/70 pointer-events-none" />
+      <!-- badge topo direito -->
+      <div v-if="discountPercent" class="absolute top-2.5 right-2.5 z-10">
+        <span class="inline-flex items-center rounded-full bg-red-600/90 px-2.5 py-0.5 text-[10px] font-black text-white tracking-widest">
           {{ discountPercent }}% OFF
         </span>
       </div>
     </div>
 
-    <!-- Conteúdo: flex-1 para esticar, botão sempre na base -->
-    <div class="flex flex-col flex-1 px-4 pt-3 pb-4">
-      <!-- Título: máx 2 linhas, altura mínima garantida -->
-      <h3 class="text-sm font-bold text-white leading-snug line-clamp-2 min-h-[2.5rem]">
+    <!-- Conteúdo centralizado -->
+    <div class="flex flex-col flex-1 items-center text-center px-3 pt-3 pb-4">
+      <!-- Título: 2 linhas max, altura uniforme -->
+      <h3 class="text-[13px] font-bold text-white leading-snug line-clamp-2 min-h-[2.6rem] w-full">
         {{ productName }}
       </h3>
+
       <!-- Subtítulo -->
-      <p class="mt-1.5 text-[10px] font-extrabold tracking-[0.18em] uppercase text-cyan-400">
+      <p class="mt-1.5 text-[9px] font-extrabold tracking-[0.22em] uppercase text-cyan-400">
         LICENÇA DIGITAL
       </p>
-      <!-- Preço: sempre antes do botão -->
-      <div class="mt-2">
-        <div class="text-2xl font-black text-[#00e676] leading-none tracking-tight">
+
+      <!-- Preço -->
+      <div class="mt-2.5">
+        <div class="text-[1.65rem] font-black text-[#00e676] leading-none">
           {{ formattedPrice }}
         </div>
-        <div v-if="formattedOldPrice" class="mt-0.5 text-xs text-red-400/80 line-through leading-none">
+        <div v-if="formattedOldPrice" class="mt-1 text-[11px] text-red-400/75 line-through leading-none">
           {{ formattedOldPrice }}
         </div>
       </div>
-      <!-- Botão: mt-auto empurra para a base do card -->
+
+      <!-- Botão outline neon — mt-auto fixa na base -->
       <button
         type="button"
-        class="mt-auto pt-3 w-full rounded-full bg-blue-700 hover:bg-blue-500 active:bg-blue-800 text-white text-[11px] font-black uppercase tracking-[0.15em] py-3 transition-all duration-200 shadow-lg shadow-blue-900/60 hover:shadow-blue-400/50"
+        class="mt-auto w-[92%] rounded-full border border-cyan-500/70 bg-transparent hover:bg-cyan-500/15 hover:border-cyan-400 text-white text-[10px] font-black uppercase tracking-[0.18em] py-2.5 transition-all duration-200"
         @click="buyNow"
       >
         {{ buyNowLabel }}
