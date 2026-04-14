@@ -378,10 +378,10 @@ function buyNow(event: Event) {
 <template>
   <NuxtLink
     :to="productPath"
-    class="group relative flex flex-col overflow-hidden rounded-2xl border border-cyan-500/60 bg-[#07071a] hover:border-cyan-400 hover:shadow-[0_0_18px_2px_rgba(0,230,230,0.18)] transition-all duration-200"
+    class="group relative flex flex-col overflow-hidden rounded-xl border border-cyan-500/50 bg-[#07071a] hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-200"
   >
     <!-- Imagem -->
-    <div class="relative w-full overflow-hidden bg-[#06061a] h-40">
+    <div class="relative w-full overflow-hidden bg-[#06061a] h-32">
       <img
         :src="productImage"
         :alt="productName"

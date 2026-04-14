@@ -17,7 +17,7 @@
       <div v-else-if="products.length === 0" class="text-center py-16 text-gray-400">
         {{ $t('home.no_best_sellers') }}
       </div>
-      <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div v-else class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <ProductCard
           v-for="product in products.slice(0, 8)"
           :key="product.id"
