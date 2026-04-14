@@ -46,7 +46,9 @@ export async function createMercadoPagoPix(opts: {
   const firstName = nameParts[0] || 'Cliente'
   const lastName  = nameParts.slice(1).join(' ') || firstName
 
-  const body = {
+  const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+
+  const body: any = {
     transaction_amount: opts.amountBrl,
     description: (opts.description || 'Pedido').slice(0, 60),
     payment_method_id: 'pix',
@@ -61,6 +63,10 @@ export async function createMercadoPagoPix(opts: {
         number: opts.customer.document.replace(/\D/g, ''),
       },
     },
+  }
+
+  if (siteUrl) {
+    body.notification_url = `${siteUrl}/api/mercadopago/webhook`
   }
 
   const data = await mpFetch('/v1/payments', {
@@ -97,7 +103,9 @@ export async function createMercadoPagoCard(opts: {
   const firstName = nameParts[0] || 'Cliente'
   const lastName  = nameParts.slice(1).join(' ') || firstName
 
-  const body = {
+  const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+
+  const body: any = {
     transaction_amount: opts.amountBrl,
     token: opts.token,
     installments: opts.installments ?? 1,
@@ -111,6 +119,10 @@ export async function createMercadoPagoCard(opts: {
         number: opts.customer.document.replace(/\D/g, ''),
       },
     },
+  }
+
+  if (siteUrl) {
+    body.notification_url = `${siteUrl}/api/mercadopago/webhook`
   }
 
   const data = await mpFetch('/v1/payments', {

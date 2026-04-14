@@ -194,7 +194,13 @@ export default defineEventHandler(async (event) => {
       data: { pagarmeChargeId: result.chargeId },
       select: { id: true },
     })
-  } else {
+  } else if (result.gateway === 'mercadopago') {
+    await (prisma as any).order.update({
+      where: { id: order.id },
+      data: { mercadoPagoPaymentId: (result as any).paymentId ?? null },
+      select: { id: true },
+    })
+  } else if (result.gateway === 'stripe') {
     await (prisma as any).order.update({
       where: { id: order.id },
       data: { stripePaymentIntentId: (result as any).clientSecret?.split('_secret_')[0] ?? null },
