@@ -328,6 +328,8 @@ const pixQrUrl = ref('')
 const pixCopiado = ref(false)
 const paymentError = ref('')
 const funnelOrderId = ref('')
+const pollingActive = ref(false)
+const pollingTimer = ref<any>(null)
 
 const productSlug = computed(() => String(route.query.product || ''))
 const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
@@ -420,6 +422,10 @@ onMounted(async () => {
   trackGtag('begin_checkout', { value: totalPrice.value })
 })
 
+onUnmounted(() => {
+  stopPaymentPolling()
+})
+
 function formatTelefone(e: Event) {
   let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 11)
   if (v.length > 10) v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`
@@ -477,7 +483,44 @@ function saveFunnelOrder(orderId: string) {
   } catch {}
 }
 
+async function startPaymentPolling() {
+  if (!funnelOrderId.value || pollingActive.value) return
+  pollingActive.value = true
+
+  const checkStatus = async () => {
+    try {
+      const res: any = await $fetch('/api/order-status', { query: { orderId: funnelOrderId.value } })
+      if (res?.order?.status === 'PAID') {
+        stopPaymentPolling()
+        clearPIXSession()
+        saveFunnelOrder(funnelOrderId.value)
+        trackMeta('Purchase', { value: totalPrice.value, currency: 'BRL' })
+        trackGtag('purchase', { value: totalPrice.value, currency: 'BRL', transaction_id: funnelOrderId.value })
+        if (isFunnelMode.value) {
+          await navigateTo('/upsell/windows-11')
+        } else {
+          await navigateTo({ path: '/obrigado', query: { orderId: funnelOrderId.value } })
+        }
+      }
+    } catch {
+      // ignora erro, continua polling
+    }
+  }
+
+  pollingTimer.value = setInterval(checkStatus, 3000)
+  checkStatus()
+}
+
+function stopPaymentPolling() {
+  if (pollingTimer.value) {
+    clearInterval(pollingTimer.value)
+    pollingTimer.value = null
+  }
+  pollingActive.value = false
+}
+
 async function handleAposPix() {
+  stopPaymentPolling()
   clearPIXSession()
   saveFunnelOrder(funnelOrderId.value || ('cs-' + Date.now()))
   if (isFunnelMode.value) {
@@ -534,6 +577,7 @@ async function handleFinalize() {
         await handleAposPix()
       } else {
         savePIXSession()
+        startPaymentPolling()
       }
     } else {
       const status = String(result?.status || '').toLowerCase()
