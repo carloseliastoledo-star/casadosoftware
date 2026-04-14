@@ -169,7 +169,7 @@ function buyNow(event: Event) {
     <!-- Bloco de imagem: proporção fixa, overlay unificador -->
     <div
       class="relative w-full shrink-0 overflow-hidden"
-      :style="`height:220px; background-color:${categoryBg}`"
+      :style="`height:280px; background-color:${categoryBg}`"
     >
       <img
         :src="productImage"
@@ -191,20 +191,20 @@ function buyNow(event: Event) {
     </div>
 
     <!-- Conteúdo centralizado -->
-    <div class="flex flex-col flex-1 items-center text-center px-3 pt-3 pb-4">
+    <div class="flex flex-col flex-1 items-center text-center px-3 pt-2 pb-3">
       <!-- Título: 2 linhas max, altura uniforme -->
-      <h3 class="text-[13px] font-bold text-white leading-snug line-clamp-2 min-h-[2.6rem] w-full">
+      <h3 class="text-[12px] font-bold text-white leading-snug line-clamp-2 min-h-[2.4rem] w-full">
         {{ productName }}
       </h3>
 
       <!-- Subtítulo -->
-      <p class="mt-1.5 text-[9px] font-extrabold tracking-[0.22em] uppercase text-cyan-400">
+      <p class="mt-1 text-[9px] font-extrabold tracking-[0.22em] uppercase text-cyan-400">
         LICENÇA DIGITAL
       </p>
 
       <!-- Preço -->
-      <div class="mt-2.5">
-        <div class="text-[1.65rem] font-black text-[#00e676] leading-none">
+      <div class="mt-1.5">
+        <div class="text-[1.5rem] font-black text-[#00e676] leading-none">
           {{ formattedPrice }}
         </div>
         <div v-if="formattedOldPrice" class="mt-1 text-[11px] text-red-400/75 line-through leading-none">
@@ -215,7 +215,7 @@ function buyNow(event: Event) {
       <!-- Botão outline neon — mt-auto fixa na base -->
       <button
         type="button"
-        class="mt-auto w-[92%] rounded-full border border-cyan-500/70 bg-transparent hover:bg-cyan-500/15 hover:border-cyan-400 text-white text-[10px] font-black uppercase tracking-[0.18em] py-2.5 transition-all duration-200"
+        class="mt-auto w-[92%] rounded-full border border-cyan-500/70 bg-transparent hover:bg-cyan-500/15 hover:border-cyan-400 text-white text-[10px] font-black uppercase tracking-[0.18em] py-2 transition-all duration-200"
         @click="buyNow"
       >
         {{ buyNowLabel }}
