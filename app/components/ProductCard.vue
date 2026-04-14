@@ -378,10 +378,10 @@ function buyNow(event: Event) {
 <template>
   <NuxtLink
     :to="productPath"
-    class="group flex flex-col rounded-xl border border-cyan-500/50 bg-[#07071a] hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-200 overflow-hidden"
+    class="group flex flex-col rounded-xl border border-cyan-500/40 bg-[#07071a] hover:border-cyan-400 hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-200 overflow-hidden"
   >
-    <!-- Imagem: altura fixa, nunca sobrepõe o conteúdo -->
-    <div class="relative h-36 w-full shrink-0 bg-[#06061a]">
+    <!-- Imagem: altura generosa, topo do card -->
+    <div class="relative w-full shrink-0 bg-[#06061a]" style="height:200px">
       <img
         :src="productImage"
         :alt="productName"
@@ -392,21 +392,21 @@ function buyNow(event: Event) {
         @error="onImageError"
       />
       <div v-if="discountPercent" class="absolute top-2 right-2 z-10">
-        <span class="inline-flex items-center rounded-md bg-red-600 px-2 py-0.5 text-[11px] font-black text-white tracking-wider shadow">
+        <span class="inline-flex items-center rounded-md bg-red-600 px-2 py-0.5 text-[11px] font-black text-white tracking-wide shadow">
           {{ discountPercent }}% OFF
         </span>
       </div>
     </div>
 
-    <!-- Conteúdo: sempre abaixo da imagem -->
-    <div class="flex flex-col gap-1 px-3 py-3">
-      <h3 class="text-xs font-semibold text-white leading-snug line-clamp-2">
+    <!-- Conteúdo: sempre abaixo da imagem, nunca sobrepõe -->
+    <div class="flex flex-col px-3 pt-3 pb-4 gap-1">
+      <h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 min-h-[2.5rem]">
         {{ productName }}
       </h3>
-      <p class="text-[10px] font-black tracking-widest uppercase text-cyan-400">
+      <p class="text-[10px] font-black tracking-widest uppercase text-cyan-400 mt-0.5">
         LICENÇA DIGITAL
       </p>
-      <div class="text-[1.2rem] font-black text-green-400 leading-none mt-1">
+      <div class="text-xl font-black text-green-400 leading-none mt-1">
         {{ formattedPrice }}
       </div>
       <div v-if="formattedOldPrice" class="text-[11px] text-red-400 line-through leading-none">
@@ -414,7 +414,7 @@ function buyNow(event: Event) {
       </div>
       <button
         type="button"
-        class="mt-2 w-full rounded-lg border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/10 active:bg-cyan-500/20 text-white text-[11px] font-black uppercase tracking-widest py-2 transition-colors duration-150"
+        class="mt-3 w-full rounded-lg border border-cyan-500 bg-[#0d0d2b] hover:bg-cyan-500/15 active:bg-cyan-500/25 text-white text-[11px] font-black uppercase tracking-widest py-2.5 transition-colors duration-150"
         @click="buyNow"
       >
         {{ buyNowLabel }}
