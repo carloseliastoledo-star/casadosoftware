@@ -209,7 +209,7 @@
         </div>
 
         <!-- SEO content -->
-        <div v-if="safeSeoContentHtml" class="mt-8">
+        <div v-if="safeSeoContentHtml" class="mt-8 seo-content-dark">
           <section class="prose prose-invert prose-sm max-w-none text-slate-300" v-html="safeSeoContentHtml" />
         </div>
 
@@ -1275,3 +1275,41 @@ function buyNow() {
   navigateTo({ path: '/checkout', query: { product: slugValue } })
 }
 </script>
+
+<style scoped>
+/* Forçar texto visível em seções dark que usam v-html com estilos inline */
+.prose :deep(*) {
+  color: inherit !important;
+}
+.prose :deep(h1),
+.prose :deep(h2),
+.prose :deep(h3),
+.prose :deep(h4) {
+  color: #f1f5f9 !important;
+}
+.prose :deep(p),
+.prose :deep(li),
+.prose :deep(span),
+.prose :deep(div) {
+  color: #cbd5e1 !important;
+}
+.prose :deep(strong),
+.prose :deep(b) {
+  color: #f8fafc !important;
+}
+.prose :deep(a) {
+  color: #22d3ee !important;
+}
+.seo-content-dark :deep(*) {
+  color: #cbd5e1 !important;
+}
+.seo-content-dark :deep(h1),
+.seo-content-dark :deep(h2),
+.seo-content-dark :deep(h3),
+.seo-content-dark :deep(h4) {
+  color: #f1f5f9 !important;
+}
+.seo-content-dark :deep(a) {
+  color: #22d3ee !important;
+}
+</style>
