@@ -154,10 +154,10 @@ function buyNow(event: Event) {
 <template>
   <NuxtLink
     :to="productPath"
-    class="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-[#06091c] border border-blue-600/40 transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/30"
+    class="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-[#031427] border border-blue-700/50 transition-all duration-300 hover:-translate-y-2 hover:border-blue-400 hover:shadow-[0_8px_40px_rgba(59,130,246,0.4)]"
   >
-    <!-- Imagem -->
-    <div class="relative w-full shrink-0 overflow-hidden" style="height:200px">
+    <!-- Imagem: proporção fixa, fundo escuro dedicado -->
+    <div class="relative w-full shrink-0 overflow-hidden bg-[#061b33]" style="height:200px">
       <img
         :src="productImage"
         :alt="productName"
@@ -167,35 +167,39 @@ function buyNow(event: Event) {
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
-      <!-- fade bottom para fundir com o card -->
-      <div class="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#06091c] to-transparent" />
-      <!-- Badge desconto -->
+      <!-- fade bottom alinhado com o fundo do card -->
+      <div class="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-[#031427] to-transparent" />
+      <!-- Badge desconto: sempre topo direito -->
       <div v-if="discountPercent" class="absolute top-3 right-3 z-10">
-        <span class="inline-flex items-center rounded-full bg-red-600 px-3 py-1 text-[11px] font-black text-white tracking-wider shadow-lg shadow-red-900/60">
+        <span class="inline-flex items-center rounded-full bg-red-600 px-3 py-1 text-[11px] font-black text-white tracking-wider shadow-lg shadow-red-900/70">
           {{ discountPercent }}% OFF
         </span>
       </div>
     </div>
 
-    <!-- Conteúdo -->
-    <div class="flex flex-col flex-1 px-4 pt-3 pb-4 gap-1.5">
+    <!-- Conteúdo: flex-1 para esticar, botão sempre na base -->
+    <div class="flex flex-col flex-1 px-4 pt-3 pb-4">
+      <!-- Título: máx 2 linhas, altura mínima garantida -->
       <h3 class="text-sm font-bold text-white leading-snug line-clamp-2 min-h-[2.5rem]">
         {{ productName }}
       </h3>
-      <p class="text-[10px] font-extrabold tracking-[0.18em] uppercase text-cyan-400">
+      <!-- Subtítulo -->
+      <p class="mt-1.5 text-[10px] font-extrabold tracking-[0.18em] uppercase text-cyan-400">
         LICENÇA DIGITAL
       </p>
-      <div class="mt-1.5">
-        <div class="text-2xl font-black text-green-400 leading-none tracking-tight">
+      <!-- Preço: sempre antes do botão -->
+      <div class="mt-2">
+        <div class="text-2xl font-black text-[#00e676] leading-none tracking-tight">
           {{ formattedPrice }}
         </div>
-        <div v-if="formattedOldPrice" class="text-xs text-red-400/90 line-through mt-0.5 leading-none">
+        <div v-if="formattedOldPrice" class="mt-0.5 text-xs text-red-400/80 line-through leading-none">
           {{ formattedOldPrice }}
         </div>
       </div>
+      <!-- Botão: mt-auto empurra para a base do card -->
       <button
         type="button"
-        class="mt-auto pt-2.5 w-full rounded-full bg-blue-700 hover:bg-blue-500 active:bg-blue-800 text-white text-[11px] font-black uppercase tracking-[0.15em] py-3 transition-all duration-200 shadow-lg shadow-blue-900/50 hover:shadow-blue-500/40"
+        class="mt-auto pt-3 w-full rounded-full bg-blue-700 hover:bg-blue-500 active:bg-blue-800 text-white text-[11px] font-black uppercase tracking-[0.15em] py-3 transition-all duration-200 shadow-lg shadow-blue-900/60 hover:shadow-blue-400/50"
         @click="buyNow"
       >
         {{ buyNowLabel }}
