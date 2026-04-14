@@ -393,7 +393,7 @@ function buyNow(event: Event) {
     <!-- Bloco de imagem: proporção fixa, overlay unificador -->
     <div
       class="relative w-full shrink-0 overflow-hidden"
-      :style="`height:200px; background-color:${categoryBg}`"
+      :style="`height:220px; background-color:${categoryBg}`"
     >
       <img
         :src="productImage"
@@ -404,8 +404,8 @@ function buyNow(event: Event) {
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
-      <!-- overlay escuro para uniformizar todas as thumbs -->
-      <div class="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-[#021326]/70 pointer-events-none" />
+      <!-- overlay: gradiente de baixo para cima para dar contraste e aspecto premium -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none" />
       <!-- badge topo direito -->
       <div v-if="discountPercent" class="absolute top-2.5 right-2.5 z-10">
         <span class="inline-flex items-center rounded-full bg-red-600/90 px-2.5 py-0.5 text-[10px] font-black text-white tracking-widest">
