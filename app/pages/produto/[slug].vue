@@ -1277,21 +1277,20 @@ function buyNow() {
 </script>
 
 <style scoped>
-/* Forçar texto visível em seções dark que usam v-html com estilos inline */
+/* Forçar texto visível e fundo transparente em v-html com estilos inline */
 .prose :deep(*) {
-  color: inherit !important;
+  color: #cbd5e1 !important;
+  background-color: transparent !important;
+  background: transparent !important;
 }
 .prose :deep(h1),
 .prose :deep(h2),
 .prose :deep(h3),
-.prose :deep(h4) {
+.prose :deep(h4),
+.prose :deep(h5),
+.prose :deep(h6) {
   color: #f1f5f9 !important;
-}
-.prose :deep(p),
-.prose :deep(li),
-.prose :deep(span),
-.prose :deep(div) {
-  color: #cbd5e1 !important;
+  background-color: transparent !important;
 }
 .prose :deep(strong),
 .prose :deep(b) {
@@ -1300,8 +1299,19 @@ function buyNow() {
 .prose :deep(a) {
   color: #22d3ee !important;
 }
+.prose :deep(table) {
+  background-color: transparent !important;
+}
+.prose :deep(td),
+.prose :deep(th) {
+  background-color: transparent !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(148,163,184,0.2) !important;
+}
 .seo-content-dark :deep(*) {
   color: #cbd5e1 !important;
+  background-color: transparent !important;
+  background: transparent !important;
 }
 .seo-content-dark :deep(h1),
 .seo-content-dark :deep(h2),
