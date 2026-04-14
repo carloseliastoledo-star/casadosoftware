@@ -57,7 +57,7 @@
     </div>
   </section>
 
-  <section v-else class="bg-slate-50 min-h-screen">
+  <section v-else class="bg-[#010d1a] min-h-screen">
     <!-- Header visual premium -->
     <CategoryHeaderPremium
       :category-name="String(categoria?.nome || 'Softwares').replace(/[\u00AD\u200B\u200C\u200D\u200E\u200F\u2028\u2029\u202A-\u202E\u2060\uFEFF]/g, '').normalize('NFC')"
@@ -105,7 +105,7 @@
 
           <!-- Grid de produtos premium -->
           <CategoryGridPremium v-else>
-            <ProductCardPremium
+            <ProductCard
               v-for="p in produtos"
               :key="p.id + (p.imagem || p.image || '')"
               :product="p"
