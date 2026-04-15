@@ -1,6 +1,6 @@
 <template>
   <section class="relative overflow-hidden bg-gray-50">
-    <div class="max-w-7xl mx-auto px-6 py-20 lg:py-28">
+    <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
       <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
 
         <!-- Coluna esquerda: conteúdo -->

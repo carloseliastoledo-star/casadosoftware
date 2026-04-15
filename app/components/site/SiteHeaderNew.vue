@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-6">
 
       <!-- Barra principal -->
-      <div class="h-16 md:h-18 flex items-center justify-between gap-4">
+      <div class="h-14 md:h-16 flex items-center justify-between gap-4">
 
         <!-- Logo + nome -->
         <div class="flex items-center gap-3 min-w-0">
@@ -112,7 +112,7 @@
       </div>
 
       <!-- Barra de navegação desktop -->
-      <nav class="hidden md:flex items-center gap-1 h-11 border-t">
+      <nav class="hidden md:flex items-center gap-1 h-10 border-t">
         <NuxtLink
           to="/"
           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition"
