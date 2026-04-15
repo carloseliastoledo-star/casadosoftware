@@ -1,7 +1,7 @@
 <template>
   <section class="relative overflow-hidden bg-gray-50">
-    <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <div class="max-w-6xl mx-auto px-6 py-8 lg:py-12">
+      <div class="grid lg:grid-cols-2 gap-8 items-center">
 
         <!-- Coluna esquerda: conteúdo -->
         <div class="space-y-6">
@@ -54,7 +54,7 @@
         <div class="order-first lg:order-last">
           <div class="relative">
             <div class="absolute -inset-6 rounded-[2rem] bg-slate-200/40 blur-3xl" aria-hidden="true" />
-            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/60 p-8 max-w-md mx-auto">
+            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/60 p-8 max-w-[420px]">
               <!-- Imagem do produto -->
               <div class="relative h-72 bg-gradient-to-br from-slate-50 to-white rounded-xl mb-6 flex items-center justify-center overflow-hidden p-4">
                 <img
