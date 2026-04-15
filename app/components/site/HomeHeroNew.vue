@@ -58,9 +58,10 @@
         <div class="order-first lg:order-last">
           <div class="relative sticky top-6">
             <div class="absolute -inset-4 rounded-[1.5rem] bg-slate-200/50 blur-2xl" aria-hidden="true" />
-            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/70 p-6">
+            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-2xl shadow-slate-300/80 p-6">
               <!-- Imagem do produto -->
-              <div class="relative h-64 bg-gradient-to-br from-slate-50 to-white rounded-xl mb-5 flex items-center justify-center overflow-hidden p-3">
+              <div class="relative h-72 bg-gradient-to-br from-slate-50 to-white rounded-xl mb-5 flex items-center justify-center overflow-hidden p-4">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-transparent rounded-xl" aria-hidden="true" />
                 <img
                   src="https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1776154645975-container-capa-home-365-premiium-300x300-processed.png"
                   alt="Office 365"
@@ -84,7 +85,7 @@
               <!-- Preço -->
               <div class="mb-4">
                 <div class="flex items-baseline gap-2 mb-1">
-                  <span class="text-4xl font-semibold text-slate-900">R$ 99</span>
+                  <span class="text-5xl font-bold text-slate-900">R$ 99</span>
                   <span class="text-xs text-slate-500">pagamento único</span>
                 </div>
                 <p class="text-xs text-slate-500">Receba em minutos no e-mail</p>
@@ -95,8 +96,13 @@
                 to="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
                 class="block w-full text-center rounded-lg bg-slate-900 hover:bg-slate-800 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 shadow-md mb-3"
               >
-                Comprar agora
+                Ativar agora
               </NuxtLink>
+
+              <!-- Micro copy -->
+              <p class="text-center text-xs text-slate-500 mb-3">
+                Receba sua chave em até 2 minutos no e-mail
+              </p>
 
               <!-- Confiança -->
               <div class="flex items-center justify-center gap-2 text-xs text-slate-500">
