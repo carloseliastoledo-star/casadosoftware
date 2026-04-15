@@ -57,10 +57,10 @@
         <!-- Coluna direita: único card premium -->
         <div class="order-first lg:order-last">
           <div class="relative">
-            <div class="absolute -inset-8 rounded-[2.5rem] bg-blue-600/5 blur-2xl" aria-hidden="true" />
-            <div class="relative bg-gradient-to-br from-white to-blue-50/30 rounded-[1.5rem] border border-gray-200/80 shadow-2xl shadow-gray-200/70 p-10">
+            <div class="absolute -inset-8 rounded-[2.5rem] bg-blue-600/6 blur-2xl" aria-hidden="true" />
+            <div class="relative bg-gradient-to-br from-white to-blue-50/40 rounded-[1.5rem] border border-gray-200/80 shadow-3xl shadow-gray-200/80 p-10">
               <!-- Imagem do produto -->
-              <div class="relative h-64 bg-gradient-to-br from-blue-50/50 to-white rounded-2xl mb-8 flex items-center justify-center overflow-hidden p-6">
+              <div class="relative h-72 bg-gradient-to-br from-blue-50/50 to-white rounded-2xl mb-8 flex items-center justify-center overflow-hidden p-8">
                 <img
                   src="https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1776154645975-container-capa-home-365-premiium-300x300-processed.png"
                   alt="Office 365"
@@ -95,21 +95,26 @@
               <div class="mb-6">
                 <div class="flex items-baseline gap-2">
                   <span class="text-gray-400 text-sm line-through">De R$ 199</span>
-                  <span class="text-3xl font-extrabold text-green-600">R$ 49</span>
+                  <span class="text-4xl font-extrabold text-green-600">R$ 49</span>
                 </div>
               </div>
 
               <!-- Botão -->
               <NuxtLink
                 to="/categoria/office"
-                class="block w-full text-center rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 px-8 py-4 text-base font-bold text-white transition shadow-lg shadow-blue-300/50 mb-4"
+                class="block w-full text-center rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 px-8 py-4 text-base font-bold text-white transition shadow-lg shadow-blue-300/50 mb-3"
               >
                 Ativar agora
               </NuxtLink>
 
               <!-- Micro copy -->
-              <p class="text-center text-sm text-gray-500">
+              <p class="text-center text-sm text-gray-500 mb-3">
                 Receba sua chave em minutos por e-mail
+              </p>
+
+              <!-- Urgência -->
+              <p class="text-center text-xs text-orange-600 font-semibold">
+                Alta demanda hoje
               </p>
             </div>
           </div>
