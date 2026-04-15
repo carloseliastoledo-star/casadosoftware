@@ -1281,7 +1281,6 @@ function buyNow() {
 .prose :deep(*) {
   background-color: transparent !important;
   background: transparent !important;
-  color: inherit !important;
 }
 .prose :deep(table),
 .prose :deep(td),
@@ -1292,6 +1291,5 @@ function buyNow() {
 .seo-content-dark :deep(*) {
   background-color: transparent !important;
   background: transparent !important;
-  color: inherit !important;
 }
 </style>
