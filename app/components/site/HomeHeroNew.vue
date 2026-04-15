@@ -62,7 +62,7 @@
               <!-- Imagem do produto -->
               <div class="relative h-64 bg-gradient-to-br from-blue-50/50 to-white rounded-2xl mb-8 flex items-center justify-center overflow-hidden p-6">
                 <img
-                  src="/images/produto/office-365.jpg"
+                  src="https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1776154645975-container-capa-home-365-premiium-300x300-processed.png"
                   alt="Office 365"
                   loading="eager"
                   decoding="async"
