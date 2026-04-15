@@ -12,12 +12,12 @@
 
           <!-- Título principal -->
           <h1 class="text-4xl md:text-5xl lg:text-[2.75rem] font-semibold tracking-tight text-slate-900 leading-[1.15]">
-            Windows, Office e Autodesk
+            Ative seus softwares em minutos
           </h1>
 
           <!-- Subtítulo -->
           <p class="text-slate-600 text-lg leading-relaxed max-w-md">
-            Licenças originais com entrega imediata e suporte completo.
+            Receba por e-mail e ative com suporte completo.
           </p>
 
           <!-- Botões CTAs -->
@@ -26,7 +26,7 @@
               :to="productsIndexPath"
               class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 px-8 py-3.5 text-sm font-medium text-white transition-all duration-200 shadow-sm"
             >
-              Explorar produtos
+              Ativar agora
             </NuxtLink>
             <NuxtLink
               to="/categoria/office"
