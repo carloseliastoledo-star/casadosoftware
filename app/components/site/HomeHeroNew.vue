@@ -60,13 +60,13 @@
             <div class="absolute -inset-8 rounded-[2.5rem] bg-blue-600/6 blur-2xl" aria-hidden="true" />
             <div class="relative bg-gradient-to-br from-white to-blue-50/40 rounded-[1.5rem] border border-gray-200/80 shadow-3xl shadow-gray-200/80 p-10">
               <!-- Imagem do produto -->
-              <div class="relative h-72 bg-gradient-to-br from-blue-50/50 to-white rounded-2xl mb-8 flex items-center justify-center overflow-hidden p-8">
+              <div class="relative h-96 bg-gradient-to-br from-blue-50/50 to-white rounded-2xl mb-8 flex items-center justify-center overflow-hidden p-4">
                 <img
                   src="https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1776154645975-container-capa-home-365-premiium-300x300-processed.png"
                   alt="Office 365"
                   loading="eager"
                   decoding="async"
-                  class="h-full w-auto object-contain"
+                  class="h-full w-full object-contain"
                   referrerpolicy="no-referrer"
                 />
               </div>
@@ -95,7 +95,7 @@
               <div class="mb-6">
                 <div class="flex items-baseline gap-2">
                   <span class="text-gray-400 text-sm line-through">De R$ 199</span>
-                  <span class="text-4xl font-extrabold text-green-600">R$ 49</span>
+                  <span class="text-5xl font-extrabold text-green-600">R$ 99</span>
                 </div>
               </div>
 
@@ -109,13 +109,21 @@
 
               <!-- Micro copy -->
               <p class="text-center text-sm text-gray-500 mb-3">
-                Receba sua chave em minutos por e-mail
+                Receba sua chave em até 2 minutos no e-mail
               </p>
 
               <!-- Urgência -->
-              <p class="text-center text-xs text-orange-600 font-semibold">
-                Alta demanda hoje
+              <p class="text-center text-xs text-orange-600 font-semibold mb-4">
+                Mais de 200 ativações hoje
               </p>
+
+              <!-- Confiança -->
+              <div class="flex items-center justify-center gap-2 text-xs text-gray-600">
+                <svg class="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span class="font-medium">Pagamento seguro</span>
+              </div>
             </div>
           </div>
         </div>
