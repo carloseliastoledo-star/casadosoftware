@@ -62,7 +62,7 @@
               <!-- Imagem do produto -->
               <div class="relative h-48 bg-gradient-to-br from-blue-50 to-white rounded-2xl mb-6 flex items-center justify-center overflow-hidden">
                 <img
-                  src="/images/office-fallback.png"
+                  src="/images/produto/office-365.jpg"
                   alt="Office 365"
                   loading="eager"
                   decoding="async"
