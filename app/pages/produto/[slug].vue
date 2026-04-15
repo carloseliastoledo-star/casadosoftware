@@ -198,7 +198,7 @@
         <!-- ── DESCRIÇÃO DETALHADA ── -->
         <div class="bg-[#021326] border border-cyan-500/10 rounded-2xl mt-8 p-6 md:p-8">
           <h2 class="text-xl font-bold text-white mb-4">{{ t.detailedDescription }}</h2>
-          <div class="prose prose-invert prose-sm max-w-none text-slate-300" v-html="safeDescriptionHtml" />
+          <div class="prose prose-invert prose-sm max-w-none text-slate-200" v-html="safeDescriptionHtml" />
         </div>
 
         <!-- ── POR QUE O PREÇO É BOM ── -->
@@ -210,7 +210,7 @@
 
         <!-- SEO content -->
         <div v-if="safeSeoContentHtml" class="mt-8 seo-content-dark">
-          <section class="prose prose-invert prose-sm max-w-none text-slate-300" v-html="safeSeoContentHtml" />
+          <section class="prose prose-invert prose-sm max-w-none text-slate-200" v-html="safeSeoContentHtml" />
         </div>
 
         <!-- Language switcher -->
