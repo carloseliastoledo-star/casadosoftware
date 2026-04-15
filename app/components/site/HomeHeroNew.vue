@@ -1,17 +1,17 @@
 <template>
   <section class="relative overflow-hidden bg-gray-50">
     <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
-      <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
         <!-- Coluna esquerda: conteúdo -->
-        <div class="space-y-10">
+        <div class="space-y-6">
           <!-- Badge -->
           <div class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-medium tracking-wide text-slate-600">
             Entrega imediata
           </div>
 
           <!-- Título principal -->
-          <h1 class="text-4xl md:text-5xl lg:text-[2.75rem] font-semibold tracking-tight text-slate-900 leading-[1.15]">
+          <h1 class="text-4xl md:text-5xl lg:text-[3rem] font-semibold tracking-tight text-slate-900 leading-[1.15]">
             Ative seus softwares em minutos
           </h1>
 
@@ -24,7 +24,7 @@
           <div class="flex flex-col sm:flex-row gap-4 pt-4">
             <NuxtLink
               :to="productsIndexPath"
-              class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 px-8 py-3.5 text-sm font-medium text-white transition-all duration-200 shadow-sm"
+              class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 px-10 py-4 text-sm font-semibold text-white transition-all duration-200 shadow-sm"
             >
               Ativar agora
             </NuxtLink>
@@ -54,9 +54,9 @@
         <div class="order-first lg:order-last">
           <div class="relative">
             <div class="absolute -inset-6 rounded-[2rem] bg-slate-200/40 blur-3xl" aria-hidden="true" />
-            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/60 p-12">
+            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/60 p-8 max-w-md mx-auto">
               <!-- Imagem do produto -->
-              <div class="relative h-80 bg-gradient-to-br from-slate-50 to-white rounded-xl mb-8 flex items-center justify-center overflow-hidden p-6">
+              <div class="relative h-72 bg-gradient-to-br from-slate-50 to-white rounded-xl mb-6 flex items-center justify-center overflow-hidden p-4">
                 <img
                   src="https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1776154645975-container-capa-home-365-premiium-300x300-processed.png"
                   alt="Office 365"
@@ -68,17 +68,17 @@
               </div>
 
               <!-- Título do produto -->
-              <h2 class="text-xl font-medium text-slate-900 mb-2">
+              <h2 class="text-2xl font-semibold text-slate-900 mb-2">
                 Office 365
               </h2>
 
               <!-- Descrição -->
-              <p class="text-slate-500 text-sm leading-relaxed mb-8">
+              <p class="text-slate-500 text-sm leading-relaxed mb-6">
                 Para PC e Mac. Ativação rápida.
               </p>
 
               <!-- Preço -->
-              <div class="mb-8">
+              <div class="mb-6">
                 <div class="flex items-baseline gap-2 mb-1">
                   <span class="text-5xl font-semibold text-slate-900">R$ 99</span>
                   <span class="text-xs text-slate-500">pagamento único</span>
@@ -89,7 +89,7 @@
               <!-- Botão -->
               <NuxtLink
                 to="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
-                class="block w-full text-center rounded-lg bg-slate-900 hover:bg-slate-800 px-8 py-3.5 text-sm font-medium text-white transition-all duration-200 shadow-sm mb-6"
+                class="block w-full text-center rounded-lg bg-slate-900 hover:bg-slate-800 px-10 py-4 text-sm font-semibold text-white transition-all duration-200 shadow-sm mb-4"
               >
                 Comprar agora
               </NuxtLink>
