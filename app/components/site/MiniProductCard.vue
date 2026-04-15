@@ -30,7 +30,7 @@
       <h3 class="text-sm font-bold text-gray-900 leading-snug line-clamp-2 min-h-[2.4rem]">
         {{ productName }}
       </h3>
-      <p class="mt-2 text-xs text-gray-500 line-clamp-2 min-h-[2.4rem]">
+      <p class="mt-2 text-xs text-gray-700 line-clamp-2 min-h-[2.4rem]">
         {{ benefitText }}
       </p>
       <div class="mt-auto pt-3">
