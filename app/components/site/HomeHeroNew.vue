@@ -79,10 +79,11 @@
 
               <!-- Preço -->
               <div class="mb-8">
-                <div class="flex items-baseline gap-2">
-                  <span class="text-4xl font-semibold text-slate-900">R$ 49</span>
+                <div class="flex items-baseline gap-2 mb-1">
+                  <span class="text-5xl font-semibold text-slate-900">R$ 49</span>
                   <span class="text-xs text-slate-500">pagamento único</span>
                 </div>
+                <p class="text-xs text-slate-500">Receba em minutos no e-mail</p>
               </div>
 
               <!-- Botão -->
