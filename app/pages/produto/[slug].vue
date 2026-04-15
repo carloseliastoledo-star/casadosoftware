@@ -1278,7 +1278,23 @@ function buyNow() {
 
 <style scoped>
 /* Forçar fundo transparente em v-html com estilos inline - Tailwind prose-invert cuida das cores */
-.prose :deep(*) {
+.prose :deep(p),
+.prose :deep(h1),
+.prose :deep(h2),
+.prose :deep(h3),
+.prose :deep(h4),
+.prose :deep(h5),
+.prose :deep(h6),
+.prose :deep(li),
+.prose :deep(ul),
+.prose :deep(ol),
+.prose :deep(span),
+.prose :deep(div),
+.prose :deep(strong),
+.prose :deep(em),
+.prose :deep(a),
+.prose :deep(code),
+.prose :deep(pre) {
   background-color: transparent !important;
   background: transparent !important;
   color: #e2e8f0 !important;
@@ -1289,7 +1305,23 @@ function buyNow() {
   background-color: transparent !important;
   border-color: rgba(148,163,184,0.2) !important;
 }
-.seo-content-dark :deep(*) {
+.seo-content-dark :deep(p),
+.seo-content-dark :deep(h1),
+.seo-content-dark :deep(h2),
+.seo-content-dark :deep(h3),
+.seo-content-dark :deep(h4),
+.seo-content-dark :deep(h5),
+.seo-content-dark :deep(h6),
+.seo-content-dark :deep(li),
+.seo-content-dark :deep(ul),
+.seo-content-dark :deep(ol),
+.seo-content-dark :deep(span),
+.seo-content-dark :deep(div),
+.seo-content-dark :deep(strong),
+.seo-content-dark :deep(em),
+.seo-content-dark :deep(a),
+.seo-content-dark :deep(code),
+.seo-content-dark :deep(pre) {
   background-color: transparent !important;
   background: transparent !important;
   color: #e2e8f0 !important;
