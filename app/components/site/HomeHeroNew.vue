@@ -80,7 +80,7 @@
               <!-- Preço -->
               <div class="mb-8">
                 <div class="flex items-baseline gap-2 mb-1">
-                  <span class="text-5xl font-semibold text-slate-900">R$ 49</span>
+                  <span class="text-5xl font-semibold text-slate-900">R$ 99</span>
                   <span class="text-xs text-slate-500">pagamento único</span>
                 </div>
                 <p class="text-xs text-slate-500">Receba em minutos no e-mail</p>
@@ -88,7 +88,7 @@
 
               <!-- Botão -->
               <NuxtLink
-                to="/categoria/office"
+                to="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
                 class="block w-full text-center rounded-lg bg-slate-900 hover:bg-slate-800 px-8 py-3.5 text-sm font-medium text-white transition-all duration-200 shadow-sm mb-6"
               >
                 Comprar agora
