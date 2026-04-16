@@ -223,7 +223,7 @@ const faqs = [
 
           <div class="mb-1 text-gray-500 text-base line-through">De R$ 199,90</div>
           <div class="text-6xl sm:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-1 leading-none py-2">
-            R$ 49,90
+            R$ 99,00
           </div>
           <div class="text-gray-400 text-sm mb-8">pagamento único</div>
 
