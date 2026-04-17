@@ -27,11 +27,14 @@ const { companyLegalName, siteName, logoPath } = useSiteBranding()
 const siteUrl = useSiteUrl()
 
 const { data: siteSettings } = await useFetch('/api/site-settings', { default: () => null })
+const { data: trackingSettings } = await useFetch('/api/public/settings/tracking', { default: () => ({ ga4Id: null }) })
 
 const isPublicSite = computed(() => !String(route.path || '').startsWith('/admin'))
 
 const NOINDEX_PATHS = ['/checkout', '/obrigado', '/sucesso', '/upsell', '/admin']
 const isNoindex = computed(() => NOINDEX_PATHS.some((p) => String(route.path || '').startsWith(p)))
+
+const ga4Id = computed(() => String(trackingSettings.value?.ga4Id || '').trim() || null)
 
 useHead(() => {
   if (isNoindex.value) {
@@ -42,20 +45,29 @@ useHead(() => {
   const orgName = companyLegalName || siteName || 'Casa do Software'
   const logo = logoPath ? `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}` : undefined
 
-  return {
-    script: [{
-      type: 'application/ld+json',
-      key: 'org-jsonld',
-      children: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: orgName,
-        url: origin,
-        logo: logo ? { '@type': 'ImageObject', url: logo } : undefined,
-        sameAs: [origin]
-      })
-    }]
+  const scripts: any[] = [{
+    type: 'application/ld+json',
+    key: 'org-jsonld',
+    children: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: orgName,
+      url: origin,
+      logo: logo ? { '@type': 'ImageObject', url: logo } : undefined,
+      sameAs: [origin]
+    })
+  }]
+
+  // Injetar gtag.js diretamente como fallback
+  if (isPublicSite.value && ga4Id.value) {
+    scripts.push({
+      src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4Id.value)}`,
+      async: true,
+      key: 'gtag-js'
+    })
   }
+
+  return { script: scripts }
 })
 
 const headHtml = computed(() => String((siteSettings.value as any)?.settings?.headHtml || ''))
@@ -70,5 +82,29 @@ const googleAnalyticsId = computed(() => {
 const googleAdsConversionId = computed(() => {
   const fromDb = (siteSettings.value as any)?.settings?.googleAdsConversionId
   return String(fromDb || config.public.googleAdsConversionId || '')
+})
+
+// Inicializar gtag no client
+onMounted(() => {
+  if (!import.meta.client) return
+
+  const w = window as any
+
+  if (isPublicSite.value && ga4Id.value) {
+    console.log('[app.vue] Inicializando gtag com ID:', ga4Id.value)
+
+    // Inicializar dataLayer e gtag se não existirem
+    if (!w.dataLayer) w.dataLayer = []
+    if (!w.gtag) {
+      w.gtag = function gtag() { w.dataLayer.push(arguments) }
+    }
+
+    // Configurar GA4
+    w.gtag('config', ga4Id.value, {
+      send_page_view: false
+    })
+
+    console.log('[app.vue] GA4 configurado:', ga4Id.value)
+  }
 })
 </script>
