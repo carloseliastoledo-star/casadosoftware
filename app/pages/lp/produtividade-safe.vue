@@ -144,7 +144,7 @@
           R$ 99,00
         </div>
         <p class="text-slate-600 text-sm mb-8">
-          Pagamento único • Acesso imediato
+          Acesso sem cobrança recorrente • Acesso imediato
         </p>
         <NuxtLink
           to="/checkout"
@@ -216,7 +216,7 @@
           </div>
           <div class="bg-slate-50 rounded-lg p-5 border border-slate-100">
             <h3 class="font-semibold text-slate-900 mb-2">Preciso pagar mensalidade?</h3>
-            <p class="text-slate-600 text-sm">Não, o acesso é com pagamento único. Não há cobranças recorrentes.</p>
+            <p class="text-slate-600 text-sm">Não, o acesso é sem cobrança recorrente. Não há mensalidades.</p>
           </div>
           <div class="bg-slate-50 rounded-lg p-5 border border-slate-100">
             <h3 class="font-semibold text-slate-900 mb-2">Tem suporte?</h3>
@@ -276,7 +276,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: true })
+definePageMeta({ layout: false, ssr: true })
 
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
