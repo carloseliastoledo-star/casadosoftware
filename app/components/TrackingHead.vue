@@ -58,12 +58,19 @@ useHead(() => {
   const scripts: any[] = []
   const noscripts: any[] = []
 
+  console.log('[TrackingHead] shouldLoadGtag:', shouldLoadGtag.value)
+  console.log('[TrackingHead] primaryGtagId:', primaryGtagId.value)
+
   // Carregar gtag.js se necessário
   if (shouldLoadGtag.value && primaryGtagId.value) {
+    const scriptUrl = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryGtagId.value)}`
+    console.log('[TrackingHead] Injetando script:', scriptUrl)
     scripts.push({
-      src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryGtagId.value)}`,
+      src: scriptUrl,
       async: true
     })
+  } else {
+    console.log('[TrackingHead] Script gtag.js não será injetado')
   }
 
   // Carregar Meta Pixel se necessário
