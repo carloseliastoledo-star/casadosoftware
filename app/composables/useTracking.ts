@@ -121,18 +121,33 @@ export async function trackPageView() {
   try {
     const settings = await getTrackingSettings()
     const ga4Id = String(settings.ga4Id || '').trim()
-    
-    if (!ga4Id) return
-    
+
+    console.log('[trackPageView] Settings:', settings)
+    console.log('[trackPageView] ga4Id:', ga4Id)
+
+    if (!ga4Id) {
+      console.log('[trackPageView] ga4Id não configurado, abortando')
+      return
+    }
+
     const gtag = getGtag()
-    if (!gtag) return
-    
+    if (!gtag) {
+      console.log('[trackPageView] gtag não disponível, abortando')
+      return
+    }
+
     const pagePath = window.location.pathname + window.location.search + window.location.hash
+    console.log('[trackPageView] Enviando page view para:', ga4Id, 'path:', pagePath)
+
     gtag('config', ga4Id, {
       page_path: pagePath,
       send_page_view: true
     })
-  } catch {}
+
+    console.log('[trackPageView] Page view enviado com sucesso')
+  } catch (error) {
+    console.error('[trackPageView] Erro:', error)
+  }
 }
 
 /**

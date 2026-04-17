@@ -114,6 +114,11 @@ onMounted(() => {
 
   const w = window as any
 
+  console.log('[TrackingHead] ga4Id:', ga4Id.value)
+  console.log('[TrackingHead] googleAdsConversionId:', googleAdsConversionId.value)
+  console.log('[TrackingHead] primaryGtagId:', primaryGtagId.value)
+  console.log('[TrackingHead] shouldLoadGtag:', shouldLoadGtag.value)
+
   if (shouldLoadGtag.value && primaryGtagId.value) {
     // Inicializar dataLayer e gtag se não existirem
     if (!w.dataLayer) w.dataLayer = []
@@ -121,17 +126,23 @@ onMounted(() => {
       w.gtag = function gtag() { w.dataLayer.push(arguments) }
     }
 
+    console.log('[TrackingHead] Inicializando gtag com ID:', primaryGtagId.value)
+
     // Configurar GA4 se existir
     if (ga4Id.value) {
       w.gtag('config', ga4Id.value, {
         send_page_view: false
       })
+      console.log('[TrackingHead] GA4 configurado:', ga4Id.value)
     }
 
     // Configurar Google Ads se existir
     if (googleAdsConversionId.value) {
       w.gtag('config', googleAdsConversionId.value)
+      console.log('[TrackingHead] Google Ads configurado:', googleAdsConversionId.value)
     }
+  } else {
+    console.log('[TrackingHead] Gtag não será carregado - ID não configurado')
   }
 })
 </script>
