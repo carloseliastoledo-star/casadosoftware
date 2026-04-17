@@ -11,9 +11,10 @@
 
   <TrackingHead v-if="isPublicSite" />
 
-  <NuxtLayout>
+  <NuxtLayout v-if="!hasCustomLayout">
     <NuxtPage />
   </NuxtLayout>
+  <NuxtPage v-else />
 
   <template v-if="isPublicSite && bodyCloseHtml">
     <div v-html="bodyCloseHtml" />
@@ -32,6 +33,12 @@ const isPublicSite = computed(() => !String(route.path || '').startsWith('/admin
 
 const NOINDEX_PATHS = ['/checkout', '/obrigado', '/sucesso', '/upsell', '/admin']
 const isNoindex = computed(() => NOINDEX_PATHS.some((p) => String(route.path || '').startsWith(p)))
+
+// Detectar se a página usa layout customizado
+const hasCustomLayout = computed(() => {
+  const meta = (route.meta.layout as any)
+  return meta === false || (typeof meta === 'string' && meta !== 'default')
+})
 
 useHead(() => {
   if (isNoindex.value) {
