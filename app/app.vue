@@ -58,16 +58,35 @@ useHead(() => {
     })
   }]
 
-  // Injetar gtag.js diretamente como fallback
+  // Injetar gtag.js e configuração inline
   if (isPublicSite.value && ga4Id.value) {
     scripts.push({
-      src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4Id.value)}`,
       async: true,
+      src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4Id.value)}`,
       key: 'gtag-js'
+    })
+    scripts.push({
+      id: 'gtag-inline',
+      innerHTML: `
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', '${ga4Id.value}', {
+          send_page_view: true,
+          debug_mode: true
+        });
+      `,
+      tagPosition: 'head'
     })
   }
 
-  return { script: scripts }
+  return {
+    script: scripts,
+    __dangerouslyDisableSanitizersByTagID: {
+      'gtag-inline': ['innerHTML']
+    }
+  }
 })
 
 const headHtml = computed(() => String((siteSettings.value as any)?.settings?.headHtml || ''))
@@ -84,27 +103,22 @@ const googleAdsConversionId = computed(() => {
   return String(fromDb || config.public.googleAdsConversionId || '')
 })
 
-// Inicializar gtag no client
+// Watch para disparar page views quando a rota muda
 onMounted(() => {
-  if (!import.meta.client) return
-
-  const w = window as any
-
-  if (isPublicSite.value && ga4Id.value) {
-    console.log('[app.vue] Inicializando gtag com ID:', ga4Id.value)
-
-    // Inicializar dataLayer e gtag se não existirem
-    if (!w.dataLayer) w.dataLayer = []
-    if (!w.gtag) {
-      w.gtag = function gtag() { w.dataLayer.push(arguments) }
-    }
-
-    // Configurar GA4
-    w.gtag('config', ga4Id.value, {
-      send_page_view: false
-    })
-
-    console.log('[app.vue] GA4 configurado:', ga4Id.value)
-  }
+  watch(
+    () => route.fullPath,
+    () => {
+      if (import.meta.client && isPublicSite.value && ga4Id.value && typeof (window as any).gtag === 'function') {
+        console.log('[app.vue] Disparando page view para:', route.fullPath)
+        ;(window as any).gtag('event', 'page_view', {
+          page_path: window.location.pathname,
+          page_location: window.location.href,
+          page_title: document.title,
+          debug_mode: true
+        })
+      }
+    },
+    { immediate: true }
+  )
 })
 </script>
