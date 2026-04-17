@@ -289,7 +289,7 @@
 definePageMeta({ layout: 'lp' })
 
 const route = useRoute()
-const { trackMeta, trackGtag } = useMarketing()
+const { trackMeta, trackGtag, trackBeginCheckout, trackPurchase } = useTracking()
 
 const trackingData = computed(() => ({
   utm_source:   String(route.query.utm_source   || '').trim() || undefined,

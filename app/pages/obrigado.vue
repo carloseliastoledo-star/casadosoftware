@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { trackPurchase } from '~/services/analytics'
+import { trackPurchase, trackGoogleAdsConversion } from '~/composables/useTracking'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -26,7 +26,7 @@ const orderId = computed(() => String(route.query.orderId || ''))
 const paymentId = computed(() => String(route.query.paymentId || ''))
 const upsellParam = computed(() => String(route.query.upsell || ''))
 
-const { trackMeta, trackGtag } = useMarketing()
+const { trackMeta, trackGtag } = useTracking()
 
 const funnelOrder = ref<Record<string, any> | null>(null)
 
@@ -67,16 +67,6 @@ function fireFunnelPurchaseTracking() {
   } catch {}
 }
 
-const googleAdsConversionId = computed(() => {
-  const fromDb = (siteSettings.value as any)?.settings?.googleAdsConversionId
-  return String(fromDb || config.public.googleAdsConversionId || '')
-})
-
-const googleAdsConversionLabel = computed(() => {
-  const fromDb = (siteSettings.value as any)?.settings?.googleAdsConversionLabel
-  return String(fromDb || config.public.googleAdsConversionLabel || '')
-})
-
 onMounted(async () => {
   loadFunnelOrder()
   fireFunnelPurchaseTracking()
@@ -111,15 +101,7 @@ onMounted(async () => {
     }
   }
 
-  // Original conversion tracking code
-  const id = googleAdsConversionId.value
-  if (!id) return
-  if (typeof window === 'undefined') return
-
-  const gtag = (window as any).gtag
-  if (typeof gtag !== 'function') return
-
-  let label = googleAdsConversionLabel.value
+  // Google Ads conversion tracking usando o novo sistema dinâmico
   let value: number | null | undefined = undefined
   let currency: string | null | undefined = undefined
 
@@ -130,18 +112,14 @@ onMounted(async () => {
       })
       const c = res?.conversion
 
-      if (c?.label) label = String(c.label)
       value = c?.value
       currency = c?.currency
     }
   } catch {
-    // se falhar, segue com label do runtimeConfig
+    // se falhar, segue sem valor
   }
 
-  if (!label) return
-
   const payload: any = {
-    send_to: `${id}/${label}`,
     transaction_id: orderId.value || undefined
   }
 
@@ -153,8 +131,10 @@ onMounted(async () => {
     payload.currency = String(currency)
   }
 
-  gtag('event', 'conversion', payload)
+  // Dispara conversão Google Ads usando o novo sistema dinâmico
+  await trackGoogleAdsConversion(payload)
 
+  // GA4 purchase tracking
   try {
     const oid = String(orderId.value || '').trim()
     if (!oid) return

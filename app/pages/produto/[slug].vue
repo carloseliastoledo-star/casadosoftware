@@ -248,7 +248,7 @@
 
 <script setup lang="ts">
 import { useIntlContext } from '#imports'
-import { trackViewItem } from '~/services/analytics'
+import { trackViewItem } from '~/composables/useTracking'
 
 function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[]; USE_PROFILES?: any }): string {
   const str = String(html || '')

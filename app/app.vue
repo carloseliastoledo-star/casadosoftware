@@ -9,6 +9,8 @@
     <div v-html="bodyOpenHtml" />
   </template>
 
+  <TrackingHead v-if="isPublicSite" />
+
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>

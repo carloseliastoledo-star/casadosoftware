@@ -443,12 +443,12 @@ export default defineEventHandler(async (event) => {
       data: pgErr?.data
     }, null, 2))
 
-    const detail = pgErr?.data?.message || pgErr?.message || 'Erro desconhecido'
-
-    throw createError({
-      statusCode: 502,
-      statusMessage: `Pagar.me: ${detail}`
-    })
+    const httpStatus = pgErr?.status || pgErr?.statusCode || pgErr?.response?.status
+    if (httpStatus === 401) {
+      throw createError({ statusCode: 502, statusMessage: 'Chave de API do Pagar.me inválida. Verifique PAGARME_API_KEY no Vercel.' })
+    }
+    const detail = pgErr?.data?.message || pgErr?.data?.errors?.[0]?.message || pgErr?.message || 'Erro desconhecido'
+    throw createError({ statusCode: 502, statusMessage: `Erro no gateway de pagamento: ${detail}` })
   }
 
   if (!result.charge_id) {

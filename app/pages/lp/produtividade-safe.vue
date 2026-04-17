@@ -287,6 +287,6 @@ useSeoMeta({
 })
 
 useHead(() => ({
-  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/lp/produtividade` }] : []
+  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/lp/produtividade-safe` }] : []
 }))
 </script>
