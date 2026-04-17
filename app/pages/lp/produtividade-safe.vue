@@ -276,7 +276,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: true })
+definePageMeta({ layout: 'lp', ssr: true })
 
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
