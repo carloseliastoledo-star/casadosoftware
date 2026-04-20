@@ -1,310 +1,292 @@
 <script setup lang="ts">
-definePageMeta({ layout: false })
+definePageMeta({ layout: 'lp', ssr: true })
 
-useHead({
+const { siteName } = useSiteBranding()
+const baseUrl = useSiteUrl()
+
+useSeoMeta({
   title: 'Melhor Programa para Trabalho em 2026 | Casa do Software',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Descubra o que avaliar ao escolher um programa para documentos, planilhas e apresentações em 2026. Veja uma solução prática com acesso rápido.'
-    },
-    { name: 'robots', content: 'index,follow' },
-    {
-      property: 'og:title',
-      content: 'Melhor Programa para Trabalho em 2026 | Casa do Software'
-    },
-    {
-      property: 'og:description',
-      content:
-        'Veja o que analisar antes de escolher uma solução para produtividade no trabalho e estudo.'
-    },
-    { property: 'og:type', content: 'article' },
-    {
-      property: 'og:url',
-      content: 'https://casadosoftware.com.br/blog/melhor-programa-para-trabalho-2026'
-    }
-  ],
-  link: [
-    {
-      rel: 'canonical',
-      href: 'https://casadosoftware.com.br/blog/melhor-programa-para-trabalho-2026'
-    }
-  ],
-  script: [
-    {
-      type: 'application/ld+json',
-      children: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Article',
-        headline: 'Melhor Programa para Trabalho em 2026',
-        description:
-          'Descubra o que avaliar ao escolher um programa para documentos, planilhas e apresentações em 2026.',
-        author: {
-          '@type': 'Organization',
-          name: 'Casa do Software'
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Casa do Software',
-          logo: {
-            '@type': 'ImageObject',
-            url: 'https://casadosoftware.com.br/logo-casa-do-software.png'
-          }
-        },
-        mainEntityOfPage: 'https://casadosoftware.com.br/blog/melhor-programa-para-trabalho-2026'
-      })
-    }
-  ]
+  description: 'Descubra o que avaliar ao escolher um programa para documentos, planilhas e apresentações em 2026. Veja uma solução prática com acesso rápido.'
 })
 
-const checklist = [
-  'Facilidade para editar documentos no dia a dia',
-  'Planilhas simples de usar e com boa organização',
-  'Recursos para apresentações com visual profissional',
-  'Acesso rápido sem complicação na instalação',
-  'Boa relação entre custo e utilidade',
-  'Solução adequada para trabalho, estudo e rotina pessoal'
-]
-
-const comparison = [
-  {
-    title: 'Facilidade de uso',
-    common: 'Muitas opções exigem adaptação maior ou assinatura contínua.',
-    recommended: 'Uso simples e direto para começar rapidamente.'
-  },
-  {
-    title: 'Custo-benefício',
-    common: 'Em alguns casos, o valor recorrente pesa no longo prazo.',
-    recommended: 'Pagamento único com foco em praticidade.'
-  },
-  {
-    title: 'Tempo para começar',
-    common: 'Algumas soluções exigem etapas extras antes do uso.',
-    recommended: 'Liberação rápida e início mais simples.'
-  },
-  {
-    title: 'Aplicação prática',
-    common: 'Nem sempre a solução é objetiva para a rotina comum.',
-    recommended: 'Foco em documentos, planilhas e apresentações.'
-  }
-]
-
-const scenarios = [
-  'Trabalhar com relatórios, contratos e textos',
-  'Organizar dados em planilhas',
-  'Montar apresentações para estudo ou trabalho',
-  'Usar no computador ou notebook no dia a dia',
-  'Ter uma solução prática sem depender de mensalidade'
-]
+useHead(() => ({
+  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/blog/melhor-programa-para-trabalho-2026` }] : []
+}))
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#0b0b11] text-white">
-    <main class="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
-      <article class="overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.03] shadow-2xl">
-        <header class="border-b border-white/10 bg-gradient-to-br from-emerald-500/10 via-cyan-500/10 to-transparent px-6 py-10 sm:px-10 sm:py-14">
-          <div class="mb-4 inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-xs font-black uppercase tracking-[0.2em] text-emerald-400">
-            Atualizado em 2026
+  <div class="min-h-screen bg-black text-white">
+    <!-- HERO -->
+    <section class="px-4 py-16 md:py-24">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
+          Solução Completa de Produtividade para Trabalho e Estudo
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          Acesse ferramentas essenciais para criar documentos, planilhas e apresentações com facilidade.
+        </p>
+
+        <div class="flex flex-col items-center gap-3 mb-8 text-left max-w-md mx-auto">
+          <div class="flex items-center gap-3 text-gray-300">
+            <span class="text-green-600 font-bold">✔</span>
+            <span>Interface simples e conhecida</span>
           </div>
-
-          <h1 class="max-w-4xl text-3xl font-black leading-tight text-white sm:text-5xl">
-            Melhor programa para trabalho em 2026:
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-              o que realmente vale analisar antes de escolher
-            </span>
-          </h1>
-
-          <p class="mt-5 max-w-3xl text-base leading-relaxed text-gray-300 sm:text-lg">
-            Quem precisa lidar com documentos, planilhas e apresentações no dia a dia busca uma solução
-            simples, estável e com bom custo-benefício. Antes de escolher, vale entender o que realmente
-            faz diferença na prática.
-          </p>
-
-          <div class="mt-8 flex flex-wrap items-center gap-3 text-sm text-gray-400">
-            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Documentos</span>
-            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Planilhas</span>
-            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Apresentações</span>
-            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Produtividade</span>
-            <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Trabalho e estudo</span>
+          <div class="flex items-center gap-3 text-gray-300">
+            <span class="text-green-600 font-bold">✔</span>
+            <span>Compatível com múltiplos dispositivos</span>
           </div>
-        </header>
-
-        <div class="px-6 py-8 sm:px-10 sm:py-12">
-          <section class="max-w-none">
-            <p class="text-base leading-relaxed text-gray-300">
-              Na rotina real, a melhor escolha nem sempre é a mais complexa. Em muitos casos, o que mais
-              importa é conseguir começar rápido, produzir com facilidade e evitar custos recorrentes que
-              pesam no longo prazo.
-            </p>
-
-            <p class="mt-5 text-base leading-relaxed text-gray-300">
-              Por isso, quem está pesquisando um programa para trabalho costuma procurar uma solução que
-              resolva três pontos principais: escrita de documentos, organização de planilhas e criação de
-              apresentações.
-            </p>
-          </section>
-
-          <section class="mt-12 rounded-[28px] border border-white/10 bg-white/5 p-6 sm:p-8">
-            <div class="max-w-3xl">
-              <div class="mb-3 inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-400">
-                Checklist rápido
-              </div>
-
-              <h2 class="text-2xl font-black text-white sm:text-3xl">
-                O que avaliar antes de escolher
-              </h2>
-
-              <p class="mt-3 text-sm leading-relaxed text-gray-400 sm:text-base">
-                Um bom pacote para produtividade precisa ser útil na prática, não apenas parecer completo.
-              </p>
-            </div>
-
-            <div class="mt-8 grid gap-4 sm:grid-cols-2">
-              <div
-                v-for="item in checklist"
-                :key="item"
-                class="rounded-2xl border border-white/10 bg-[#101019] p-5"
-              >
-                <div class="flex items-start gap-3">
-                  <span class="mt-0.5 text-emerald-400">✓</span>
-                  <p class="m-0 text-sm leading-relaxed text-gray-200 sm:text-base">
-                    {{ item }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="mt-12">
-            <h2 class="text-2xl font-black text-white sm:text-3xl">
-              Quando esse tipo de solução faz mais sentido?
-            </h2>
-
-            <p class="mt-4 text-base leading-relaxed text-gray-300">
-              Esse tipo de ferramenta costuma ser ideal para quem precisa de produtividade imediata, seja
-              para trabalho, estudos ou organização pessoal. O ponto principal é ganhar agilidade e
-              reduzir atrito na rotina.
-            </p>
-
-            <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <div
-                v-for="item in scenarios"
-                :key="item"
-                class="rounded-2xl border border-white/10 bg-white/5 p-5"
-              >
-                <p class="text-sm leading-relaxed text-gray-200 sm:text-base">
-                  {{ item }}
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section class="mt-12">
-            <div class="mb-4 inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-400">
-              Comparativo prático
-            </div>
-
-            <h2 class="text-2xl font-black text-white sm:text-3xl">
-              O que costuma diferenciar uma boa escolha de uma opção comum
-            </h2>
-
-            <div class="mt-8 overflow-hidden rounded-[28px] border border-white/10">
-              <div class="grid grid-cols-1 border-b border-white/10 bg-white/5 sm:grid-cols-3">
-                <div class="p-5 text-sm font-bold text-white sm:text-base">Critério</div>
-                <div class="border-t border-white/10 p-5 text-sm font-bold text-gray-300 sm:border-l sm:border-t-0 sm:text-base">
-                  Opções comuns
-                </div>
-                <div class="border-t border-white/10 bg-emerald-500/10 p-5 text-sm font-bold text-emerald-300 sm:border-l sm:border-t-0 sm:text-base">
-                  Solução recomendada
-                </div>
-              </div>
-
-              <div
-                v-for="row in comparison"
-                :key="row.title"
-                class="grid grid-cols-1 border-b border-white/10 last:border-b-0 sm:grid-cols-3"
-              >
-                <div class="bg-[#0f0f16] p-5 text-sm font-semibold text-white sm:text-base">
-                  {{ row.title }}
-                </div>
-                <div class="p-5 text-sm leading-relaxed text-gray-300 sm:border-l sm:border-white/10 sm:text-base">
-                  {{ row.common }}
-                </div>
-                <div class="bg-emerald-500/[0.06] p-5 text-sm leading-relaxed text-gray-200 sm:border-l sm:border-white/10 sm:text-base">
-                  {{ row.recommended }}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="mt-12 rounded-[28px] border border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 p-6 sm:p-8">
-            <div class="mx-auto max-w-3xl text-center">
-              <div class="mb-3 inline-flex rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-emerald-400">
-                Recomendação prática
-              </div>
-
-              <h3 class="text-2xl font-black text-white sm:text-3xl">
-                Quer ver uma solução simples para começar hoje?
-              </h3>
-
-              <p class="mt-4 text-sm leading-relaxed text-gray-300 sm:text-base">
-                Existe uma opção focada em documentos, planilhas e apresentações, com pagamento único,
-                acesso rápido e uso simples no computador.
-              </p>
-
-              <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-gray-300">
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Acesso imediato</span>
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Pagamento único</span>
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Uso simples</span>
-                <span class="rounded-full border border-white/10 bg-white/5 px-3 py-1">Suporte disponível</span>
-              </div>
-
-              <a
-                href="/lp/produtividade"
-                class="mt-8 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 px-8 py-4 text-base font-black text-white shadow-lg shadow-emerald-500/30 transition-all duration-200 hover:scale-105 hover:from-green-400 hover:to-emerald-400 sm:text-lg"
-              >
-                Ver solução recomendada
-              </a>
-
-              <p class="mt-3 text-xs text-gray-400">
-                Acesso rápido • Pagamento único • 7 dias de garantia
-              </p>
-            </div>
-          </section>
-
-          <section class="mt-12">
-            <h2 class="text-2xl font-black text-white sm:text-3xl">
-              Conclusão
-            </h2>
-
-            <p class="mt-4 text-base leading-relaxed text-gray-300">
-              Em 2026, o melhor programa para trabalho é o que ajuda você a resolver a rotina com menos
-              fricção. Se sua prioridade é escrever, organizar dados e montar apresentações com rapidez,
-              vale considerar uma solução objetiva, fácil de usar e financeiramente mais simples.
-            </p>
-
-            <div class="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 text-center">
-              <p class="text-sm leading-relaxed text-gray-300 sm:text-base">
-                Para ver todos os detalhes da solução recomendada, benefícios e condição atual, acesse a
-                página completa abaixo.
-              </p>
-
-              <a
-                href="/lp/produtividade"
-                class="mt-6 inline-flex items-center justify-center rounded-2xl border border-emerald-500/30 bg-white/5 px-8 py-4 text-base font-bold text-white transition-all duration-200 hover:border-emerald-400 hover:bg-emerald-500/10"
-              >
-                Acessar página completa
-              </a>
-            </div>
-          </section>
+          <div class="flex items-center gap-3 text-gray-300">
+            <span class="text-green-600 font-bold">✔</span>
+            <span>Acesso rápido após ativação</span>
+          </div>
         </div>
-      </article>
 
-      <div class="mt-6 text-center text-xs leading-relaxed text-gray-500">
-        Este conteúdo tem caráter informativo e apresenta uma solução digital de produtividade para quem
-        busca praticidade no dia a dia.
+        <NuxtLink
+          to="/checkout"
+          class="inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
+        >
+          Continuar para acesso
+        </NuxtLink>
+
+        <p class="text-sm text-gray-400 mt-4">
+          Acesso digital • Suporte disponível
+        </p>
       </div>
-    </main>
+    </section>
+
+    <!-- BENEFÍCIOS -->
+    <section class="px-4 py-16 bg-white/5">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-white mb-12">
+          Ferramentas para sua rotina
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10">
+            <div class="text-3xl mb-4">📄</div>
+            <h3 class="font-semibold text-lg text-white mb-2">Documentos profissionais</h3>
+            <p class="text-gray-300 text-sm">Crie e edite textos com formatação profissional.</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10">
+            <div class="text-3xl mb-4">📊</div>
+            <h3 class="font-semibold text-lg text-white mb-2">Planilhas organizadas</h3>
+            <p class="text-gray-300 text-sm">Organize dados e crie cálculos com facilidade.</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10">
+            <div class="text-3xl mb-4">📽️</div>
+            <h3 class="font-semibold text-lg text-white mb-2">Apresentações eficientes</h3>
+            <p class="text-gray-300 text-sm">Monte slides claros e profissionais.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROVA SOCIAL -->
+    <section class="px-4 py-16">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-xl text-gray-300 font-medium">
+          Mais de 2.000 usuários já utilizam essa solução no dia a dia
+        </p>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section class="px-4 py-16 bg-white/5">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-white mb-12">
+          Como funciona
+        </h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="bg-green-500 text-black rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mx-auto mb-4">1</div>
+            <h3 class="font-semibold text-white mb-2">Escolha o acesso</h3>
+            <p class="text-gray-300 text-sm">Selecione a opção que melhor se adapta à sua necessidade.</p>
+          </div>
+          <div class="text-center">
+            <div class="bg-green-500 text-black rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mx-auto mb-4">2</div>
+            <h3 class="font-semibold text-white mb-2">Finalize o pagamento</h3>
+            <p class="text-gray-300 text-sm">Complete o processo de forma segura e rápida.</p>
+          </div>
+          <div class="text-center">
+            <div class="bg-green-500 text-black rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mx-auto mb-4">3</div>
+            <h3 class="font-semibold text-white mb-2">Receba e utilize</h3>
+            <p class="text-gray-300 text-sm">Acesse as ferramentas e comece a usar imediatamente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCO DE CONFIANÇA -->
+    <section class="px-4 py-16">
+      <div class="max-w-4xl mx-auto">
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10 text-center">
+            <div class="text-3xl mb-3">🛡️</div>
+            <h3 class="font-semibold text-white mb-2">Garantia de 7 dias</h3>
+            <p class="text-gray-300 text-sm">Período de garantia para sua segurança.</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10 text-center">
+            <div class="text-3xl mb-3">💬</div>
+            <h3 class="font-semibold text-white mb-2">Suporte disponível</h3>
+            <p class="text-gray-300 text-sm">Equipe pronta para ajudar quando precisar.</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10 text-center">
+            <div class="text-3xl mb-3">⚡</div>
+            <h3 class="font-semibold text-white mb-2">Processo simples</h3>
+            <p class="text-gray-300 text-sm">Fluxo direto sem complicações.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA INTERMEDIÁRIO -->
+    <section class="px-4 py-12 bg-green-500">
+      <div class="max-w-2xl mx-auto text-center">
+        <NuxtLink
+          to="/checkout"
+          class="inline-block bg-black hover:bg-gray-900 text-white font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
+        >
+          Continuar para acesso
+        </NuxtLink>
+      </div>
+    </section>
+
+    <!-- SEÇÃO DE VALOR -->
+    <section class="px-4 py-16 bg-white/5">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-6">
+          Valor atual para acesso
+        </h2>
+        <div class="text-5xl md:text-6xl font-bold text-white mb-4">
+          R$ 99,00
+        </div>
+        <p class="text-gray-300 text-sm mb-8">
+          Pagamento único • Acesso imediato
+        </p>
+        <NuxtLink
+          to="/checkout"
+          class="inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
+        >
+          Continuar para acesso
+        </NuxtLink>
+      </div>
+    </section>
+
+    <!-- DEPOIMENTOS -->
+    <section class="px-4 py-16">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-white mb-12">
+          O que dizem os usuários
+        </h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+            </div>
+            <p class="text-gray-300 text-sm mb-4">"Solução prática para meu trabalho. Consigo criar documentos e planilhas sem dificuldade."</p>
+            <p class="text-gray-400 text-xs font-medium">Carlos M.</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+            </div>
+            <p class="text-gray-300 text-sm mb-4">"Interface familiar e fácil de usar. Ativação foi rápida e o suporte ajudou quando precisei."</p>
+            <p class="text-gray-400 text-xs font-medium">Ana S.</p>
+          </div>
+          <div class="bg-white/5 rounded-xl p-6 shadow-sm border border-white/10">
+            <div class="flex items-center gap-1 mb-3">
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+              <span class="text-yellow-500">★</span>
+            </div>
+            <p class="text-gray-300 text-sm mb-4">"Boa solução para estudantes. Consigo fazer trabalhos e apresentações com qualidade."</p>
+            <p class="text-gray-400 text-xs font-medium">Ricardo L.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="px-4 py-16 bg-white/5">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-center text-white mb-12">
+          Perguntas frequentes
+        </h2>
+        <div class="space-y-4">
+          <div class="bg-white/5 rounded-lg p-5 border border-white/10">
+            <h3 class="font-semibold text-white mb-2">Como recebo o acesso?</h3>
+            <p class="text-gray-300 text-sm">Após a confirmação do pagamento, você recebe as instruções de acesso por e-mail em poucos minutos.</p>
+          </div>
+          <div class="bg-white/5 rounded-lg p-5 border border-white/10">
+            <h3 class="font-semibold text-white mb-2">Funciona em computador?</h3>
+            <p class="text-gray-300 text-sm">Sim, a solução é compatível com computadores desktop e notebooks.</p>
+          </div>
+          <div class="bg-white/5 rounded-lg p-5 border border-white/10">
+            <h3 class="font-semibold text-white mb-2">Preciso pagar mensalidade?</h3>
+            <p class="text-gray-300 text-sm">Não, o acesso é com pagamento único. Não há cobranças recorrentes.</p>
+          </div>
+          <div class="bg-white/5 rounded-lg p-5 border border-white/10">
+            <h3 class="font-semibold text-white mb-2">Tem suporte?</h3>
+            <p class="text-gray-300 text-sm">Sim, oferecemos suporte para ajudar com dúvidas sobre ativação e uso das ferramentas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="px-4 py-16">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-6">
+          Pronto para começar?
+        </h2>
+        <p class="text-gray-300 mb-8">
+          Acesse ferramentas essenciais para sua produtividade.
+        </p>
+        <NuxtLink
+          to="/checkout"
+          class="inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
+        >
+          Continuar para acesso
+        </NuxtLink>
+      </div>
+    </section>
+
+    <!-- BLOCO LEGAL CRÍTICO -->
+    <section class="px-4 py-8 bg-white/5 border-t border-white/10">
+      <div class="max-w-4xl mx-auto">
+        <p class="text-xs text-gray-400 text-center leading-relaxed">
+          Este site oferece acesso a soluções digitais para produtividade e suporte ao usuário. Não possuímos vínculo institucional com marcas terceiras. O uso das ferramentas está sujeito aos termos da plataforma.
+        </p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="px-4 py-8 bg-black text-gray-400">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6 text-sm">
+          <NuxtLink to="/politica-de-privacidade" class="hover:text-white transition-colors">
+            Política de Privacidade
+          </NuxtLink>
+          <NuxtLink to="/termos-de-uso" class="hover:text-white transition-colors">
+            Termos de Uso
+          </NuxtLink>
+          <NuxtLink to="/contato" class="hover:text-white transition-colors">
+            Contato
+          </NuxtLink>
+        </div>
+        <p class="text-center text-xs mt-6 text-gray-400">
+          {{ new Date().getFullYear() }} Todos os direitos reservados.
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
