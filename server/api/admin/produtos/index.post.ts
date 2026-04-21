@@ -74,13 +74,18 @@ export default defineEventHandler(async (event) => {
   const rawPrecoEur = body.precoEur === null || body.precoEur === undefined ? '' : String(body.precoEur).trim()
   const precoEur = rawPrecoEur === '' ? null : Number(rawPrecoEur)
 
+  const precoNum = parseFloat(String(body.preco || '0').replace(',', '.'))
+  if (!Number.isFinite(precoNum) || precoNum <= 0) {
+    throw createError({ statusCode: 400, statusMessage: 'Preço inválido. Informe um valor numérico válido.' })
+  }
+
   try {
     // Montar data base sem campos undefined
     const data: Record<string, any> = {
       nome: body.nome,
       slug: body.slug,
       finalUrl,
-      preco: Number(body.preco),
+      preco: precoNum,
       precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
       descricao,
       ativo: body.ativo ?? true,
@@ -149,12 +154,12 @@ export default defineEventHandler(async (event) => {
           id: crypto.randomUUID(),
           produtoId: created.id,
           storeSlug,
-          preco: Number(body.preco),
+          preco: precoNum,
           precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
           updatedAt: new Date()
         },
         update: {
-          preco: Number(body.preco),
+          preco: precoNum,
           precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
           updatedAt: new Date()
         }
