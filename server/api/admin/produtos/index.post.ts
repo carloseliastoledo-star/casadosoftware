@@ -75,61 +75,72 @@ export default defineEventHandler(async (event) => {
   const precoEur = rawPrecoEur === '' ? null : Number(rawPrecoEur)
 
   try {
-    const created = await (prisma as any).produto.create({
-      data: {
-        nome: body.nome,
-        nomeEn: typeof body.nomeEn === 'string' ? body.nomeEn : undefined,
-        nomeEs: typeof body.nomeEs === 'string' ? body.nomeEs : undefined,
-        nomeIt: typeof body.nomeIt === 'string' ? body.nomeIt : undefined,
-        nomeFr: typeof body.nomeFr === 'string' ? body.nomeFr : undefined,
-        slug: body.slug,
-        finalUrl,
-        preco: Number(body.preco),
-        precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
-        descricao,
-        descricaoEn: typeof body.descricaoEn === 'string' ? body.descricaoEn : undefined,
-        descricaoEs: typeof body.descricaoEs === 'string' ? body.descricaoEs : undefined,
-        descricaoIt: typeof body.descricaoIt === 'string' ? body.descricaoIt : undefined,
-        descricaoFr: typeof body.descricaoFr === 'string' ? body.descricaoFr : undefined,
-        ativo: body.ativo ?? true,
-        imagem,
-        cardItems,
-        ...(categorias.length
-          ? {
-              produtoCategorias: {
-                create: categorias.map((slug: string) => ({
-                  categoria: { connect: { slug } }
-                }))
-              }
-            }
-          : {}),
-        ...(hasGoogleAds
-          ? {
-              googleAdsConversionLabel: body.googleAdsConversionLabel,
-              googleAdsConversionValue:
-                body.googleAdsConversionValue === null || body.googleAdsConversionValue === undefined || body.googleAdsConversionValue === ''
-                  ? null
-                  : Number(body.googleAdsConversionValue),
-              googleAdsConversionCurrency: body.googleAdsConversionCurrency || 'BRL'
-            }
-          : {}),
-        tutorialTitulo: body.tutorialTitulo,
-        tutorialTituloEn: typeof body.tutorialTituloEn === 'string' ? body.tutorialTituloEn : undefined,
-        tutorialTituloEs: typeof body.tutorialTituloEs === 'string' ? body.tutorialTituloEs : undefined,
-        tutorialTituloIt: typeof body.tutorialTituloIt === 'string' ? body.tutorialTituloIt : undefined,
-        tutorialTituloFr: typeof body.tutorialTituloFr === 'string' ? body.tutorialTituloFr : undefined,
-        tutorialSubtitulo: body.tutorialSubtitulo,
-        tutorialSubtituloEn: typeof body.tutorialSubtituloEn === 'string' ? body.tutorialSubtituloEn : undefined,
-        tutorialSubtituloEs: typeof body.tutorialSubtituloEs === 'string' ? body.tutorialSubtituloEs : undefined,
-        tutorialSubtituloIt: typeof body.tutorialSubtituloIt === 'string' ? body.tutorialSubtituloIt : undefined,
-        tutorialSubtituloFr: typeof body.tutorialSubtituloFr === 'string' ? body.tutorialSubtituloFr : undefined,
-        tutorialConteudo: body.tutorialConteudo,
-        tutorialConteudoEn: typeof body.tutorialConteudoEn === 'string' ? body.tutorialConteudoEn : undefined,
-        tutorialConteudoEs: typeof body.tutorialConteudoEs === 'string' ? body.tutorialConteudoEs : undefined,
-        tutorialConteudoIt: typeof body.tutorialConteudoIt === 'string' ? body.tutorialConteudoIt : undefined,
-        tutorialConteudoFr: typeof body.tutorialConteudoFr === 'string' ? body.tutorialConteudoFr : undefined
+    // Montar data base sem campos undefined
+    const data: Record<string, any> = {
+      nome: body.nome,
+      slug: body.slug,
+      finalUrl,
+      preco: Number(body.preco),
+      precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo,
+      descricao,
+      ativo: body.ativo ?? true,
+      imagem,
+      cardItems
+    }
+
+    // Campos de idioma (só incluir se string não vazia)
+    const optionalStringFields: Record<string, string | undefined> = {
+      nomeEn: body.nomeEn,
+      nomeEs: body.nomeEs,
+      nomeIt: body.nomeIt,
+      nomeFr: body.nomeFr,
+      descricaoEn: body.descricaoEn,
+      descricaoEs: body.descricaoEs,
+      descricaoIt: body.descricaoIt,
+      descricaoFr: body.descricaoFr,
+      tutorialTitulo: body.tutorialTitulo,
+      tutorialTituloEn: body.tutorialTituloEn,
+      tutorialTituloEs: body.tutorialTituloEs,
+      tutorialTituloIt: body.tutorialTituloIt,
+      tutorialTituloFr: body.tutorialTituloFr,
+      tutorialSubtitulo: body.tutorialSubtitulo,
+      tutorialSubtituloEn: body.tutorialSubtituloEn,
+      tutorialSubtituloEs: body.tutorialSubtituloEs,
+      tutorialSubtituloIt: body.tutorialSubtituloIt,
+      tutorialSubtituloFr: body.tutorialSubtituloFr,
+      tutorialConteudo: body.tutorialConteudo,
+      tutorialConteudoEn: body.tutorialConteudoEn,
+      tutorialConteudoEs: body.tutorialConteudoEs,
+      tutorialConteudoIt: body.tutorialConteudoIt,
+      tutorialConteudoFr: body.tutorialConteudoFr
+    }
+
+    for (const [key, value] of Object.entries(optionalStringFields)) {
+      if (typeof value === 'string' && value.trim()) {
+        data[key] = value
       }
-    })
+    }
+
+    // Google Ads
+    if (hasGoogleAds) {
+      data.googleAdsConversionLabel = body.googleAdsConversionLabel
+      data.googleAdsConversionValue =
+        body.googleAdsConversionValue === null || body.googleAdsConversionValue === undefined || body.googleAdsConversionValue === ''
+          ? null
+          : Number(body.googleAdsConversionValue)
+      data.googleAdsConversionCurrency = body.googleAdsConversionCurrency || 'BRL'
+    }
+
+    // Categorias
+    if (categorias.length) {
+      data.produtoCategorias = {
+        create: categorias.map((slug: string) => ({
+          categoria: { connect: { slug } }
+        }))
+      }
+    }
+
+    const created = await (prisma as any).produto.create({ data })
 
     if (storeSlug) {
       await (prisma as any).produtoPrecoLoja.upsert({
@@ -191,13 +202,28 @@ export default defineEventHandler(async (event) => {
     return created
   } catch (err: any) {
     const message = String(err?.message || '')
-    throw createError({
-      statusCode: message.includes('provided value for the column is too long') && message.includes('Column: descricao') ? 400 : 500,
-      statusMessage: message.includes('provided value for the column is too long') && message.includes('Column: descricao')
-        ? 'A descrição está muito grande para o limite do banco atual. Aplique a migração para aumentar o campo (descricao -> TEXT).'
-        : (message.includes('Unknown column')
-            ? 'Banco de dados desatualizado (migração pendente). Rode as migrations em produção.'
-            : (err?.message || 'Server Error'))
-    })
+    console.error('[admin][produtos][create] Erro:', message)
+
+    let statusCode = 500
+    let statusMessage = err?.message || 'Server Error'
+
+    if (message.includes('provided value for the column is too long') && message.includes('Column: descricao')) {
+      statusCode = 400
+      statusMessage = 'A descrição está muito grande para o limite do banco atual. Aplique a migração para aumentar o campo (descricao -> TEXT).'
+    } else if (message.includes('Unknown arg') || message.includes('Unknown field')) {
+      statusCode = 400
+      statusMessage = 'Banco de dados desatualizado (migração pendente). Rode as migrations em produção.'
+    } else if (message.includes('Unknown column')) {
+      statusCode = 400
+      statusMessage = 'Banco de dados desatualizado (migração pendente). Rode as migrations em produção.'
+    } else if (message.includes('Record to connect') || message.includes('No Categoria found')) {
+      statusCode = 400
+      statusMessage = 'Categoria não encontrada. Verifique se a categoria existe antes de associar ao produto.'
+    } else if (message.includes('Unique constraint') && message.includes('slug')) {
+      statusCode = 400
+      statusMessage = 'Já existe um produto com este slug. Escolha um slug diferente.'
+    }
+
+    throw createError({ statusCode, statusMessage })
   }
 })
