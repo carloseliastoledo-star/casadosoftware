@@ -44,6 +44,16 @@ export async function processMercadoPagoPayment(dataId: string) {
             }
           | null = null
 
+        // Verificar se este pagamento já foi processado (webhook duplicado)
+        const alreadyProcessed = await anyTx.order.findFirst({
+          where: { mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId) },
+          select: { id: true, status: true }
+        })
+        if (alreadyProcessed) {
+          console.log('[mp webhook] Pagamento já processado (duplicado)', { orderId: String(orderId), dataId, existingOrderId: alreadyProcessed.id })
+          return
+        }
+
         try {
           order = await anyTx.order.update({
             where: { id: String(orderId) },
@@ -69,8 +79,13 @@ export async function processMercadoPagoPayment(dataId: string) {
             }
           })
         } catch (err: any) {
-          if (String(err?.code || '') === 'P2025') {
+          const code = String(err?.code || '')
+          if (code === 'P2025') {
             console.log('[mp webhook] order not found for payment', { orderId: String(orderId), dataId })
+            return
+          }
+          if (code === 'P2002') {
+            console.log('[mp webhook] unique constraint (webhook duplicado)', { orderId: String(orderId), dataId })
             return
           }
           throw err
@@ -323,8 +338,13 @@ export async function processMercadoPagoPayment(dataId: string) {
           }
         })
       } catch (err: any) {
-        if (String(err?.code || '') === 'P2025') {
+        const code = String(err?.code || '')
+        if (code === 'P2025') {
           console.log('[mp webhook] order not found for rejected/cancelled payment', { orderId: String(orderId), dataId })
+          return { ok: true }
+        }
+        if (code === 'P2002') {
+          console.log('[mp webhook] unique constraint on rejected/cancelled (duplicado)', { orderId: String(orderId), dataId })
           return { ok: true }
         }
         throw err
@@ -332,8 +352,13 @@ export async function processMercadoPagoPayment(dataId: string) {
     }
 
     return { ok: true }
-  } catch (err) {
-    console.log('[mp webhook] processMercadoPagoPayment error', err)
+  } catch (err: any) {
+    console.error('[mp webhook] processMercadoPagoPayment error:', {
+      message: err?.message || String(err),
+      code: err?.code,
+      meta: err?.meta,
+      dataId
+    })
     return { ok: true }
   }
 }
