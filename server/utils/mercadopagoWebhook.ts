@@ -164,7 +164,9 @@ export async function processMercadoPagoPayment(dataId: string) {
           return
         }
 
-        const candidate = await anyTx.licenca.findFirst({
+        console.log('[mp webhook] Buscando licença para produto:', order.produtoId, 'storeSlug:', order.storeSlug)
+
+        let candidate = await anyTx.licenca.findFirst({
           where: {
             produtoId: order.produtoId,
             status: 'STOCK',
@@ -174,6 +176,23 @@ export async function processMercadoPagoPayment(dataId: string) {
           },
           select: { id: true }
         })
+
+        // Fallback: buscar licença sem storeSlug (legada)
+        if (!candidate && order.storeSlug) {
+          console.log('[mp webhook] Nenhuma licença com storeSlug, tentando fallback com storeSlug: null')
+          candidate = await anyTx.licenca.findFirst({
+            where: {
+              produtoId: order.produtoId,
+              status: 'STOCK',
+              orderId: null,
+              customerId: null,
+              storeSlug: null
+            },
+            select: { id: true }
+          })
+        }
+
+        console.log('[mp webhook] Licença encontrada:', candidate?.id || 'NENHUMA')
 
         if (!candidate) {
           await anyTx.order.update({

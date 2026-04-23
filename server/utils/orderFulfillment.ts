@@ -68,7 +68,7 @@ export async function fulfillPaidOrder(orderId: string) {
       return
     }
 
-    const candidate = await tx.licenca.findFirst({
+    let candidate = await tx.licenca.findFirst({
       where: {
         produtoId: order.produtoId,
         status: 'STOCK',
@@ -78,6 +78,20 @@ export async function fulfillPaidOrder(orderId: string) {
       },
       select: { id: true }
     })
+
+    // Fallback: buscar licença sem storeSlug (legada)
+    if (!candidate && order.storeSlug) {
+      candidate = await tx.licenca.findFirst({
+        where: {
+          produtoId: order.produtoId,
+          status: 'STOCK',
+          orderId: null,
+          customerId: null,
+          storeSlug: null
+        },
+        select: { id: true }
+      })
+    }
 
     if (!candidate) {
       await tx.order.update({

@@ -64,7 +64,8 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'Licença não está disponível em estoque' })
     }
 
-    if (String(licenca.storeSlug || '') !== String(order.storeSlug || '')) {
+    // Permitir licenças legadas (storeSlug null) para qualquer loja
+    if (licenca.storeSlug && order.storeSlug && String(licenca.storeSlug) !== String(order.storeSlug)) {
       throw createError({ statusCode: 400, statusMessage: 'Licença não pertence à mesma loja do pedido' })
     }
 
