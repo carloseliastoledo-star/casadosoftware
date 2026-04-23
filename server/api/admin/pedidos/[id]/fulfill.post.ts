@@ -7,7 +7,7 @@ import { getStoreContext, whereForStore } from '#root/server/utils/store'
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const ctx = getStoreContext()
+  const ctx = getStoreContext(event)
 
   const id = String(getRouterParam(event, 'id') || '').trim()
   if (!id) {
@@ -37,8 +37,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Pedido não encontrado' })
   }
 
-  if (String(order.status || '').toUpperCase() !== 'PAID') {
-    throw createError({ statusCode: 400, statusMessage: 'Pedido precisa estar com status PAID' })
+  const orderStatus = String(order.status || '').toUpperCase()
+  if (orderStatus !== 'PAID') {
+    throw createError({ statusCode: 400, statusMessage: `Pedido com status ${orderStatus}. Precisa estar PAID para entregar licença.` })
   }
 
   if (order.licencas.length > 0) {

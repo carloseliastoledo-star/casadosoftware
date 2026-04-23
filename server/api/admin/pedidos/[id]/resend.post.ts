@@ -7,7 +7,7 @@ import { getStoreContext, whereForStore } from '#root/server/utils/store'
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const ctx = getStoreContext()
+  const ctx = getStoreContext(event)
 
   const id = String(getRouterParam(event, 'id') || '').trim()
   if (!id) {

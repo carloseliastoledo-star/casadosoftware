@@ -8,7 +8,7 @@ type AllowedStatus = 'PENDING' | 'PAID' | 'REJECTED' | 'CANCELLED'
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const ctx = getStoreContext()
+  const ctx = getStoreContext(event)
 
   const id = String(getRouterParam(event, 'id') || '').trim()
   if (!id) {

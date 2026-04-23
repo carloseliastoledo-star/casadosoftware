@@ -46,7 +46,7 @@ function normalizeImageUrl(input: unknown): string | null {
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const { storeSlug } = getStoreContext()
+  const { storeSlug } = getStoreContext(event)
 
   const id = event.context.params.id
   const body = await readBody(event)

@@ -6,7 +6,7 @@ import { getStoreContext } from '../../../utils/store'
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const { storeSlug } = getStoreContext()
+  const { storeSlug } = getStoreContext(event)
 
   const body = await readBody(event)
 

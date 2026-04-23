@@ -5,7 +5,7 @@ import { getStoreContext } from '#root/server/utils/store'
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const { storeSlug } = getStoreContext()
+  const { storeSlug } = getStoreContext(event)
 
   const products = await (prisma as any).produto.findMany({
     select: {
