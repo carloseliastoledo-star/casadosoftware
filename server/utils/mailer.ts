@@ -43,7 +43,24 @@ export async function sendMail({ to, bcc, subject, html }: MailParams) {
 
   const transporter = getTransporter()
   const safeBcc = String(bcc || '').trim()
-  await transporter.sendMail({ from, to, bcc: safeBcc || undefined, subject, html })
+
+  console.log(`[mailer] Enviando email: from=${from}, to=${to}, subject=${subject}`)
+
+  const info = await transporter.sendMail({ from, to, bcc: safeBcc || undefined, subject, html })
+
+  console.log(`[mailer] Resultado envio:`, {
+    messageId: info.messageId,
+    response: info.response,
+    accepted: info.accepted,
+    rejected: info.rejected,
+    envelope: info.envelope
+  })
+
+  // Verificar se o destinatário foi rejeitado
+  const rejected = Array.isArray(info.rejected) ? info.rejected : []
+  if (rejected.length > 0) {
+    throw new Error(`Email rejeitado pelo servidor SMTP para: ${rejected.join(', ')}. Response: ${info.response}`)
+  }
 }
 
 export function renderLicenseEmail(params: {
