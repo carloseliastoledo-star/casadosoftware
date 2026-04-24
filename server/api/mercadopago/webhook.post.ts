@@ -11,9 +11,11 @@ export default defineEventHandler(async (event) => {
     console.log('[mp webhook] POST', { type, dataId })
 
     if (type === 'merchant_order' && dataId) {
-      processMercadoPagoMerchantOrder(dataId).catch((err) => {
-        console.log('[mp webhook] merchant_order background error', err)
-      })
+      try {
+        await processMercadoPagoMerchantOrder(dataId)
+      } catch (err) {
+        console.error('[mp webhook] merchant_order error', err)
+      }
       return { ok: true }
     }
 
@@ -21,12 +23,15 @@ export default defineEventHandler(async (event) => {
       return { ok: true }
     }
 
-    processMercadoPagoPayment(dataId).catch((err) => {
-      console.log('[mp webhook] payment background error', err)
-    })
+    try {
+      await processMercadoPagoPayment(dataId)
+    } catch (err) {
+      console.error('[mp webhook] payment error', err)
+    }
+
     return { ok: true }
   } catch (err) {
-    console.log('[mp webhook] POST handler error', err)
+    console.error('[mp webhook] POST handler error', err)
     return { ok: true }
   }
 })
