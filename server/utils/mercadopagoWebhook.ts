@@ -47,13 +47,20 @@ export async function processMercadoPagoPayment(dataId: string) {
             }
           | null = null
 
-        // Verificar se este pagamento já foi processado (webhook duplicado)
+        // Verificar se este pagamento já foi processado com fulfillment completo
         const alreadyProcessed = await anyTx.order.findFirst({
-          where: { mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId) },
-          select: { id: true, status: true }
+          where: {
+            mercadoPagoPaymentId: String((mpPayment as any)?.id || dataId),
+            fulfillmentStatus: { in: ['SENT', 'RESENT', 'NO_STOCK', 'SMTP_ERROR'] }
+          },
+          select: { id: true, status: true, fulfillmentStatus: true }
         })
         if (alreadyProcessed) {
-          console.log('[mp webhook] Pagamento já processado (duplicado)', { orderId: String(orderId), dataId, existingOrderId: alreadyProcessed.id })
+          console.log('[mp webhook] Pagamento já processado (duplicado)', {
+            orderId: String(orderId), dataId,
+            existingOrderId: alreadyProcessed.id,
+            fulfillmentStatus: (alreadyProcessed as any).fulfillmentStatus
+          })
           return
         }
 

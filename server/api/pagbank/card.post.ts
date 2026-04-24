@@ -2,6 +2,7 @@ import { defineEventHandler, readBody, createError, getCookie } from 'h3'
 import prisma from '../../db/prisma.js'
 import { createPagbankCard } from '../../services/pagbank.js'
 import { getStoreContext } from '../../utils/store'
+import { fulfillPaidOrder } from '../../utils/orderFulfillment'
 
 export default defineEventHandler(async (event) => {
   const { storeSlug } = getStoreContext(event)
@@ -198,6 +199,14 @@ export default defineEventHandler(async (event) => {
       pagoEm: paid ? new Date() : null
     }
   })
+
+  if (paid) {
+    try {
+      await fulfillPaidOrder(order.id)
+    } catch (err) {
+      console.error('[pagbank card] fulfillment error:', err)
+    }
+  }
 
   return {
     ok: true,

@@ -332,9 +332,11 @@ export default defineEventHandler(async (event) => {
   })
 
   if (status === 'approved') {
-    processMercadoPagoPayment(mpPaymentId).catch((err) => {
-      console.log('[card] processMercadoPagoPayment error', err)
-    })
+    try {
+      await processMercadoPagoPayment(mpPaymentId)
+    } catch (err) {
+      console.error('[card] processMercadoPagoPayment error', err)
+    }
   }
 
   return {

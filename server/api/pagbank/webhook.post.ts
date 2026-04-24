@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
 import prisma from '../../db/prisma.js'
+import { fulfillPaidOrder } from '../../utils/orderFulfillment'
 
 /**
  * Webhook PagBank — notificação de mudança de status de charge.
@@ -47,6 +48,12 @@ export default defineEventHandler(async (event) => {
   })
 
   console.log('[pagbank webhook] pedido marcado como PAID:', order.id)
+
+  try {
+    await fulfillPaidOrder(order.id)
+  } catch (err) {
+    console.error('[pagbank webhook] fulfillment error:', err)
+  }
 
   return { ok: true }
 })
