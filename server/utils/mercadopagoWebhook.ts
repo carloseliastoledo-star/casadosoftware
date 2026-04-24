@@ -22,13 +22,16 @@ export async function processMercadoPagoPayment(dataId: string) {
     if (status === 'approved') {
       type TelegramReservation = { orderId: string; reservedAt: Date }
       type TelegramPayload = { orderId: string; produtoNome: string; customerEmail: string }
+      type EmailPayload = { orderId: string; customerEmail: string; produtoNome: string; licenseKey: string }
 
       let telegramReservation: TelegramReservation | null = null
       let telegramPayload: TelegramPayload | null = null
+      let emailPayload: EmailPayload | null = null
 
       const paidAt = new Date()
       const availableAt = new Date(paidAt.getTime() + 7 * 24 * 60 * 60 * 1000)
 
+      // ── TRANSACTION: apenas operações de banco (rápido) ──
       await prisma.$transaction(async (tx) => {
         const anyTx: any = tx as any
         let order:
@@ -93,6 +96,8 @@ export async function processMercadoPagoPayment(dataId: string) {
 
         if (!order) return
 
+        console.log('[mp webhook] Pedido atualizado para PAID:', order.id)
+
         if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
           try {
             const affiliateId = Number((order as any)?.affiliateId ?? 0)
@@ -138,14 +143,14 @@ export async function processMercadoPagoPayment(dataId: string) {
             select: { id: true }
           })
 
-          const [customer, produto] = await Promise.all([
+          const [cust, prod] = await Promise.all([
             anyTx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
             anyTx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
           ])
 
-          if (customer?.email && produto?.nome) {
+          if (cust?.email && prod?.nome) {
             telegramReservation = { orderId: order.id, reservedAt }
-            telegramPayload = { orderId: order.id, produtoNome: produto.nome, customerEmail: customer.email }
+            telegramPayload = { orderId: order.id, produtoNome: prod.nome, customerEmail: cust.email }
           }
         }
 
@@ -251,25 +256,39 @@ export async function processMercadoPagoPayment(dataId: string) {
           return
         }
 
-        const html = renderLicenseEmail({
+        // Preparar dados para envio de email FORA da transação
+        emailPayload = {
+          orderId: order.id,
+          customerEmail: customer.email,
           produtoNome: produto.nome,
-          licenseKey: licenca.chave,
-          orderId: order.id
-        })
+          licenseKey: licenca.chave
+        }
 
-        const now = new Date()
+        console.log('[mp webhook] Transação concluída, licença vinculada:', licenca.id, 'email será enviado fora da tx')
+      })
+
+      // ── ENVIO DE EMAIL: fora da transação (SMTP não bloqueia o DB) ──
+      if (emailPayload) {
+        const ep = emailPayload
         try {
-          const bcc =
-            String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
+          const html = renderLicenseEmail({
+            produtoNome: ep.produtoNome,
+            licenseKey: ep.licenseKey,
+            orderId: ep.orderId
+          })
+
+          const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
+
           await sendMail({
-            to: customer.email,
+            to: ep.customerEmail,
             bcc,
-            subject: `Sua licença: ${produto.nome}`,
+            subject: `Sua licença: ${ep.produtoNome}`,
             html
           })
 
-          await anyTx.order.update({
-            where: { id: order.id },
+          const now = new Date()
+          await (prisma as any).order.update({
+            where: { id: ep.orderId },
             data: {
               emailEnviadoEm: now,
               fulfillmentStatus: 'SENT',
@@ -277,20 +296,22 @@ export async function processMercadoPagoPayment(dataId: string) {
               fulfillmentUpdatedAt: now
             }
           })
+
+          console.log('[mp webhook] Email enviado com sucesso para:', ep.customerEmail)
         } catch (err: any) {
           const msg = String(err?.data?.statusMessage || err?.message || 'Falha ao enviar e-mail')
-          await anyTx.order.update({
-            where: { id: order.id },
+          console.error('[mp webhook] Erro ao enviar email:', msg)
+
+          await (prisma as any).order.update({
+            where: { id: ep.orderId },
             data: {
               fulfillmentStatus: 'SMTP_ERROR',
               fulfillmentError: msg,
-              fulfillmentUpdatedAt: now
-            },
-            select: { id: true }
+              fulfillmentUpdatedAt: new Date()
+            }
           })
-          return
         }
-      })
+      }
 
       if (telegramReservation && telegramPayload) {
         const payload: TelegramPayload = telegramPayload
