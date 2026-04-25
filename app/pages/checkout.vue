@@ -289,7 +289,8 @@
 definePageMeta({ layout: 'lp' })
 
 const route = useRoute()
-const { trackMeta, trackGtag, trackBeginCheckout, trackPurchase } = useTracking()
+const { trackMeta, trackGtag, trackBeginCheckout } = useTracking()
+const { trackBeginCheckout: ecomBeginCheckout } = useEcommerceTracking()
 
 const trackingData = computed(() => ({
   utm_source:   String(route.query.utm_source   || '').trim() || undefined,
@@ -420,6 +421,13 @@ onMounted(async () => {
 
   trackMeta('InitiateCheckout', { value: totalPrice.value })
   trackGtag('begin_checkout', { value: totalPrice.value })
+
+  ecomBeginCheckout(
+    [{ item_id: produtoId.value, item_name: productName.value, price: basePrice.value, item_category: 'Software' }],
+    'BRL',
+    totalPrice.value,
+    'mercado_pago'
+  )
 })
 
 onUnmounted(() => {
@@ -494,8 +502,6 @@ async function startPaymentPolling() {
         stopPaymentPolling()
         clearPIXSession()
         saveFunnelOrder(funnelOrderId.value)
-        trackMeta('Purchase', { value: totalPrice.value, currency: 'BRL' })
-        trackGtag('purchase', { value: totalPrice.value, currency: 'BRL', transaction_id: funnelOrderId.value })
         if (isFunnelMode.value) {
           await navigateTo('/upsell/windows-11')
         } else {
@@ -542,6 +548,13 @@ async function handleFinalize() {
     trackMeta('InitiateCheckout', { value: total, currency: 'BRL' })
     trackGtag('begin_checkout', { value: total, currency: 'BRL' })
 
+    ecomBeginCheckout(
+      [{ item_id: produtoId.value, item_name: productName.value, price: basePrice.value, item_category: 'Software' }],
+      'BRL',
+      total,
+      'mercado_pago'
+    )
+
     const expiryParts = cardExpiry.value.split('/')
     const body: Record<string, unknown> = {
       produtoId: produtoId.value,
@@ -583,8 +596,6 @@ async function handleFinalize() {
       const status = String(result?.status || '').toLowerCase()
       if (status === 'paid' || status === 'approved') {
         saveFunnelOrder(funnelOrderId.value)
-        trackMeta('Purchase', { value: total, currency: 'BRL' })
-        trackGtag('purchase', { value: total, currency: 'BRL', transaction_id: funnelOrderId.value })
         if (isFunnelMode.value) {
           await navigateTo('/upsell/windows-11')
         } else {

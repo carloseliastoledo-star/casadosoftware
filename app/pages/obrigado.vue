@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { trackPurchase, trackGoogleAdsConversion } from '~/composables/useTracking'
+import { useEcommerceTracking } from '~/composables/useEcommerceTracking'
+import type { PurchasePayload } from '~/composables/useEcommerceTracking'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -27,6 +29,7 @@ const paymentId = computed(() => String(route.query.paymentId || ''))
 const upsellParam = computed(() => String(route.query.upsell || ''))
 
 const { trackMeta, trackGtag } = useTracking()
+const { trackPurchase: ecomPurchase } = useEcommerceTracking()
 
 const funnelOrder = ref<Record<string, any> | null>(null)
 
@@ -77,13 +80,11 @@ onMounted(async () => {
   
   if (oid && hasUpsell) {
     try {
-      // Check if there's an upsell available for this order
       const upsellCheck: any = await $fetch('/api/upsell/check', {
         query: { orderId: oid }
       })
       
       if (upsellCheck.hasUpsell && upsellCheck.upsellProductId) {
-        // Redirect to upsell page
         navigateTo({
           path: '/upsell',
           query: {
@@ -102,8 +103,8 @@ onMounted(async () => {
   }
 
   // Google Ads conversion tracking usando o novo sistema dinâmico
-  let value: number | null | undefined = undefined
-  let currency: string | null | undefined = undefined
+  let conversionValue: number | null | undefined = undefined
+  let conversionCurrency: string | null | undefined = undefined
 
   try {
     if (orderId.value) {
@@ -112,36 +113,37 @@ onMounted(async () => {
       })
       const c = res?.conversion
 
-      value = c?.value
-      currency = c?.currency
+      conversionValue = c?.value
+      conversionCurrency = c?.currency
     }
   } catch {
     // se falhar, segue sem valor
   }
 
-  const payload: any = {
+  const adsPayload: any = {
     transaction_id: orderId.value || undefined
   }
 
-  if (value !== null && value !== undefined) {
-    payload.value = Number(value)
+  if (conversionValue !== null && conversionValue !== undefined) {
+    adsPayload.value = Number(conversionValue)
   }
 
-  if (currency) {
-    payload.currency = String(currency)
+  if (conversionCurrency) {
+    adsPayload.currency = String(conversionCurrency)
   }
 
-  // Dispara conversão Google Ads usando o novo sistema dinâmico
-  await trackGoogleAdsConversion(payload)
+  await trackGoogleAdsConversion(adsPayload)
 
-  // GA4 purchase tracking
+  // ── GA4 purchase tracking com dados reais do pedido ──
   try {
-    const oid = String(orderId.value || '').trim()
     if (!oid) return
 
-    const purchaseKey = `ga4_purchase_tracked_${oid}`
+    const purchaseKey = `purchase_tracked_${oid}`
     try {
-      if (typeof window !== 'undefined' && window.localStorage?.getItem(purchaseKey)) return
+      if (typeof window !== 'undefined' && window.localStorage?.getItem(purchaseKey)) {
+        console.log('[GA4] purchase já rastreado para orderId:', oid)
+        return
+      }
     } catch {
       // ignore
     }
@@ -151,7 +153,32 @@ onMounted(async () => {
     const status = String(order?.status || '').toUpperCase()
 
     if (status === 'PAID') {
+      // Detectar gateway a partir da resposta do backend
+      const gateway: 'mercado_pago' | 'stripe' = order.gateway === 'stripe' ? 'stripe' : 'mercado_pago'
+      const currency: 'BRL' | 'USD' = String(order.currency || '').toUpperCase() === 'USD' ? 'USD' : 'BRL'
+      const total = Number(order.total || 0)
+      const items = Array.isArray(order.items) ? order.items : []
+
+      // Disparar usando useTracking (compatibilidade com Meta Pixel etc)
       trackPurchase(order)
+
+      // Disparar usando useEcommerceTracking (GA4 ecommerce completo com dedup)
+      ecomPurchase({
+        transaction_id: oid,
+        value: total,
+        currency,
+        gateway,
+        items: items.map((item: any) => ({
+          item_id: item.item_id || item.id,
+          item_name: item.item_name || item.name,
+          price: Number(item.price || 0),
+          quantity: Number(item.quantity || 1),
+          item_category: item.item_category || 'Software'
+        }))
+      })
+
+      // Meta Pixel purchase
+      trackMeta('Purchase', { value: total, currency, content_name: items[0]?.item_name || '' })
 
       try {
         if (typeof window !== 'undefined') window.localStorage?.setItem(purchaseKey, '1')
@@ -159,8 +186,8 @@ onMounted(async () => {
         // ignore
       }
     }
-  } catch {
-    // ignore
+  } catch (err) {
+    console.error('[GA4] Erro ao rastrear purchase:', err)
   }
 })
 </script>

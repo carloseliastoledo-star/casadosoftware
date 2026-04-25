@@ -3,7 +3,7 @@ import prisma from '#root/server/db/prisma'
 import { getStoreContext, whereForStore } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
-  const ctx = getStoreContext()
+  const ctx = getStoreContext(event)
   const query = getQuery(event)
   const orderId = String(query.orderId || '').trim()
 

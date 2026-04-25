@@ -249,6 +249,7 @@
 <script setup lang="ts">
 import { useIntlContext } from '#imports'
 import { trackViewItem } from '~/composables/useTracking'
+import { useEcommerceTracking } from '~/composables/useEcommerceTracking'
 
 function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[]; USE_PROFILES?: any }): string {
   const str = String(html || '')
@@ -494,6 +495,8 @@ const primaryCategoryLabel = computed(() => {
   return pretty ? (pretty.charAt(0).toUpperCase() + pretty.slice(1)) : s
 })
 
+const { trackViewItem: ecomViewItem, trackAddToCart: ecomAddToCart } = useEcommerceTracking()
+
 const viewItemTracked = ref(false)
 
 watch(
@@ -506,6 +509,12 @@ watch(
 
     try {
       trackViewItem(p)
+      ecomViewItem({
+        item_id: (p as any).id,
+        item_name: String((p as any).nome || (p as any).name || ''),
+        price: Number((p as any).preco ?? (p as any).price ?? 0),
+        item_category: primaryCategoryLabel.value || 'Software'
+      }, 'BRL')
     } catch {
       // ignore
     }
@@ -1271,7 +1280,18 @@ const t = computed(() => {
 })
 
 function buyNow() {
-  const slugValue = String((safeProduct.value as any)?.slug || slug || '')
+  const p = safeProduct.value as any
+  try {
+    ecomAddToCart({
+      item_id: p?.id || '',
+      item_name: String(p?.nome || p?.name || ''),
+      price: Number(p?.preco ?? p?.price ?? 0),
+      item_category: primaryCategoryLabel.value || 'Software'
+    }, 'BRL')
+  } catch {
+    // ignore
+  }
+  const slugValue = String(p?.slug || slug || '')
   navigateTo({ path: '/checkout', query: { product: slugValue } })
 }
 </script>
