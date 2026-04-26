@@ -84,7 +84,7 @@ useHead(() => {
         window.gtag = gtag;
         gtag('js', new Date());
         gtag('config', '${ga4Id.value}', {
-          send_page_view: true,
+          send_page_view: false,
           debug_mode: true
         });
       `,
@@ -114,19 +114,19 @@ const googleAdsConversionId = computed(() => {
   return String(fromDb || config.public.googleAdsConversionId || '')
 })
 
-// Watch para disparar page views quando a rota muda
+// Attribution tracking + page_view em toda navegação SPA
+const { captureEntry, capturePageView } = useAttributionTracking()
+
 onMounted(() => {
+  if (isPublicSite.value) {
+    captureEntry()
+  }
+
   watch(
     () => route.fullPath,
-    () => {
-      if (import.meta.client && isPublicSite.value && ga4Id.value && typeof (window as any).gtag === 'function') {
-        console.log('[app.vue] Disparando page view para:', route.fullPath)
-        ;(window as any).gtag('event', 'page_view', {
-          page_path: window.location.pathname,
-          page_location: window.location.href,
-          page_title: document.title,
-          debug_mode: true
-        })
+    (path) => {
+      if (import.meta.client && isPublicSite.value) {
+        capturePageView(path)
       }
     },
     { immediate: true }

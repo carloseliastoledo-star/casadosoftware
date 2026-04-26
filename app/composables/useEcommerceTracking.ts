@@ -9,6 +9,8 @@
  *  - purchase         → SOMENTE na página de obrigado, com dados reais do pedido
  */
 
+import { useAttributionTracking } from '~/composables/useAttributionTracking'
+
 export type TrackingItem = {
   item_id?: string | number
   item_name: string
@@ -102,13 +104,28 @@ export function useEcommerceTracking() {
       // localStorage indisponível
     }
 
+    const { getPurchaseAttributionPayload } = useAttributionTracking()
+    const attribution = getPurchaseAttributionPayload()
+
     trackEvent('purchase', {
       transaction_id: payload.transaction_id,
       value: Number(payload.value || 0),
       currency: payload.currency,
       payment_type: payload.gateway,
       affiliation: payload.gateway === 'mercado_pago' ? 'Mercado Pago Brasil' : 'Stripe Internacional',
-      items: formatItems(payload.items)
+      items: formatItems(payload.items),
+      first_landing_page: attribution.first_landing_page,
+      last_landing_page: attribution.last_landing_page,
+      last_page_before_checkout: attribution.last_page_before_checkout,
+      referrer: attribution.referrer,
+      utm_source: attribution.utm_source,
+      utm_medium: attribution.utm_medium,
+      utm_campaign: attribution.utm_campaign,
+      utm_content: attribution.utm_content,
+      utm_term: attribution.utm_term,
+      gclid: attribution.gclid,
+      fbclid: attribution.fbclid,
+      msclkid: attribution.msclkid
     })
 
     try {
@@ -118,6 +135,7 @@ export function useEcommerceTracking() {
     }
 
     console.log('[GA4] purchase rastreado:', payload.transaction_id, payload.value, payload.currency)
+    console.log('[GA4] purchase attribution', attribution)
   }
 
   return {

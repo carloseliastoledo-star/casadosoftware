@@ -291,6 +291,7 @@ definePageMeta({ layout: 'lp' })
 const route = useRoute()
 const { trackMeta, trackGtag, trackBeginCheckout } = useTracking()
 const { trackBeginCheckout: ecomBeginCheckout } = useEcommerceTracking()
+const { captureBeforeCheckout } = useAttributionTracking()
 
 const trackingData = computed(() => ({
   utm_source:   String(route.query.utm_source   || '').trim() || undefined,
@@ -419,6 +420,7 @@ onMounted(async () => {
     }
   }
 
+  captureBeforeCheckout('mercado_pago')
   trackMeta('InitiateCheckout', { value: totalPrice.value })
   trackGtag('begin_checkout', { value: totalPrice.value })
 
@@ -545,6 +547,7 @@ async function handleFinalize() {
 
   try {
     const total = totalPrice.value
+    captureBeforeCheckout('mercado_pago')
     trackMeta('InitiateCheckout', { value: total, currency: 'BRL' })
     trackGtag('begin_checkout', { value: total, currency: 'BRL' })
 
