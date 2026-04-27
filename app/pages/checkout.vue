@@ -291,7 +291,7 @@ definePageMeta({ layout: 'lp' })
 const route = useRoute()
 const { trackMeta, trackGtag, trackBeginCheckout } = useTracking()
 const { trackBeginCheckout: ecomBeginCheckout } = useEcommerceTracking()
-const { captureBeforeCheckout } = useAttributionTracking()
+const { captureBeforeCheckout, getAttributionForOrder } = useAttributionTracking()
 
 const trackingData = computed(() => ({
   utm_source:   String(route.query.utm_source   || '').trim() || undefined,
@@ -303,6 +303,7 @@ const trackingData = computed(() => ({
   fbclid:       String(route.query.fbclid       || '').trim() || undefined,
   referrer:     import.meta.client ? (document.referrer || undefined) : undefined,
   landingPage:  import.meta.client ? (window.location.href || undefined) : undefined,
+  tracking:     import.meta.client ? getAttributionForOrder() : undefined,
 }))
 
 const FUNNEL_SLUG = 'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'

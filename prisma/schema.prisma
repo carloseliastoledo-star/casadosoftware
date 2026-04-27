@@ -195,6 +195,27 @@ model Order {
   fbclid              String?
   referrer            String?  @db.Text
   landingPage         String?  @db.Text
+  firstTouchSource       String?
+  firstTouchMedium       String?
+  firstTouchCampaign     String?
+  firstTouchContent      String?
+  firstTouchTerm         String?
+  firstTouchGclid        String?
+  firstTouchFbclid       String?
+  firstTouchReferrer     String?  @db.Text
+  firstTouchLandingPage  String?  @db.Text
+  lastTouchSource        String?
+  lastTouchMedium        String?
+  lastTouchCampaign      String?
+  lastTouchContent       String?
+  lastTouchTerm          String?
+  lastTouchGclid         String?
+  lastTouchFbclid        String?
+  lastTouchReferrer      String?  @db.Text
+  lastTouchLandingPage   String?  @db.Text
+  checkoutPage           String?  @db.Text
+  trackingUserAgent      String?  @db.Text
+  trackingDevice         String?
   currency            String?
   countryCode         String?
   produtoId            String

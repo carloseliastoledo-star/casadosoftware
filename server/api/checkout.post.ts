@@ -37,6 +37,11 @@ export default defineEventHandler(async (event) => {
   const referrer    = body?.referrer     ? String(body.referrer).trim()     : null
   const landingPage = body?.landingPage  ? String(body.landingPage).trim()  : null
 
+  // Attribution tracking (first/last touch)
+  const tracking = body?.tracking || {}
+  const firstTouch = tracking.first_touch || {}
+  const lastTouch = tracking.last_touch || {}
+
   function inferTrafficSourceType() {
     if (gclid || utmMedium === 'cpc' || utmMedium === 'ppc' || utmMedium === 'paid' || utmMedium === 'paidsearch') return 'cpc'
     if (utmMedium === 'organic') return 'organic'
@@ -146,6 +151,27 @@ export default defineEventHandler(async (event) => {
       fbclid,
       referrer,
       landingPage,
+      firstTouchSource: firstTouch.source || null,
+      firstTouchMedium: firstTouch.medium || null,
+      firstTouchCampaign: firstTouch.campaign || null,
+      firstTouchContent: firstTouch.content || null,
+      firstTouchTerm: firstTouch.term || null,
+      firstTouchGclid: firstTouch.gclid || null,
+      firstTouchFbclid: firstTouch.fbclid || null,
+      firstTouchReferrer: firstTouch.referrer || null,
+      firstTouchLandingPage: firstTouch.landing_page || null,
+      lastTouchSource: lastTouch.source || null,
+      lastTouchMedium: lastTouch.medium || null,
+      lastTouchCampaign: lastTouch.campaign || null,
+      lastTouchContent: lastTouch.content || null,
+      lastTouchTerm: lastTouch.term || null,
+      lastTouchGclid: lastTouch.gclid || null,
+      lastTouchFbclid: lastTouch.fbclid || null,
+      lastTouchReferrer: lastTouch.referrer || null,
+      lastTouchLandingPage: lastTouch.landing_page || null,
+      checkoutPage: tracking.checkout_page || null,
+      trackingUserAgent: tracking.user_agent || null,
+      trackingDevice: tracking.device || null,
     },
     select: { id: true },
   })

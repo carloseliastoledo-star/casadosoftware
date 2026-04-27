@@ -214,46 +214,60 @@
 
           <div class="p-5 space-y-4">
             <div class="border rounded-lg p-3">
-              <div class="font-medium mb-2">Origem / Tracking</div>
-              <div class="grid grid-cols-1 gap-2 text-xs">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="text-gray-600">Tipo</div>
-                  <div class="font-mono text-right break-all">{{ editOrder?.trafficSourceType || '-' }}</div>
+              <div class="flex items-center gap-2 mb-3">
+                <div class="font-medium">Origem / Tracking</div>
+                <span v-if="channelBadge(editOrder)" class="px-2 py-0.5 rounded text-[11px] font-semibold" :class="channelBadge(editOrder)?.cls">{{ channelBadge(editOrder)?.label }}</span>
+              </div>
+
+              <div v-if="hasFirstTouch(editOrder)" class="mb-3">
+                <div class="text-[11px] font-semibold text-gray-500 uppercase mb-1">First Touch</div>
+                <div class="grid grid-cols-1 gap-1 text-xs">
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Source</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchSource || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Medium</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchMedium || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Campaign</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchCampaign || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Content</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchContent || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Term</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchTerm || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">GCLID</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchGclid || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">FBCLID</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchFbclid || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Landing Page</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchLandingPage || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Referrer</div><div class="font-mono text-right break-all">{{ editOrder?.firstTouchReferrer || '-' }}</div></div>
                 </div>
-                <div class="flex items-start justify-between gap-3">
-                  <div class="text-gray-600">UTM Source</div>
-                  <div class="font-mono text-right break-all">{{ editOrder?.utmSource || '-' }}</div>
+              </div>
+
+              <div v-if="hasLastTouch(editOrder)" class="mb-3">
+                <div class="text-[11px] font-semibold text-gray-500 uppercase mb-1">Last Touch</div>
+                <div class="grid grid-cols-1 gap-1 text-xs">
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Source</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchSource || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Medium</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchMedium || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Campaign</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchCampaign || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Content</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchContent || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Term</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchTerm || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">GCLID</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchGclid || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">FBCLID</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchFbclid || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Landing Page</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchLandingPage || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Referrer</div><div class="font-mono text-right break-all">{{ editOrder?.lastTouchReferrer || '-' }}</div></div>
                 </div>
-                <div class="flex items-start justify-between gap-3">
-                  <div class="text-gray-600">UTM Medium</div>
-                  <div class="font-mono text-right break-all">{{ editOrder?.utmMedium || '-' }}</div>
+              </div>
+
+              <div v-if="!hasFirstTouch(editOrder) && !hasLastTouch(editOrder)" class="mb-3">
+                <div class="text-[11px] font-semibold text-gray-500 uppercase mb-1">Tracking legado</div>
+                <div class="grid grid-cols-1 gap-1 text-xs">
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Tipo</div><div class="font-mono text-right break-all">{{ editOrder?.trafficSourceType || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">UTM Source</div><div class="font-mono text-right break-all">{{ editOrder?.utmSource || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">UTM Medium</div><div class="font-mono text-right break-all">{{ editOrder?.utmMedium || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">UTM Campaign</div><div class="font-mono text-right break-all">{{ editOrder?.utmCampaign || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">GCLID</div><div class="font-mono text-right break-all">{{ editOrder?.gclid || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">FBCLID</div><div class="font-mono text-right break-all">{{ editOrder?.fbclid || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Referrer</div><div class="font-mono text-right break-all">{{ editOrder?.referrer || '-' }}</div></div>
+                  <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Landing page</div><div class="font-mono text-right break-all">{{ editOrder?.landingPage || '-' }}</div></div>
                 </div>
-                <div class="flex items-start justify-between gap-3">
-                  <div class="text-gray-600">UTM Campaign</div>
-                  <div class="font-mono text-right break-all">{{ editOrder?.utmCampaign || '-' }}</div>
-                </div>
-                <div class="flex items-start justify-between gap-3">
-                  <div class="text-gray-600">GCLID</div>
-                  <div class="flex items-start justify-end gap-2">
-                    <div class="font-mono text-right break-all">{{ editOrder?.gclid || '-' }}</div>
-                    <button
-                      v-if="editOrder?.gclid"
-                      class="text-[11px] text-blue-700 hover:text-blue-900 whitespace-nowrap"
-                      type="button"
-                      @click.stop="copyToClipboard(editOrder?.gclid || '')"
-                    >
-                      {{ copiedText === editOrder?.gclid ? 'Copiado' : 'Copiar' }}
-                    </button>
-                  </div>
-                </div>
-                <div class="flex items-start justify-between gap-3">
-                  <div class="text-gray-600">Referrer</div>
-                  <div class="font-mono text-right break-all">{{ editOrder?.referrer || '-' }}</div>
-                </div>
-                <div class="flex items-start justify-between gap-3">
-                  <div class="text-gray-600">Landing page</div>
-                  <div class="font-mono text-right break-all">{{ editOrder?.landingPage || '-' }}</div>
-                </div>
+              </div>
+
+              <div class="text-[11px] font-semibold text-gray-500 uppercase mb-1">Checkout</div>
+              <div class="grid grid-cols-1 gap-1 text-xs">
+                <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Checkout Page</div><div class="font-mono text-right break-all">{{ editOrder?.checkoutPage || '-' }}</div></div>
+                <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Device</div><div class="font-mono text-right break-all">{{ editOrder?.trackingDevice || '-' }}</div></div>
+                <div class="flex items-start justify-between gap-3"><div class="text-gray-600">User Agent</div><div class="font-mono text-right break-all text-[10px]">{{ editOrder?.trackingUserAgent || '-' }}</div></div>
               </div>
             </div>
 
@@ -517,6 +531,27 @@ type OrderDto = {
   fbclid?: string | null
   referrer?: string | null
   landingPage?: string | null
+  firstTouchSource?: string | null
+  firstTouchMedium?: string | null
+  firstTouchCampaign?: string | null
+  firstTouchContent?: string | null
+  firstTouchTerm?: string | null
+  firstTouchGclid?: string | null
+  firstTouchFbclid?: string | null
+  firstTouchReferrer?: string | null
+  firstTouchLandingPage?: string | null
+  lastTouchSource?: string | null
+  lastTouchMedium?: string | null
+  lastTouchCampaign?: string | null
+  lastTouchContent?: string | null
+  lastTouchTerm?: string | null
+  lastTouchGclid?: string | null
+  lastTouchFbclid?: string | null
+  lastTouchReferrer?: string | null
+  lastTouchLandingPage?: string | null
+  checkoutPage?: string | null
+  trackingUserAgent?: string | null
+  trackingDevice?: string | null
   criadoEm: string
   pagoEm: string | null
   emailEnviadoEm: string | null
@@ -644,6 +679,32 @@ const selectedLicencaId = ref('')
 const fulfillSubmitting = ref(false)
 const fulfillMessage = ref('')
 const fulfillError = ref('')
+
+function channelBadge(o: OrderDto | null): { label: string; cls: string } | null {
+  if (!o) return null
+  const gclid = o.lastTouchGclid || o.firstTouchGclid || o.gclid
+  const fbclid = o.lastTouchFbclid || o.firstTouchFbclid || o.fbclid
+  const medium = o.lastTouchMedium || o.firstTouchMedium || o.utmMedium
+  const source = o.lastTouchSource || o.firstTouchSource || o.utmSource
+
+  if (gclid) return { label: 'Google Ads', cls: 'bg-blue-100 text-blue-800' }
+  if (fbclid) return { label: 'Meta Ads', cls: 'bg-indigo-100 text-indigo-800' }
+  if (medium === 'cpc' || medium === 'ppc' || medium === 'paid') return { label: 'Pago', cls: 'bg-amber-100 text-amber-800' }
+  if (medium === 'organic') return { label: 'Orgânico', cls: 'bg-green-100 text-green-800' }
+  if (source) return { label: `${source} / ${medium || '?'}`, cls: 'bg-gray-100 text-gray-800' }
+  if (o.referrer) return { label: 'Referral', cls: 'bg-purple-100 text-purple-800' }
+  return { label: 'Direto / não identificado', cls: 'bg-gray-100 text-gray-600' }
+}
+
+function hasFirstTouch(o: OrderDto | null): boolean {
+  if (!o) return false
+  return !!(o.firstTouchSource || o.firstTouchMedium || o.firstTouchCampaign || o.firstTouchGclid || o.firstTouchFbclid || o.firstTouchLandingPage)
+}
+
+function hasLastTouch(o: OrderDto | null): boolean {
+  if (!o) return false
+  return !!(o.lastTouchSource || o.lastTouchMedium || o.lastTouchCampaign || o.lastTouchGclid || o.lastTouchFbclid || o.lastTouchLandingPage)
+}
 
 function paymentTypeLabel(o: OrderDto) {
   const t = String(o?.mercadoPagoPaymentTypeId || '').toLowerCase()

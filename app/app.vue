@@ -114,12 +114,12 @@ const googleAdsConversionId = computed(() => {
   return String(fromDb || config.public.googleAdsConversionId || '')
 })
 
-// Attribution tracking + page_view em toda navegação SPA
-const { captureEntry, capturePageView } = useAttributionTracking()
+// Attribution tracking (first/last touch) + page_view em toda navegação SPA
+const { captureAttribution, capturePageView } = useAttributionTracking()
 
 onMounted(() => {
   if (isPublicSite.value) {
-    captureEntry()
+    captureAttribution()
   }
 
   watch(
