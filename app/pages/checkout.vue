@@ -143,6 +143,37 @@
             </div>
           </div>
 
+          <!-- Cupom de desconto -->
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <h2 class="font-bold text-gray-800 mb-3 text-xs uppercase tracking-widest">Cupom de desconto</h2>
+            <div class="flex gap-2">
+              <input
+                v-model="couponCode"
+                type="text"
+                placeholder="Digite seu cupom"
+                class="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                @input="handleCouponInput"
+              />
+              <button
+                type="button"
+                @click="applyCoupon"
+                :disabled="!couponCode.trim() || applyingCoupon"
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm rounded-xl transition-all"
+              >
+                <template v-if="applyingCoupon">
+                  <svg class="animate-spin w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                  </svg>
+                  Aplicando...
+                </template>
+                <template v-else>Aplicar</template>
+              </button>
+            </div>
+            <div v-if="couponError" class="mt-2 text-xs text-red-600">{{ couponError }}</div>
+            <div v-if="couponSuccess" class="mt-2 text-xs text-green-600">{{ couponSuccess }}</div>
+          </div>
+
           <!-- Order Bump (só modo funnel) -->
           <div
             v-if="isFunnelMode"
@@ -334,11 +365,25 @@ const funnelOrderId = ref('')
 const pollingActive = ref(false)
 const pollingTimer = ref<any>(null)
 
+// Cupom
+const couponCode = ref('')
+const applyingCoupon = ref(false)
+const couponError = ref('')
+const couponSuccess = ref('')
+const appliedCoupon = ref<any>(null)
+
 const productSlug = computed(() => String(route.query.product || ''))
 const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
-const totalPrice = computed(() => basePrice.value + (isFunnelMode.value && orderBump.value ? bumpConfig.value.price : 0))
+const totalPrice = computed(() => {
+  const subtotal = basePrice.value + (isFunnelMode.value && orderBump.value ? bumpConfig.value.price : 0)
+  if (appliedCoupon.value && appliedCoupon.value.percent) {
+    const discount = subtotal * (appliedCoupon.value.percent / 100)
+    return subtotal - discount
+  }
+  return subtotal
+})
 
 useSeoMeta({
   title: computed(() => `Checkout — ${productName.value} | Casa do Software`),
@@ -569,6 +614,8 @@ async function handleFinalize() {
       method: paymentMethod.value,
       orderBump: isFunnelMode.value && orderBump.value,
       currency: 'BRL',
+      couponCode: appliedCoupon.value?.code || undefined,
+      couponPercent: appliedCoupon.value?.percent || undefined,
       ...trackingData.value
     }
 
@@ -613,6 +660,50 @@ async function handleFinalize() {
     paymentError.value = e?.data?.statusMessage || e?.message || 'Erro ao processar. Tente novamente.'
   } finally {
     loading.value = false
+  }
+}
+
+// Cupom functions
+function handleCouponInput() {
+  couponError.value = ''
+  couponSuccess.value = ''
+}
+
+async function applyCoupon() {
+  if (!couponCode.value.trim() || applyingCoupon.value) return
+
+  applyingCoupon.value = true
+  couponError.value = ''
+  couponSuccess.value = ''
+
+  try {
+    const res: any = await $fetch(`/api/coupons/${encodeURIComponent(couponCode.value.trim())}`)
+    const coupon = res?.coupon
+
+    if (!coupon || !coupon.active) {
+      couponError.value = 'Cupom inválido ou inativo.'
+      return
+    }
+
+    // Verificar validade
+    if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
+      couponError.value = 'Cupom expirado.'
+      return
+    }
+
+    // Verificar limite de usos
+    if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
+      couponError.value = 'Cupom já atingiu o limite de usos.'
+      return
+    }
+
+    appliedCoupon.value = coupon
+    couponSuccess.value = `Cupom aplicado! ${coupon.percent}% de desconto.`
+    couponCode.value = ''
+  } catch (e: any) {
+    couponError.value = e?.data?.statusMessage || 'Erro ao validar cupom.'
+  } finally {
+    applyingCoupon.value = false
   }
 }
 </script>
