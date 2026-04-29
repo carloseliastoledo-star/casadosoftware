@@ -691,11 +691,10 @@ async function applyCoupon() {
     
     const coupon = res?.coupon
     console.log('[checkout] Coupon object:', coupon)
-    console.log('[checkout] Coupon active:', coupon?.active)
 
-    if (!coupon || !coupon.active) {
-      console.log('[checkout] Coupon invalid/inactive:', coupon)
-      couponError.value = 'Cupom inválido ou inativo.'
+    if (!coupon || !coupon.id || !coupon.code) {
+      console.log('[checkout] Coupon invalid/missing:', coupon)
+      couponError.value = 'Cupom inválido.'
       return
     }
 
