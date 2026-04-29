@@ -203,8 +203,8 @@
       <div class="absolute inset-0 bg-black/40" @click="closeEditModal" />
 
       <div class="absolute inset-0 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-xl rounded-xl shadow-lg">
-          <div class="flex items-center justify-between p-5 border-b">
+        <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-xl shadow-lg flex flex-col">
+          <div class="flex items-center justify-between p-5 border-b flex-shrink-0">
             <div>
               <h2 class="text-lg font-semibold">Editar pedido</h2>
               <p class="text-sm text-gray-600 mt-1 font-mono">{{ editOrder?.id }}</p>
@@ -212,7 +212,7 @@
             <button class="text-gray-500 hover:text-gray-700" @click="closeEditModal">Fechar</button>
           </div>
 
-          <div class="p-5 space-y-4">
+          <div class="p-5 space-y-4 overflow-y-auto flex-1">
             <div class="border rounded-lg p-3">
               <div class="flex items-center gap-2 mb-3">
                 <div class="font-medium">Origem / Tracking</div>
@@ -286,7 +286,7 @@
             <div v-if="editError" class="text-red-700 text-sm font-medium">{{ editError }}</div>
           </div>
 
-          <div class="p-5 border-t flex items-center justify-end gap-3">
+          <div class="p-5 border-t flex items-center justify-end gap-3 flex-shrink-0">
             <button class="px-4 py-2 rounded-lg border" @click="closeEditModal" :disabled="editLoading">Cancelar</button>
             <button
               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
