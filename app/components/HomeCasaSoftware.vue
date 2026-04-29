@@ -239,17 +239,21 @@ const { data, pending } = await useAsyncData(
   asyncKey,
   async () => {
     try {
-      return await $fetch('/api/products/best-sellers', {
-        headers: fetchHeaders as any
+      const result = await $fetch('/api/products/best-sellers', {
+        headers: fetchHeaders as any,
+        timeout: 5000
       })
-    } catch (err) {
-      console.error('[home][products] failed', err)
+      return Array.isArray(result) ? result : []
+    } catch (err: any) {
+      console.error('[home][products] failed:', err?.message || err)
+      // Return empty array to prevent SSR breaking
       return []
     }
   },
   {
     server: true,
-    default: () => []
+    default: () => [],
+    transform: (data: any) => Array.isArray(data) ? data : []
   }
 )
 
