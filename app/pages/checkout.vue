@@ -678,11 +678,20 @@ async function applyCoupon() {
 
   const code = couponCode.value.trim()
   console.log('[checkout] Applying coupon:', code)
+  console.log('[checkout] Code length:', code.length)
+  console.log('[checkout] Code chars:', code.split('').map(c => `${c}(${c.charCodeAt(0)})`).join(' '))
 
   try {
-    const res: any = await $fetch(`/api/coupons/${encodeURIComponent(code)}`)
+    const url = `/api/coupons/${encodeURIComponent(code)}`
+    console.log('[checkout] Fetching URL:', url)
+    
+    const res: any = await $fetch(url)
+    console.log('[checkout] API response type:', typeof res)
     console.log('[checkout] API response:', res)
+    
     const coupon = res?.coupon
+    console.log('[checkout] Coupon object:', coupon)
+    console.log('[checkout] Coupon active:', coupon?.active)
 
     if (!coupon || !coupon.active) {
       console.log('[checkout] Coupon invalid/inactive:', coupon)
@@ -710,6 +719,12 @@ async function applyCoupon() {
     couponCode.value = ''
   } catch (e: any) {
     console.error('[checkout] Coupon validation error:', e)
+    console.error('[checkout] Error details:', {
+      message: e?.message,
+      statusMessage: e?.data?.statusMessage,
+      statusCode: e?.statusCode,
+      stack: e?.stack
+    })
     couponError.value = e?.data?.statusMessage || 'Erro ao validar cupom.'
   } finally {
     applyingCoupon.value = false
