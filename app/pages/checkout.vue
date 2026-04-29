@@ -676,31 +676,40 @@ async function applyCoupon() {
   couponError.value = ''
   couponSuccess.value = ''
 
+  const code = couponCode.value.trim()
+  console.log('[checkout] Applying coupon:', code)
+
   try {
-    const res: any = await $fetch(`/api/coupons/${encodeURIComponent(couponCode.value.trim())}`)
+    const res: any = await $fetch(`/api/coupons/${encodeURIComponent(code)}`)
+    console.log('[checkout] API response:', res)
     const coupon = res?.coupon
 
     if (!coupon || !coupon.active) {
+      console.log('[checkout] Coupon invalid/inactive:', coupon)
       couponError.value = 'Cupom inválido ou inativo.'
       return
     }
 
     // Verificar validade
     if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
+      console.log('[checkout] Coupon expired:', coupon.expiresAt)
       couponError.value = 'Cupom expirado.'
       return
     }
 
     // Verificar limite de usos
     if (coupon.maxUses && coupon.usedCount >= coupon.maxUses) {
+      console.log('[checkout] Coupon usage limit reached:', coupon.usedCount, '/', coupon.maxUses)
       couponError.value = 'Cupom já atingiu o limite de usos.'
       return
     }
 
+    console.log('[checkout] Coupon applied successfully:', coupon)
     appliedCoupon.value = coupon
     couponSuccess.value = `Cupom aplicado! ${coupon.percent}% de desconto.`
     couponCode.value = ''
   } catch (e: any) {
+    console.error('[checkout] Coupon validation error:', e)
     couponError.value = e?.data?.statusMessage || 'Erro ao validar cupom.'
   } finally {
     applyingCoupon.value = false
