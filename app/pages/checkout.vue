@@ -718,13 +718,9 @@ async function applyCoupon() {
     couponCode.value = ''
   } catch (e: any) {
     console.error('[checkout] Coupon validation error:', e)
-    console.error('[checkout] Error details:', {
-      message: e?.message,
-      statusMessage: e?.data?.statusMessage,
-      statusCode: e?.statusCode,
-      stack: e?.stack
-    })
-    couponError.value = e?.data?.statusMessage || 'Erro ao validar cupom.'
+    const statusCode = e?.statusCode || e?.status || e?.data?.statusCode || ''
+    const statusMessage = e?.data?.statusMessage || e?.statusMessage || e?.message || 'Erro ao validar cupom.'
+    couponError.value = statusCode ? `Erro ${statusCode}: ${statusMessage}` : statusMessage
   } finally {
     applyingCoupon.value = false
   }
