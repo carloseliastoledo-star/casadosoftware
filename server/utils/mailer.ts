@@ -48,21 +48,36 @@ export async function sendMail({ to, bcc, subject, html }: MailParams) {
   const safeBcc = String(bcc || '').trim()
 
   console.log(`[mailer] Enviando email: from=${from}, to=${to}, subject=${subject}`)
+  console.log(`[mailer] BCC: ${safeBcc || 'none'}`)
+  console.log(`[mailer] HTML preview: ${html.substring(0, 200)}...`)
 
-  const info = await transporter.sendMail({ from, to, bcc: safeBcc || undefined, subject, html })
+  try {
+    const info = await transporter.sendMail({ from, to, bcc: safeBcc || undefined, subject, html })
 
-  console.log(`[mailer] Resultado envio:`, {
-    messageId: info.messageId,
-    response: info.response,
-    accepted: info.accepted,
-    rejected: info.rejected,
-    envelope: info.envelope
-  })
+    console.log(`[mailer] Resultado envio:`, {
+      messageId: info.messageId,
+      response: info.response,
+      accepted: info.accepted,
+      rejected: info.rejected,
+      envelope: info.envelope
+    })
 
-  // Verificar se o destinatário foi rejeitado
-  const rejected = Array.isArray(info.rejected) ? info.rejected : []
-  if (rejected.length > 0) {
-    throw new Error(`Email rejeitado pelo servidor SMTP para: ${rejected.join(', ')}. Response: ${info.response}`)
+    // Verificar se o destinatário foi rejeitado
+    const rejected = Array.isArray(info.rejected) ? info.rejected : []
+    if (rejected.length > 0) {
+      throw new Error(`Email rejeitado pelo servidor SMTP para: ${rejected.join(', ')}. Response: ${info.response}`)
+    }
+
+    return info
+  } catch (error: any) {
+    console.error(`[mailer] Erro detalhado ao enviar email:`, {
+      message: error?.message,
+      code: error?.code,
+      command: error?.command,
+      response: error?.response,
+      stack: error?.stack
+    })
+    throw error
   }
 }
 
