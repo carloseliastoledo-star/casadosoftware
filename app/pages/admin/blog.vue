@@ -848,6 +848,17 @@ async function saveModal() {
   modalMessage.value = ''
   modalError.value = ''
 
+  if (!editingId.value && !formPublicado.value) {
+    const proceed = process.client
+      ? window.confirm('Este post será salvo como rascunho e não aparecerá no site público. Deseja continuar?')
+      : false
+    if (!proceed) {
+      modalLoading.value = false
+      modalError.value = 'Publicação cancelada. Marque "Publicar no site" para deixar o post visível no site.'
+      return
+    }
+  }
+
   try {
     const featuredImageRaw = String(formFeaturedImage.value || '').trim()
     const featuredImage = featuredImageRaw ? featuredImageRaw : null
