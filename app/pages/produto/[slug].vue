@@ -259,7 +259,7 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
   return str
 }
 
-definePageMeta({ ssr: true })
+definePageMeta({ ssr: true, middleware: ['product-fallback'] })
 
 const intl = useIntlContext()
 

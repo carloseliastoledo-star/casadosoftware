@@ -50,7 +50,6 @@ function mapPathToLang(lang: string, pathname: string): string {
       '/produto':    '/es/producto',
       '/producto':   '/es/producto',
       '/categoria':  '/es/categoria',
-      '/categorias': '/es/categorias',
       '/blog':       '/es/blog'
     },
     fr: {

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: true })
+definePageMeta({ ssr: false, layout: 'default' })
 
 import { useJsonLd } from '~/composables/useJsonLd'
 import { getCasaHomeJsonLdBundle } from '~/services/casaJsonLd'
@@ -115,10 +115,6 @@ const applyCasaSeo = computed(() => {
   if (isCasaDoSoftware.value) return true
   if (process.server && !normalizedHost.value) return true
   return false
-})
-
-watchEffect(() => {
-  setPageLayout('default' as any)
 })
 
 if (applyCasaSeo.value) {

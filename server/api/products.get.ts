@@ -46,6 +46,7 @@ function normalizeImageUrl(input: unknown): string | null {
 }
 
 export default defineEventHandler(async (event) => {
+  setHeader(event, 'Cache-Control', 's-maxage=60, stale-while-revalidate=300')
   try {
     const { storeSlug } = getStoreContext()
 
@@ -213,11 +214,8 @@ export default defineEventHandler(async (event) => {
         createdAt: p.criadoEm
       }
     })
-  } catch (err: any) {
-    console.error('GET /api/products failed', err)
-    throw createError({
-      statusCode: 500,
-      statusMessage: err?.message || 'Falha ao carregar produtos'
-    })
+  } catch (error: any) {
+    console.error('[API PRODUCTS ERROR]', error)
+    return []
   }
 })

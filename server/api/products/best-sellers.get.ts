@@ -1,4 +1,5 @@
 import prisma from '#root/server/db/prisma'
+import { setHeader } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
 import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
@@ -67,6 +68,7 @@ function parseSlugs(raw: unknown): string[] {
 }
 
 export default defineEventHandler(async (event) => {
+  setHeader(event, 'Cache-Control', 's-maxage=60, stale-while-revalidate=300')
   try {
     const { storeSlug } = getStoreContext(event)
 
@@ -212,11 +214,8 @@ export default defineEventHandler(async (event) => {
     const ordered = productIds.map((id: any) => byId.get(id)).filter(Boolean) as typeof products
 
     return ordered.map(mapProduct)
-  } catch (err: any) {
-    console.error('GET /api/products/best-sellers failed', err)
-    throw createError({
-      statusCode: 500,
-      statusMessage: err?.message || 'Falha ao carregar produtos'
-    })
+  } catch (error: any) {
+    console.error('[API PRODUCTS BEST-SELLERS ERROR]', error)
+    return []
   }
 })

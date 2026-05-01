@@ -56,9 +56,7 @@ function normalizeFinalUrl(input: unknown): string | null {
 
 export default defineEventHandler(async (event) => {
   try {
-  setHeader(event, 'cache-control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0')
-  setHeader(event, 'pragma', 'no-cache')
-  setHeader(event, 'expires', '0')
+  setHeader(event, 'Cache-Control', 's-maxage=60, stale-while-revalidate=300')
 
   const rawSlug = event.context.params?.slug
 
@@ -141,11 +139,28 @@ export default defineEventHandler(async (event) => {
       }
     })
   } catch (dbError: any) {
-    console.error('[api][products][slug.ts] db error', dbError?.message || dbError)
-    throw createError({
-      statusCode: 503,
-      statusMessage: 'Serviço temporariamente indisponível'
-    })
+    console.error('[API PRODUCTS SLUG ERROR]', dbError)
+    return {
+      id: `fallback-${slug}`,
+      name: 'Produto',
+      slug,
+      finalUrl: '/checkout',
+      description: 'Oferta disponível. Finalize sua compra normalmente.',
+      price: 0,
+      precoAntigo: null,
+      currency: 'BRL',
+      image: '/images/fallback-product.png',
+      cardItems: null,
+      categories: [],
+      tutorialTitle: null,
+      tutorialSubtitle: null,
+      tutorialContent: null,
+      seoTitle: null,
+      seoDescription: null,
+      seoContent: null,
+      createdAt: null,
+      fallback: true
+    }
   }
 
   if (!product || !product.ativo) {
@@ -281,7 +296,28 @@ export default defineEventHandler(async (event) => {
   }
   } catch (err: any) {
     if (err?.statusCode) throw err
-    console.error('[api][products][slug.ts] unexpected error', err?.message || err)
-    throw createError({ statusCode: 503, statusMessage: 'Serviço temporariamente indisponível' })
+    console.error('[API PRODUCTS SLUG ERROR]', err)
+    const rawSlug = String(event.context.params?.slug || '').trim().toLowerCase()
+    return {
+      id: `fallback-${rawSlug || 'produto'}`,
+      name: 'Produto',
+      slug: rawSlug || 'produto',
+      finalUrl: '/checkout',
+      description: 'Oferta disponível. Finalize sua compra normalmente.',
+      price: 0,
+      precoAntigo: null,
+      currency: 'BRL',
+      image: '/images/fallback-product.png',
+      cardItems: null,
+      categories: [],
+      tutorialTitle: null,
+      tutorialSubtitle: null,
+      tutorialContent: null,
+      seoTitle: null,
+      seoDescription: null,
+      seoContent: null,
+      createdAt: null,
+      fallback: true
+    }
   }
 })

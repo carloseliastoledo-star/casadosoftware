@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SeoPageData } from '~/components/seo/SeoLandingTemplate.vue'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({ layout: 'default', ssr: false })
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
@@ -25,25 +25,24 @@ const { data, error } = await useFetch('/api/seo-pages/by-slug', {
     preview: previewToken.value || undefined
   })),
   key: `seo-page-${locale}-${slug.value}`,
+  server: false,
+  lazy: true,
   default: () => null
 })
 
-if (error.value || !data.value?.page) {
-  throw createError({ statusCode: 404, statusMessage: 'Página não encontrada', fatal: true })
-}
-
-const page = computed<SeoPageData>(() => data.value!.page as SeoPageData)
+const page = computed<SeoPageData | null>(() => (data.value?.page as SeoPageData) || null)
 const isPreview = computed(() => Boolean(previewToken.value))
-const isNoindex = computed(() => page.value.noindex || page.value.status !== 'published' || isPreview.value)
+const isFallback = computed(() => Boolean(error.value) || !page.value)
+const isNoindex = computed(() => isFallback.value || Boolean(page.value?.noindex) || String(page.value?.status || '') !== 'published' || isPreview.value)
 
 const canonicalBase = locale === 'en' ? 'https://casadosoftware.store' : 'https://casadosoftware.com.br'
 const canonicalUrl = computed(() => `${canonicalBase}/lp/${slug.value}`)
 
 useSeoMeta({
-  title: computed(() => page.value.seoTitle || page.value.title),
-  description: computed(() => page.value.seoDescription || ''),
-  ogTitle: computed(() => page.value.seoTitle || page.value.title),
-  ogDescription: computed(() => page.value.seoDescription || ''),
+  title: computed(() => page.value?.seoTitle || page.value?.title || 'Oferta especial Casa do Software'),
+  description: computed(() => page.value?.seoDescription || 'Compra segura com entrega digital imediata.'),
+  ogTitle: computed(() => page.value?.seoTitle || page.value?.title || 'Oferta especial Casa do Software'),
+  ogDescription: computed(() => page.value?.seoDescription || 'Compra segura com entrega digital imediata.'),
   ogUrl: canonicalUrl,
   ogType: 'website',
   robots: computed(() =>
@@ -74,6 +73,26 @@ useHead({
       ⚠️ Modo Preview — esta página não está publicada e não será indexada pelo Google.
     </div>
 
-    <SeoLandingTemplate :page="page" />
+    <SeoLandingTemplate v-if="page" :page="page" />
+
+    <section v-else class="mx-auto max-w-3xl px-5 py-12">
+      <div class="rounded-2xl border border-blue-100 bg-blue-50 p-8 text-center">
+        <h1 class="text-2xl font-black text-gray-900">Oferta principal disponível</h1>
+        <p class="mt-3 text-sm text-gray-600">Sistema em modo seguro. Você pode concluir sua compra normalmente.</p>
+        <ul class="mt-5 space-y-2 text-sm text-gray-700">
+          <li>Entrega digital imediata</li>
+          <li>Compra segura</li>
+          <li>Suporte por WhatsApp</li>
+        </ul>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <NuxtLink to="/checkout" class="inline-flex rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700 transition">
+            Comprar agora
+          </NuxtLink>
+          <a href="https://wa.me/5511910512647" target="_blank" rel="noopener" class="inline-flex rounded-xl border border-green-600 px-5 py-3 text-sm font-bold text-green-700 hover:bg-green-100 transition">
+            WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
   </div>
 </template>

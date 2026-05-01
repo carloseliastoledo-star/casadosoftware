@@ -11,15 +11,45 @@
       <div v-if="pending" class="text-center py-16 text-gray-500">
         {{ $t('home.loading_products') }}
       </div>
-      <div v-else-if="hasError" class="text-center py-16 text-red-600">
-        {{ $t('home.error_loading_products') }}
-      </div>
-      <div v-else-if="products.length === 0" class="text-center py-16 text-gray-400">
-        {{ $t('home.no_best_sellers') }}
+      <div v-else-if="hasError || products.length === 0" class="py-8">
+        <div class="rounded-2xl border border-blue-100 bg-blue-50 p-6 text-center">
+          <h3 class="text-xl font-black text-gray-900">Oferta principal disponível</h3>
+          <p class="mt-2 text-sm text-gray-600">Compra segura com entrega digital imediata, mesmo em instabilidade momentânea.</p>
+          <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <NuxtLink to="/checkout" class="inline-flex rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700 transition">
+              Comprar agora
+            </NuxtLink>
+            <a href="https://wa.me/5511910512647" target="_blank" rel="noopener" class="inline-flex rounded-xl border border-green-600 px-5 py-3 text-sm font-bold text-green-700 hover:bg-green-100 transition">
+              WhatsApp
+            </a>
+          </div>
+        </div>
+        <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <article
+            v-for="product in safeProducts.slice(0, 8)"
+            :key="String(product?.id || product?.slug || 'fallback-product')"
+            class="rounded-2xl border border-gray-200 bg-white p-4"
+          >
+            <img
+              :src="String(product?.image || '/images/fallback-product.png')"
+              :alt="String(product?.name || 'Produto')"
+              loading="lazy"
+              width="400"
+              height="300"
+              class="h-40 w-full rounded-lg object-cover"
+              @error="handleFallbackImageError"
+            />
+            <h4 class="mt-3 text-base font-bold text-gray-900">{{ product?.name || 'Produto' }}</h4>
+            <p class="mt-1 text-sm text-gray-600">R$ {{ Number(product?.price || 0).toFixed(2) }}</p>
+            <NuxtLink :to="String(product?.checkoutUrl || '/checkout')" class="mt-3 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
+              Comprar agora
+            </NuxtLink>
+          </article>
+        </div>
       </div>
       <div v-else class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <ProductCard
-          v-for="product in products.slice(0, 8)"
+          v-for="product in safeProducts.slice(0, 8)"
           :key="product.id"
           :product="product"
         />
@@ -36,6 +66,7 @@
 
 <script setup lang="ts">
 import ProductCard from '~/components/ProductCard.vue'
+import { fallbackProducts } from '~/data/fallbackProducts'
 
 const intl = useIntlContext()
 
@@ -187,81 +218,37 @@ const affiliateCtaAudience3 = computed(() => {
   return 'Afiliados internacionais'
 })
 
-const forwardedHeaders = import.meta.server
-  ? useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host'])
-  : undefined
-
-function normalizeHostValue(input: unknown) {
-  const raw = String(input || '').trim().toLowerCase()
-  if (!raw) return ''
-  const noProto = raw.replace(/^https?:\/\//, '')
-  const noPath = noProto.replace(/\/.*/, '')
-  const noPort = noPath.replace(/:\d+$/, '')
-  return noPort.replace(/^www\./, '')
-}
-
-function pickPublicHost(input: unknown) {
-  const raw = String(input || '').trim()
-  if (!raw) return ''
-  const parts = raw
-    .split(',')
-    .map((p) => normalizeHostValue(p))
-    .filter(Boolean)
-
-  if (parts.length === 0) return ''
-  const preferred = parts.find((h) =>
-    h.includes('casadosoftware.com.br') || h.includes('licencasdigitais.com.br')
-  )
-  return preferred || parts[0] || ''
-}
-
-const forwardedHost = import.meta.server
-  ? pickPublicHost(
-      (forwardedHeaders as any)?.['x-forwarded-host'] ||
-      (forwardedHeaders as any)?.['x-original-host'] ||
-      (forwardedHeaders as any)?.host ||
-      ''
-    )
-  : ''
-
-const fetchHeaders = import.meta.server
-  ? ({ 'x-forwarded-host': forwardedHost } as Record<string, string>)
-  : undefined
-
-const clientHost = !import.meta.server
-  ? pickPublicHost(typeof window !== 'undefined' ? window.location.host : '')
-  : ''
-
-const keyHost = import.meta.server ? forwardedHost : clientHost
-const asyncKey = `best-sellers:${keyHost || 'default'}`
-
-const { data, pending } = await useAsyncData(
-  asyncKey,
-  async () => {
-    try {
-      const result = await $fetch('/api/products/best-sellers', {
-        headers: fetchHeaders as any,
-        timeout: 5000
-      })
-      return Array.isArray(result) ? result : []
-    } catch (err: any) {
-      console.error('[home][products] failed:', err?.message || err)
-      // Return empty array to prevent SSR breaking
-      return []
-    }
-  },
-  {
-    server: true,
-    default: () => [],
-    transform: (data: any) => Array.isArray(data) ? data : []
-  }
-)
+const { data, pending, error } = await useFetch('/api/products/best-sellers', {
+  server: false,
+  lazy: true,
+  default: () => [],
+  timeout: 5000,
+  transform: (raw: any) => Array.isArray(raw) ? raw : []
+})
 
 const products = computed(() =>
   Array.isArray(data.value) ? data.value : []
 )
 
-const hasError = computed(() => false)
+const hasError = computed(() => Boolean(error.value))
+
+const safeProducts = computed(() => {
+  if (products.value.length > 0) return products.value
+  return fallbackProducts.map((item) => ({
+    id: item.id,
+    name: item.name,
+    slug: item.slug,
+    price: item.price,
+    image: item.image,
+    checkoutUrl: item.checkoutUrl
+  }))
+})
+
+function handleFallbackImageError(event: Event) {
+  const target = event.target as HTMLImageElement | null
+  if (!target) return
+  target.src = '/logo-casa-do-software.png'
+}
 
 const affiliateCta = computed(() => ({
   to: affiliateLandingTo.value,

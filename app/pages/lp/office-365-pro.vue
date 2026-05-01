@@ -309,7 +309,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'lp' })
+definePageMeta({ layout: 'lp', ssr: false })
 
 const productUrl = '/checkout'
 

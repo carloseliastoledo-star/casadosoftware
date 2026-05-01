@@ -37,8 +37,16 @@ const route = useRoute()
 const { companyLegalName, siteName, logoPath } = useSiteBranding()
 const siteUrl = useSiteUrl()
 
-const { data: siteSettings } = await useFetch('/api/site-settings', { default: () => null })
-const { data: trackingSettings } = await useFetch('/api/public/settings/tracking', { default: () => ({ ga4Id: null }) })
+const { data: siteSettings } = await useFetch('/api/site-settings', {
+  server: false,
+  lazy: true,
+  default: () => ({ settings: {} })
+})
+const { data: trackingSettings } = await useFetch('/api/public/settings/tracking', {
+  server: false,
+  lazy: true,
+  default: () => ({ ga4Id: null })
+})
 
 const isPublicSite = computed(() => !String(route.path || '').startsWith('/admin'))
 
