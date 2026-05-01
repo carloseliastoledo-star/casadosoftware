@@ -35,12 +35,12 @@
           </div>
         </div>
 
-        <NuxtLink
-          to="/checkout"
+        <a
+          href="/checkout"
           class="inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
         >
           Continuar para acesso
-        </NuxtLink>
+        </a>
 
         <p class="text-sm text-gray-400 mt-4">
           Acesso digital • Suporte disponível
@@ -135,12 +135,12 @@
     <!-- CTA INTERMEDIÁRIO -->
     <section class="px-4 py-12 bg-green-500">
       <div class="max-w-2xl mx-auto text-center">
-        <NuxtLink
-          to="/checkout"
+        <a
+          href="/checkout"
           class="inline-block bg-black hover:bg-gray-900 text-white font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
         >
           Continuar para acesso
-        </NuxtLink>
+        </a>
       </div>
     </section>
 
@@ -156,12 +156,12 @@
         <p class="text-gray-300 text-sm mb-8">
           Pagamento único • Acesso imediato
         </p>
-        <NuxtLink
-          to="/checkout"
+        <a
+          href="/checkout"
           class="inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
         >
           Continuar para acesso
-        </NuxtLink>
+        </a>
       </div>
     </section>
 
@@ -245,12 +245,12 @@
         <p class="text-gray-300 mb-8">
           Acesse ferramentas essenciais para sua produtividade.
         </p>
-        <NuxtLink
-          to="/checkout"
+        <a
+          href="/checkout"
           class="inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
         >
           Continuar para acesso
-        </NuxtLink>
+        </a>
       </div>
     </section>
 
@@ -267,18 +267,18 @@
     <footer class="px-4 py-8 bg-black text-gray-400">
       <div class="max-w-4xl mx-auto">
         <div class="flex flex-col md:flex-row items-center justify-center gap-6 text-sm">
-          <NuxtLink to="/politica-de-privacidade" class="hover:text-white transition-colors">
+          <a href="/politica-de-privacidade" class="hover:text-white transition-colors">
             Política de Privacidade
-          </NuxtLink>
-          <NuxtLink to="/termos-de-uso" class="hover:text-white transition-colors">
+          </a>
+          <a href="/termos-de-uso" class="hover:text-white transition-colors">
             Termos de Uso
-          </NuxtLink>
-          <NuxtLink to="/contato" class="hover:text-white transition-colors">
+          </a>
+          <a href="/contato" class="hover:text-white transition-colors">
             Contato
-          </NuxtLink>
+          </a>
         </div>
         <p class="text-center text-xs mt-6 text-gray-400">
-          © {{ new Date().getFullYear() }} Todos os direitos reservados.
+          © 2026 Todos os direitos reservados.
         </p>
       </div>
     </footer>
@@ -286,7 +286,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'lp', ssr: false })
+definePageMeta({ layout: 'lp', ssr: true })
 
 useHead({
   link: [
@@ -294,16 +294,10 @@ useHead({
   ]
 })
 
-const productUrl = '/checkout'
-const { siteName } = useSiteBranding()
-const baseUrl = useSiteUrl()
 
 useSeoMeta({
   title: 'Solução de Produtividade para Trabalho e Estudo',
   description: 'Acesse ferramentas essenciais para criar documentos, planilhas e apresentações com facilidade. Interface simples e compatível com múltiplos dispositivos.'
 })
 
-useHead(() => ({
-  link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}/lp/produtividade` }] : []
-}))
 </script>
