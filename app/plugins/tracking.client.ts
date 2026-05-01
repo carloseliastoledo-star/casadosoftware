@@ -12,11 +12,10 @@ export default defineNuxtPlugin(() => {
   const router = useRouter()
   
   router.afterEach(() => {
-    // Pequeno delay para garantir que o DOM esteja pronto
     setTimeout(() => {
       console.log('[tracking] Disparando page view após navegação')
       trackPageView()
-    }, 100)
+    }, 2000)
   })
 
   // Dispara page view na carga inicial
@@ -24,6 +23,6 @@ export default defineNuxtPlugin(() => {
     setTimeout(() => {
       console.log('[tracking] Disparando page view na carga inicial')
       trackPageView()
-    }, 100)
+    }, 2000)
   })
 })
