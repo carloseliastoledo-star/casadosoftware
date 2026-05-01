@@ -17,13 +17,24 @@ export async function sendWhatsAppText(phone: string, message: string) {
   const token = process.env.ZAPI_TOKEN
   const clientToken = process.env.ZAPI_CLIENT_TOKEN
   const baseUrl = process.env.ZAPI_BASE_URL || 'https://api.z-api.io'
+
   const normalizedPhone = normalizeBrazilPhone(phone)
 
   if (!normalizedPhone) {
     return { success: false, error: 'phone_required' }
   }
 
-  if (!instanceId || !token || !clientToken) {
+  if (!message) {
+  message = `Você esqueceu sua ativação 😱
+
+Seu Office está pronto para liberar agora:
+
+👉 https://casadosoftware.com.br/checkout
+
+Entrega imediata após pagamento ⚡`
+}
+
+  if (!instanceId || !token) {
     return { success: false, error: 'zapi_not_configured' }
   }
 
@@ -31,8 +42,8 @@ export async function sendWhatsAppText(phone: string, message: string) {
     const response = await fetch(`${baseUrl}/instances/${instanceId}/token/${token}/send-text`, {
       method: 'POST',
       headers: {
-        'Client-Token': clientToken,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...(clientToken ? { 'Client-Token': clientToken } : {})
       },
       body: JSON.stringify({
         phone: normalizedPhone,
@@ -47,7 +58,10 @@ export async function sendWhatsAppText(phone: string, message: string) {
     }
 
     return { success: true, data }
+
   } catch (error) {
+    console.error('[WHATSAPP ERROR]', error)
     return { success: false, error }
   }
 }
+
