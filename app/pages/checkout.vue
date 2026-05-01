@@ -700,8 +700,20 @@ async function handleGeneratePix() {
       }
     }
 
-    const result: any = await $fetch('/api/checkout', { method: 'POST', body })
+    const result: any = await $fetch('/api/create-pix', {
+      method: 'POST',
+      body: {
+        ...body,
+        name: name.value,
+        phone: phone.value
+      }
+    })
     funnelOrderId.value = String(result?.orderId || 'cs-' + Date.now())
+
+    if (result?.checkoutUrl && import.meta.client) {
+      window.location.href = result.checkoutUrl
+      return
+    }
 
     if (paymentMethod.value === 'pix') {
       pixQrCode.value = result?.qrCode || ''
