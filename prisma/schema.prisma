@@ -430,6 +430,20 @@ model Lead {
   @@index([storeSlug])
 }
 
+model AbandonedCheckout {
+  id        String   @id @default(uuid())
+  email     String?
+  phone     String?
+  product   String?
+  status    String   @default("started")
+  createdAt DateTime @default(now()) @db.DateTime(0)
+
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+  @@index([createdAt])
+}
+
 model PartnerApplication {
   id               Int      @id @default(autoincrement())
   name             String

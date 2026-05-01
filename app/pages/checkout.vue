@@ -54,6 +54,7 @@
                   type="email"
                   placeholder="Licença será enviada para este e-mail"
                   autocomplete="email"
+                  @input="captureAbandonedCheckout"
                   @blur="trackField('email')"
                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
@@ -393,6 +394,7 @@ const funnelOrderId = ref('')
 const pollingActive = ref(false)
 const pollingTimer = ref<any>(null)
 const timerText = ref('09:59')
+const abandonedCheckoutTimer = ref<any>(null)
 
 // Cupom
 const couponCode = ref('')
@@ -467,7 +469,51 @@ function trackCheckoutAbandon() {
     if (w.gtag) {
       w.gtag('event', 'checkout_abandon', { step: 'form' })
     }
+
+    const payload = JSON.stringify({
+      email: email.value.trim(),
+      phone: telefone.value.trim(),
+      product: productSlug.value || 'office-365',
+      status: 'abandoned'
+    })
+
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/abandoned-checkout', new Blob([payload], { type: 'application/json' }))
+    } else {
+      fetch('/api/abandoned-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        keepalive: true
+      })
+    }
   } catch {}
+}
+
+function captureAbandonedCheckout() {
+  if (!import.meta.client) return
+
+  if (abandonedCheckoutTimer.value) {
+    clearTimeout(abandonedCheckoutTimer.value)
+  }
+
+  abandonedCheckoutTimer.value = setTimeout(() => {
+    const leadEmail = email.value.trim()
+    const leadPhone = telefone.value.trim()
+
+    if (!leadEmail && !leadPhone) return
+
+    fetch('/api/abandoned-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: leadEmail,
+        phone: leadPhone,
+        product: productSlug.value || 'office-365',
+        status: 'started'
+      })
+    }).catch(() => {})
+  }, 800)
 }
 
 onMounted(async () => {
@@ -548,6 +594,9 @@ onMounted(async () => {
 
 onUnmounted(() => {
   stopPaymentPolling()
+  if (abandonedCheckoutTimer.value) {
+    clearTimeout(abandonedCheckoutTimer.value)
+  }
   if (import.meta.client) {
     window.removeEventListener('beforeunload', trackCheckoutAbandon)
   }
@@ -560,6 +609,7 @@ function formatTelefone(e: Event) {
   else if (v.length > 2) v = `(${v.slice(0, 2)}) ${v.slice(2)}`
   else if (v.length > 0) v = `(${v}`
   telefone.value = v
+  captureAbandonedCheckout()
 }
 
 function formatCpf(e: Event) {
