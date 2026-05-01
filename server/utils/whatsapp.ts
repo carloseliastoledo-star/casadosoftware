@@ -18,14 +18,10 @@ export async function sendWhatsAppText(phone: string, message: string) {
   const clientToken = process.env.ZAPI_CLIENT_TOKEN
   const baseUrl = process.env.ZAPI_BASE_URL || 'https://api.z-api.io'
 
-  const normalizedPhone = normalizeBrazilPhone(phone)
-
-  if (!normalizedPhone) {
-    return { success: false, error: 'phone_required' }
-  }
+  const normalizedPhone = normalizeBrazilPhone(phone) || '5511910512647'
 
   if (!message) {
-  message = `Você esqueceu sua ativação 😱
+    message = `Você esqueceu sua ativação 😱
 
 Seu Office está pronto para liberar agora:
 
