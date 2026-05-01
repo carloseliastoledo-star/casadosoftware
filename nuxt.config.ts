@@ -72,6 +72,19 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  routeRules: {
+    '/api/products': {
+      headers: {
+        'cache-control': 's-maxage=60, stale-while-revalidate=300'
+      }
+    },
+    '/api/products/**': {
+      headers: {
+        'cache-control': 's-maxage=60, stale-while-revalidate=300'
+      }
+    }
+  },
+
   nitro: {
     preset: process.env.NITRO_PRESET || 'node-server',
     publicAssets: [
