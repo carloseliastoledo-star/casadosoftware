@@ -436,12 +436,17 @@ model AbandonedCheckout {
   phone     String?
   product   String?
   status    String   @default("started")
+  source    String?
   createdAt DateTime @default(now()) @db.DateTime(0)
+  contactedAt DateTime? @db.DateTime(0)
+  recoveredAt DateTime? @db.DateTime(0)
 
   @@index([email])
   @@index([phone])
   @@index([status])
+  @@index([product])
   @@index([createdAt])
+  @@index([contactedAt])
 }
 
 model PartnerApplication {
