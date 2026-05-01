@@ -26,6 +26,16 @@
         <p class="text-blue-200 text-lg md:text-xl mb-8 leading-relaxed">
           {{ t.heroSub }}
         </p>
+        <img
+          src="/images/hero.webp"
+          alt="Office 365"
+          width="600"
+          height="600"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+          class="mx-auto mb-8 h-48 w-48 md:h-64 md:w-64 object-contain"
+        />
 
         <!-- Bloco de preço -->
         <div class="inline-flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-8 py-5 mb-7">
@@ -310,6 +320,12 @@
 
 <script setup lang="ts">
 definePageMeta({ layout: 'lp', ssr: false })
+
+useHead({
+  link: [
+    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
+  ]
+})
 
 const productUrl = '/checkout'
 

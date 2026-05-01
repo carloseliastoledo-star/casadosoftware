@@ -9,6 +9,16 @@
         <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
           Acesse ferramentas essenciais para criar documentos, planilhas e apresentações com facilidade.
         </p>
+        <img
+          src="/images/hero.webp"
+          alt="Pacote Office para produtividade"
+          width="600"
+          height="600"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+          class="mx-auto mb-8 h-48 w-48 md:h-64 md:w-64 object-contain"
+        />
         
         <div class="flex flex-col items-center gap-3 mb-8 text-left max-w-md mx-auto">
           <div class="flex items-center gap-3 text-gray-300">
@@ -278,6 +288,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lp', ssr: false })
 
+useHead({
+  link: [
+    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
+  ]
+})
+
+const productUrl = '/checkout'
 const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
 

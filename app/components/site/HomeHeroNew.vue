@@ -63,12 +63,14 @@
               <div class="relative h-72 bg-gradient-to-br from-slate-50 to-white rounded-xl mb-5 flex items-center justify-center overflow-hidden p-4">
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-transparent rounded-xl" aria-hidden="true" />
                 <img
-                  src="https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1776154645975-container-capa-home-365-premiium-300x300-processed.png"
+                  src="/images/hero.webp"
                   alt="Office 365"
                   loading="eager"
                   decoding="async"
+                  fetchpriority="high"
+                  width="600"
+                  height="600"
                   class="h-full w-full object-contain"
-                  referrerpolicy="no-referrer"
                 />
               </div>
 
@@ -121,4 +123,10 @@
 </template>
 
 <script setup lang="ts">
+useHead({
+  link: [
+    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
+  ]
+})
+
 const props = defineProps<{ productsIndexPath: string }>()</script>
