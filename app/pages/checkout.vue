@@ -64,16 +64,16 @@
                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                   />
                 </div>
-                <div class="opacity-80">
-                  <label class="block text-xs font-medium text-gray-500 mb-1">CPF <span class="font-normal">(opcional)</span></label>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
                   <input
                     v-model="cpf"
                     type="text"
-                    placeholder="Opcional"
+                    placeholder="000.000.000-00"
                     inputmode="numeric"
                     maxlength="14"
                     @input="formatCpf"
-                    class="w-full border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                   />
                 </div>
               </div>
@@ -296,7 +296,7 @@
             <!-- CTA principal -->
             <button
               v-if="!pixQrCode"
-              :disabled="loading || !nome.trim() || !emailValido"
+              :disabled="loading || !nome.trim() || !emailValido || !cpfValido"
               @click="handleFinalize"
               class="w-full bg-green-500 hover:bg-green-400 active:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-base py-4 rounded-2xl shadow-lg shadow-green-200 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2"
             >
@@ -334,8 +334,8 @@
             </div>
 
             <!-- Validação inline -->
-            <p v-if="showValidation && (!nome.trim() || !emailValido)" class="mt-2 text-xs text-red-500 text-center">
-              Preencha nome e e-mail válido para continuar.
+            <p v-if="showValidation && (!nome.trim() || !emailValido || !cpfValido)" class="mt-2 text-xs text-red-500 text-center">
+              Preencha nome, e-mail válido e CPF para continuar.
             </p>
 
             <p class="mt-3 text-center text-xs text-gray-400">
@@ -409,6 +409,7 @@ const productSlug = computed(() => String(route.query.product || ''))
 const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
+const cpfValido = computed(() => cpf.value.replace(/\D/g, '').length === 11)
 const totalPrice = computed(() => {
   const subtotal = basePrice.value + (isFunnelMode.value && orderBump.value ? bumpConfig.value.price : 0)
   if (appliedCoupon.value && appliedCoupon.value.percent) {
@@ -619,7 +620,7 @@ async function handleAposPix() {
 
 async function handleFinalize() {
   showValidation.value = true
-  if (!nome.value.trim() || !emailValido.value || loading.value) return
+  if (!nome.value.trim() || !emailValido.value || !cpfValido.value || loading.value) return
 
   loading.value = true
   paymentError.value = ''
