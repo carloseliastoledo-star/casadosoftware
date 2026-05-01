@@ -22,6 +22,11 @@
         <p class="text-yellow-600 text-sm font-black mt-2">⭐⭐⭐⭐⭐ Mais de 12.000 clientes atendidos</p>
       </div>
 
+      <div class="text-center text-xs text-gray-500 mb-4">
+        ✅ +3.842 clientes atendidos
+        ⭐ 4.9/5 avaliações
+      </div>
+
       <div class="flex flex-col lg:flex-row gap-6">
 
         <!-- Coluna esquerda: formulário + order bump -->
@@ -38,6 +43,7 @@
                   type="text"
                   placeholder="Como está no documento"
                   autocomplete="name"
+                  @blur="trackField('name')"
                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
               </div>
@@ -48,6 +54,7 @@
                   type="email"
                   placeholder="Licença será enviada para este e-mail"
                   autocomplete="email"
+                  @blur="trackField('email')"
                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
               </div>
@@ -61,11 +68,12 @@
                     autocomplete="tel"
                     maxlength="15"
                     @input="formatTelefone"
+                    @blur="trackField('phone')"
                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF <span class="text-xs font-normal text-gray-500">(usado apenas para validar o pagamento com segurança)</span></label>
                   <input
                     v-model="cpf"
                     type="text"
@@ -73,6 +81,7 @@
                     inputmode="numeric"
                     maxlength="14"
                     @input="formatCpf"
+                    @blur="trackField('cpf')"
                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                   />
                 </div>
@@ -161,7 +170,6 @@
               <button
                 type="button"
                 @click="applyCoupon"
-                :disabled="!couponCode.trim() || applyingCoupon"
                 class="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm rounded-xl transition-all"
               >
                 <template v-if="applyingCoupon">
@@ -181,40 +189,21 @@
           <!-- Order Bump (só modo funnel) -->
           <div
             v-if="isFunnelMode"
-            :class="[
-              'rounded-2xl border-2 p-5 cursor-pointer select-none transition-all',
-              orderBump
-                ? 'border-green-500 bg-green-50 shadow-sm'
-                : 'border-dashed border-gray-300 bg-white hover:border-green-400 hover:bg-green-50/40'
-            ]"
-            role="checkbox"
-            :aria-checked="orderBump"
-            tabindex="0"
-            @click="orderBump = !orderBump"
-            @keydown.space.prevent="orderBump = !orderBump"
+            class="border-2 border-orange-400 bg-orange-50 p-4 rounded-xl"
           >
-            <div class="flex items-start gap-3">
-              <div
-                :class="[
-                  'mt-0.5 flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all',
-                  orderBump ? 'border-green-500 bg-green-500' : 'border-gray-300 bg-white'
-                ]"
-              >
-                <svg v-if="orderBump" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" v-model="orderBump" class="mt-1">
+
+              <div>
+                <p class="font-bold text-sm">
+                  🔥 SUPORTE VIP + INSTALAÇÃO
+                </p>
+
+                <p class="text-xs text-gray-600">
+                  De R$97 por apenas R$19
+                </p>
               </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2 flex-wrap">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full">SIM! QUERO</span>
-                    <span class="font-bold text-gray-900 text-sm">{{ bumpConfig.title }}</span>
-                  </div>
-                  <span class="font-black text-green-700 text-sm whitespace-nowrap">+ R$ {{ bumpConfig.price.toFixed(2).replace('.', ',') }}</span>
-                </div>
-                <p class="mt-1.5 text-xs text-gray-600 leading-relaxed">{{ bumpConfig.description }}</p>
-              </div>
-            </div>
+            </label>
           </div>
 
         </div>
@@ -294,11 +283,20 @@
             </div>
 
             <!-- CTA principal -->
+            <div v-if="!pixQrCode" class="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-center">
+              <p class="text-red-600 text-sm font-bold">
+                🔥 Últimas licenças com esse preço
+              </p>
+              <p class="text-xs text-red-500">
+                ⏰ Oferta expira em <span id="timer">{{ timerText }}</span>
+              </p>
+            </div>
+
             <button
               v-if="!pixQrCode"
-              :disabled="loading || !nome.trim() || !emailValido || !cpfValido"
-              @click="handleFinalize"
-              class="w-full bg-green-500 hover:bg-green-400 active:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-base py-4 rounded-2xl shadow-lg shadow-green-200 transition-all hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-2"
+              :disabled="loading"
+              @click="handleGeneratePix"
+              class="w-full bg-green-500 hover:bg-green-400 text-white font-black py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2"
             >
               <template v-if="loading">
                 <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -308,7 +306,7 @@
                 Processando...
               </template>
               <template v-else>
-                <span>🔥 ATIVAR MINHA LICENÇA AGORA</span>
+                <span>⚡ ATIVAR MINHA LICENÇA AGORA</span>
               </template>
             </button>
 
@@ -332,11 +330,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- Validação inline -->
-            <p v-if="showValidation && (!nome.trim() || !emailValido || !cpfValido)" class="mt-2 text-xs text-red-500 text-center">
-              Preencha nome, e-mail válido e CPF para continuar.
-            </p>
 
             <p class="mt-3 text-center text-xs text-gray-400">
               Pagamento seguro • Entrega após confirmação
@@ -376,6 +369,8 @@ const nome = ref('')
 const email = ref('')
 const telefone = ref('')
 const cpf = ref('')
+const name = nome
+const phone = telefone
 const basePrice = ref(49)
 const productName = ref('Office 365 Pro')
 const produtoId = ref('')
@@ -397,6 +392,7 @@ const paymentError = ref('')
 const funnelOrderId = ref('')
 const pollingActive = ref(false)
 const pollingTimer = ref<any>(null)
+const timerText = ref('09:59')
 
 // Cupom
 const couponCode = ref('')
@@ -409,7 +405,6 @@ const productSlug = computed(() => String(route.query.product || ''))
 const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
-const cpfValido = computed(() => cpf.value.replace(/\D/g, '').length === 11)
 const totalPrice = computed(() => {
   const subtotal = basePrice.value + (isFunnelMode.value && orderBump.value ? bumpConfig.value.price : 0)
   if (appliedCoupon.value && appliedCoupon.value.percent) {
@@ -456,7 +451,46 @@ function restorePIXSession() {
   } catch {}
 }
 
+function trackField(field: string) {
+  if (!import.meta.client) return
+  try {
+    const w = window as any
+    if (w.gtag) {
+      w.gtag('event', 'checkout_field_fill', { field })
+    }
+  } catch {}
+}
+
+function trackCheckoutAbandon() {
+  try {
+    const w = window as any
+    if (w.gtag) {
+      w.gtag('event', 'checkout_abandon', { step: 'form' })
+    }
+  } catch {}
+}
+
 onMounted(async () => {
+  let time = 600
+  const countdown = setInterval(() => {
+    time--
+    if (time < 0) {
+      clearInterval(countdown)
+      return
+    }
+
+    const min = Math.floor(time / 60)
+    const sec = time % 60
+    timerText.value = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+
+    const el = document.getElementById('timer')
+    if (el) {
+      el.innerText = timerText.value
+    }
+  }, 1000)
+
+  window.addEventListener('beforeunload', trackCheckoutAbandon)
+
   restorePIXSession()
   if (pixQrCode.value || pixQrUrl.value) return
 
@@ -514,6 +548,9 @@ onMounted(async () => {
 
 onUnmounted(() => {
   stopPaymentPolling()
+  if (import.meta.client) {
+    window.removeEventListener('beforeunload', trackCheckoutAbandon)
+  }
 })
 
 function formatTelefone(e: Event) {
@@ -618,9 +655,8 @@ async function handleAposPix() {
   }
 }
 
-async function handleFinalize() {
-  showValidation.value = true
-  if (!nome.value.trim() || !emailValido.value || !cpfValido.value || loading.value) return
+async function handleGeneratePix() {
+  if (loading.value) return
 
   loading.value = true
   paymentError.value = ''
@@ -630,6 +666,7 @@ async function handleFinalize() {
     captureBeforeCheckout('mercado_pago')
     trackMeta('InitiateCheckout', { value: total, currency: 'BRL' })
     trackGtag('begin_checkout', { value: total, currency: 'BRL' })
+    trackGtag('generate_pix_click', { value: total, currency: 'BRL' })
 
     ecomBeginCheckout(
       [{ item_id: produtoId.value, item_name: productName.value, price: basePrice.value, item_category: 'Software' }],
@@ -691,7 +728,10 @@ async function handleFinalize() {
       }
     }
   } catch (e: any) {
-    paymentError.value = e?.data?.statusMessage || e?.message || 'Erro ao processar. Tente novamente.'
+    paymentError.value = e?.data?.statusMessage || e?.message || 'Erro ao gerar pagamento'
+    if (import.meta.client) {
+      alert('Erro ao gerar pagamento')
+    }
   } finally {
     loading.value = false
   }

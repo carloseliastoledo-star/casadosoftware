@@ -7,6 +7,19 @@ export default defineNuxtPlugin(() => {
   if (!import.meta.client) return
 
   const { trackPageView } = useTracking()
+  const route = useRoute()
+
+  const trackCheckoutStart = () => {
+    try {
+      const w = window as any
+      if (route.path === '/checkout' && w.gtag) {
+        w.gtag('event', 'begin_checkout', {
+          currency: 'BRL',
+          value: 49
+        })
+      }
+    } catch {}
+  }
 
   // Dispara page view quando a página termina de carregar
   const router = useRouter()
@@ -23,6 +36,7 @@ export default defineNuxtPlugin(() => {
     setTimeout(() => {
       console.log('[tracking] Disparando page view na carga inicial')
       trackPageView()
+      trackCheckoutStart()
     }, 2000)
   })
 })
