@@ -13,9 +13,13 @@
     <div class="max-w-3xl mx-auto px-5 py-8">
 
       <!-- Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-2xl md:text-3xl font-black text-gray-900">Finalize seu pedido</h1>
-        <p class="text-gray-500 text-sm mt-1">Você está a um passo do seu {{ productName }}</p>
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center rounded-full bg-orange-100 px-4 py-1.5 text-xs font-black text-orange-700 mb-3">
+          ⏳ Oferta válida hoje
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black text-gray-900">⚡ Você está a 1 passo de ativar seu Office completo</h1>
+        <p class="text-green-700 text-sm md:text-base font-bold mt-2">🔥 Entrega imediata após pagamento</p>
+        <p class="text-yellow-600 text-sm font-black mt-2">⭐⭐⭐⭐⭐ Mais de 12.000 clientes atendidos</p>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-6">
@@ -47,7 +51,7 @@
                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                 />
               </div>
-              <div class="grid grid-cols-2 gap-3">
+              <div class="grid sm:grid-cols-2 gap-3">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                   <input
@@ -60,16 +64,16 @@
                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                   />
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                <div class="opacity-80">
+                  <label class="block text-xs font-medium text-gray-500 mb-1">CPF <span class="font-normal">(opcional)</span></label>
                   <input
                     v-model="cpf"
                     type="text"
-                    placeholder="000.000.000-00"
+                    placeholder="Opcional"
                     inputmode="numeric"
                     maxlength="14"
                     @input="formatCpf"
-                    class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                    class="w-full border border-gray-100 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition"
                   />
                 </div>
               </div>
@@ -218,6 +222,10 @@
         <!-- Coluna direita: resumo do pedido -->
         <div class="lg:w-72 xl:w-80 shrink-0">
           <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 lg:sticky lg:top-4">
+            <div class="mb-4 rounded-xl bg-green-50 border border-green-100 px-3 py-2 text-center">
+              <p class="text-xs font-black text-green-800">🔥 Seu Office completo liberado em minutos</p>
+            </div>
+
             <h2 class="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest">Resumo do pedido</h2>
 
             <!-- Produto principal -->
@@ -225,9 +233,10 @@
               <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">{{ productName.charAt(0) }}</div>
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-semibold text-gray-900">{{ productName }}</div>
-                <div class="text-xs text-gray-500 mt-0.5">Licença digital • Entrega imediata</div>
+                <div class="text-xs text-gray-500 mt-0.5">Licença digital • Word, Excel, PowerPoint, Outlook e Teams</div>
+                <div class="text-xs text-green-700 font-semibold mt-1">Ativação rápida com suporte incluso</div>
               </div>
-              <div class="text-sm font-bold text-gray-900 whitespace-nowrap">R$ {{ basePrice.toFixed(2).replace('.', ',') }}</div>
+              <div class="text-base font-black text-green-700 whitespace-nowrap">R$ {{ basePrice.toFixed(2).replace('.', ',') }}</div>
             </div>
 
             <!-- Order bump (linha condicional) -->
@@ -239,7 +248,7 @@
             <!-- Total -->
             <div class="flex items-center justify-between pt-3 mb-4">
               <span class="text-sm font-black text-gray-900">Total</span>
-              <span class="text-2xl font-black text-green-600">
+              <span class="text-3xl font-black text-green-600">
                 R$ {{ totalPrice.toFixed(2).replace('.', ',') }}
               </span>
             </div>
@@ -248,11 +257,15 @@
             <div class="space-y-1.5 mb-5">
               <div class="flex items-center gap-2 text-xs text-gray-500">
                 <span class="text-green-500 text-base leading-none">✔</span>
+                Acesso ao Office completo
+              </div>
+              <div class="flex items-center gap-2 text-xs text-gray-500">
+                <span class="text-green-500 text-base leading-none">✔</span>
                 Entrega digital em até 5 minutos
               </div>
               <div class="flex items-center gap-2 text-xs text-gray-500">
                 <span class="text-green-500 text-base leading-none">✔</span>
-                Licença original para PC, Mac, iOS e Android
+                Funciona em PC, Mac, iOS e Android
               </div>
               <div class="flex items-center gap-2 text-xs text-gray-500">
                 <span class="text-green-500 text-base leading-none">✔</span>
@@ -295,10 +308,30 @@
                 Processando...
               </template>
               <template v-else>
-                <span v-if="paymentMethod === 'pix'">⚡ GERAR PIX</span>
-                <span v-else>🔒 FINALIZAR COMPRA</span>
+                <span>🔥 ATIVAR MINHA LICENÇA AGORA</span>
               </template>
             </button>
+
+            <div v-if="!pixQrCode" class="mt-4 rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+              <div class="grid grid-cols-1 gap-2 text-xs font-semibold text-gray-700">
+                <div class="flex items-center gap-2">
+                  <span class="text-green-600">🔒</span>
+                  Compra segura
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-green-600">✔</span>
+                  Entrega em até 5 minutos
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-green-600">✔</span>
+                  Suporte incluso
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-green-600">✔</span>
+                  Garantia
+                </div>
+              </div>
+            </div>
 
             <!-- Validação inline -->
             <p v-if="showValidation && (!nome.trim() || !emailValido)" class="mt-2 text-xs text-red-500 text-center">
