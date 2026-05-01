@@ -23,11 +23,8 @@ const route = useRoute()
 const { companyLegalName, siteName, logoPath } = useSiteBranding()
 const siteUrl = useSiteUrl()
 
-const { data: siteSettings } = await useFetch('/api/site-settings', {
-  server: false,
-  lazy: true,
-  default: () => ({ settings: {} })
-})
+type SiteSettingsResponse = { settings?: { headHtml?: string; bodyOpenHtml?: string; bodyCloseHtml?: string } }
+
 
 const isPublicSite = computed(() => !String(route.path || '').startsWith('/admin'))
 
@@ -59,10 +56,6 @@ useHead(() => {
   }
 })
 
-const headHtml = computed(() => String((siteSettings.value as any)?.settings?.headHtml || ''))
-const bodyOpenHtml = computed(() => String((siteSettings.value as any)?.settings?.bodyOpenHtml || ''))
-const bodyCloseHtml = computed(() => String((siteSettings.value as any)?.settings?.bodyCloseHtml || ''))
-
 // Attribution tracking (first/last touch) + page_view em toda navegação SPA
 const { captureAttribution, capturePageView } = useAttributionTracking()
 
@@ -75,11 +68,19 @@ function appendInlineHtml(html: string, target: HTMLElement) {
 
 onMounted(() => {
   if (!import.meta.client) return
-  setTimeout(() => {
+  setTimeout(async () => {
     if (isPublicSite.value) {
-      appendInlineHtml(headHtml.value, document.head)
-      appendInlineHtml(bodyOpenHtml.value, document.body)
-      appendInlineHtml(bodyCloseHtml.value, document.body)
+      let settings: SiteSettingsResponse['settings'] = {}
+
+      try {
+        settings = ((await $fetch<SiteSettingsResponse>('/api/site-settings'))?.settings || {})
+      } catch {
+        settings = {}
+      }
+
+      appendInlineHtml(String(settings.headHtml || ''), document.head)
+      appendInlineHtml(String(settings.bodyOpenHtml || ''), document.body)
+      appendInlineHtml(String(settings.bodyCloseHtml || ''), document.body)
       captureAttribution()
     }
 

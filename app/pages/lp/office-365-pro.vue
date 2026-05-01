@@ -1,29 +1,26 @@
 <template>
-  <div class="bg-white min-h-screen font-sans">
+  <div class="lp-page bg-white min-h-screen font-sans">
 
     <!-- ═══════════════════════════════════════════
          SEÇÃO 1 — HERO (dobra principal)
     ════════════════════════════════════════════════ -->
-    <section class="bg-[#0a1628] text-white relative overflow-hidden">
-      <!-- Detalhe decorativo de fundo -->
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-900/40 via-transparent to-indigo-900/30 pointer-events-none" aria-hidden="true" />
-
-      <div class="relative max-w-3xl mx-auto px-5 pt-10 pb-12 text-center">
+    <section class="lp-hero bg-[#0a1628] text-white">
+      <div class="lp-hero-container max-w-3xl mx-auto px-5 pt-10 pb-12 text-center">
 
         <!-- Badge urgência -->
-        <div class="inline-flex items-center gap-2 rounded-full bg-red-600/20 border border-red-500/40 px-4 py-1.5 text-sm font-bold text-red-300 mb-6 uppercase tracking-wide">
-          <span class="h-2 w-2 rounded-full bg-red-400 animate-pulse flex-shrink-0" aria-hidden="true" />
+        <div class="lp-badge inline-flex items-center gap-2 rounded-full bg-red-600/20 border border-red-500/40 px-4 py-1.5 text-sm font-bold text-red-300 mb-6 uppercase tracking-wide">
+          <span class="h-2 w-2 rounded-full bg-red-400 flex-shrink-0" aria-hidden="true" />
           ? DESCONTO EXPIRA HOJE
         </div>
 
         <!-- Headline principal -->
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-[1.08] tracking-tight mb-4">
+        <h1 class="lp-title text-3xl sm:text-4xl md:text-5xl font-black leading-[1.08] tracking-tight mb-4">
           SEU OFFICE FOI BLOQUEADO?<br />
           <span class="text-green-400">Ative em menos de 5 minutos ? sem mensalidade</span>
         </h1>
 
         <!-- Subheadline -->
-        <p class="text-blue-200 text-lg md:text-xl mb-8 leading-relaxed">
+        <p class="lp-subtitle text-blue-200 text-lg md:text-xl mb-8 leading-relaxed">
           Licen?a original ? sem mensalidade, sem renova??o. Funciona em PC, Mac, Android e iOS.
         </p>
         <img
@@ -34,11 +31,11 @@
           loading="eager"
           decoding="async"
           fetchpriority="high"
-          class="mx-auto mb-8 h-48 w-48 md:h-64 md:w-64 object-contain"
+          class="lp-hero-image mx-auto mb-8 h-48 w-48 md:h-64 md:w-64 object-contain"
         />
 
         <!-- Bloco de preço -->
-        <div class="inline-flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-8 py-5 mb-7">
+        <div class="lp-price inline-flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-8 py-5 mb-7">
           <span class="text-sm text-gray-400 line-through mb-1">De R$199</span>
           <div class="flex items-end gap-2 leading-none">
             <span class="text-green-400 text-5xl md:text-6xl font-black">R$49</span>
@@ -52,7 +49,7 @@
         <div class="flex flex-col items-center gap-3">
           <a
             href="/checkout"
-            class="w-full max-w-sm inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 active:bg-green-600 text-white font-black text-xl py-5 px-8 rounded-2xl shadow-xl shadow-green-900/40 transition-all hover:scale-[1.02] active:scale-[0.99]"
+            class="lp-cta w-full max-w-sm inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-400 active:bg-green-600 text-white font-black text-xl py-5 px-8 rounded-2xl"
           >
             <svg class="w-6 h-6 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
@@ -302,7 +299,7 @@ definePageMeta({ layout: 'lp', ssr: true })
 
 useHead({
   link: [
-    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
+    { rel: 'preload', as: 'image', href: '/images/hero.webp', fetchpriority: 'high' }
   ]
 })
 
@@ -312,3 +309,91 @@ useSeoMeta({
   robots: 'index,follow'
 })
 </script>
+
+<style scoped>
+.lp-page {
+  min-height: 100vh;
+  background: #fff;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.lp-hero {
+  background: #0a1628;
+  color: #fff;
+}
+
+.lp-hero-container {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+  text-align: center;
+}
+
+.lp-badge {
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(239, 68, 68, .4);
+  border-radius: 9999px;
+  background: rgba(220, 38, 38, .18);
+  color: #fca5a5;
+}
+
+.lp-title {
+  margin: 0 0 1rem;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.lp-subtitle {
+  margin: 0 0 2rem;
+  color: #bfdbfe;
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.lp-hero-image {
+  display: block;
+  width: 12rem;
+  height: 12rem;
+  margin: 0 auto 2rem;
+  object-fit: contain;
+}
+
+.lp-price {
+  margin-bottom: 1.75rem;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, .05);
+  padding: 1.25rem 2rem;
+}
+
+.lp-cta {
+  width: 100%;
+  max-width: 24rem;
+  border-radius: 1rem;
+  background: #22c55e;
+  color: #fff;
+  padding: 1.25rem 2rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .lp-title {
+    font-size: 3rem;
+  }
+
+  .lp-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .lp-hero-image {
+    width: 16rem;
+    height: 16rem;
+  }
+}
+</style>

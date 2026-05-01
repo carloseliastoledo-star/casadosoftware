@@ -20,8 +20,6 @@ export default defineNuxtConfig({
         { rel: 'icon', href: process.env.SITE_LOGO_PATH || '/logo-mercadosoftwares.png' },
         { rel: 'apple-touch-icon', href: process.env.SITE_LOGO_PATH || '/logo-mercadosoftwares.png' },
         { rel: 'manifest', href: '/api/site.webmanifest' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
         { rel: 'dns-prefetch', href: 'https://www.google-analytics.com' },
         { rel: 'dns-prefetch', href: 'https://www.googletagmanager.com' }
       ],
@@ -81,6 +79,16 @@ export default defineNuxtConfig({
     '/api/products/**': {
       headers: {
         'cache-control': 's-maxage=60, stale-while-revalidate=300'
+      }
+    },
+    '/lp/produtividade': {
+      headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=3600'
+      }
+    },
+    '/lp/office-365-pro': {
+      headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=3600'
       }
     }
   },

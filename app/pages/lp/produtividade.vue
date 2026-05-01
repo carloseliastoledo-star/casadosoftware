@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen bg-black text-white">
+  <div class="lp-page min-h-screen bg-black text-white">
     <!-- HERO -->
-    <section class="px-4 py-16 md:py-24">
-      <div class="max-w-3xl mx-auto text-center">
-        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
+    <section class="lp-hero px-4 py-16 md:py-24">
+      <div class="lp-hero-container max-w-3xl mx-auto text-center">
+        <h1 class="lp-title text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
           Solução Completa de Produtividade para Trabalho e Estudo
         </h1>
-        <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+        <p class="lp-subtitle text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
           Acesse ferramentas essenciais para criar documentos, planilhas e apresentações com facilidade.
         </p>
         <img
@@ -17,7 +17,7 @@
           loading="eager"
           decoding="async"
           fetchpriority="high"
-          class="mx-auto mb-8 h-48 w-48 md:h-64 md:w-64 object-contain"
+          class="lp-hero-image mx-auto mb-8 h-48 w-48 md:h-64 md:w-64 object-contain"
         />
         
         <div class="flex flex-col items-center gap-3 mb-8 text-left max-w-md mx-auto">
@@ -37,7 +37,7 @@
 
         <a
           href="/checkout"
-          class="inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg transition-colors text-lg"
+          class="lp-cta inline-block bg-green-500 hover:bg-green-400 text-black font-extrabold px-8 py-4 rounded-lg text-lg"
         >
           Continuar para acesso
         </a>
@@ -290,7 +290,7 @@ definePageMeta({ layout: 'lp', ssr: true })
 
 useHead({
   link: [
-    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
+    { rel: 'preload', as: 'image', href: '/images/hero.webp', fetchpriority: 'high' }
   ]
 })
 
@@ -301,3 +301,78 @@ useSeoMeta({
 })
 
 </script>
+
+<style scoped>
+.lp-page {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.lp-hero {
+  padding: 4rem 1rem;
+}
+
+.lp-hero-container {
+  max-width: 48rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.lp-title {
+  margin: 0 0 1.5rem;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.lp-subtitle {
+  max-width: 42rem;
+  margin: 0 auto 2rem;
+  color: #d1d5db;
+  font-size: 1.125rem;
+  line-height: 1.55;
+}
+
+.lp-hero-image {
+  display: block;
+  width: 12rem;
+  height: 12rem;
+  margin: 0 auto 2rem;
+  object-fit: contain;
+}
+
+.lp-cta {
+  display: inline-block;
+  border-radius: .5rem;
+  background: #22c55e;
+  color: #000;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .lp-hero {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+
+  .lp-title {
+    font-size: 3rem;
+  }
+
+  .lp-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .lp-hero-image {
+    width: 16rem;
+    height: 16rem;
+  }
+}
+</style>

@@ -57,11 +57,9 @@
         <!-- Coluna direita: card premium -->
         <div class="order-first lg:order-last">
           <div class="relative sticky top-6">
-            <div class="absolute -inset-4 rounded-[1.5rem] bg-slate-200/50 blur-2xl" aria-hidden="true" />
-            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-2xl shadow-slate-300/80 p-6">
+            <div class="relative bg-white rounded-2xl border border-slate-200 shadow-md p-6">
               <!-- Imagem do produto -->
-              <div class="relative h-72 bg-gradient-to-br from-slate-50 to-white rounded-xl mb-5 flex items-center justify-center overflow-hidden p-4">
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-50/30 to-transparent rounded-xl" aria-hidden="true" />
+              <div class="relative h-72 bg-slate-50 rounded-xl mb-5 flex items-center justify-center overflow-hidden p-4">
                 <img
                   src="/images/hero.webp"
                   alt="Office 365"
@@ -125,7 +123,7 @@
 <script setup lang="ts">
 useHead({
   link: [
-    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
+    { rel: 'preload', as: 'image', href: '/images/hero.webp', fetchpriority: 'high' }
   ]
 })
 
