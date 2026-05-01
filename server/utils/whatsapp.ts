@@ -43,17 +43,20 @@ Entrega imediata após pagamento ⚡`
   }
 
   try {
-    const response = await fetch(`${baseUrl}/instances/${instanceId}/token/${token}/send-text`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(clientToken ? { 'Client-Token': clientToken } : {})
-      },
-      body: JSON.stringify({
-        phone: finalPhone,
-        message
-      })
-    })
+    const response = await fetch(
+      `https://api.z-api.io/instances/${instanceId}/token/${token}/send-text`,
+      {
+        method: 'POST',
+        headers: {
+          'Client-Token': clientToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          phone: finalPhone,
+          message
+        })
+      }
+    )
 
     const data = await response.json().catch(() => null)
 
