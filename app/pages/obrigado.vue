@@ -185,6 +185,21 @@ onMounted(async () => {
       } catch {
         // ignore
       }
+
+      try {
+        const productSlug = items[0]?.item_id || items[0]?.item_name || ''
+        await $fetch('/api/abandoned-checkout/recover', {
+          method: 'POST',
+          body: {
+            orderId: oid,
+            email: order.email || '',
+            phone: order.phone || order.telefone || '',
+            product: productSlug
+          }
+        })
+      } catch {
+        // não bloquear fluxo
+      }
     }
   } catch (err) {
     console.error('[GA4] Erro ao rastrear purchase:', err)

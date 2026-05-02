@@ -431,15 +431,20 @@ model Lead {
 }
 
 model AbandonedCheckout {
-  id        String   @id @default(uuid())
-  email     String?
-  phone     String?
-  product   String?
-  status    String   @default("started")
-  source    String?
-  createdAt DateTime @default(now()) @db.DateTime(0)
-  contactedAt DateTime? @db.DateTime(0)
-  recoveredAt DateTime? @db.DateTime(0)
+  id            String    @id @default(uuid())
+  email         String?
+  phone         String?
+  product       String?
+  checkoutUrl   String?
+  status        String    @default("started")
+  source        String?
+  messageStep   Int       @default(0)
+  lastMessageAt DateTime? @db.DateTime(0)
+  contactedAt   DateTime? @db.DateTime(0)
+  recoveredAt   DateTime? @db.DateTime(0)
+  repliedAt     DateTime? @db.DateTime(0)
+  createdAt     DateTime  @default(now()) @db.DateTime(0)
+  updatedAt     DateTime  @updatedAt @db.DateTime(0)
 
   @@index([email])
   @@index([phone])
@@ -447,6 +452,7 @@ model AbandonedCheckout {
   @@index([product])
   @@index([createdAt])
   @@index([contactedAt])
+  @@index([lastMessageAt])
 }
 
 model PartnerApplication {

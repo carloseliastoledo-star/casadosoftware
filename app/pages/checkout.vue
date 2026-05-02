@@ -474,6 +474,7 @@ function trackCheckoutAbandon() {
       email: email.value.trim(),
       phone: telefone.value.trim(),
       product: productSlug.value || 'office-365',
+      checkoutUrl: window.location.href,
       status: 'abandoned'
     })
 
@@ -510,6 +511,7 @@ function captureAbandonedCheckout() {
         email: leadEmail,
         phone: leadPhone,
         product: productSlug.value || 'office-365',
+        checkoutUrl: import.meta.client ? window.location.href : '',
         status: 'started'
       })
     }).catch(() => {})
