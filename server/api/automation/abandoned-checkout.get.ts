@@ -2,9 +2,9 @@ import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { sendWhatsAppText } from '../../utils/whatsapp'
 
-const MAX_PER_RUN = 20
-
-const COMPLETED_STATUSES = ['paid', 'completed', 'converted', 'recovered', 'replied']
+const MAX_PER_RUN = 5
+const FALLBACK_URL = 'https://casadosoftware.com.br/checkout'
+const WINDOW_MS = 48 * 60 * 60 * 1000
 
 const MESSAGES: Record<number, (url: string) => string> = {
   0: (url) => `⚠️ Oi! Vi que você iniciou a ativação do seu Office, mas não finalizou.\n\nSe precisar, posso te ajudar agora mesmo 👍\n\n👉 Finalizar ativação:\n${url}\n\n💡 Leva menos de 2 minutos e já sai funcionando no seu computador.`,
@@ -23,8 +23,8 @@ function getWaitMs(step: number): number {
 
 function skipReason(lead: any, now: number): string | null {
   if (!lead.phone) return 'no_phone'
-  if (COMPLETED_STATUSES.includes(lead.status)) return 'completed'
   if (lead.repliedAt) return 'replied'
+  if (lead.recoveredAt) return 'completed'
   const step = lead.messageStep ?? 0
   if (step >= 4) return 'already_sent'
   const ref = step === 0
@@ -38,21 +38,43 @@ function skipReason(lead: any, now: number): string | null {
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const secret = String(query?.secret || '')
+  const isTest = String(query?.test || '') === 'true'
+  const isDryRun = String(query?.dryRun || '') === 'true'
 
   if (!process.env.AUTOMATION_SECRET || secret !== process.env.AUTOMATION_SECRET) {
     setResponseStatus(event, 401)
     return { ok: false, error: 'unauthorized' }
   }
 
+  if (process.env.ABANDONED_CHECKOUT_ENABLED !== 'true') {
+    return { ok: false, error: 'automation_disabled' }
+  }
+
+  if (isTest) {
+    const testPhone = process.env.TEST_WHATSAPP_PHONE
+    if (!testPhone) return { ok: false, error: 'TEST_WHATSAPP_PHONE_not_set' }
+    if (!isDryRun) {
+      const msg = MESSAGES[0](FALLBACK_URL)
+      const result = await sendWhatsAppText(testPhone, msg)
+      console.log('[ABANDONED_AUTOMATION] test sent to:', testPhone, '| result:', result)
+    }
+    return { ok: true, test: true, dryRun: isDryRun, phone: testPhone }
+  }
+
   try {
+    const since = new Date(Date.now() - WINDOW_MS)
+
     const leads = await (prisma as any).abandonedCheckout.findMany({
       where: {
         phone: { not: null },
-        status: { notIn: COMPLETED_STATUSES },
+        status: { in: ['abandoned', 'pending', 'messaged'] },
+        createdAt: { gte: since },
+        repliedAt: null,
+        recoveredAt: null,
         messageStep: { lt: 4 }
       },
       orderBy: { createdAt: 'asc' },
-      take: MAX_PER_RUN,
+      take: MAX_PER_RUN * 4,
       select: {
         id: true,
         phone: true,
@@ -62,6 +84,7 @@ export default defineEventHandler(async (event) => {
         messageStep: true,
         lastMessageAt: true,
         repliedAt: true,
+        recoveredAt: true,
         createdAt: true
       }
     })
@@ -74,6 +97,8 @@ export default defineEventHandler(async (event) => {
     const now = Date.now()
 
     for (const lead of leads) {
+      if (sent >= MAX_PER_RUN) break
+
       try {
         const reason = skipReason(lead, now)
         if (reason) {
@@ -84,32 +109,33 @@ export default defineEventHandler(async (event) => {
 
         const step = lead.messageStep ?? 0
         const product = lead.product || 'office-365'
-        const url = lead.checkoutUrl || `https://casadosoftware.com.br/checkout?product=${product}`
+        const url = lead.checkoutUrl || `${FALLBACK_URL}?product=${product}`
         const message = MESSAGES[step](url)
 
-        const result = await sendWhatsAppText(lead.phone, message)
+        if (!isDryRun) {
+          const result = await sendWhatsAppText(lead.phone, message)
 
-        if (!result.success) {
-          console.error('[ABANDONED_AUTOMATION_ERROR]', { id: lead.id, step, error: result.error })
-          reasons['send_failed'] = (reasons['send_failed'] ?? 0) + 1
-          skipped++
-          continue
+          if (!result.success) {
+            console.error('[ABANDONED_AUTOMATION_ERROR]', { id: lead.id, step, error: result.error })
+            reasons['send_failed'] = (reasons['send_failed'] ?? 0) + 1
+            skipped++
+            continue
+          }
+
+          await (prisma as any).abandonedCheckout.update({
+            where: { id: lead.id },
+            data: {
+              messageStep: step + 1,
+              lastMessageAt: new Date(),
+              status: 'messaged',
+              ...(step === 0 ? { contactedAt: new Date() } : {})
+            },
+            select: { id: true }
+          })
         }
 
-        await (prisma as any).abandonedCheckout.update({
-          where: { id: lead.id },
-          data: {
-            messageStep: step + 1,
-            lastMessageAt: new Date(),
-            status: 'messaged',
-            ...(step === 0 ? { contactedAt: new Date() } : {})
-          },
-          select: { id: true }
-        })
-
         sent++
-        console.log('[ABANDONED_AUTOMATION] sent:', lead.id, '| step:', step + 1, '| phone:', lead.phone)
-        if (sent >= MAX_PER_RUN) break
+        console.log('[ABANDONED_AUTOMATION] sent:', lead.id, '| step:', step + 1, '| dryRun:', isDryRun)
       } catch (error) {
         console.error('[ABANDONED_AUTOMATION_ERROR]', error)
         reasons['exception'] = (reasons['exception'] ?? 0) + 1
@@ -118,7 +144,7 @@ export default defineEventHandler(async (event) => {
     }
 
     console.log('[ABANDONED_AUTOMATION] sent:', sent, '| skipped:', skipped, '| reasons:', reasons)
-    return { ok: true, found: leads.length, sent, skipped, reasons }
+    return { ok: true, found: leads.length, sent, skipped, reasons, dryRun: isDryRun }
   } catch (err: any) {
     console.error('🔥 AUTOMATION ERROR:', err)
     return {
