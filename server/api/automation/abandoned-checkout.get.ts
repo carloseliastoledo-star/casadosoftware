@@ -106,8 +106,12 @@ export default defineEventHandler(async (event) => {
     }
 
     return { ok: true, found: leads.length, sent, skipped }
-  } catch (error) {
-    console.error('[ABANDONED_AUTOMATION_ERROR]', error)
-    return { ok: false, error: 'automation_failed' }
+  } catch (err: any) {
+    console.error('🔥 AUTOMATION ERROR:', err)
+    return {
+      ok: false,
+      error: err.message || 'automation_failed',
+      stack: err.stack
+    }
   }
 })
