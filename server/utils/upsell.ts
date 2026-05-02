@@ -43,7 +43,7 @@ export function getUpsellOffer(productSlug: string): UpsellOffer | null {
 }
 
 export function buildUpsellMessage(offer: UpsellOffer): string {
-  return `🔥 Oferta exclusiva para completar sua compra\n\nVocê pode adicionar ${offer.title} por apenas ${offer.price}.\n\n👉 ${offer.url}`
+  return `� Já que você ativou, tenho um upgrade especial:\n\n👉 ${offer.url}\n\nHoje consigo liberar com desconto.\n\nQuer que eu te envie?`
 }
 
 export async function sendUpsellWhatsApp(phone: string, productSlug: string): Promise<boolean> {

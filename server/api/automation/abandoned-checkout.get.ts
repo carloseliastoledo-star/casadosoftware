@@ -7,10 +7,10 @@ const MAX_PER_RUN = 20
 const COMPLETED_STATUSES = ['paid', 'completed', 'converted', 'recovered', 'replied']
 
 const MESSAGES: Record<number, (url: string) => string> = {
-  0: (url) => `⚠️ Você esqueceu sua ativação 😱\n\nSeu pedido ainda está reservado.\n\nFinalize aqui:\n${url}\n\nEntrega imediata após pagamento ⚡`,
-  1: (url) => `🔥 Sua licença ainda está disponível\n\nMuitos clientes perdem a oferta por não finalizar o pagamento.\n\nConclua aqui:\n${url}`,
-  2: (url) => `💻 Ainda sem seu Office?\n\nEvite travamentos, erros e perda de produtividade.\n\nAtive agora em poucos minutos:\n${url}`,
-  3: (url) => `🎁 Última chance\n\nSua condição especial ainda está disponível hoje.\n\nFinalize aqui:\n${url}\n\nDepois disso o valor pode subir.`
+  0: (url) => `⚠️ Oi! Vi que você iniciou a ativação do seu Office, mas não finalizou.\n\nSe precisar, posso te ajudar agora mesmo 👍\n\n👉 Finalizar ativação:\n${url}\n\n💡 Leva menos de 2 minutos e já sai funcionando no seu computador.`,
+  1: (url) => `🔥 Seu acesso ainda está reservado, mas pode sair a qualquer momento.\n\nHoje muita gente está ativando esse pacote.\n\n👉 Garantir agora:\n${url}\n\nSe tiver dúvida, me chama 👍`,
+  2: (url) => `💻 Ainda não conseguiu ativar?\n\nPosso te ajudar passo a passo aqui 👇\n\n👉 Finalizar:\n${url}\n\n🎁 Posso te mandar um guia simples se precisar.`,
+  3: (url) => `🎁 Última chance!\n\nSeu acesso pode expirar e o valor pode mudar.\n\n👉 Ativar agora:\n${url}`
 }
 
 function getWaitMs(step: number): number {
@@ -24,6 +24,7 @@ function getWaitMs(step: number): number {
 function skipReason(lead: any, now: number): string | null {
   if (!lead.phone) return 'no_phone'
   if (COMPLETED_STATUSES.includes(lead.status)) return 'completed'
+  if (lead.repliedAt) return 'replied'
   const step = lead.messageStep ?? 0
   if (step >= 4) return 'already_sent'
   const ref = step === 0
@@ -60,6 +61,7 @@ export default defineEventHandler(async (event) => {
         status: true,
         messageStep: true,
         lastMessageAt: true,
+        repliedAt: true,
         createdAt: true
       }
     })
@@ -107,6 +109,7 @@ export default defineEventHandler(async (event) => {
 
         sent++
         console.log('[ABANDONED_AUTOMATION] sent:', lead.id, '| step:', step + 1, '| phone:', lead.phone)
+        if (sent >= MAX_PER_RUN) break
       } catch (error) {
         console.error('[ABANDONED_AUTOMATION_ERROR]', error)
         reasons['exception'] = (reasons['exception'] ?? 0) + 1
