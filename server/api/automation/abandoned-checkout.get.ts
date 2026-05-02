@@ -2,6 +2,8 @@ import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { sendWhatsAppText } from '../../utils/whatsapp'
 
+// TODO: REMOVER MODO DE TESTE APÓS VALIDAR INTEGRAÇÃO WHATSAPP
+
 const MESSAGES: Record<number, (url: string) => string> = {
   0: (url) => `⚠️ Você esqueceu sua ativação 😱\n\nSeu pedido ainda está reservado.\n\nFinalize aqui:\n${url}\n\nEntrega imediata após pagamento ⚡`,
   1: (url) => `🔥 Sua licença ainda está disponível\n\nMuitos clientes perdem a oferta por não finalizar o pagamento.\n\nConclua aqui:\n${url}`,
@@ -38,22 +40,18 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    // ── MODO DE TESTE TEMPORÁRIO ─────────────────────────────────────────────
+    // Ignora filtros de tempo, status e checkoutUrl. Valida apenas telefone.
+    // TODO: REMOVER APÓS CONFIRMAR QUE WHATSAPP ESTÁ FUNCIONANDO
     const leads = await (prisma as any).abandonedCheckout.findMany({
       where: {
-        phone: { not: null },
-        status: { notIn: ['replied', 'recovered'] },
-        messageStep: { lt: 4 }
+        phone: { not: null }
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: 'desc' },
       take: 20,
       select: {
         id: true,
-        phone: true,
-        product: true,
-        checkoutUrl: true,
-        messageStep: true,
-        lastMessageAt: true,
-        createdAt: true
+        phone: true
       }
     })
 
@@ -61,22 +59,15 @@ export default defineEventHandler(async (event) => {
 
     let sent = 0
     let skipped = 0
-    const now = Date.now()
 
     for (const lead of leads) {
       try {
-        if (!isReadyToSend(lead, now)) {
+        if (!lead.phone) {
           skipped++
           continue
         }
 
-        const step = lead.messageStep ?? 0
-        const product = lead.product || 'office-365'
-        const url = lead.checkoutUrl || `https://casadosoftware.com.br/checkout?product=${product}`
-        const messageFn = MESSAGES[step]
-        if (!messageFn) { skipped++; continue }
-
-        const message = messageFn(url)
+        const message = `Olá! Teste automático da Casa do Software. Se você recebeu esta mensagem, a integração WhatsApp está funcionando.`
         const result = await sendWhatsAppText(lead.phone, message)
 
         if (!result.success) {
@@ -85,25 +76,14 @@ export default defineEventHandler(async (event) => {
           continue
         }
 
-        const nextStep = step + 1
-        await (prisma as any).abandonedCheckout.update({
-          where: { id: lead.id },
-          data: {
-            status: STEP_STATUS[step],
-            messageStep: nextStep,
-            lastMessageAt: new Date(),
-            ...(step === 0 ? { contactedAt: new Date() } : {})
-          },
-          select: { id: true }
-        })
-
         sent++
-        console.log('[ABANDONED_AUTOMATION] sent:', lead.id, '| step:', step + 1)
+        console.log('[ABANDONED_AUTOMATION] sent:', lead.id)
       } catch (error) {
         console.error('[ABANDONED_AUTOMATION_ERROR]', error)
         skipped++
       }
     }
+    // ── FIM MODO DE TESTE ────────────────────────────────────────────────────
 
     return { ok: true, found: leads.length, sent, skipped }
   } catch (err: any) {
