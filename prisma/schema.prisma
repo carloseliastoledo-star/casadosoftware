@@ -440,6 +440,8 @@ model AbandonedCheckout {
   source        String?
   messageStep   Int       @default(0)
   lastMessageAt DateTime? @db.DateTime(0)
+  lastSentAt    DateTime? @db.DateTime(0)
+  lockedAt      DateTime? @db.DateTime(0)
   contactedAt   DateTime? @db.DateTime(0)
   recoveredAt   DateTime? @db.DateTime(0)
   repliedAt     DateTime? @db.DateTime(0)
@@ -453,6 +455,8 @@ model AbandonedCheckout {
   @@index([createdAt])
   @@index([contactedAt])
   @@index([lastMessageAt])
+  @@index([lastSentAt])
+  @@index([lockedAt])
 }
 
 model PartnerApplication {
