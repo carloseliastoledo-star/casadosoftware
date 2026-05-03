@@ -6,14 +6,13 @@
     "node": ">=20 <21"
   },
   "scripts": {
-    "build": "nuxt build",
-    "vercel-build": "prisma generate && (prisma migrate deploy || echo 'migrate deploy failed, continuing') && nuxt build",
+    "build": "prisma migrate deploy && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",
     "start:prod": "prisma migrate deploy && node .output/server/index.mjs",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare && prisma generate"
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "node prisma/seed.mjs"
