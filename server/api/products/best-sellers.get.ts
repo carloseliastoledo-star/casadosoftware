@@ -68,7 +68,8 @@ function parseSlugs(raw: unknown): string[] {
 }
 
 export default defineEventHandler(async (event) => {
-  setHeader(event, 'Cache-Control', 's-maxage=60, stale-while-revalidate=300')
+  const startedAt = Date.now()
+  setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
   try {
     const { storeSlug } = getStoreContext(event)
 
@@ -215,7 +216,9 @@ export default defineEventHandler(async (event) => {
 
     return ordered.map(mapProduct)
   } catch (error: any) {
-    console.error('[API PRODUCTS BEST-SELLERS ERROR]', error)
+    console.error('[api/products/best-sellers] error:', error)
     return []
+  } finally {
+    console.log('[api/products/best-sellers] loaded in', Date.now() - startedAt, 'ms')
   }
 })

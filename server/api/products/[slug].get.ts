@@ -55,8 +55,9 @@ function normalizeFinalUrl(input: unknown): string | null {
 }
 
 export default defineEventHandler(async (event) => {
+  const startedAt = Date.now()
   try {
-  setHeader(event, 'Cache-Control', 's-maxage=60, stale-while-revalidate=300')
+  setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
 
   const rawSlug = event.context.params?.slug
 
@@ -293,7 +294,7 @@ export default defineEventHandler(async (event) => {
   }
   } catch (err: any) {
     if (err?.statusCode) throw err
-    console.error('[API PRODUCTS SLUG ERROR]', err)
+    console.error('[api/products/[slug]] error:', err)
     const rawSlug = String(event.context.params?.slug || '').trim().toLowerCase()
     return {
       id: `fallback-${rawSlug || 'produto'}`,
@@ -316,5 +317,7 @@ export default defineEventHandler(async (event) => {
       createdAt: null,
       fallback: true
     }
+  } finally {
+    console.log('[api/products/[slug]] loaded in', Date.now() - startedAt, 'ms')
   }
 })

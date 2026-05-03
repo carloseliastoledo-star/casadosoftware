@@ -1,4 +1,4 @@
-import { defineEventHandler, getRouterParam, createError } from 'h3'
+import { defineEventHandler, getRouterParam, createError, setHeader } from 'h3'
 import prisma from '../../db/prisma'
 import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
@@ -16,6 +16,9 @@ function normalizeImageUrl(input: unknown): string | null {
 }
 
 export default defineEventHandler(async (event) => {
+  const startedAt = Date.now()
+  setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+
   const slug = String(getRouterParam(event, 'slug') || '')
   .trim()
   .toLowerCase()
@@ -29,6 +32,7 @@ export default defineEventHandler(async (event) => {
 
   const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
+  try {
   const categoria = await (prisma as any).categoria.findFirst({
   where: {
     slug,
@@ -128,5 +132,8 @@ export default defineEventHandler(async (event) => {
           createdAt: p.criadoEm
         }
       })
+    }
+  } finally {
+    console.log('[api/categorias/[slug]] loaded in', Date.now() - startedAt, 'ms')
   }
 })

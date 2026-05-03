@@ -46,7 +46,8 @@ function normalizeImageUrl(input: unknown): string | null {
 }
 
 export default defineEventHandler(async (event) => {
-  setHeader(event, 'Cache-Control', 's-maxage=60, stale-while-revalidate=300')
+  const startedAt = Date.now()
+  setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
   try {
     const { storeSlug } = getStoreContext()
 
@@ -215,7 +216,9 @@ export default defineEventHandler(async (event) => {
       }
     })
   } catch (error: any) {
-    console.error('[API PRODUCTS ERROR]', error)
+    console.error('[api/products] error:', error)
     return []
+  } finally {
+    console.log('[api/products] loaded in', Date.now() - startedAt, 'ms')
   }
 })

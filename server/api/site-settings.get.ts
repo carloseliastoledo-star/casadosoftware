@@ -1,9 +1,10 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, setHeader } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { getStoreContext } from '#root/server/utils/store'
 
 const EMPTY = { ok: true, settings: null }
 
+// Apenas configurações públicas, sem secrets
 const SELECT = {
   id: true,
   googleAnalyticsId: true,
@@ -17,7 +18,10 @@ const SELECT = {
   footerPolicyLinks: true
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const startedAt = Date.now()
+  setHeader(event, 'Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1200')
+
   const { storeSlug } = getStoreContext()
 
   const prismaAny = prisma as any
@@ -50,7 +54,9 @@ export default defineEventHandler(async () => {
       return legacy ? { ok: true, settings: legacy } : EMPTY
     }
   } catch (err: any) {
-    console.error('[api][site-settings] db error', err?.message || err)
+    console.error('[api/site-settings] error:', err?.message || err)
     return EMPTY
+  } finally {
+    console.log('[api/site-settings] loaded in', Date.now() - startedAt, 'ms')
   }
 })

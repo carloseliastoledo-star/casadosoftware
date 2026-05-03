@@ -1,7 +1,9 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, setHeader } from 'h3'
 import prisma from '../../db/prisma'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+  const startedAt = Date.now()
+  setHeader(event, 'Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1200')
   try {
     const categorias = await prisma.categoria.findMany({
       where: { ativo: true },
@@ -14,7 +16,9 @@ export default defineEventHandler(async () => {
     })
     return { ok: true, categorias }
   } catch (err: any) {
-    console.error('[api][categorias] db error', err?.message || err)
+    console.error('[api/categorias] error:', err?.message || err)
     return { ok: true, categorias: [] }
+  } finally {
+    console.log('[api/categorias] loaded in', Date.now() - startedAt, 'ms')
   }
 })
