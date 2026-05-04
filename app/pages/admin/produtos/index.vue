@@ -33,15 +33,29 @@ const produtos = computed(() => data.value || [])
 
 <template>
   <div>
-    <div class="flex justify-between mb-6">
+    <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Produtos</h1>
 
-      <NuxtLink
-        to="/admin/produtos/novo"
-        class="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        + Adicionar novo
-      </NuxtLink>
+      <div class="flex items-center gap-2">
+        <NuxtLink
+          to="/admin/produtos/exportar"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm"
+        >
+          📥 Exportar
+        </NuxtLink>
+        <NuxtLink
+          to="/admin/produtos/importar"
+          class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm"
+        >
+          📤 Importar
+        </NuxtLink>
+        <NuxtLink
+          to="/admin/produtos/novo"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        >
+          + Adicionar novo
+        </NuxtLink>
+      </div>
     </div>
 
     <div v-if="produtos.length === 0" class="text-gray-500">
