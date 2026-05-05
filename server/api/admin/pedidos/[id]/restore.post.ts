@@ -1,7 +1,7 @@
 import { defineEventHandler, getRouterParam, createError } from 'h3'
-import prisma from '../../../db/prisma'
-import { requireAdminSession } from '../../../utils/adminSession'
-import { getStoreContext, whereForStore } from '../../../utils/store'
+import prisma from '../../../../db/prisma'
+import { requireAdminSession } from '../../../../utils/adminSession'
+import { getStoreContext, whereForStore } from '../../../../utils/store'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
