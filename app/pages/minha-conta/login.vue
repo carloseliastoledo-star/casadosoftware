@@ -75,6 +75,14 @@
 <script setup lang="ts">
 definePageMeta({ middleware: ['customer'] })
 
+const route = useRoute()
+const returnTo = computed(() => {
+  const raw = String(route.query?.returnTo || '').trim()
+  if (!raw) return '/minha-conta'
+  if (raw.startsWith('/') && !raw.startsWith('//')) return raw
+  return '/minha-conta'
+})
+
 const mode = ref<'login' | 'register'>('login')
 
 const email = ref('')
@@ -123,12 +131,13 @@ async function submit() {
     return
   }
 
+  const destination = returnTo.value
   try {
-    await navigateTo('/minha-conta')
+    await navigateTo(destination)
   } catch (err: any) {
     if (import.meta.client) {
       try {
-        window.location.href = '/minha-conta'
+        window.location.href = destination
         return
       } catch {
         // ignore

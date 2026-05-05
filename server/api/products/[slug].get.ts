@@ -1,11 +1,12 @@
 import prisma from '#root/server/db/prisma'
 import { getDefaultProductDescription } from '#root/server/utils/productDescriptionTemplate'
 import { createError, getQuery, setHeader } from 'h3'
-import { getStoreContext } from '#root/server/utils/store'
+import { getStoreContext, whereForStore } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
 import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
 import { autoTranslateText } from '#root/server/utils/autoTranslate'
 import { fixCp850 } from '#root/server/utils/fixEncoding'
+import { getCustomerSession } from '#root/server/utils/customerSession'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -57,8 +58,6 @@ function normalizeFinalUrl(input: unknown): string | null {
 export default defineEventHandler(async (event) => {
   const startedAt = Date.now()
   try {
-  setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
-
   const rawSlug = event.context.params?.slug
 
   const { storeSlug } = getStoreContext()
@@ -67,6 +66,28 @@ export default defineEventHandler(async (event) => {
 
   const query = getQuery(event)
   const includeTutorial = String((query as any)?.includeTutorial || '').trim() === '1'
+
+  setHeader(event, 'Cache-Control', includeTutorial
+    ? 'private, no-store'
+    : 'public, s-maxage=300, stale-while-revalidate=600'
+  )
+
+  let tutorialAllowed = false
+  if (includeTutorial) {
+    const session = getCustomerSession(event)
+    if (session) {
+      try {
+        const ctx = getStoreContext()
+        const paidOrder = await (prisma as any).order.findFirst({
+          where: whereForStore({ customerId: session.customerId, pagoEm: { not: null } }, ctx) as any,
+          select: { id: true }
+        })
+        tutorialAllowed = Boolean(paidOrder)
+      } catch {
+        tutorialAllowed = false
+      }
+    }
+  }
 
   const queryLang = String((query as any)?.lang || '').trim().toLowerCase()
   const langFromQuery = queryLang === 'en' || queryLang === 'es' || queryLang === 'it' || queryLang === 'fr' ? queryLang : ''
@@ -239,9 +260,10 @@ export default defineEventHandler(async (event) => {
   const translatedTutorialSubtitle = (typeof dbTutorialSubtitle === 'string' && dbTutorialSubtitle.trim())
     ? dbTutorialSubtitle
     : (autoTranslateText(product.tutorialSubtitulo, { lang }) || product.tutorialSubtitulo)
-  const translatedTutorialContent = includeTutorial
+  const translatedTutorialContent = (includeTutorial && tutorialAllowed)
     ? ((typeof dbTutorialContent === 'string' && dbTutorialContent.trim()) ? dbTutorialContent : (autoTranslateText(product.tutorialConteudo, { lang }) || product.tutorialConteudo))
     : null
+  const tutorialAccessDenied = includeTutorial && !tutorialAllowed
 
   const rawCardItems = typeof (product as any).cardItems === 'string' ? String((product as any).cardItems) : ''
   const translatedCardItems = (() => {
@@ -287,6 +309,7 @@ export default defineEventHandler(async (event) => {
     tutorialTitle: translatedTutorialTitle,
     tutorialSubtitle: translatedTutorialSubtitle,
     tutorialContent: translatedTutorialContent,
+    tutorialAccessDenied: tutorialAccessDenied ?? false,
     seoTitle: fixCp850((product as any).seoTitle) || null,
     seoDescription: fixCp850((product as any).seoDescription) || null,
     seoContent: fixCp850((product as any).seoContent) || null,

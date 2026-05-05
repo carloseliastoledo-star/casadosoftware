@@ -185,13 +185,24 @@
             <div>
               <h3 class="text-lg font-bold text-white">{{ t.tutorialCardTitle }}</h3>
               <p class="text-slate-400 text-sm mt-1">{{ safeProduct.tutorialSubtitulo }}</p>
+              <p v-if="tutorialAccessChecked && !tutorialAccess?.allowed" class="text-amber-400 text-xs mt-2">
+                🔒 {{ t.tutorialLoginRequired }}
+              </p>
             </div>
           </div>
           <NuxtLink
+            v-if="!tutorialAccessChecked || tutorialAccess?.allowed"
             :to="`/tutoriais/${safeProduct.slug}`"
             class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
             → {{ t.viewTutorial }}
+          </NuxtLink>
+          <NuxtLink
+            v-else
+            :to="`/minha-conta/login?returnTo=${encodeURIComponent('/tutoriais/' + safeProduct.slug)}`"
+            class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition"
+          >
+            🔑 {{ t.tutorialLoginRequired }}
           </NuxtLink>
         </div>
 
@@ -480,6 +491,25 @@ const safeProduct = computed(() => {
     descricao: descricaoLonga
   }
 })
+
+const tutorialAccess = ref<{ allowed: boolean; reason: string | null } | null>(null)
+const tutorialAccessChecked = ref(false)
+
+if (import.meta.client) {
+  onMounted(async () => {
+    if (!safeProduct.value?.tutorialTitulo) return
+    try {
+      const res = await $fetch<{ ok: boolean; allowed: boolean; reason: string | null }>(
+        `/api/customer/tutorial-access/${slug}`
+      )
+      tutorialAccess.value = { allowed: res.allowed, reason: res.reason ?? null }
+    } catch {
+      tutorialAccess.value = { allowed: false, reason: 'error' }
+    } finally {
+      tutorialAccessChecked.value = true
+    }
+  })
+}
 
 const primaryCategorySlug = computed(() => {
   const raw = (safeProduct.value as any)?.categories
@@ -1151,6 +1181,7 @@ const t = computed(() => {
       emailDelivery: 'Delivered by email after confirmation',
       tutorialCardTitle: 'Activation tutorial',
       viewTutorial: 'View tutorial',
+      tutorialLoginRequired: 'Sign in to access',
       detailedDescription: 'Detailed description',
       whyPriceTitle: 'Why is our price more affordable?',
       whyPriceP1: 'Our prices are more affordable because we work with digital distribution, with no physical media, logistics, or middleman costs.',
@@ -1180,6 +1211,7 @@ const t = computed(() => {
       emailDelivery: 'Envío por e-mail tras la confirmación',
       tutorialCardTitle: 'Tutorial de activación',
       viewTutorial: 'Ver tutorial',
+      tutorialLoginRequired: 'Inicia sesión para acceder',
       detailedDescription: 'Descripción detallada',
       whyPriceTitle: '¿Por qué nuestro precio es más accesible?',
       whyPriceP1: 'Nuestros precios son más accesibles porque trabajamos con distribución digital, sin costos de medios físicos, logística ni intermediarios.',
@@ -1209,6 +1241,7 @@ const t = computed(() => {
       emailDelivery: 'Consegnato via email dopo la conferma',
       tutorialCardTitle: 'Tutorial di attivazione',
       viewTutorial: 'Vedi tutorial',
+      tutorialLoginRequired: 'Accedi per visualizzare',
       detailedDescription: 'Descrizione dettagliata',
       whyPriceTitle: 'Perché il nostro prezzo è più conveniente?',
       whyPriceP1: 'I nostri prezzi sono più convenienti perché lavoriamo con distribuzione digitale, senza costi di supporti fisici, logistica o intermediari.',
@@ -1238,6 +1271,7 @@ const t = computed(() => {
       emailDelivery: 'Livré par e-mail après confirmation',
       tutorialCardTitle: "Tutoriel d’activation",
       viewTutorial: 'Voir le tutoriel',
+      tutorialLoginRequired: 'Connectez-vous pour accéder',
       detailedDescription: 'Description détaillée',
       whyPriceTitle: 'Pourquoi notre prix est-il plus abordable ?',
       whyPriceP1: 'Nos prix sont plus abordables car nous travaillons avec une distribution numérique, sans coûts de support physique, de logistique ou d’intermédiaires.',
@@ -1266,6 +1300,7 @@ const t = computed(() => {
     emailDelivery: 'Envio por e-mail após confirmação',
     tutorialCardTitle: 'Tutorial de Ativação',
     viewTutorial: 'Ver Tutorial',
+    tutorialLoginRequired: 'Entre para acessar',
     detailedDescription: 'Descrição Detalhada',
     whyPriceTitle: 'Por que o preço é tão bom? Entenda.',
     whyPriceP1: 'Nossos preços são mais acessíveis porque trabalhamos com distribuição digital, sem custos de mídia física, logística ou intermediários.',

@@ -11,7 +11,11 @@ const t = computed(() => {
       defaultTitle: 'Activation tutorial',
       loading: 'Loading tutorial...',
       notFound: 'Tutorial not found',
-      noContent: 'No content.'
+      noContent: 'No content.',
+      accessDeniedTitle: 'Exclusive content for customers',
+      accessDeniedBody: 'This tutorial is available only to customers who have completed a purchase.',
+      accessDeniedLogin: 'Sign in to your account',
+      accessDeniedBuy: 'Buy now and get access'
     }
   }
 
@@ -20,7 +24,11 @@ const t = computed(() => {
       defaultTitle: 'Tutorial de activación',
       loading: 'Cargando tutorial...',
       notFound: 'Tutorial no encontrado',
-      noContent: 'Sin contenido.'
+      noContent: 'Sin contenido.',
+      accessDeniedTitle: 'Contenido exclusivo para clientes',
+      accessDeniedBody: 'Este tutorial está disponible solo para clientes que han realizado una compra.',
+      accessDeniedLogin: 'Inicia sesión en tu cuenta',
+      accessDeniedBuy: 'Compra ahora y obtén acceso'
     }
   }
 
@@ -28,7 +36,11 @@ const t = computed(() => {
     defaultTitle: 'Tutorial de Ativação',
     loading: 'Carregando tutorial...',
     notFound: 'Tutorial não encontrado',
-    noContent: 'Sem conteúdo.'
+    noContent: 'Sem conteúdo.',
+    accessDeniedTitle: 'Conteúdo exclusivo para clientes',
+    accessDeniedBody: 'Este tutorial está disponível apenas para clientes que já realizaram uma compra.',
+    accessDeniedLogin: 'Entrar na minha conta',
+    accessDeniedBuy: 'Comprar agora e ter acesso'
   }
 })
 
@@ -40,6 +52,8 @@ const { data, pending, error } = await useFetch(
   { server: false }
 )
 
+const accessDenied = computed(() => Boolean((data.value as any)?.tutorialAccessDenied))
+
 const tutorial = computed(() => {
   const p: any = data.value
   if (!p) return null
@@ -48,6 +62,11 @@ const tutorial = computed(() => {
     title: p.tutorialTitle || t.value.defaultTitle,
     content: p.tutorialContent || ''
   }
+})
+
+const loginUrl = computed(() => {
+  const returnPath = useRoute().fullPath
+  return `/minha-conta/login?returnTo=${encodeURIComponent(returnPath)}`
 })
 
 function escapeHtml(input: string) {
@@ -221,10 +240,33 @@ const tutorialHtml = computed(() => {
         {{ t.loading }}
       </div>
 
-      <div v-else-if="error || !tutorial">
-        <h1 class="text-2xl font-bold">
-          {{ t.notFound }}
-        </h1>
+      <div v-else-if="error">
+        <h1 class="text-2xl font-bold">{{ t.notFound }}</h1>
+      </div>
+
+      <!-- Gate de acesso negado -->
+      <div v-else-if="accessDenied" class="text-center py-16">
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 text-4xl mb-6">🔒</div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-3">{{ t.accessDeniedTitle }}</h1>
+        <p class="text-gray-600 max-w-md mx-auto mb-8">{{ t.accessDeniedBody }}</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <NuxtLink
+            :to="loginUrl"
+            class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
+          >
+            🔑 {{ t.accessDeniedLogin }}
+          </NuxtLink>
+          <NuxtLink
+            to="/produtos"
+            class="inline-flex items-center gap-2 border border-blue-600 text-blue-700 hover:bg-blue-50 font-semibold px-6 py-3 rounded-xl transition"
+          >
+            🛒 {{ t.accessDeniedBuy }}
+          </NuxtLink>
+        </div>
+      </div>
+
+      <div v-else-if="!tutorial">
+        <h1 class="text-2xl font-bold">{{ t.notFound }}</h1>
       </div>
 
       <div v-else>
