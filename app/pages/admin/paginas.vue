@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold">Páginas</h1>
-        <p class="text-sm text-gray-600 mt-1">Crie páginas institucionais e publique no site.</p>
+        <p class="text-sm text-gray-600 mt-1">Crie páginas institucionais e publique no site. Para aparecer no rodapé, marque Publicar no site e Mostrar no rodapé.</p>
       </div>
 
       <button
@@ -114,12 +114,12 @@
 
             <div class="flex items-center gap-2">
               <input id="pub" v-model="formPublicado" type="checkbox" class="h-4 w-4" />
-              <label for="pub" class="text-sm">Publicar no site</label>
+              <label for="pub" class="text-sm">Publicar no site (necessário para aparecer no rodapé)</label>
             </div>
 
             <div class="flex items-center gap-2">
               <input id="footer" v-model="formShowInFooter" type="checkbox" class="h-4 w-4" />
-              <label for="footer" class="text-sm">Mostrar no rodapé</label>
+              <label for="footer" class="text-sm">Mostrar no rodapé (só aparece se estiver publicado)</label>
             </div>
 
             <div v-if="formShowInFooter" class="max-w-xs">
@@ -189,8 +189,8 @@ const formTitulo = ref('')
 const formSlug = ref('')
 const formConteudo = ref('')
 const formIsHtml = ref(false)
-const formPublicado = ref(false)
-const formShowInFooter = ref(false)
+const formPublicado = ref(true)
+const formShowInFooter = ref(true)
 const formFooterOrder = ref<string>('')
 
 const modalLoading = ref(false)
@@ -203,8 +203,8 @@ function openCreate() {
   formSlug.value = ''
   formConteudo.value = ''
   formIsHtml.value = false
-  formPublicado.value = false
-  formShowInFooter.value = false
+  formPublicado.value = true
+  formShowInFooter.value = true
   formFooterOrder.value = ''
   modalMessage.value = ''
   modalError.value = ''
