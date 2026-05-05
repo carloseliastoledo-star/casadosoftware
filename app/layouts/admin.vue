@@ -73,6 +73,10 @@
           💸 Saques Afiliados
         </NuxtLink>
 
+        <NuxtLink to="/admin/tema-home" class="menu">
+          🎨 Tema da Home
+        </NuxtLink>
+
         <NuxtLink to="/admin/configuracoes" class="menu">
           ⚙️ Configurações
         </NuxtLink>

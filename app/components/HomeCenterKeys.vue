@@ -567,7 +567,9 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ onlyBestSellers?: boolean }>()
+import type { HomeTheme } from '~/types/homeTheme'
+
+const props = defineProps<{ onlyBestSellers?: boolean; homeTheme?: HomeTheme | null }>()
 const onlyBestSellers = computed(() => Boolean(props.onlyBestSellers))
 
 const intl = useIntlContext()

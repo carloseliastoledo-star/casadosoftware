@@ -1,5 +1,11 @@
 {
   "buildCommand": "npm run build",
   "framework": "nuxtjs",
-  "regions": ["gru1"]
+  "regions": ["gru1"],
+  "crons": [
+    {
+      "path": "/api/automation/abandoned-checkout?secret=COLOQUE_SEU_AUTOMATION_SECRET_AQUI",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }

@@ -363,6 +363,7 @@ model SiteSettings {
   orderBumpTitle          String?
   orderBumpDescription    String?  @db.Text
   orderBumpPrice          Float?   @default(19)
+  homeThemeJson           String?  @db.Text
   createdAt              DateTime @default(now()) @db.DateTime(0)
   updatedAt              DateTime @updatedAt @db.DateTime(0)
 }

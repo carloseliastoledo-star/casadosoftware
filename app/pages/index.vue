@@ -1,7 +1,7 @@
 <template>
-  <HomeCasaSoftware v-if="isCasaDoSoftware" />
-  <HomeCenterKeys v-else-if="isLicencasDigitais" :only-best-sellers="true" />
-  <HomeCenterKeys v-else :only-best-sellers="false" />
+  <HomeCasaSoftware v-if="isCasaDoSoftware" :home-theme="homeTheme" />
+  <HomeCenterKeys v-else-if="isLicencasDigitais" :only-best-sellers="true" :home-theme="homeTheme" />
+  <HomeCenterKeys v-else :only-best-sellers="false" :home-theme="homeTheme" />
 
   <div v-if="debugHost" class="fixed bottom-3 left-3 z-[9999] max-w-[92vw] rounded-lg bg-black/70 text-white text-xs p-3">
     <div><b>host:</b> {{ host }}</div>
@@ -17,6 +17,9 @@ definePageMeta({ ssr: false, layout: 'default' })
 
 import { useJsonLd } from '~/composables/useJsonLd'
 import { getCasaHomeJsonLdBundle } from '~/services/casaJsonLd'
+import { useHomeTheme } from '~/composables/useHomeTheme'
+
+const { homeTheme } = useHomeTheme()
 
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())

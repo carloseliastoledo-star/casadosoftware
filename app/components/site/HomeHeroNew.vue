@@ -8,26 +8,33 @@
           <!-- Badge -->
           <div class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-xs font-semibold tracking-wide text-blue-700">
             <span class="h-2 w-2 rounded-full bg-blue-500" aria-hidden="true" />
-            Entrega imediata
+            {{ heroBadge }}
           </div>
 
           <!-- Título principal -->
           <h1 class="text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-tight text-slate-900 leading-[1.1]">
-            Ative seus softwares em minutos
+            {{ heroTitle }}
           </h1>
 
           <!-- Subtítulo -->
           <p class="text-slate-600 text-lg leading-relaxed max-w-md">
-            Receba por e-mail e ative com suporte completo.
+            {{ heroSubtitle }}
           </p>
 
           <!-- Botão principal -->
-          <div class="pt-2">
+          <div class="pt-2 flex flex-wrap gap-3">
             <NuxtLink
-              :to="productsIndexPath"
+              :to="heroPrimaryUrl"
               class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 hover:bg-slate-800 px-10 py-4 text-sm font-semibold text-white transition-all duration-200 shadow-md"
             >
-              Ativar agora
+              {{ heroPrimaryLabel }}
+            </NuxtLink>
+            <NuxtLink
+              v-if="heroSecondaryLabel"
+              :to="heroSecondaryUrl"
+              class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-900 px-10 py-4 text-sm font-semibold text-slate-900 hover:bg-slate-50 transition-all duration-200"
+            >
+              {{ heroSecondaryLabel }}
             </NuxtLink>
           </div>
 
@@ -121,10 +128,21 @@
 </template>
 
 <script setup lang="ts">
+import type { HomeTheme } from '~/types/homeTheme'
+
 useHead({
   link: [
     { rel: 'preload', as: 'image', href: '/images/hero.webp', fetchpriority: 'high' }
   ]
 })
 
-const props = defineProps<{ productsIndexPath: string }>()</script>
+const props = defineProps<{ productsIndexPath: string; homeTheme?: HomeTheme | null }>()
+
+const heroBadge = computed(() => props.homeTheme?.hero?.badge || 'Entrega imediata')
+const heroTitle = computed(() => props.homeTheme?.hero?.title || 'Ative seus softwares em minutos')
+const heroSubtitle = computed(() => props.homeTheme?.hero?.subtitle || 'Receba por e-mail e ative com suporte completo.')
+const heroPrimaryLabel = computed(() => props.homeTheme?.hero?.primaryCtaLabel || 'Ativar agora')
+const heroPrimaryUrl = computed(() => props.homeTheme?.hero?.primaryCtaUrl || props.productsIndexPath)
+const heroSecondaryLabel = computed(() => props.homeTheme?.hero?.secondaryCtaLabel || '')
+const heroSecondaryUrl = computed(() => props.homeTheme?.hero?.secondaryCtaUrl || '/')
+</script>

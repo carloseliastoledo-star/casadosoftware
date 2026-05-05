@@ -1,7 +1,7 @@
 <template>
   <section>
     <!-- 1. Hero -->
-    <HomeHeroNew :products-index-path="productsIndexPath" />
+    <HomeHeroNew :products-index-path="productsIndexPath" :home-theme="homeTheme" />
 
     <!-- 2. Por que escolher -->
     <HomeBenefitsNew />
@@ -67,6 +67,10 @@
 <script setup lang="ts">
 import ProductCard from '~/components/ProductCard.vue'
 import { fallbackProducts } from '~/data/fallbackProducts'
+import type { HomeTheme } from '~/types/homeTheme'
+
+const props = defineProps<{ homeTheme?: HomeTheme | null }>()
+const homeTheme = computed(() => props.homeTheme ?? null)
 
 const intl = useIntlContext()
 
