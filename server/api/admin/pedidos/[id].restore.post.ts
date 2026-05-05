@@ -14,18 +14,18 @@ export default defineEventHandler(async (event) => {
   }
 
   const order = await (prisma as any).order.findFirst({
-    where: whereForStore({ id, deletedAt: null }, ctx) as any,
+    where: whereForStore({ id, deletedAt: { not: null } }, ctx) as any,
     select: { id: true }
   })
 
   if (!order) {
-    return { ok: true, deleted: 0 }
+    throw createError({ statusCode: 404, statusMessage: 'Pedido excluído não encontrado' })
   }
 
   await (prisma as any).order.update({
     where: { id },
-    data: { deletedAt: new Date() }
+    data: { deletedAt: null }
   })
 
-  return { ok: true, deleted: 1 }
+  return { ok: true }
 })

@@ -6,8 +6,14 @@
         <p class="text-sm text-gray-600 mt-1">Lista de pedidos e status.</p>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
+        <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+          <input type="checkbox" v-model="showDeleted" class="h-4 w-4 accent-red-600" />
+          <span class="text-gray-700">Ver excluídos</span>
+        </label>
+
         <button
+          v-if="!showDeleted"
           class="px-4 py-2 rounded-lg border border-red-200 bg-red-50 text-red-800 hover:bg-red-100 disabled:opacity-50"
           :disabled="!selectedOrderIds.length"
           @click="deleteSelectedOrders"
@@ -99,7 +105,7 @@
         </thead>
 
         <tbody>
-          <tr v-for="o in orders" :key="o.id" class="border-t">
+          <tr v-for="o in orders" :key="o.id" class="border-t" :class="o.deletedAt ? 'bg-red-50' : ''">
             <td class="px-2 py-2 align-top">
               <input
                 type="checkbox"
@@ -165,33 +171,41 @@
             </td>
             <td class="px-2 py-2">
               <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <button class="text-blue-600 hover:text-blue-800" @click="openEditModal(o)">
-                  Editar
-                </button>
-                <button
-                  v-if="canResend(o)"
-                  class="text-indigo-700 hover:text-indigo-900"
-                  @click="resendOrder(o)"
-                >
-                  Reenviar
-                </button>
-                <button
-                  v-if="canCheckPayment(o)"
-                  class="text-amber-600 hover:text-amber-800"
-                  @click="checkPayment(o)"
-                >
-                  Verificar
-                </button>
-                <button
-                  v-if="canManualFulfill(o)"
-                  class="text-emerald-700 hover:text-emerald-900"
-                  @click="openFulfillModal(o)"
-                >
-                  Entregar licença
-                </button>
-                <button class="text-red-600 hover:text-red-800" @click="deleteOrder(o)">
-                  Apagar
-                </button>
+                <template v-if="o.deletedAt">
+                  <span class="text-xs text-red-600 font-semibold">Excluído</span>
+                  <button class="text-emerald-600 hover:text-emerald-800 text-xs" @click="restoreOrder(o)">
+                    Restaurar
+                  </button>
+                </template>
+                <template v-else>
+                  <button class="text-blue-600 hover:text-blue-800" @click="openEditModal(o)">
+                    Editar
+                  </button>
+                  <button
+                    v-if="canResend(o)"
+                    class="text-indigo-700 hover:text-indigo-900"
+                    @click="resendOrder(o)"
+                  >
+                    Reenviar
+                  </button>
+                  <button
+                    v-if="canCheckPayment(o)"
+                    class="text-amber-600 hover:text-amber-800"
+                    @click="checkPayment(o)"
+                  >
+                    Verificar
+                  </button>
+                  <button
+                    v-if="canManualFulfill(o)"
+                    class="text-emerald-700 hover:text-emerald-900"
+                    @click="openFulfillModal(o)"
+                  >
+                    Entregar licença
+                  </button>
+                  <button class="text-red-600 hover:text-red-800" @click="deleteOrder(o)">
+                    Apagar
+                  </button>
+                </template>
               </div>
             </td>
           </tr>
@@ -213,6 +227,39 @@
           </div>
 
           <div class="p-5 space-y-4 overflow-y-auto flex-1">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Status</label>
+                <select v-model="editStatus" class="w-full border rounded-lg p-2 text-sm">
+                  <option value="PENDING">PENDING</option>
+                  <option value="PAID">PAID</option>
+                  <option value="REJECTED">REJECTED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+                <p class="text-xs text-gray-400 mt-1">Pedidos com licença não podem sair de PAID.</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Data pagamento</label>
+                <input type="datetime-local" v-model="editPagoEm" class="w-full border rounded-lg p-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Valor total (R$)</label>
+                <input type="number" step="0.01" min="0" v-model="editTotalAmount" class="w-full border rounded-lg p-2 text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Email do cliente</label>
+                <input type="email" v-model="editCustomerEmail" class="w-full border rounded-lg p-2 text-sm" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-1">Produto</label>
+                <select v-model="editProdutoId" class="w-full border rounded-lg p-2 text-sm">
+                  <option value="">— sem alteração —</option>
+                  <option v-for="p in produtos" :key="p.id" :value="p.id">{{ p.nome }} ({{ p.slug }})</option>
+                </select>
+              </div>
+            </div>
+
             <div class="border rounded-lg p-3">
               <div class="flex items-center gap-2 mb-3">
                 <div class="font-medium">Origem / Tracking</div>
@@ -269,17 +316,6 @@
                 <div class="flex items-start justify-between gap-3"><div class="text-gray-600">Device</div><div class="font-mono text-right break-all">{{ editOrder?.trackingDevice || '-' }}</div></div>
                 <div class="flex items-start justify-between gap-3"><div class="text-gray-600">User Agent</div><div class="font-mono text-right break-all text-[10px]">{{ editOrder?.trackingUserAgent || '-' }}</div></div>
               </div>
-            </div>
-
-            <div>
-              <label class="block font-medium mb-2">Status</label>
-              <select v-model="editStatus" class="w-full border rounded-lg p-3">
-                <option value="PENDING">PENDING</option>
-                <option value="PAID">PAID</option>
-                <option value="REJECTED">REJECTED</option>
-                <option value="CANCELLED">CANCELLED</option>
-              </select>
-              <p class="text-xs text-gray-500 mt-2">Pedidos com licença vinculada não podem voltar para status diferente de PAID.</p>
             </div>
 
             <div v-if="editMessage" class="text-green-700 text-sm font-medium">{{ editMessage }}</div>
@@ -521,6 +557,8 @@ type OrderDto = {
   id: string
   numero: number
   status: string
+  deletedAt: string | null
+  totalAmount: number | null
   trafficSourceType?: string | null
   utmSource?: string | null
   utmMedium?: string | null
@@ -626,15 +664,18 @@ type SummaryDto = {
   totalPaid: number
 }
 
+const showDeleted = ref(false)
+
 const { data, pending, error, refresh } = await useFetch<{ ok: true; orders: OrderDto[]; summary: SummaryDto }>(
   '/api/admin/pedidos',
   {
     server: false,
     query: computed(() => ({
       dateFrom: dateFrom.value || undefined,
-      dateTo: dateTo.value || undefined
+      dateTo: dateTo.value || undefined,
+      showDeleted: showDeleted.value ? '1' : undefined
     })),
-    watch: [dateFrom, dateTo]
+    watch: [dateFrom, dateTo, showDeleted]
   }
 )
 
@@ -653,6 +694,10 @@ const summary = computed<SummaryDto>(() => {
 const showEdit = ref(false)
 const editOrder = ref<OrderDto | null>(null)
 const editStatus = ref('PENDING')
+const editPagoEm = ref('')
+const editTotalAmount = ref('')
+const editCustomerEmail = ref('')
+const editProdutoId = ref('')
 const editLoading = ref(false)
 const editMessage = ref('')
 const editError = ref('')
@@ -847,6 +892,10 @@ function openEditModal(o: OrderDto) {
   showEdit.value = true
   editOrder.value = o
   editStatus.value = String(o.status || 'PENDING')
+  editPagoEm.value = o.pagoEm ? new Date(o.pagoEm).toISOString().slice(0, 16) : ''
+  editTotalAmount.value = o.totalAmount != null ? String(o.totalAmount) : ''
+  editCustomerEmail.value = o.customer?.email || ''
+  editProdutoId.value = ''
   editMessage.value = ''
   editError.value = ''
 }
@@ -864,9 +913,29 @@ async function saveEdit() {
   editError.value = ''
 
   try {
+    const body: any = { status: editStatus.value }
+
+    if (editPagoEm.value) {
+      body.pagoEm = new Date(editPagoEm.value).toISOString()
+    } else {
+      body.pagoEm = null
+    }
+
+    if (editTotalAmount.value !== '') {
+      body.totalAmount = parseFloat(editTotalAmount.value)
+    }
+
+    if (editCustomerEmail.value.trim() !== (editOrder.value.customer?.email || '')) {
+      body.customerEmail = editCustomerEmail.value.trim()
+    }
+
+    if (editProdutoId.value) {
+      body.produtoId = editProdutoId.value
+    }
+
     await $fetch(`/api/admin/pedidos/${editOrder.value.id}`, {
       method: 'PATCH',
-      body: { status: editStatus.value }
+      body
     })
     editMessage.value = 'Pedido atualizado com sucesso.'
     await refresh()
@@ -875,6 +944,17 @@ async function saveEdit() {
     editError.value = err?.data?.statusMessage || 'Erro ao atualizar pedido'
   } finally {
     editLoading.value = false
+  }
+}
+
+async function restoreOrder(o: OrderDto) {
+  if (!o?.id) return
+  if (!confirm('Restaurar este pedido excluído?')) return
+  try {
+    await $fetch(`/api/admin/pedidos/${o.id}/restore`, { method: 'POST' })
+    await refresh()
+  } catch (err: any) {
+    alert(err?.data?.statusMessage || 'Erro ao restaurar pedido')
   }
 }
 

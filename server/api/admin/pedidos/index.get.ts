@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
   const period = String((q as any)?.period || '').trim().toLowerCase()
   const dateFromRaw = String((q as any)?.dateFrom || '').trim()
   const dateToRaw = String((q as any)?.dateTo || '').trim()
+  const showDeleted = String((q as any)?.showDeleted || '').trim() === '1'
 
   let paidAfter: Date | null = null
   let paidBefore: Date | null = null
@@ -60,7 +61,8 @@ export default defineEventHandler(async (event) => {
 
   const listWhere = whereForStore(
     {
-      criadoEm: hasDateFilter ? dateFilter : undefined
+      criadoEm: hasDateFilter ? dateFilter : undefined,
+      deletedAt: showDeleted ? { not: null } : null
     },
     ctx
   ) as any
@@ -114,6 +116,8 @@ export default defineEventHandler(async (event) => {
       mercadoPagoPaymentId: true,
       mercadoPagoPaymentTypeId: true,
       mercadoPagoPaymentMethodId: true,
+      totalAmount: true,
+      deletedAt: true,
       produto: { select: { id: true, nome: true, slug: true } },
       customer: { select: { id: true, email: true, nome: true, whatsapp: true, cpf: true } },
       licencas: { select: { id: true, chave: true, status: true } }

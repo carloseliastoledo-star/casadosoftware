@@ -247,6 +247,7 @@ model Order {
   fulfillmentStatus    String?
   fulfillmentError     String?  @db.Text
   fulfillmentUpdatedAt DateTime? @db.DateTime(0)
+  deletedAt            DateTime? @db.DateTime(0)
   licencas             Licenca[]
 
   affiliate            Affiliate? @relation(fields: [affiliateId], references: [id])
