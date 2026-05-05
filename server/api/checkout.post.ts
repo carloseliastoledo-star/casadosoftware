@@ -26,6 +26,8 @@ export default defineEventHandler(async (event) => {
   const bumpProductId = body?.bumpProductId ? String(body.bumpProductId).trim() : null
   const installments  = Number(body?.installments) || 1
   const card          = body?.card ?? null
+  const couponCode    = String(body?.couponCode    || '').trim().toUpperCase()
+  const couponPercent = Number(body?.couponPercent || 0)
 
   const utmSource   = body?.utm_source   ? String(body.utm_source).trim()   : null
   const utmMedium   = body?.utm_medium   ? String(body.utm_medium).trim()   : null
@@ -85,8 +87,37 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const totalBrl = round2(amountBrl + bumpAmount)
-  const totalForeign = amountForeign ? round2(amountForeign + bumpAmount) : null
+  // Validação e aplicação do cupom de desconto
+  let coupon: { id: string; code: string; percent: number } | null = null
+  let couponDiscountAmount = 0
+
+  if (couponCode) {
+    const c = await (prisma as any).cupom.findUnique({
+      where: { code: couponCode },
+      select: { id: true, code: true, percent: true, active: true, startsAt: true, expiresAt: true, maxUses: true, usedCount: true }
+    })
+
+    if (c && c.active) {
+      const now = new Date()
+      const isValid = (!c.startsAt || c.startsAt <= now) &&
+                      (!c.expiresAt || c.expiresAt >= now) &&
+                      (!c.maxUses || c.usedCount < c.maxUses)
+
+      if (isValid) {
+        coupon = { id: c.id, code: c.code, percent: Number(c.percent) }
+        couponDiscountAmount = round2(amountBrl * (coupon.percent / 100))
+
+        // Incrementa contador de uso do cupom
+        await (prisma as any).cupom.update({
+          where: { id: c.id },
+          data: { usedCount: { increment: 1 } }
+        })
+      }
+    }
+  }
+
+  const totalBrl = round2(amountBrl + bumpAmount - couponDiscountAmount)
+  const totalForeign = amountForeign ? round2(amountForeign + bumpAmount - couponDiscountAmount) : null
 
   // Afiliado
   let affiliateId: number | null = null
@@ -139,6 +170,10 @@ export default defineEventHandler(async (event) => {
       countryCode: country,
       subtotalAmount: amountBrl,
       totalAmount: totalBrl,
+      cupomId: coupon?.id || null,
+      couponCode: coupon?.code || null,
+      couponPercent: coupon?.percent || null,
+      couponDiscountAmount: coupon ? couponDiscountAmount : null,
       orderBump,
       bumpProductId: bumpProduto?.id ?? null,
       trafficSourceType,
