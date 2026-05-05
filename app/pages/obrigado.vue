@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { trackPurchase, trackGoogleAdsConversion } from '~/composables/useTracking'
 import { useEcommerceTracking } from '~/composables/useEcommerceTracking'
+import { useAttributionTracking } from '~/composables/useAttributionTracking'
 import type { PurchasePayload } from '~/composables/useEcommerceTracking'
 
 const route = useRoute()
@@ -30,6 +31,7 @@ const upsellParam = computed(() => String(route.query.upsell || ''))
 
 const { trackMeta, trackGtag } = useTracking()
 const { trackPurchase: ecomPurchase } = useEcommerceTracking()
+const { getAttributionForOrder } = useAttributionTracking()
 
 const funnelOrder = ref<Record<string, any> | null>(null)
 
@@ -179,6 +181,72 @@ onMounted(async () => {
 
       // Meta Pixel purchase
       trackMeta('Purchase', { value: total, currency, content_name: items[0]?.item_name || '' })
+
+      // ── GA4 PURCHASE ENRIQUECIDO COM SOURCE/MEDIUM REAL ──
+      try {
+        const tracking = getAttributionForOrder()
+        const last = tracking?.last_touch || {}
+        const first = tracking?.first_touch || {}
+
+        function resolveSource() {
+          if (last?.gclid) return 'google'
+          if (last?.fbclid) return 'facebook'
+          if (last?.source) return last.source
+          if (first?.source) return first.source
+          return 'direct'
+        }
+
+        function resolveMedium() {
+          if (last?.gclid) return 'cpc'
+          if (last?.fbclid) return 'paid_social'
+          if (last?.medium) return last.medium
+          if (first?.medium) return first.medium
+          return 'none'
+        }
+
+        function resolveCampaign() {
+          return last?.campaign || first?.campaign || '(not set)'
+        }
+
+        const source = resolveSource()
+        const medium = resolveMedium()
+        const campaign = resolveCampaign()
+
+        // Disparar purchase com source/medium real (evita Unassigned no GA4)
+        if (window.gtag) {
+          window.gtag('event', 'purchase', {
+            transaction_id: oid,
+            value: total,
+            currency: currency,
+            items: items.map((item: any) => ({
+              item_id: item.item_id || item.id,
+              item_name: item.item_name || item.name,
+              price: Number(item.price || 0),
+              quantity: Number(item.quantity || 1),
+              item_category: item.item_category || 'Software'
+            })),
+            // CRÍTICO: enviar origem real para GA4
+            source: source,
+            medium: medium,
+            campaign: campaign
+          })
+
+          // Evento auxiliar para debug
+          window.gtag('event', 'purchase_debug', {
+            source,
+            medium,
+            campaign,
+            first_touch_source: first?.source || null,
+            first_touch_medium: first?.medium || null,
+            last_touch_source: last?.source || null,
+            last_touch_medium: last?.medium || null,
+            gclid: last?.gclid || first?.gclid || null,
+            fbclid: last?.fbclid || first?.fbclid || null
+          })
+        }
+      } catch (err) {
+        console.error('[GA4] Erro ao enriquecer purchase com attribution:', err)
+      }
 
       try {
         if (typeof window !== 'undefined') window.localStorage?.setItem(purchaseKey, '1')
