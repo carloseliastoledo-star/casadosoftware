@@ -78,25 +78,6 @@ useHead(() => {
     })
   }]
 
-  // Tawk.to Live Chat - only on public site (client-side)
-  if (isPublicSite.value) {
-    // Initialize Tawk_API before loading script
-    scripts.push({
-      key: 'tawk-init',
-      innerHTML: 'var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();',
-      body: true
-    })
-    // Load Tawk.to script
-    scripts.push({
-      key: 'tawk-to',
-      src: 'https://embed.tawk.to/69fb4d5d507e611c31480e5b/1jnuqcdm4',
-      async: true,
-      charset: 'UTF-8',
-      crossorigin: '*',
-      body: true
-    })
-  }
-
   return { script: scripts }
 })
 
