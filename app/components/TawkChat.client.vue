@@ -3,23 +3,25 @@
 </template>
 
 <script setup>
-// Tawk.to Live Chat - Only runs on client side
-if (import.meta.client) {
+// Tawk.to Live Chat - Only runs on client side after mount
+onMounted(() => {
+  if (!import.meta.client) return
+  
+  // Prevent duplicate loading
+  if (window.Tawk_API && window.Tawk_LoadStart) return
+  
   window.Tawk_API = window.Tawk_API || {}
   window.Tawk_LoadStart = new Date()
   
-  ;(function () {
-    const s1 = document.createElement('script')
-    const s0 = document.getElementsByTagName('script')[0]
-    s1.async = true
-    s1.src = 'https://embed.tawk.to/69fb4d5d507e611c31480e5b/1jnuqcdm4'
-    s1.charset = 'UTF-8'
-    s1.setAttribute('crossorigin', '*')
-    if (s0 && s0.parentNode) {
-      s0.parentNode.insertBefore(s1, s0)
-    } else {
-      document.head.appendChild(s1)
-    }
-  })()
-}
+  const script = document.createElement('script')
+  script.async = true
+  script.src = 'https://embed.tawk.to/69fb4d5d507e611c31480e5b/1jnuqcdm4'
+  script.charset = 'UTF-8'
+  script.setAttribute('crossorigin', '*')
+  
+  // Safe append to head
+  if (document.head) {
+    document.head.appendChild(script)
+  }
+})
 </script>

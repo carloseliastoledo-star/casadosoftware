@@ -17,7 +17,9 @@
   </a>
 
   <!-- Tawk.to Live Chat Widget -->
-  <TawkChat v-if="isPublicSite" />
+  <ClientOnly v-if="isPublicSite">
+    <TawkChat />
+  </ClientOnly>
 
 </template>
 
