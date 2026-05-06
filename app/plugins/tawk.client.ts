@@ -32,8 +32,36 @@ export default defineNuxtPlugin(() => {
     script.charset = 'UTF-8'
     script.setAttribute('crossorigin', '*')
 
+    // Configure Tawk_API callbacks before loading
+    ;(window as any).Tawk_API.onLoad = function() {
+      console.log('[Tawk] API onLoad triggered')
+    }
+
+    ;(window as any).Tawk_API.beforeLoad = function() {
+      console.log('[Tawk] API beforeLoad triggered')
+    }
+
+    ;(window as any).Tawk_API.onChatMaximized = function() {
+      console.log('[Tawk] Chat maximized')
+    }
+
     script.onload = () => {
       console.log('[Tawk] Script loaded successfully')
+      
+      // Wait a bit and try to maximize the widget
+      setTimeout(() => {
+        const Tawk_API = (window as any).Tawk_API
+        if (Tawk_API?.maximize) {
+          console.log('[Tawk] Maximizing widget...')
+          Tawk_API.maximize()
+        } else {
+          console.log('[Tawk] maximize not available yet')
+        }
+        
+        // Check if widget iframe exists
+        const tawkFrame = document.querySelector('iframe[src*="tawk.to"]')
+        console.log('[Tawk] Widget iframe found:', !!tawkFrame)
+      }, 2000)
     }
 
     script.onerror = () => {
