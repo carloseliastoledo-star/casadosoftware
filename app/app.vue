@@ -18,6 +18,31 @@
 
 </template>
 
+<style>
+/* Ensure Tawk.to widget is visible and on top */
+.tawk-minimal,
+.tawk-card,
+.tawk-box,
+.tawk-button,
+.tawk-chat-widget,
+.tawk-chat-widget * {
+  z-index: 99999 !important;
+}
+
+/* Move Tawk widget to avoid overlap with WhatsApp button */
+.tawk-minimal {
+  bottom: 100px !important;
+  right: 20px !important;
+}
+
+/* Ensure iframe is visible */
+.tawk-iframe {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+</style>
+
 <script setup lang="ts">
 const route = useRoute()
 const { companyLegalName, siteName, logoPath } = useSiteBranding()
@@ -55,19 +80,19 @@ useHead(() => {
 
   // Tawk.to Live Chat - only on public site (client-side)
   if (isPublicSite.value) {
+    // Initialize Tawk_API before loading script
+    scripts.push({
+      key: 'tawk-init',
+      innerHTML: 'var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();',
+      body: true
+    })
+    // Load Tawk.to script
     scripts.push({
       key: 'tawk-to',
-      innerHTML: `
-        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-        (function(){
-          var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-          s1.async=true;
-          s1.src='https://embed.tawk.to/69fb4d5d507e611c31480e5b/1jnuqcdm4';
-          s1.charset='UTF-8';
-          s1.setAttribute('crossorigin','*');
-          s0.parentNode.insertBefore(s1,s0);
-        })();
-      `,
+      src: 'https://embed.tawk.to/69fb4d5d507e611c31480e5b/1jnuqcdm4',
+      async: true,
+      charset: 'UTF-8',
+      crossorigin: '*',
       body: true
     })
   }
