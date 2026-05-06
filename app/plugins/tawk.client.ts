@@ -1,75 +1,43 @@
 // Tawk.to Live Chat Plugin - Client-side only
 export default defineNuxtPlugin(() => {
-  // Only run on client
   if (!process.client) return
 
-  console.log('[Tawk] Plugin loaded')
+  console.log('[Tawk] Starting inline embed...')
 
-  // Wait for DOM to be ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTawk)
-  } else {
-    initTawk()
+  // Inline embed script exactly as Tawk.to provides
+  const inlineScript = `
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+      var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+      s1.async=true;
+      s1.src='https://embed.tawk.to/69fb4d5d507e611c31480e5b/1jnuqcdm4';
+      s1.charset='UTF-8';
+      s1.setAttribute('crossorigin','*');
+      s0.parentNode.insertBefore(s1,s0);
+    })();
+  `
+
+  // Create script element with inline code
+  const script = document.createElement('script')
+  script.textContent = inlineScript
+  
+  // Add to head
+  if (document.head) {
+    document.head.appendChild(script)
+    console.log('[Tawk] Inline script added to head')
   }
 
-  function initTawk() {
-    console.log('[Tawk] Initializing...')
-
-    // Check if already loaded
-    if ((window as any).Tawk_API?.loaded) {
-      console.log('[Tawk] Already loaded')
-      return
+  // Check after 3 seconds
+  setTimeout(() => {
+    const tawkFrame = document.querySelector('iframe[src*="tawk.to"]')
+    console.log('[Tawk] Widget iframe found:', !!tawkFrame)
+    
+    // Try to show widget if hidden
+    if (tawkFrame) {
+      ;(tawkFrame as HTMLElement).style.display = 'block'
+      ;(tawkFrame as HTMLElement).style.visibility = 'visible'
+      ;(tawkFrame as HTMLElement).style.opacity = '1'
+      console.log('[Tawk] Widget styles applied')
     }
-
-    // Initialize Tawk_API
-    ;(window as any).Tawk_API = (window as any).Tawk_API || {}
-    ;(window as any).Tawk_LoadStart = new Date()
-
-    // Create and append script
-    const script = document.createElement('script')
-    script.async = true
-    script.src = 'https://embed.tawk.to/69fb4d5d507e611c31480e5b/1jnuqcdm4'
-    script.charset = 'UTF-8'
-    script.setAttribute('crossorigin', '*')
-
-    // Configure Tawk_API callbacks before loading
-    ;(window as any).Tawk_API.onLoad = function() {
-      console.log('[Tawk] API onLoad triggered')
-    }
-
-    ;(window as any).Tawk_API.beforeLoad = function() {
-      console.log('[Tawk] API beforeLoad triggered')
-    }
-
-    ;(window as any).Tawk_API.onChatMaximized = function() {
-      console.log('[Tawk] Chat maximized')
-    }
-
-    script.onload = () => {
-      console.log('[Tawk] Script loaded successfully')
-      
-      // Wait a bit and try to maximize the widget
-      setTimeout(() => {
-        const Tawk_API = (window as any).Tawk_API
-        if (Tawk_API?.maximize) {
-          console.log('[Tawk] Maximizing widget...')
-          Tawk_API.maximize()
-        } else {
-          console.log('[Tawk] maximize not available yet')
-        }
-        
-        // Check if widget iframe exists
-        const tawkFrame = document.querySelector('iframe[src*="tawk.to"]')
-        console.log('[Tawk] Widget iframe found:', !!tawkFrame)
-      }, 2000)
-    }
-
-    script.onerror = () => {
-      console.error('[Tawk] Failed to load script')
-    }
-
-    // Append to body
-    document.body.appendChild(script)
-    console.log('[Tawk] Script appended to body')
-  }
+  }, 3000)
 })
