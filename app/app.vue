@@ -18,31 +18,6 @@
 
 </template>
 
-<style>
-/* Ensure Tawk.to widget is visible and on top */
-.tawk-minimal,
-.tawk-card,
-.tawk-box,
-.tawk-button,
-.tawk-chat-widget,
-.tawk-chat-widget * {
-  z-index: 99999 !important;
-}
-
-/* Move Tawk widget to avoid overlap with WhatsApp button */
-.tawk-minimal {
-  bottom: 100px !important;
-  right: 20px !important;
-}
-
-/* Ensure iframe is visible */
-.tawk-iframe {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-</style>
-
 <script setup lang="ts">
 const route = useRoute()
 const { companyLegalName, siteName, logoPath } = useSiteBranding()
