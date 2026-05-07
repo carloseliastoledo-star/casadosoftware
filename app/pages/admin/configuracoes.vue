@@ -17,7 +17,8 @@ const form = reactive({
   cardGateway: 'mercadopago',
   orderBumpTitle: '',
   orderBumpDescription: '',
-  orderBumpPrice: '19'
+  orderBumpPrice: '19',
+  orderBumpsJson: ''
 })
 
 const loading = ref(true)
@@ -49,6 +50,7 @@ onMounted(async () => {
     form.orderBumpTitle = s.orderBumpTitle ?? ''
     form.orderBumpDescription = s.orderBumpDescription ?? ''
     form.orderBumpPrice = s.orderBumpPrice != null ? String(s.orderBumpPrice) : '19'
+    form.orderBumpsJson = s.orderBumpsJson || ''
   } catch (err: any) {
     errorMsg.value = err?.data?.statusMessage || err?.message || 'Erro ao carregar configurações'
   } finally {
@@ -80,7 +82,8 @@ async function salvar() {
         cardGateway: form.cardGateway,
         orderBumpTitle: form.orderBumpTitle || null,
         orderBumpDescription: form.orderBumpDescription || null,
-        orderBumpPrice: form.orderBumpPrice !== '' ? Number(form.orderBumpPrice) : null
+        orderBumpPrice: form.orderBumpPrice !== '' ? Number(form.orderBumpPrice) : null,
+        orderBumps: form.orderBumpsJson.trim() ? JSON.parse(form.orderBumpsJson) : []
       }
     })
     message.value = 'Configurações salvas com sucesso.'
@@ -206,6 +209,7 @@ async function salvar() {
     <div class="bg-white rounded shadow p-6 max-w-2xl">
       <h2 class="text-lg font-semibold mb-1">Order Bump</h2>
       <p class="text-sm text-gray-500 mb-4">Oferta adicional exibida no checkout do funil (Office 365 Pro).</p>
+      <p class="text-xs text-gray-500 mb-4">Para múltiplas ofertas, preencha o JSON abaixo. Se vazio, o checkout usa a oferta única dos campos antigos.</p>
 
       <div class="space-y-4">
         <div>
@@ -234,6 +238,15 @@ async function salvar() {
             step="0.01"
             class="w-full border p-2 rounded"
             placeholder="19.00"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Múltiplas ofertas (JSON)</label>
+          <textarea
+            v-model="form.orderBumpsJson"
+            class="w-full border p-2 rounded font-mono text-xs"
+            rows="8"
+            placeholder='[{"id":"windows-11-pro","title":"Windows 11 Pro","description":"Leve junto com desconto","price":49,"active":true}]'
           />
         </div>
       </div>

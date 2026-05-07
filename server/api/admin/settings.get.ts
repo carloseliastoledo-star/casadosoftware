@@ -29,7 +29,8 @@ export default defineEventHandler(async (event) => {
         cardGateway: true,
         orderBumpTitle: true,
         orderBumpDescription: true,
-        orderBumpPrice: true
+        orderBumpPrice: true,
+        orderBumpsJson: true
       }
     })
 
@@ -54,7 +55,8 @@ export default defineEventHandler(async (event) => {
         cardGateway: true,
         orderBumpTitle: true,
         orderBumpDescription: true,
-        orderBumpPrice: true
+        orderBumpPrice: true,
+        orderBumpsJson: true
       }
     })
 
@@ -80,7 +82,8 @@ export default defineEventHandler(async (event) => {
       cardGateway: true,
       orderBumpTitle: true,
       orderBumpDescription: true,
-      orderBumpPrice: true
+      orderBumpPrice: true,
+        orderBumpsJson: true
     }
   })
 
@@ -104,7 +107,8 @@ export default defineEventHandler(async (event) => {
       cardGateway: true,
       orderBumpTitle: true,
       orderBumpDescription: true,
-      orderBumpPrice: true
+      orderBumpPrice: true,
+        orderBumpsJson: true
     }
   })
 
@@ -130,9 +134,12 @@ export default defineEventHandler(async (event) => {
       cardGateway: true,
       orderBumpTitle: true,
       orderBumpDescription: true,
-      orderBumpPrice: true
+      orderBumpPrice: true,
+        orderBumpsJson: true
     }
   })
 
   return { ok: true, settings: created }
 })
+
+

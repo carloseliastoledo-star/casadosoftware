@@ -23,6 +23,9 @@ export default defineEventHandler(async (event) => {
   const affiliate   = String(body?.affiliate   || body?.ref || '').trim()
   const currency    = String(body?.currency    || (country === 'BR' ? 'brl' : 'usd')).toLowerCase()
   const orderBump   = Boolean(body?.orderBump)
+  const orderBumpIds = Array.isArray(body?.orderBumpIds)
+    ? body.orderBumpIds.map((id: any) => String(id || '').trim()).filter(Boolean).slice(0, 10)
+    : []
   const bumpProductId = body?.bumpProductId ? String(body.bumpProductId).trim() : null
   const installments  = Number(body?.installments) || 1
   const card          = body?.card ?? null
@@ -84,6 +87,38 @@ export default defineEventHandler(async (event) => {
     })
     if (bumpProduto) {
       bumpAmount = round2(bumpProduto.preco)
+    }
+  }
+
+  if (orderBump && !bumpAmount) {
+    const settings = await (prisma as any).siteSettings.findFirst({
+      where: storeSlug ? { storeSlug } : undefined,
+      select: { orderBumpPrice: true, orderBumpTitle: true, orderBumpDescription: true, orderBumpsJson: true }
+    })
+
+    let configuredBumps: any[] = []
+    try {
+      const parsed = JSON.parse(String(settings?.orderBumpsJson || '[]'))
+      configuredBumps = Array.isArray(parsed)
+        ? parsed
+            .map((item: any) => ({
+              id: String(item?.id || '').trim(),
+              price: Number(item?.price || 0),
+              active: item?.active !== false
+            }))
+            .filter((item: any) => item.id && item.price > 0 && item.active)
+        : []
+    } catch {
+      configuredBumps = []
+    }
+
+    if (configuredBumps.length && orderBumpIds.length) {
+      const selectedIds = new Set(orderBumpIds)
+      bumpAmount = round2(configuredBumps
+        .filter((item: any) => selectedIds.has(item.id))
+        .reduce((sum: number, item: any) => sum + Number(item.price || 0), 0))
+    } else {
+      bumpAmount = round2(Number(settings?.orderBumpPrice ?? 0) || 0)
     }
   }
 

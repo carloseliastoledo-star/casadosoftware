@@ -188,20 +188,25 @@
           </div>
 
           <!-- Order Bump (só modo funnel) -->
-          <div
-            v-if="isFunnelMode"
-            class="border-2 border-orange-400 bg-orange-50 p-4 rounded-xl"
-          >
-            <label class="flex items-start gap-3 cursor-pointer">
-              <input type="checkbox" v-model="orderBump" class="mt-1">
+          <div v-if="showOrderBump" class="space-y-3">
+            <label
+              v-for="bump in bumpConfigs"
+              :key="bump.id"
+              class="flex items-start gap-3 cursor-pointer border-2 border-orange-400 bg-orange-50 p-4 rounded-xl"
+            >
+              <input type="checkbox" :checked="selectedBumpIds.includes(bump.id)" class="mt-1" @change="toggleBump(bump.id)">
 
               <div>
                 <p class="font-bold text-sm">
-                  🔥 SUPORTE VIP + INSTALAÇÃO
+                  🔥 {{ bump.title }}
                 </p>
 
-                <p class="text-xs text-gray-600">
-                  De R$97 por apenas R$19
+                <p v-if="bump.description" class="text-xs text-gray-600 mt-1">
+                  {{ bump.description }}
+                </p>
+
+                <p class="text-xs text-orange-700 font-bold mt-1">
+                  Adicione por apenas R$ {{ bump.price.toFixed(2).replace('.', ',') }}
                 </p>
               </div>
             </label>
@@ -230,9 +235,9 @@
             </div>
 
             <!-- Order bump (linha condicional) -->
-            <div v-if="orderBump" class="flex items-center justify-between py-2.5 border-b border-gray-100">
-              <span class="text-sm text-gray-700">{{ bumpConfig.title }}</span>
-              <span class="text-sm font-semibold text-green-700">+ R$ {{ bumpConfig.price.toFixed(2).replace('.', ',') }}</span>
+            <div v-for="bump in selectedBumps" :key="bump.id" class="flex items-center justify-between py-2.5 border-b border-gray-100">
+              <span class="text-sm text-gray-700">{{ bump.title }}</span>
+              <span class="text-sm font-semibold text-green-700">+ R$ {{ bump.price.toFixed(2).replace('.', ',') }}</span>
             </div>
 
             <!-- Total -->
@@ -376,7 +381,9 @@ const basePrice = ref(49)
 const productName = ref('Office 365 Pro')
 const produtoId = ref('')
 const orderBump = ref(false)
-const bumpConfig = ref({ title: 'Suporte premium de instalação', description: 'Receba ajuda prioritária para ativar seu produto sem complicação. Atendimento por WhatsApp em até 2h após a compra.', price: 19 })
+const bumpConfigs = ref([{ id: 'default', title: 'Suporte premium de instalação', description: 'Receba ajuda prioritária para ativar seu produto sem complicação. Atendimento por WhatsApp em até 2h após a compra.', price: 19 }])
+const selectedBumpIds = ref<string[]>([])
+const bumpConfig = computed(() => bumpConfigs.value[0] || { id: 'default', title: '', description: '', price: 0 })
 const loading = ref(false)
 const showValidation = ref(false)
 const productLoading = ref(false)
@@ -405,10 +412,14 @@ const appliedCoupon = ref<any>(null)
 
 const productSlug = computed(() => String(route.query.product || ''))
 const isFunnelMode = computed(() => !productSlug.value || productSlug.value === FUNNEL_SLUG)
+const showOrderBump = computed(() => isFunnelMode.value && bumpConfigs.value.some((bump) => Boolean(bump.title) && Number(bump.price) > 0))
+const selectedBumps = computed(() => bumpConfigs.value.filter((bump) => selectedBumpIds.value.includes(bump.id)))
+const bumpTotal = computed(() => selectedBumps.value.reduce((sum, bump) => sum + Number(bump.price || 0), 0))
+const hasSelectedBumps = computed(() => showOrderBump.value && selectedBumps.value.length > 0)
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
 const totalPrice = computed(() => {
-  const subtotal = basePrice.value + (isFunnelMode.value && orderBump.value ? bumpConfig.value.price : 0)
+  const subtotal = basePrice.value + (showOrderBump.value ? bumpTotal.value : 0)
   if (appliedCoupon.value && appliedCoupon.value.percent) {
     const discount = subtotal * (appliedCoupon.value.percent / 100)
     return subtotal - discount
@@ -544,7 +555,18 @@ onMounted(async () => {
 
   try {
     const cfg: any = await $fetch('/api/checkout-config')
-    if (cfg?.orderBump) bumpConfig.value = { ...bumpConfig.value, ...cfg.orderBump }
+    if (Array.isArray(cfg?.orderBumps) && cfg.orderBumps.length) {
+      bumpConfigs.value = cfg.orderBumps
+        .map((item: any) => ({
+          id: String(item?.id || '').trim(),
+          title: String(item?.title || '').trim(),
+          description: String(item?.description || '').trim(),
+          price: Number(item?.price || 0)
+        }))
+        .filter((item: any) => item.id && item.title && item.price > 0)
+    } else if (cfg?.orderBump) {
+      bumpConfigs.value = [{ id: 'default', ...cfg.orderBump }]
+    }
   } catch {}
 
   if (productSlug.value && productSlug.value !== FUNNEL_SLUG) {
@@ -622,6 +644,19 @@ function formatCpf(e: Event) {
   cpf.value = v
 }
 
+function toggleBump(id: string) {
+  const normalizedId = String(id || '').trim()
+  if (!normalizedId) return
+
+  if (selectedBumpIds.value.includes(normalizedId)) {
+    selectedBumpIds.value = selectedBumpIds.value.filter((item) => item !== normalizedId)
+  } else {
+    selectedBumpIds.value = [...selectedBumpIds.value, normalizedId]
+  }
+
+  orderBump.value = selectedBumpIds.value.length > 0
+}
+
 function formatCardNumber(e: Event) {
   let v = (e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 16)
   cardNumber.value = v.replace(/(.{4})/g, '$1 ').trim()
@@ -648,9 +683,9 @@ function saveFunnelOrder(orderId: string) {
       orderId,
       produto: productName.value,
       preco: basePrice.value,
-      orderBump: isFunnelMode.value && orderBump.value,
-      bumpProduto: (isFunnelMode.value && orderBump.value) ? bumpConfig.value.title : null,
-      bumpPreco: (isFunnelMode.value && orderBump.value) ? bumpConfig.value.price : 0,
+      orderBump: hasSelectedBumps.value,
+      bumpProduto: hasSelectedBumps.value ? selectedBumps.value.map((bump) => bump.title).join(', ') : null,
+      bumpPreco: hasSelectedBumps.value ? bumpTotal.value : 0,
       total: totalPrice.value,
       totalFinal: null,
       nome: nome.value.trim(),
@@ -735,7 +770,8 @@ async function handleGeneratePix() {
       document: cpf.value.replace(/\D/g, ''),
       phone: telefone.value.replace(/\D/g, ''),
       method: paymentMethod.value,
-      orderBump: isFunnelMode.value && orderBump.value,
+      orderBump: hasSelectedBumps.value,
+      orderBumpIds: hasSelectedBumps.value ? selectedBumpIds.value : [],
       currency: 'BRL',
       couponCode: appliedCoupon.value?.code || undefined,
       couponPercent: appliedCoupon.value?.percent || undefined,
