@@ -2,9 +2,19 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import crypto from 'crypto'
 import prisma from '../../../../db/prisma'
 import { requireAdminSession } from '../../../../utils/adminSession'
+import { sendMail } from '../../../../utils/mailer'
 
 function hashToken(token: string, secret: string) {
   return crypto.createHmac('sha256', secret).update(token).digest('hex')
+}
+
+function escapeHtml(input: string) {
+  return String(input)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;')
 }
 
 function getBaseUrl(event: any) {
@@ -76,5 +86,36 @@ export default defineEventHandler(async (event) => {
     ? `${baseUrl}/affiliate/ativar?token=${encodeURIComponent(token)}`
     : `/affiliate/ativar?token=${encodeURIComponent(token)}`
 
-  return { ok: true, affiliateId: affiliate.id, inviteUrl }
+  let emailSent = false
+
+  try {
+    await sendMail({
+      to: email,
+      subject: 'Sua inscrição de afiliado foi aprovada',
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+          <h2 style="margin: 0 0 12px;">Sua inscrição foi aprovada</h2>
+          <p style="margin: 0 0 8px;">Olá, ${escapeHtml(name)}.</p>
+          <p style="margin: 0 0 8px;">Sua inscrição para o programa de afiliados da Casa do Software foi aprovada.</p>
+          <p style="margin: 0 0 16px;">Clique no botão abaixo para criar sua senha e acessar sua área de afiliado:</p>
+          <p style="margin: 0 0 16px;">
+            <a href="${escapeHtml(inviteUrl)}" style="display: inline-block; background: #059669; color: #ffffff; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-weight: 700;">
+              Ativar meu acesso
+            </a>
+          </p>
+          <p style="margin: 0 0 8px; font-size: 13px; color: #4b5563;">Se o botão não funcionar, copie e cole este link no navegador:</p>
+          <p style="margin: 0 0 8px; font-size: 13px; word-break: break-all;">
+            <a href="${escapeHtml(inviteUrl)}">${escapeHtml(inviteUrl)}</a>
+          </p>
+          <p style="margin: 16px 0 0; font-size: 12px; color: #6b7280;">Este link expira em 48 horas.</p>
+          <p style="margin: 8px 0 0; font-size: 12px; color: #6b7280;">Casa do Software</p>
+        </div>
+      `.trim()
+    })
+    emailSent = true
+  } catch (err) {
+    console.error('[partner approve] failed to send affiliate invite email:', err)
+  }
+
+  return { ok: true, affiliateId: affiliate.id, inviteUrl, emailSent }
 })
