@@ -197,11 +197,11 @@
               <input type="checkbox" :checked="selectedBumpIds.includes(bump.id)" class="mt-1" @change="toggleBump(bump.id)">
 
               <div>
-                <p class="font-bold text-sm">
+                <p class="font-bold text-sm text-gray-900">
                   🔥 {{ bump.title }}
                 </p>
 
-                <p v-if="bump.description" class="text-xs text-gray-600 mt-1">
+                <p v-if="bump.description" class="text-xs text-gray-700 mt-1">
                   {{ bump.description }}
                 </p>
 
