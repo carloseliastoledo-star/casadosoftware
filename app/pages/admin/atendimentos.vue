@@ -157,9 +157,9 @@ function formatDateTime(dateStr: string): string {
 
 function openConversation(id: string) {
   console.log('[atendimentos] Opening conversation:', id)
-  alert('Clicou! ID: ' + id)
   try {
-    navigateTo(`/admin/atendimentos/detalhes?id=${id}`)
+    const router = useRouter()
+    router.push(`/admin/atendimentos/detalhes?id=${id}`)
   } catch (e) {
     console.error('[atendimentos] Navigation error:', e)
   }
