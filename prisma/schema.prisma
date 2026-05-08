@@ -14,6 +14,19 @@ enum AdminRole {
   editor
 }
 
+enum ChatStatus {
+  AI
+  HUMAN
+  CLOSED
+}
+
+enum ChatSender {
+  CUSTOMER
+  AI
+  AGENT
+  SYSTEM
+}
+
 model Produto {
   id        String    @id @default(uuid())
   wcProductId Int?     @unique
@@ -494,9 +507,40 @@ model SeoPage {
   status              String   @default("draft")
   noindex             Boolean  @default(false)
   publishedAt         DateTime? @db.DateTime(0)
-  createdAt           DateTime @default(now()) @db.DateTime(0)
+  createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt @db.DateTime(0)
 
   @@unique([locale, slug])
   @@index([locale, status])
+}
+
+model ChatConversation {
+  id            String      @id @default(cuid())
+  customerName  String?
+  customerEmail String?
+  orderNumber   String?
+  status        ChatStatus  @default(AI)
+  sourcePage    String?
+  userIp        String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  messages      ChatMessage[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([updatedAt])
+}
+
+model ChatMessage {
+  id             String      @id @default(cuid())
+  conversationId String
+  sender         ChatSender
+  content        String      @db.Text
+  createdAt      DateTime    @default(now())
+
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
 }
