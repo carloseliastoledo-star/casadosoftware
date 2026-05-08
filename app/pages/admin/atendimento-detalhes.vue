@@ -8,9 +8,9 @@
 
 <script setup lang="ts">
 const route = useRoute()
-const conversationId = computed(() => String(route.params.id))
+const conversationId = computed(() => String(route.query.id || ''))
 
 onMounted(() => {
-  console.log('[atendimentos/[id]] SIMPLE PAGE NO LAYOUT Mounted with ID:', conversationId.value)
+  console.log('[atendimento-detalhes] Mounted with ID:', conversationId.value)
 })
 </script>

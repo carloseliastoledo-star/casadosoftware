@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-bold">Atendimentos</h1>
         <p class="text-sm text-gray-600 mt-1">Gerencie as conversas de chat do site.</p>
       </div>
-      <a href="/admin/atendimentos/teste" class="text-blue-600 hover:text-blue-800">
+      <a href="/admin/atendimento-teste" class="text-blue-600 hover:text-blue-800">
         Teste
       </a>
     </div>
@@ -69,7 +69,7 @@
             <td class="p-3 text-gray-600 max-w-xs truncate">{{ conv.lastMessage || '-' }}</td>
             <td class="p-3 text-gray-500">{{ formatDateTime(conv.updatedAt) }}</td>
             <td class="p-3">
-              <a :href="`/admin/atendimentos/${conv.id}`" class="text-blue-600 hover:text-blue-800">
+              <a :href="`/admin/atendimento-detalhes?id=${conv.id}`" class="text-blue-600 hover:text-blue-800">
                 Abrir
               </a>
             </td>
