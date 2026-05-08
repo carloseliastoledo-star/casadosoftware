@@ -96,6 +96,7 @@ const error = ref(false)
 const conversations = ref<any[]>([])
 const lastConversationCount = ref(0)
 const lastMessageTimestamps = ref<Record<string, string>>({})
+const conversationStatuses = ref<Record<string, string>>({})
 
 const pollingInterval = ref<any>(null)
 
@@ -153,6 +154,14 @@ async function loadConversations() {
         }
       }
       lastMessageTimestamps.value[conv.id] = conv.updatedAt
+
+      // Verificar se o status mudou de AI para HUMAN (cliente solicitou atendimento humano)
+      const previousStatus = conversationStatuses.value[conv.id]
+      if (previousStatus === 'AI' && conv.status === 'HUMAN') {
+        showNotification(`${conv.customerName || 'Cliente'} solicitou atendimento humano`)
+        playNotificationSound()
+      }
+      conversationStatuses.value[conv.id] = conv.status
     }
 
     conversations.value = newConversations
