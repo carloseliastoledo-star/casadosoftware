@@ -12,6 +12,7 @@ generator client {
 enum AdminRole {
   admin
   editor
+  agent
 }
 
 enum ChatStatus {
