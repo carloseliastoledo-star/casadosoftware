@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     }
 
     console.log('[takeover] Finding conversation...')
-    const conversation = await (prisma as any).chatConversation.findUnique({
+    const conversation = await prisma.chatConversation.findUnique({
       where: { id: conversationId }
     })
 
@@ -47,19 +47,19 @@ export default defineEventHandler(async (event) => {
     console.log('[takeover] Updating conversation with agentId:', user.id)
 
     if (conversation.status !== 'HUMAN') {
-      await (prisma as any).chatConversation.update({
+      await prisma.chatConversation.update({
         where: { id: conversationId },
         data: { status: 'HUMAN', agentId: user.id }
       })
     } else if (!conversation.agentId) {
-      await (prisma as any).chatConversation.update({
+      await prisma.chatConversation.update({
         where: { id: conversationId },
         data: { agentId: user.id }
       })
     }
 
     console.log('[takeover] Creating system message...')
-    await (prisma as any).chatMessage.create({
+    await prisma.chatMessage.create({
       data: {
         conversationId,
         sender: 'SYSTEM',
