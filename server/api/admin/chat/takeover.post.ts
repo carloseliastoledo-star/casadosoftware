@@ -3,10 +3,14 @@ import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 
 export default defineEventHandler(async (event) => {
+  console.log('[takeover] Request received')
+  
   try {
+    console.log('[takeover] Getting session...')
     const session = requireAdminSession(event)
     console.log('[takeover] Session:', session)
 
+    console.log('[takeover] Reading body...')
     const body = await readBody(event) || {}
     const conversationId = String(body?.conversationId || '').trim()
     console.log('[takeover] ConversationId:', conversationId)
@@ -15,6 +19,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'conversationId é obrigatório' })
     }
 
+    console.log('[takeover] Finding user...')
     const user = await prisma.adminUser.findUnique({
       where: { email: session.email },
       select: { id: true, email: true, role: true }
@@ -26,6 +31,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, statusMessage: 'Usuário não encontrado' })
     }
 
+    console.log('[takeover] Finding conversation...')
     const conversation = await (prisma as any).chatConversation.findUnique({
       where: { id: conversationId }
     })
@@ -50,6 +56,7 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    console.log('[takeover] Creating system message...')
     await (prisma as any).chatMessage.create({
       data: {
         conversationId,
@@ -62,6 +69,8 @@ export default defineEventHandler(async (event) => {
     return { ok: true }
   } catch (err: any) {
     console.error('[takeover] Error:', err)
+    console.error('[takeover] Error message:', err?.message)
+    console.error('[takeover] Error stack:', err?.stack)
     if (err?.statusCode) {
       throw err
     }
