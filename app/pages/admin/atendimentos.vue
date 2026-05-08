@@ -5,6 +5,9 @@
         <h1 class="text-2xl font-bold">Atendimentos</h1>
         <p class="text-sm text-gray-600 mt-1">Gerencie as conversas de chat do site.</p>
       </div>
+      <a href="/admin/atendimentos/teste" class="text-blue-600 hover:text-blue-800">
+        Teste
+      </a>
     </div>
 
     <div class="bg-white rounded shadow p-4 mb-6">
