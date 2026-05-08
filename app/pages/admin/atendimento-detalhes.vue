@@ -219,15 +219,18 @@ async function sendMessage() {
 async function takeover() {
   if (takingOver.value || !conversationId.value || conversation.value?.status === 'HUMAN') return
 
+  console.log('[atendimento-detalhes] Starting takeover, conversationId:', conversationId.value)
   takingOver.value = true
 
   try {
-    await $fetch('/api/admin/chat/takeover', {
+    console.log('[atendimento-detalhes] Sending takeover request...')
+    const response = await $fetch('/api/admin/chat/takeover', {
       method: 'POST',
       body: {
         conversationId: conversationId.value
       }
     })
+    console.log('[atendimento-detalhes] Takeover response:', response)
 
     await loadConversation()
   } catch (err) {
