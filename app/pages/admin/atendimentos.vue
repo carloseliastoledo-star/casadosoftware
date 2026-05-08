@@ -66,9 +66,9 @@
             <td class="p-3 text-gray-600 max-w-xs truncate">{{ conv.lastMessage || '-' }}</td>
             <td class="p-3 text-gray-500">{{ formatDateTime(conv.updatedAt) }}</td>
             <td class="p-3">
-              <a :href="`/admin/atendimentos/detalhes?id=${conv.id}`" @click.prevent="navigateTo(`/admin/atendimentos/detalhes?id=${conv.id}`)" class="text-blue-600 hover:text-blue-800 cursor-pointer">
+              <button @click="openConversation(conv.id)" class="text-blue-600 hover:text-blue-800">
                 Abrir
-              </a>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -157,8 +157,9 @@ function formatDateTime(dateStr: string): string {
 
 function openConversation(id: string) {
   console.log('[atendimentos] Opening conversation:', id)
+  alert('Clicou! ID: ' + id)
   try {
-    navigateTo(`/admin/atendimentos/${id}`)
+    navigateTo(`/admin/atendimentos/detalhes?id=${id}`)
   } catch (e) {
     console.error('[atendimentos] Navigation error:', e)
   }
