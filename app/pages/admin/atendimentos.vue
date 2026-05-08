@@ -95,6 +95,7 @@ const pending = ref(false)
 const error = ref(false)
 const conversations = ref<any[]>([])
 const lastConversationCount = ref(0)
+const lastMessageTimestamps = ref<Record<string, string>>({})
 
 const pollingInterval = ref<any>(null)
 
@@ -138,6 +139,20 @@ async function loadConversations() {
       const newCount = newConversations.length - lastConversationCount.value
       showNotification(`${newCount} novo${newCount > 1 ? 's' : ''} atendimento${newCount > 1 ? 's' : ''} recebido${newCount > 1 ? 's' : ''}`)
       playNotificationSound()
+    }
+
+    // Verificar se há novas mensagens em conversas existentes
+    for (const conv of newConversations) {
+      const lastTimestamp = lastMessageTimestamps.value[conv.id]
+      if (lastTimestamp && conv.updatedAt > lastTimestamp) {
+        // Verificar se a última atualização foi causada por uma mensagem do cliente
+        const lastMessage = conv.lastMessage || ''
+        if (lastMessage && conv.status !== 'CLOSED') {
+          showNotification(`Nova mensagem de ${conv.customerName || 'cliente'}`)
+          playNotificationSound()
+        }
+      }
+      lastMessageTimestamps.value[conv.id] = conv.updatedAt
     }
 
     conversations.value = newConversations
