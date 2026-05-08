@@ -136,7 +136,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const conversationId = computed(() => String(route.params.id))
+const conversationId = computed(() => String(route.query.id || ''))
 
 const pending = ref(false)
 const error = ref(false)
@@ -150,7 +150,11 @@ const messagesContainer = ref<HTMLElement | null>(null)
 const pollingInterval = ref<any>(null)
 
 onMounted(() => {
-  console.log('[atendimentos/[id]] Mounted with ID:', conversationId.value)
+  console.log('[atendimentos/detalhes] Mounted with ID:', conversationId.value)
+  if (!conversationId.value) {
+    navigateTo('/admin/atendimentos')
+    return
+  }
   loadConversation()
   startPolling()
 })
@@ -178,7 +182,7 @@ async function loadConversation() {
     await nextTick()
     scrollToBottom()
   } catch (err) {
-    console.error('[atendimentos/[id]] Error loading conversation:', err)
+    console.error('[atendimentos/detalhes] Error loading conversation:', err)
     error.value = true
   } finally {
     pending.value = false
@@ -203,7 +207,7 @@ async function sendMessage() {
 
     await loadConversation()
   } catch (err) {
-    console.error('[atendimentos/[id]] Error sending reply:', err)
+    console.error('[atendimentos/detalhes] Error sending reply:', err)
     alert('Erro ao enviar resposta. Tente novamente.')
   } finally {
     sending.value = false
@@ -225,7 +229,7 @@ async function takeover() {
 
     await loadConversation()
   } catch (err) {
-    console.error('[atendimentos/[id]] Error taking over:', err)
+    console.error('[atendimentos/detalhes] Error taking over:', err)
     alert('Erro ao assumir atendimento. Tente novamente.')
   } finally {
     takingOver.value = false
@@ -249,7 +253,7 @@ async function closeConversation() {
 
     await loadConversation()
   } catch (err) {
-    console.error('[atendimentos/[id]] Error closing conversation:', err)
+    console.error('[atendimentos/detalhes] Error closing conversation:', err)
     alert('Erro ao encerrar atendimento. Tente novamente.')
   } finally {
     closing.value = false
