@@ -5,9 +5,11 @@ import { requireAdminSession } from '../../../utils/adminSession'
 export default defineEventHandler(async (event) => {
   try {
     const session = requireAdminSession(event)
+    console.log('[takeover] Session:', session)
 
     const body = await readBody(event) || {}
     const conversationId = String(body?.conversationId || '').trim()
+    console.log('[takeover] ConversationId:', conversationId)
 
     if (!conversationId) {
       throw createError({ statusCode: 400, statusMessage: 'conversationId é obrigatório' })
@@ -18,6 +20,8 @@ export default defineEventHandler(async (event) => {
       select: { id: true, email: true, role: true }
     })
 
+    console.log('[takeover] User:', user)
+
     if (!user) {
       throw createError({ statusCode: 404, statusMessage: 'Usuário não encontrado' })
     }
@@ -26,9 +30,13 @@ export default defineEventHandler(async (event) => {
       where: { id: conversationId }
     })
 
+    console.log('[takeover] Conversation:', conversation)
+
     if (!conversation) {
       throw createError({ statusCode: 404, statusMessage: 'Conversa não encontrada' })
     }
+
+    console.log('[takeover] Updating conversation with agentId:', user.id)
 
     if (conversation.status !== 'HUMAN') {
       await (prisma as any).chatConversation.update({
@@ -50,6 +58,7 @@ export default defineEventHandler(async (event) => {
       }
     })
 
+    console.log('[takeover] Success')
     return { ok: true }
   } catch (err: any) {
     console.error('[takeover] Error:', err)
