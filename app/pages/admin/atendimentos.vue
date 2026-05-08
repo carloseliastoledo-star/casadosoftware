@@ -54,12 +54,15 @@
             <td class="p-3">
               <span
                 :class="[
-                  'px-2 py-1 rounded-full text-xs font-medium',
+                  'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
                   conv.status === 'AI' ? 'bg-blue-100 text-blue-700' :
                   conv.status === 'HUMAN' ? 'bg-green-100 text-green-700' :
                   'bg-gray-100 text-gray-700'
                 ]"
               >
+                <span v-if="conv.status === 'HUMAN'" class="text-lg">👤</span>
+                <span v-else-if="conv.status === 'AI'" class="text-lg">🤖</span>
+                <span v-else class="text-lg">🔒</span>
                 {{ conv.status === 'AI' ? 'IA' : conv.status === 'HUMAN' ? 'Humano' : 'Encerrado' }}
               </span>
             </td>
@@ -91,10 +94,12 @@ const searchQuery = ref('')
 const pending = ref(false)
 const error = ref(false)
 const conversations = ref<any[]>([])
+const lastConversationCount = ref(0)
 
 const pollingInterval = ref<any>(null)
 
 onMounted(() => {
+  requestNotificationPermission()
   loadConversations()
   startPolling()
 })
@@ -102,6 +107,12 @@ onMounted(() => {
 onUnmounted(() => {
   stopPolling()
 })
+
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission()
+  }
+}
 
 watch([statusFilter, searchQuery], () => {
   loadConversations()
@@ -120,13 +131,39 @@ async function loadConversations() {
       query
     }) as any
 
-    conversations.value = response.conversations || []
+    const newConversations = response.conversations || []
+    
+    // Verificar se há novos atendimentos
+    if (newConversations.length > lastConversationCount.value && lastConversationCount.value > 0) {
+      const newCount = newConversations.length - lastConversationCount.value
+      showNotification(`${newCount} novo${newCount > 1 ? 's' : ''} atendimento${newCount > 1 ? 's' : ''} recebido${newCount > 1 ? 's' : ''}`)
+      playNotificationSound()
+    }
+
+    conversations.value = newConversations
+    lastConversationCount.value = newConversations.length
   } catch (err) {
     console.error('[atendimentos] Error loading conversations:', err)
     error.value = true
   } finally {
     pending.value = false
   }
+}
+
+function showNotification(message: string) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Novo Atendimento - Casa do Software', {
+      body: message,
+      icon: '/favicon.ico'
+    })
+  }
+}
+
+function playNotificationSound() {
+  const audio = new Audio('/notification.mp3')
+  audio.play().catch(() => {
+    // Ignorar erro se o arquivo de som não existir ou não puder ser reproduzido
+  })
 }
 
 function startPolling() {
