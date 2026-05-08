@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'Senha deve ter pelo menos 8 caracteres' })
     }
 
-    if (role !== 'admin' && role !== 'editor') {
+    if (role !== 'admin' && role !== 'editor' && role !== 'agent') {
       throw createError({ statusCode: 400, statusMessage: 'Role inválida' })
     }
 

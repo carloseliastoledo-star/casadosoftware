@@ -37,6 +37,10 @@
           💬 Atendimentos
         </NuxtLink>
 
+        <NuxtLink to="/admin/usuarios" class="menu">
+          👥 Usuários Admin
+        </NuxtLink>
+
         <NuxtLink to="/admin/categorias" class="menu">
           🗂️ Categorias
         </NuxtLink>
