@@ -24,5 +24,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Conversa não encontrada' })
   }
 
-  return { ok: true, conversation }
+  let agent = null
+  if (conversation.agentId) {
+    agent = await prisma.adminUser.findUnique({
+      where: { id: conversation.agentId },
+      select: { id: true, email: true }
+    })
+  }
+
+  return { ok: true, conversation, agent }
 })

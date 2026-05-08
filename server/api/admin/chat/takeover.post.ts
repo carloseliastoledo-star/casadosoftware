@@ -3,13 +3,22 @@ import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 
 export default defineEventHandler(async (event) => {
-  await requireAdminSession(event)
+  const session = await requireAdminSession(event)
 
   const body = await readBody(event) || {}
   const conversationId = String(body?.conversationId || '').trim()
 
   if (!conversationId) {
     throw createError({ statusCode: 400, statusMessage: 'conversationId é obrigatório' })
+  }
+
+  const user = await prisma.adminUser.findUnique({
+    where: { email: session.email },
+    select: { id: true, email: true, role: true }
+  })
+
+  if (!user) {
+    throw createError({ statusCode: 404, statusMessage: 'Usuário não encontrado' })
   }
 
   const conversation = await (prisma as any).chatConversation.findUnique({
@@ -23,7 +32,12 @@ export default defineEventHandler(async (event) => {
   if (conversation.status !== 'HUMAN') {
     await (prisma as any).chatConversation.update({
       where: { id: conversationId },
-      data: { status: 'HUMAN' }
+      data: { status: 'HUMAN', agentId: user.id }
+    })
+  } else if (!conversation.agentId) {
+    await (prisma as any).chatConversation.update({
+      where: { id: conversationId },
+      data: { agentId: user.id }
     })
   }
 

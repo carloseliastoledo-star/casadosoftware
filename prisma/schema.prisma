@@ -523,6 +523,7 @@ model ChatConversation {
   status        ChatStatus  @default(AI)
   sourcePage    String?
   userIp        String?
+  agentId       String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -531,6 +532,7 @@ model ChatConversation {
   @@index([status])
   @@index([createdAt])
   @@index([updatedAt])
+  @@index([agentId])
 }
 
 model ChatMessage {

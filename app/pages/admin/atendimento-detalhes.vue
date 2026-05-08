@@ -33,6 +33,10 @@
             <span class="text-gray-600">Status:</span>
             <span class="ml-2 font-medium">{{ conversation.status }}</span>
           </div>
+          <div v-if="agent" class="md:col-span-2">
+            <span class="text-gray-600">Atendente:</span>
+            <span class="ml-2 font-medium text-green-600">{{ agent.email }}</span>
+          </div>
           <div v-if="conversation.sourcePage" class="md:col-span-2">
             <span class="text-gray-600">Página de origem:</span>
             <a
@@ -141,6 +145,7 @@ const conversationId = computed(() => String(route.query.id || ''))
 const pending = ref(false)
 const error = ref(false)
 const conversation = ref<any>(null)
+const agent = ref<any>(null)
 const replyMessage = ref('')
 const sending = ref(false)
 const takingOver = ref(false)
@@ -170,6 +175,7 @@ async function loadConversation() {
   try {
     const response = await $fetch(`/api/admin/chat/${conversationId.value}`) as any
     conversation.value = response.conversation
+    agent.value = response.agent || null
 
     await nextTick()
     scrollToBottom()
