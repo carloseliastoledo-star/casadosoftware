@@ -156,6 +156,11 @@ function formatDateTime(dateStr: string): string {
 }
 
 function openConversation(id: string) {
-  navigateTo(`/admin/atendimentos/${id}`)
+  console.log('[atendimentos] Opening conversation:', id)
+  try {
+    navigateTo(`/admin/atendimentos/${id}`)
+  } catch (e) {
+    console.error('[atendimentos] Navigation error:', e)
+  }
 }
 </script>
