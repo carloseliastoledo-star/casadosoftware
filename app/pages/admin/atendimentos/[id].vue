@@ -150,6 +150,7 @@ const messagesContainer = ref<HTMLElement | null>(null)
 const pollingInterval = ref<any>(null)
 
 onMounted(() => {
+  console.log('[atendimentos/[id]] Mounted with ID:', conversationId.value)
   loadConversation()
   startPolling()
 })
