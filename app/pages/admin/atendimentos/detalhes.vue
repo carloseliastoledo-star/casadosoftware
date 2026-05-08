@@ -150,8 +150,11 @@ const messagesContainer = ref<HTMLElement | null>(null)
 const pollingInterval = ref<any>(null)
 
 onMounted(() => {
-  console.log('[atendimentos/detalhes] Mounted with ID:', conversationId.value)
+  console.log('[atendimentos/detalhes] Route query:', route.query)
+  console.log('[atendimentos/detalhes] Route query.id:', route.query.id)
+  console.log('[atendimentos/detalhes] conversationId computed:', conversationId.value)
   if (!conversationId.value) {
+    console.log('[atendimentos/detalhes] No ID found, redirecting')
     navigateTo('/admin/atendimentos')
     return
   }
