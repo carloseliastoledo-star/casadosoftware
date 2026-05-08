@@ -177,6 +177,10 @@ async function loadConversation() {
     conversation.value = response.conversation
     agent.value = response.agent || null
 
+    console.log('[atendimento-detalhes] Conversation:', conversation.value)
+    console.log('[atendimento-detalhes] Agent:', agent.value)
+    console.log('[atendimento-detalhes] AgentId in conversation:', conversation.value?.agentId)
+
     await nextTick()
     scrollToBottom()
   } catch (err) {
