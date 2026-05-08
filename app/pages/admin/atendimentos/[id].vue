@@ -7,14 +7,10 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: 'admin'
-})
-
 const route = useRoute()
 const conversationId = computed(() => String(route.params.id))
 
 onMounted(() => {
-  console.log('[atendimentos/[id]] SIMPLE PAGE Mounted with ID:', conversationId.value)
+  console.log('[atendimentos/[id]] SIMPLE PAGE NO LAYOUT Mounted with ID:', conversationId.value)
 })
 </script>
