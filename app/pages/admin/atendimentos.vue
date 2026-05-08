@@ -66,9 +66,9 @@
             <td class="p-3 text-gray-600 max-w-xs truncate">{{ conv.lastMessage || '-' }}</td>
             <td class="p-3 text-gray-500">{{ formatDateTime(conv.updatedAt) }}</td>
             <td class="p-3">
-              <button @click="openConversation(conv.id)" class="text-blue-600 hover:text-blue-800">
+              <a :href="`/admin/atendimentos/${conv.id}`" class="text-blue-600 hover:text-blue-800 cursor-pointer">
                 Abrir
-              </button>
+              </a>
             </td>
           </tr>
         </tbody>
