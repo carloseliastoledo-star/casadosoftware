@@ -155,11 +155,10 @@ onMounted(() => {
     return
   }
   loadConversation()
-  startPolling()
 })
 
 onUnmounted(() => {
-  stopPolling()
+  // Polling removido para evitar piscar
 })
 
 async function loadConversation() {
