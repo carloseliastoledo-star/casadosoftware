@@ -66,9 +66,9 @@
             <td class="p-3 text-gray-600 max-w-xs truncate">{{ conv.lastMessage || '-' }}</td>
             <td class="p-3 text-gray-500">{{ formatDateTime(conv.updatedAt) }}</td>
             <td class="p-3">
-              <NuxtLink :to="`/admin/atendimentos/detalhes?id=${conv.id}`" class="text-blue-600 hover:text-blue-800">
+              <a :href="`/admin/atendimentos/detalhes?id=${conv.id}`" @click.prevent="navigateTo(`/admin/atendimentos/detalhes?id=${conv.id}`)" class="text-blue-600 hover:text-blue-800 cursor-pointer">
                 Abrir
-              </NuxtLink>
+              </a>
             </td>
           </tr>
         </tbody>
