@@ -3,7 +3,7 @@ import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 
 export default defineEventHandler(async (event) => {
-  await requireAdminSession(event)
+  const session = requireAdminSession(event)
 
   const body = await readBody(event) || {}
   const conversationId = String(body?.conversationId || '').trim()
@@ -12,7 +12,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'conversationId é obrigatório' })
   }
 
-  const conversation = await (prisma as any).chatConversation.findUnique({
+  const user = await prisma.adminUser.findUnique({
+    where: { email: session.email },
+    select: { id: true, email: true, role: true }
+  })
+
+  if (!user) {
+    throw createError({ statusCode: 404, statusMessage: 'Usuário não encontrado' })
+  }
+
+  const conversation = await prisma.chatConversation.findUnique({
     where: { id: conversationId }
   })
 
@@ -20,12 +29,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Conversa não encontrada' })
   }
 
-  await (prisma as any).chatConversation.update({
+  await prisma.chatConversation.update({
     where: { id: conversationId },
-    data: { status: 'CLOSED' }
+    data: { status: 'CLOSED', closedByAgentId: user.id }
   })
 
-  await (prisma as any).chatMessage.create({
+  await prisma.chatMessage.create({
     data: {
       conversationId,
       sender: 'SYSTEM',

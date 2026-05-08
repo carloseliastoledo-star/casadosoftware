@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'ID é obrigatório' })
   }
 
-  const conversation = await (prisma as any).chatConversation.findUnique({
+  const conversation = await prisma.chatConversation.findUnique({
     where: { id },
     include: {
       messages: {
@@ -32,5 +32,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return { ok: true, conversation, agent }
+  let closedByAgent = null
+  if (conversation.closedByAgentId) {
+    closedByAgent = await prisma.adminUser.findUnique({
+      where: { id: conversation.closedByAgentId },
+      select: { id: true, email: true }
+    })
+  }
+
+  return { ok: true, conversation, agent, closedByAgent }
 })

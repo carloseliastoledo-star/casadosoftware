@@ -37,6 +37,10 @@
             <span class="text-gray-600">Atendente:</span>
             <span class="ml-2 font-medium text-green-600">{{ agent.email }}</span>
           </div>
+          <div v-if="closedByAgent && conversation.status === 'CLOSED'" class="md:col-span-2">
+            <span class="text-gray-600">Encerrado por:</span>
+            <span class="ml-2 font-medium text-red-600">{{ closedByAgent.email }}</span>
+          </div>
           <div v-if="conversation.sourcePage" class="md:col-span-2">
             <span class="text-gray-600">Página de origem:</span>
             <a
@@ -146,6 +150,7 @@ const pending = ref(false)
 const error = ref(false)
 const conversation = ref<any>(null)
 const agent = ref<any>(null)
+const closedByAgent = ref<any>(null)
 const replyMessage = ref('')
 const sending = ref(false)
 const takingOver = ref(false)
@@ -176,10 +181,7 @@ async function loadConversation() {
     const response = await $fetch(`/api/admin/chat/${conversationId.value}`) as any
     conversation.value = response.conversation
     agent.value = response.agent || null
-
-    console.log('[atendimento-detalhes] Conversation:', conversation.value)
-    console.log('[atendimento-detalhes] Agent:', agent.value)
-    console.log('[atendimento-detalhes] AgentId in conversation:', conversation.value?.agentId)
+    closedByAgent.value = response.closedByAgent || null
 
     await nextTick()
     scrollToBottom()
@@ -219,18 +221,15 @@ async function sendMessage() {
 async function takeover() {
   if (takingOver.value || !conversationId.value || conversation.value?.status === 'HUMAN') return
 
-  console.log('[atendimento-detalhes] Starting takeover, conversationId:', conversationId.value)
   takingOver.value = true
 
   try {
-    console.log('[atendimento-detalhes] Sending takeover request...')
-    const response = await $fetch('/api/admin/chat/takeover', {
+    await $fetch('/api/admin/chat/takeover', {
       method: 'POST',
       body: {
         conversationId: conversationId.value
       }
     })
-    console.log('[atendimento-detalhes] Takeover response:', response)
 
     await loadConversation()
   } catch (err) {
