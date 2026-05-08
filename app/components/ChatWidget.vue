@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div v-if="import.meta.client">
+    <div>
       <button
         v-if="!isOpen"
         @click="toggleChat"
