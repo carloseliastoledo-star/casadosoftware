@@ -66,9 +66,9 @@
             <td class="p-3 text-gray-600 max-w-xs truncate">{{ conv.lastMessage || '-' }}</td>
             <td class="p-3 text-gray-500">{{ formatDateTime(conv.updatedAt) }}</td>
             <td class="p-3">
-              <NuxtLink :to="`/admin/atendimentos/${conv.id}`" class="text-blue-600 hover:text-blue-800">
+              <button @click="openConversation(conv.id)" class="text-blue-600 hover:text-blue-800">
                 Abrir
-              </NuxtLink>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -153,5 +153,9 @@ function formatDateTime(dateStr: string): string {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+function openConversation(id: string) {
+  navigateTo(`/admin/atendimentos/${id}`)
 }
 </script>
