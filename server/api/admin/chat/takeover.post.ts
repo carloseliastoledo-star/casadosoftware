@@ -3,7 +3,9 @@ import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 
 export default defineEventHandler(async (event) => {
-  console.log('[takeover] Request received')
+  console.log('[takeover] =========================================')
+  console.log('[takeover] REQUEST RECEIVED')
+  console.log('[takeover] =========================================')
   
   try {
     console.log('[takeover] Getting session...')
@@ -65,12 +67,16 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    console.log('[takeover] Success')
+    console.log('[takeover] =========================================')
+    console.log('[takeover] SUCCESS')
+    console.log('[takeover] =========================================')
     return { ok: true }
   } catch (err: any) {
-    console.error('[takeover] Error:', err)
+    console.log('[takeover] =========================================')
+    console.error('[takeover] ERROR:', err)
     console.error('[takeover] Error message:', err?.message)
     console.error('[takeover] Error stack:', err?.stack)
+    console.log('[takeover] =========================================')
     if (err?.statusCode) {
       throw err
     }
