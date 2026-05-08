@@ -157,11 +157,6 @@ function formatDateTime(dateStr: string): string {
 
 function openConversation(id: string) {
   console.log('[atendimentos] Opening conversation:', id)
-  try {
-    const router = useRouter()
-    router.push(`/admin/atendimentos/detalhes?id=${id}`)
-  } catch (e) {
-    console.error('[atendimentos] Navigation error:', e)
-  }
+  window.location.href = `/admin/atendimentos/detalhes?id=${id}`
 }
 </script>
