@@ -33,6 +33,10 @@
           👤 Clientes
         </NuxtLink>
 
+        <NuxtLink to="/admin/atendimentos" class="menu">
+          💬 Atendimentos
+        </NuxtLink>
+
         <NuxtLink to="/admin/categorias" class="menu">
           🗂️ Categorias
         </NuxtLink>
