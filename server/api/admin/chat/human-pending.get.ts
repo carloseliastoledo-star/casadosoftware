@@ -5,6 +5,8 @@ import { requireAdminSession } from '../../../utils/adminSession'
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
 
+  const startTime = Date.now()
+
   // Buscar conversas com status WAITING_HUMAN
   const waitingConversations = await prisma.chatConversation.findMany({
     where: {
@@ -14,6 +16,8 @@ export default defineEventHandler(async (event) => {
       humanRequestedAt: 'desc'
     }
   })
+
+  console.log('[admin] WAITING_HUMAN queries:', waitingConversations.length, 'time:', Date.now() - startTime, 'ms')
 
   // Tratar conversas antigas com status AI mas com mensagem indicando atendimento humano
   // Apenas conversas das últimas 24h para não sobrecarregar o banco
@@ -31,6 +35,8 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  console.log('[admin] AI conversations (24h):', aiConversations.length, 'time:', Date.now() - startTime, 'ms')
+
   const legacyPending: any[] = []
   for (const conv of aiConversations) {
     const messages = await prisma.chatMessage.findMany({
@@ -44,7 +50,7 @@ export default defineEventHandler(async (event) => {
       take: 3 // Reduzido de 5 para 3
     })
 
-    const hasHumanRequest = messages.some(msg => 
+    const hasHumanRequest = messages.some((msg: any) => 
       msg.content.toLowerCase().includes('aguardando atendimento humano') ||
       msg.content.toLowerCase().includes('atendimento humano') ||
       msg.content.toLowerCase().includes('encaminhar atendente')
@@ -57,11 +63,17 @@ export default defineEventHandler(async (event) => {
 
   const allPending = [...waitingConversations, ...legacyPending]
 
-  console.log('[admin] atendimentos humanos pendentes:', allPending.length)
+  const totalTime = Date.now() - startTime
+  console.log('[admin] atendimentos humanos pendentes:', allPending.length, 'total time:', totalTime, 'ms')
 
   return {
     ok: true,
     count: allPending.length,
-    conversations: allPending
+    conversations: allPending,
+    performance: {
+      totalTime,
+      waitingCount: waitingConversations.length,
+      legacyCount: legacyPending.length
+    }
   }
 })
