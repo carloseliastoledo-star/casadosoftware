@@ -143,8 +143,8 @@ const { siteName } = useSiteBranding()
 
 const sidebarOpen = ref(false)
 const pendingCount = ref(0)
-const notifiedIds = ref<string[]>([])
-const pollingInterval = ref<any>(null)
+const notifiedIds = ref([])
+const pollingInterval = ref(null)
 
 onMounted(() => {
   loadNotifiedIds()
@@ -191,7 +191,7 @@ function saveNotifiedIds() {
 
 async function checkHumanPending() {
   try {
-    const response = await $fetch('/api/admin/chat/human-pending') as any
+    const response = await $fetch('/api/admin/chat/human-pending')
     pendingCount.value = response.count || 0
 
     if (response.conversations && response.conversations.length > 0) {
@@ -209,7 +209,7 @@ async function checkHumanPending() {
   }
 }
 
-function showNotification(message: string) {
+function showNotification(message) {
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification('Novo Atendimento - Casa do Software', {
       body: message,
