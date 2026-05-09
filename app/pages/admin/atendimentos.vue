@@ -27,6 +27,16 @@
             placeholder="Nome, e-mail ou pedido"
           />
         </div>
+        <div class="flex items-end">
+          <button
+            v-if="selectedConversations.length > 0"
+            @click="deleteSelected"
+            class="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+            :disabled="deleting"
+          >
+            {{ deleting ? 'Deletando...' : `Deletar ${selectedConversations.length} selecionados` }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -37,6 +47,14 @@
       <table class="w-full text-sm">
         <thead class="bg-gray-100 text-gray-600">
           <tr>
+            <th class="p-3 text-left w-10">
+              <input
+                type="checkbox"
+                v-model="selectAll"
+                @change="toggleSelectAll"
+                class="w-4 h-4"
+              />
+            </th>
             <th class="p-3 text-left">Cliente</th>
             <th class="p-3 text-left">E-mail</th>
             <th class="p-3 text-left">Pedido</th>
@@ -49,6 +67,14 @@
 
         <tbody>
           <tr v-for="conv in conversations" :key="conv.id" class="border-t">
+            <td class="p-3">
+              <input
+                type="checkbox"
+                v-model="selectedConversations"
+                :value="conv.id"
+                class="w-4 h-4"
+              />
+            </td>
             <td class="p-3 font-medium">{{ conv.customerName }}</td>
             <td class="p-3">{{ conv.customerEmail || '-' }}</td>
             <td class="p-3">{{ conv.orderNumber || '-' }}</td>
@@ -100,6 +126,9 @@ const conversations = ref<any[]>([])
 const lastConversationCount = ref(0)
 const lastMessageTimestamps = ref<Record<string, string>>({})
 const conversationStatuses = ref<Record<string, string>>({})
+const selectedConversations = ref<string[]>([])
+const selectAll = ref(false)
+const deleting = ref(false)
 
 const pollingInterval = ref<any>(null)
 
@@ -242,5 +271,44 @@ function formatDateTime(dateStr: string): string {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+function toggleSelectAll() {
+  if (selectAll.value) {
+    selectedConversations.value = conversations.value.map(c => c.id)
+  } else {
+    selectedConversations.value = []
+  }
+}
+
+async function deleteSelected() {
+  if (selectedConversations.value.length === 0) return
+
+  if (!confirm(`Tem certeza que deseja DELETAR ${selectedConversations.value.length} atendimento(s)? Esta ação não pode ser desfeita.`)) return
+
+  deleting.value = true
+
+  try {
+    const response = await $fetch('/api/admin/chat/bulk-delete', {
+      method: 'POST',
+      body: {
+        conversationIds: selectedConversations.value
+      }
+    }) as any
+
+    if (response.ok) {
+      alert(`${response.deletedCount} atendimento(s) deletado(s) com sucesso.`)
+      selectedConversations.value = []
+      selectAll.value = false
+      await loadConversations()
+    } else {
+      alert('Erro ao deletar atendimentos. Tente novamente.')
+    }
+  } catch (err) {
+    console.error('[atendimentos] Error deleting selected conversations:', err)
+    alert('Erro ao deletar atendimentos. Tente novamente.')
+  } finally {
+    deleting.value = false
+  }
 }
 </script>
