@@ -147,14 +147,12 @@ const notifiedIds = ref([])
 const pollingInterval = ref(null)
 
 onMounted(() => {
-  console.log('[admin] Layout admin montado, iniciando polling')
   loadNotifiedIds()
   startPolling()
   requestNotificationPermission()
 })
 
 onUnmounted(() => {
-  console.log('[admin] Layout admin desmontado, parando polling')
   stopPolling()
 })
 
@@ -192,31 +190,23 @@ function saveNotifiedIds() {
 }
 
 async function checkHumanPending() {
-  console.log('[admin] checkHumanPending iniciado')
   try {
     const response = await $fetch('/api/admin/chat/human-pending')
-    console.log('[admin] Resposta recebida:', response)
     pendingCount.value = response.count || 0
 
     if (response.conversations && response.conversations.length > 0) {
-      console.log('[admin] Conversas pendentes:', response.conversations.length)
-      console.log('[admin] IDs já notificados:', notifiedIds.value)
       for (const conv of response.conversations) {
         if (!notifiedIds.value.includes(conv.id)) {
-          console.log('[admin-alert] novo atendimento humano:', conv.id)
           showNotification(`Novo cliente aguardando atendimento humano: ${conv.customerName || 'Cliente'}`)
           playNotificationSound()
           notifiedIds.value.push(conv.id)
           saveNotifiedIds()
-        } else {
-          console.log('[admin] Conversa já notificada:', conv.id)
         }
       }
     }
   } catch (err) {
     console.error('[admin] Error checking human pending:', err)
   }
-  console.log('[admin] checkHumanPending finalizado')
 }
 
 function showNotification(message) {
@@ -233,21 +223,16 @@ function playNotificationSound() {
 }
 
 function startPolling() {
-  console.log('[admin] Iniciando polling a cada 30 segundos')
   if (pollingInterval.value) {
-    console.log('[admin] Polling já existe, parando anterior')
     stopPolling()
   }
   pollingInterval.value = setInterval(() => {
-    console.log('[admin] Executando checkHumanPending')
     checkHumanPending()
-  }, 30000) // 30 segundos para reduzir carga no banco
-  console.log('[admin] Polling iniciado, interval ID:', pollingInterval.value)
+  }, 30000)
 }
 
 function stopPolling() {
   if (pollingInterval.value) {
-    console.log('[admin] Parando polling')
     clearInterval(pollingInterval.value)
     pollingInterval.value = null
   }
