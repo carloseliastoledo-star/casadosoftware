@@ -366,6 +366,7 @@ model SiteSettings {
   googleAnalyticsId       String?
   googleAdsConversionId  String?
   googleAdsConversionLabel String?
+  googleAdsConfigJson     String?  @db.Text
   headHtml                String?  @db.Text
   bodyOpenHtml            String?  @db.Text
   bodyCloseHtml           String?  @db.Text

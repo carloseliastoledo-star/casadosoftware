@@ -5,6 +5,7 @@ const form = reactive({
   googleAnalyticsId: '',
   googleAdsConversionId: '',
   googleAdsConversionLabel: '',
+  googleAdsConfigJson: '',
   metaPixelId: '',
   tiktokPixelId: '',
   headHtml: '',
@@ -37,6 +38,7 @@ onMounted(async () => {
     form.googleAnalyticsId = s.googleAnalyticsId ?? ''
     form.googleAdsConversionId = s.googleAdsConversionId ?? ''
     form.googleAdsConversionLabel = s.googleAdsConversionLabel ?? ''
+    form.googleAdsConfigJson = s.googleAdsConfigJson || ''
     form.metaPixelId = s.metaPixelId ?? ''
     form.tiktokPixelId = s.tiktokPixelId ?? ''
     form.headHtml = s.headHtml ?? ''
@@ -70,6 +72,7 @@ async function salvar() {
         googleAnalyticsId: form.googleAnalyticsId,
         googleAdsConversionId: form.googleAdsConversionId,
         googleAdsConversionLabel: form.googleAdsConversionLabel,
+        googleAdsConfigJson: form.googleAdsConfigJson || null,
         metaPixelId: form.metaPixelId,
         tiktokPixelId: form.tiktokPixelId,
         headHtml: form.headHtml,
@@ -303,6 +306,36 @@ async function salvar() {
           </label>
           <input v-model="form.googleAdsConversionLabel" class="w-full border p-2 rounded" placeholder="AbCdEfGhIjkL" />
         </div>
+      </div>
+
+      <div class="pt-4 border-t">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          🔧 Múltiplas Contas Google Ads (JSON)
+        </label>
+        <p class="text-xs text-gray-500 mb-2">
+          Configure múltiplas contas de Google Ads com seus respectivos IDs de conversão e labels. Formato JSON.
+        </p>
+        <textarea
+          v-model="form.googleAdsConfigJson"
+          class="w-full border p-2 rounded font-mono text-xs"
+          rows="10"
+          placeholder='[
+  {
+    "name": "Conta Principal",
+    "conversionId": "AW-123456789",
+    "conversionLabel": "AbCdEfGhIjkL",
+    "conversionValue": 99.00,
+    "conversionCurrency": "BRL"
+  },
+  {
+    "name": "Conta Secundária",
+    "conversionId": "AW-987654321",
+    "conversionLabel": "XyZwVtUrSqP",
+    "conversionValue": 99.00,
+    "conversionCurrency": "BRL"
+  }
+]'
+        />
       </div>
 
       <div class="pt-4 border-t">

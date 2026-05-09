@@ -36,6 +36,10 @@ export default defineEventHandler(async (event) => {
     ? null
     : String(body.googleAdsConversionLabel).trim()
 
+  const googleAdsConfigJson = body?.googleAdsConfigJson === null || body?.googleAdsConfigJson === undefined
+    ? null
+    : String(body.googleAdsConfigJson)
+
   const metaPixelId = body?.metaPixelId === null || body?.metaPixelId === undefined
     ? null
     : String(body.metaPixelId).trim()
@@ -136,6 +140,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'footerPolicyLinks muito grande' })
   }
 
+  if (googleAdsConfigJson && googleAdsConfigJson.length > 50000) {
+    throw createError({ statusCode: 400, statusMessage: 'googleAdsConfigJson muito grande' })
+  }
+
+  if (googleAdsConfigJson) {
+    try {
+      JSON.parse(googleAdsConfigJson)
+    } catch {
+      throw createError({ statusCode: 400, statusMessage: 'googleAdsConfigJson inválido (JSON inválido)' })
+    }
+  }
+
   if (!storeSlug) {
     const existing = await prismaAny.siteSettings.findFirst({
       select: { id: true }
@@ -148,6 +164,7 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: googleAnalyticsId || null,
             googleAdsConversionId: googleAdsConversionId || null,
             googleAdsConversionLabel: googleAdsConversionLabel || null,
+            googleAdsConfigJson: googleAdsConfigJson || null,
             metaPixelId: metaPixelId || null,
             tiktokPixelId: tiktokPixelId || null,
             headHtml,
@@ -168,6 +185,7 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: true,
             googleAdsConversionId: true,
             googleAdsConversionLabel: true,
+            googleAdsConfigJson: true,
             metaPixelId: true,
             tiktokPixelId: true,
             headHtml: true,
@@ -189,6 +207,7 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: googleAnalyticsId || null,
             googleAdsConversionId: googleAdsConversionId || null,
             googleAdsConversionLabel: googleAdsConversionLabel || null,
+            googleAdsConfigJson: googleAdsConfigJson || null,
             metaPixelId: metaPixelId || null,
             tiktokPixelId: tiktokPixelId || null,
             headHtml,
@@ -209,6 +228,7 @@ export default defineEventHandler(async (event) => {
             googleAnalyticsId: true,
             googleAdsConversionId: true,
             googleAdsConversionLabel: true,
+            googleAdsConfigJson: true,
             metaPixelId: true,
             tiktokPixelId: true,
             headHtml: true,
