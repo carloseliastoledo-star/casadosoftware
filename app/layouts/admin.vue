@@ -199,6 +199,8 @@ async function checkHumanPending() {
     pendingCount.value = response.count || 0
 
     if (response.conversations && response.conversations.length > 0) {
+      console.log('[admin] Conversas pendentes:', response.conversations.length)
+      console.log('[admin] IDs já notificados:', notifiedIds.value)
       for (const conv of response.conversations) {
         if (!notifiedIds.value.includes(conv.id)) {
           console.log('[admin-alert] novo atendimento humano:', conv.id)
@@ -206,6 +208,8 @@ async function checkHumanPending() {
           playNotificationSound()
           notifiedIds.value.push(conv.id)
           saveNotifiedIds()
+        } else {
+          console.log('[admin] Conversa já notificada:', conv.id)
         }
       }
     }
