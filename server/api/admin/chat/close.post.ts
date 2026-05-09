@@ -31,20 +31,31 @@ export default defineEventHandler(async (event) => {
 
   console.log('[chat] Encerrando conversa:', conversationId, 'por:', user.email, 'status atual:', conversation.status)
 
-  await prisma.chatConversation.update({
-    where: { id: conversationId },
-    data: { status: 'CLOSED', closedByAgentId: user.id }
-  })
+  try {
+    await prisma.chatConversation.update({
+      where: { id: conversationId },
+      data: { status: 'CLOSED', closedByAgentId: user.id }
+    })
+    console.log('[chat] Status atualizado para CLOSED:', conversationId)
+  } catch (error) {
+    console.error('[chat] Erro ao atualizar status para CLOSED:', error)
+    throw createError({ statusCode: 500, statusMessage: 'Erro ao encerrar conversa' })
+  }
 
   console.log('[chat] Conversa encerrada:', conversationId, 'por:', user.email)
 
-  await prisma.chatMessage.create({
-    data: {
-      conversationId,
-      sender: 'SYSTEM',
-      content: 'Atendimento encerrado.'
-    }
-  })
+  try {
+    await prisma.chatMessage.create({
+      data: {
+        conversationId,
+        sender: 'SYSTEM',
+        content: 'Atendimento encerrado.'
+      }
+    })
+  } catch (error) {
+    console.error('[chat] Erro ao criar mensagem de encerramento:', error)
+    // Não falha se a mensagem não for criada
+  }
 
   return { ok: true }
 })

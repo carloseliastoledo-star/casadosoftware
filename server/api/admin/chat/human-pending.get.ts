@@ -19,6 +19,17 @@ export default defineEventHandler(async (event) => {
 
   console.log('[admin] WAITING_HUMAN queries:', waitingConversations.length, 'time:', Date.now() - startTime, 'ms')
 
+  // Atualizar humanNotifiedAt para conversas que ainda não foram notificadas
+  for (const conv of waitingConversations) {
+    if (!conv.humanNotifiedAt) {
+      await prisma.chatConversation.update({
+        where: { id: conv.id },
+        data: { humanNotifiedAt: new Date() }
+      })
+      console.log('[admin] Marcando como notificado:', conv.id)
+    }
+  }
+
   // Tratar conversas antigas com status AI mas com mensagem indicando atendimento humano
   // Apenas conversas das últimas 24h para não sobrecarregar o banco
   const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
