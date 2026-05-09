@@ -57,13 +57,15 @@
                   'px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1',
                   conv.status === 'AI' ? 'bg-blue-100 text-blue-700' :
                   conv.status === 'HUMAN' ? 'bg-green-100 text-green-700' :
+                  conv.status === 'WAITING_HUMAN' ? 'bg-red-100 text-red-700' :
                   'bg-gray-100 text-gray-700'
                 ]"
               >
                 <span v-if="conv.status === 'HUMAN'" class="text-lg">👤</span>
                 <span v-else-if="conv.status === 'AI'" class="text-lg">🤖</span>
+                <span v-else-if="conv.status === 'WAITING_HUMAN'" class="text-lg">⚠️</span>
                 <span v-else class="text-lg">🔒</span>
-                {{ conv.status === 'AI' ? 'IA' : conv.status === 'HUMAN' ? 'Humano' : 'Encerrado' }}
+                {{ conv.status === 'AI' ? 'IA' : conv.status === 'HUMAN' ? 'Humano' : conv.status === 'WAITING_HUMAN' ? 'Aguardando Humano' : 'Encerrado' }}
               </span>
             </td>
             <td class="p-3 text-gray-600 max-w-xs truncate">{{ conv.lastMessage || '-' }}</td>
@@ -133,7 +135,14 @@ async function loadConversations() {
       query
     }) as any
 
-    const newConversations = response.conversations || []
+    let newConversations = response.conversations || []
+    
+    // Colocar conversas WAITING_HUMAN no topo
+    newConversations = newConversations.sort((a: any, b: any) => {
+      if (a.status === 'WAITING_HUMAN' && b.status !== 'WAITING_HUMAN') return -1
+      if (a.status !== 'WAITING_HUMAN' && b.status === 'WAITING_HUMAN') return 1
+      return 0
+    })
     
     // Verificar se há novos atendimentos
     if (newConversations.length > lastConversationCount.value && lastConversationCount.value > 0) {

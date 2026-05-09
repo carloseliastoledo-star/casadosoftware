@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: `Mensagem muito longa (máximo ${MAX_MESSAGE_LENGTH} caracteres)` })
   }
 
-  const conversation = await (prisma as any).chatConversation.findUnique({
+  const conversation = await prisma.chatConversation.findUnique({
     where: { id: conversationId }
   })
 
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (customerName || customerEmail || orderNumber) {
-    await (prisma as any).chatConversation.update({
+    await prisma.chatConversation.update({
       where: { id: conversationId },
       data: {
         ...(customerName && { customerName }),
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  await (prisma as any).chatMessage.create({
+  await prisma.chatMessage.create({
     data: {
       conversationId,
       sender: 'CUSTOMER',
@@ -68,14 +68,19 @@ export default defineEventHandler(async (event) => {
   }
 
   if (transferToHuman) {
-    await (prisma as any).chatConversation.update({
+    console.log('[chat] pedido humano detectado:', conversationId)
+    await prisma.chatConversation.update({
       where: { id: conversationId },
-      data: { status: 'HUMAN' }
+      data: { 
+        status: 'WAITING_HUMAN',
+        needsHuman: true,
+        humanRequestedAt: new Date()
+      }
     })
 
-    const transferMessage = 'Entendi. Vou encaminhar seu atendimento para um atendente humano verificar com mais segurança.'
+    const transferMessage = 'Entendo. Vou encaminhar seu atendimento para um atendente humano verificar com mais segurança.'
 
-    await (prisma as any).chatMessage.create({
+    await prisma.chatMessage.create({
       data: {
         conversationId,
         sender: 'AI',
@@ -85,12 +90,12 @@ export default defineEventHandler(async (event) => {
 
     return {
       conversationId,
-      status: 'HUMAN',
+      status: 'WAITING_HUMAN',
       reply: transferMessage
     }
   }
 
-  const history = await (prisma as any).chatMessage.findMany({
+  const history = await prisma.chatMessage.findMany({
     where: { conversationId },
     orderBy: { createdAt: 'asc' },
     select: { sender: true, content: true }
@@ -106,7 +111,7 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  await (prisma as any).chatMessage.create({
+  await prisma.chatMessage.create({
     data: {
       conversationId,
       sender: 'AI',

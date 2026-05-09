@@ -35,6 +35,7 @@
 
         <NuxtLink to="/admin/atendimentos" class="menu">
           💬 Atendimentos
+          <span v-if="pendingCount > 0" class="ml-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ pendingCount }}</span>
         </NuxtLink>
 
         <NuxtLink to="/admin/usuarios" class="menu">
@@ -141,12 +142,97 @@
 const { siteName } = useSiteBranding()
 
 const sidebarOpen = ref(false)
+const pendingCount = ref(0)
+const notifiedIds = ref<string[]>([])
+const pollingInterval = ref<any>(null)
+
+onMounted(() => {
+  loadNotifiedIds()
+  startPolling()
+  requestNotificationPermission()
+})
+
+onUnmounted(() => {
+  stopPolling()
+})
 
 async function logout() {
   try {
     await $fetch('/api/admin/auth/logout', { method: 'POST' })
   } finally {
     navigateTo('/admin/login')
+  }
+}
+
+function requestNotificationPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission()
+  }
+}
+
+function loadNotifiedIds() {
+  try {
+    const stored = localStorage.getItem('notifiedHumanPendingIds')
+    if (stored) {
+      notifiedIds.value = JSON.parse(stored)
+    }
+  } catch (err) {
+    console.error('[admin] Error loading notified IDs:', err)
+  }
+}
+
+function saveNotifiedIds() {
+  try {
+    localStorage.setItem('notifiedHumanPendingIds', JSON.stringify(notifiedIds.value))
+  } catch (err) {
+    console.error('[admin] Error saving notified IDs:', err)
+  }
+}
+
+async function checkHumanPending() {
+  try {
+    const response = await $fetch('/api/admin/chat/human-pending') as any
+    pendingCount.value = response.count || 0
+
+    if (response.conversations && response.conversations.length > 0) {
+      for (const conv of response.conversations) {
+        if (!notifiedIds.value.includes(conv.id)) {
+          showNotification(`Novo cliente aguardando atendimento humano: ${conv.customerName || 'Cliente'}`)
+          playNotificationSound()
+          notifiedIds.value.push(conv.id)
+          saveNotifiedIds()
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[admin] Error checking human pending:', err)
+  }
+}
+
+function showNotification(message: string) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Novo Atendimento - Casa do Software', {
+      body: message,
+      icon: '/favicon.ico'
+    })
+  }
+}
+
+function playNotificationSound() {
+  // Som opcional - não bloqueia notificação se arquivo não existir
+}
+
+function startPolling() {
+  stopPolling()
+  pollingInterval.value = setInterval(() => {
+    checkHumanPending()
+  }, 15000) // 15 segundos
+}
+
+function stopPolling() {
+  if (pollingInterval.value) {
+    clearInterval(pollingInterval.value)
+    pollingInterval.value = null
   }
 }
 </script>

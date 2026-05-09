@@ -17,6 +17,7 @@ enum AdminRole {
 
 enum ChatStatus {
   AI
+  WAITING_HUMAN
   HUMAN
   CLOSED
 }
@@ -525,6 +526,9 @@ model ChatConversation {
   userIp        String?
   agentId       String?
   closedByAgentId String?
+  needsHuman    Boolean     @default(false)
+  humanRequestedAt DateTime?
+  humanNotifiedAt  DateTime?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -535,6 +539,8 @@ model ChatConversation {
   @@index([updatedAt])
   @@index([agentId])
   @@index([closedByAgentId])
+  @@index([needsHuman])
+  @@index([humanRequestedAt])
 }
 
 model ChatMessage {
