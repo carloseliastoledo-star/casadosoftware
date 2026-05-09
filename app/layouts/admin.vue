@@ -147,12 +147,14 @@ const notifiedIds = ref([])
 const pollingInterval = ref(null)
 
 onMounted(() => {
+  console.log('[admin] Layout admin montado, iniciando polling')
   loadNotifiedIds()
   startPolling()
   requestNotificationPermission()
 })
 
 onUnmounted(() => {
+  console.log('[admin] Layout admin desmontado, parando polling')
   stopPolling()
 })
 
@@ -224,14 +226,17 @@ function playNotificationSound() {
 }
 
 function startPolling() {
+  console.log('[admin] Iniciando polling a cada 30 segundos')
   stopPolling()
   pollingInterval.value = setInterval(() => {
+    console.log('[admin] Executando checkHumanPending')
     checkHumanPending()
   }, 30000) // 30 segundos para reduzir carga no banco
 }
 
 function stopPolling() {
   if (pollingInterval.value) {
+    console.log('[admin] Parando polling')
     clearInterval(pollingInterval.value)
     pollingInterval.value = null
   }
