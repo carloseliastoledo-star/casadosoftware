@@ -192,8 +192,10 @@ function saveNotifiedIds() {
 }
 
 async function checkHumanPending() {
+  console.log('[admin] checkHumanPending iniciado')
   try {
     const response = await $fetch('/api/admin/chat/human-pending')
+    console.log('[admin] Resposta recebida:', response)
     pendingCount.value = response.count || 0
 
     if (response.conversations && response.conversations.length > 0) {
@@ -210,6 +212,7 @@ async function checkHumanPending() {
   } catch (err) {
     console.error('[admin] Error checking human pending:', err)
   }
+  console.log('[admin] checkHumanPending finalizado')
 }
 
 function showNotification(message) {
