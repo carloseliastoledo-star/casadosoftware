@@ -16,9 +16,15 @@ export default defineEventHandler(async (event) => {
   })
 
   // Tratar conversas antigas com status AI mas com mensagem indicando atendimento humano
+  // Apenas conversas das últimas 24h para não sobrecarregar o banco
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+  
   const aiConversations = await prisma.chatConversation.findMany({
     where: {
-      status: 'AI'
+      status: 'AI',
+      updatedAt: {
+        gte: twentyFourHoursAgo
+      }
     },
     orderBy: {
       updatedAt: 'desc'
@@ -28,9 +34,14 @@ export default defineEventHandler(async (event) => {
   const legacyPending: any[] = []
   for (const conv of aiConversations) {
     const messages = await prisma.chatMessage.findMany({
-      where: { conversationId: conv.id },
+      where: { 
+        conversationId: conv.id,
+        createdAt: {
+          gte: twentyFourHoursAgo
+        }
+      },
       orderBy: { createdAt: 'desc' },
-      take: 5
+      take: 3 // Reduzido de 5 para 3
     })
 
     const hasHumanRequest = messages.some(msg => 

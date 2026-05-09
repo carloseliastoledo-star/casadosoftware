@@ -226,7 +226,7 @@ function startPolling() {
   stopPolling()
   pollingInterval.value = setInterval(() => {
     checkHumanPending()
-  }, 15000) // 15 segundos
+  }, 30000) // 30 segundos para reduzir carga no banco
 }
 
 function stopPolling() {
