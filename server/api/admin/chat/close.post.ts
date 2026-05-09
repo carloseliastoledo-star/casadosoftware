@@ -29,10 +29,14 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Conversa não encontrada' })
   }
 
+  console.log('[chat] Encerrando conversa:', conversationId, 'por:', user.email, 'status atual:', conversation.status)
+
   await prisma.chatConversation.update({
     where: { id: conversationId },
     data: { status: 'CLOSED', closedByAgentId: user.id }
   })
+
+  console.log('[chat] Conversa encerrada:', conversationId, 'por:', user.email)
 
   await prisma.chatMessage.create({
     data: {
