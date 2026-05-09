@@ -1,6 +1,7 @@
 import { defineEventHandler } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
+import { sendTelegramMessage } from '../../../utils/telegram'
 
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
@@ -27,6 +28,20 @@ export default defineEventHandler(async (event) => {
         data: { humanNotifiedAt: new Date() }
       })
       console.log('[admin] Marcando como notificado:', conv.id)
+      
+      // Enviar notificação Telegram
+      try {
+        await sendTelegramMessage(
+          `🔔 Novo cliente aguardando atendimento humano!\n\n` +
+          `Cliente: ${conv.customerName || 'Não informado'}\n` +
+          `ID: ${conv.id}\n` +
+          `Horário: ${new Date(conv.humanRequestedAt).toLocaleString('pt-BR')}\n\n` +
+          `Acesse: https://www.casadosoftware.com.br/admin/atendimento-detalhes?id=${conv.id}`
+        )
+        console.log('[telegram] Notificação enviada para:', conv.id)
+      } catch (err) {
+        console.error('[telegram] Erro ao enviar notificação:', err)
+      }
     }
   }
 
