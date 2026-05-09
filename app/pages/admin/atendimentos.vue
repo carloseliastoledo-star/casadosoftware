@@ -14,6 +14,7 @@
           <select v-model="statusFilter" class="w-full border rounded-lg p-3">
             <option value="">Todos</option>
             <option value="AI">IA</option>
+            <option value="WAITING_HUMAN">Aguardando Humano</option>
             <option value="HUMAN">Humano</option>
             <option value="CLOSED">Encerrados</option>
           </select>

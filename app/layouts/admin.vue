@@ -197,6 +197,7 @@ async function checkHumanPending() {
     if (response.conversations && response.conversations.length > 0) {
       for (const conv of response.conversations) {
         if (!notifiedIds.value.includes(conv.id)) {
+          console.log('[admin-alert] novo atendimento humano:', conv.id)
           showNotification(`Novo cliente aguardando atendimento humano: ${conv.customerName || 'Cliente'}`)
           playNotificationSound()
           notifiedIds.value.push(conv.id)

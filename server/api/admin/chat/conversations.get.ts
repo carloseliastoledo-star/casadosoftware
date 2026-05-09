@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const search = String(query?.search || '').trim() || null
 
   const where: any = {}
-  if (status && ['AI', 'HUMAN', 'CLOSED'].includes(status)) {
+  if (status && ['AI', 'WAITING_HUMAN', 'HUMAN', 'CLOSED'].includes(status)) {
     where.status = status
   }
   if (search) {
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     ]
   }
 
-  const conversations = await (prisma as any).chatConversation.findMany({
+  const conversations = await prisma.chatConversation.findMany({
     where,
     orderBy: { updatedAt: 'desc' },
     take: 100,
@@ -31,6 +31,8 @@ export default defineEventHandler(async (event) => {
       customerEmail: true,
       orderNumber: true,
       status: true,
+      needsHuman: true,
+      humanRequestedAt: true,
       sourcePage: true,
       createdAt: true,
       updatedAt: true,
@@ -48,6 +50,8 @@ export default defineEventHandler(async (event) => {
     customerEmail: conv.customerEmail,
     orderNumber: conv.orderNumber,
     status: conv.status,
+    needsHuman: conv.needsHuman,
+    humanRequestedAt: conv.humanRequestedAt,
     sourcePage: conv.sourcePage,
     createdAt: conv.createdAt,
     updatedAt: conv.updatedAt,

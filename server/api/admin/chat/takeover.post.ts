@@ -31,11 +31,19 @@ export default defineEventHandler(async (event) => {
     }
 
     if (conversation.status !== 'HUMAN') {
+      console.log('[takeover] Assumindo conversa:', conversationId, 'status atual:', conversation.status, 'por:', user.email)
       await prisma.chatConversation.update({
         where: { id: conversationId },
-        data: { status: 'HUMAN', agentId: user.id }
+        data: { 
+          status: 'HUMAN', 
+          agentId: user.id,
+          humanNotifiedAt: new Date(),
+          needsHuman: false
+        }
       })
+      console.log('[takeover] Conversa assumida:', conversationId, 'status: HUMAN')
     } else if (!conversation.agentId) {
+      console.log('[takeover] Atualizando agentId:', conversationId, 'por:', user.email)
       await prisma.chatConversation.update({
         where: { id: conversationId },
         data: { agentId: user.id }

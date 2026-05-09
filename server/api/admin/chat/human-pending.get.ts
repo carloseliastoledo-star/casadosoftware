@@ -75,8 +75,8 @@ export default defineEventHandler(async (event) => {
   const allPending = [...waitingConversations, ...legacyPending]
 
   const totalTime = Date.now() - startTime
-  console.log('[admin] atendimentos humanos pendentes:', allPending.length, 'total time:', totalTime, 'ms')
-
+  console.log('[human-pending] pendentes:', allPending.length)
+  
   return {
     ok: true,
     count: allPending.length,
