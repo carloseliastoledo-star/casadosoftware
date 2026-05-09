@@ -111,6 +111,9 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  // Verificar se a IA decidiu encaminhar para humano
+  const aiWantsToTransfer = shouldTransferToHuman(aiReply)
+
   await prisma.chatMessage.create({
     data: {
       conversationId,
@@ -118,6 +121,23 @@ export default defineEventHandler(async (event) => {
       content: aiReply
     }
   })
+
+  if (aiWantsToTransfer) {
+    console.log('[chat] IA decidiu encaminhar para humano:', conversationId)
+    await prisma.chatConversation.update({
+      where: { id: conversationId },
+      data: { 
+        status: 'WAITING_HUMAN',
+        needsHuman: true,
+        humanRequestedAt: new Date()
+      }
+    })
+    return {
+      conversationId,
+      status: 'WAITING_HUMAN',
+      reply: aiReply
+    }
+  }
 
   return {
     conversationId,

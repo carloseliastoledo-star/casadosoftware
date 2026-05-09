@@ -16,7 +16,14 @@ const HUMAN_TRANSFER_KEYWORDS = [
   'atendente',
   'falar com pessoa',
   'procon',
-  'advogado'
+  'advogado',
+  'atendimento humano',
+  'encaminhar atendente',
+  'encaminhar humano',
+  'falar com humano',
+  'preciso de atendente',
+  'aguardando atendimento',
+  'aguardando atendimento humano'
 ]
 
 export function shouldTransferToHuman(message: string): boolean {
