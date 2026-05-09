@@ -355,6 +355,7 @@ const route = useRoute()
 const { trackMeta, trackGtag, trackBeginCheckout } = useTracking()
 const { trackBeginCheckout: ecomBeginCheckout } = useEcommerceTracking()
 const { captureBeforeCheckout, getAttributionForOrder } = useAttributionTracking()
+const { getRef } = useAffiliate()
 
 const trackingData = computed(() => ({
   utm_source:   String(route.query.utm_source   || '').trim() || undefined,
@@ -367,6 +368,7 @@ const trackingData = computed(() => ({
   referrer:     import.meta.client ? (document.referrer || undefined) : undefined,
   landingPage:  import.meta.client ? (window.location.href || undefined) : undefined,
   tracking:     import.meta.client ? getAttributionForOrder() : undefined,
+  affiliate:    getRef() || undefined,
 }))
 
 const FUNNEL_SLUG = 'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'

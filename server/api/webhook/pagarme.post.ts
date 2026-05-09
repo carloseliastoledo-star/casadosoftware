@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
 
       const order = await (prisma as any).order.findFirst({
         where: { pagarmeChargeId: chargeId },
-        select: { id: true, status: true },
+        select: { id: true, status: true, affiliateId: true, totalAmount: true },
       })
 
       if (!order) {
@@ -59,13 +59,56 @@ export default defineEventHandler(async (event) => {
       }
 
       if (String(order.status).toUpperCase() !== 'PAID') {
+        const paidAt = new Date()
+        const availableAt = new Date(paidAt.getTime() + 7 * 24 * 60 * 60 * 1000)
+
         await (prisma as any).order.update({
           where: { id: order.id },
-          data: { status: 'PAID', pagoEm: new Date() },
+          data: { status: 'PAID', pagoEm: paidAt },
           select: { id: true },
         })
 
         console.log('[pagarme-webhook] ordem atualizada para PAID:', order.id)
+
+        // Criar comissão de afiliado
+        if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
+          try {
+            const affiliateId = Number((order as any)?.affiliateId ?? 0)
+            if (affiliateId) {
+              const existing = await (prisma as any).affiliateCommission.findFirst({
+                where: { orderId: order.id, affiliateId },
+                select: { id: true }
+              })
+
+              if (!existing) {
+                const affiliate = await (prisma as any).affiliate.findUnique({
+                  where: { id: affiliateId },
+                  select: { commissionRate: true }
+                })
+
+                const totalAmount = Number((order as any)?.totalAmount ?? 0)
+                const commissionRate = Number((affiliate as any)?.commissionRate ?? 0)
+                const amount = Math.round(totalAmount * commissionRate * 100) / 100
+
+                if (amount > 0) {
+                  await (prisma as any).affiliateCommission.create({
+                    data: {
+                      orderId: order.id,
+                      affiliateId,
+                      amount,
+                      availableAt
+                    },
+                    select: { id: true }
+                  })
+                  console.log('[pagarme-webhook] comissão de afiliado criada:', { orderId: order.id, affiliateId, amount })
+                }
+              }
+            }
+          } catch (err: any) {
+            console.error('[pagarme-webhook] erro ao criar comissão de afiliado:', err?.message)
+          }
+        }
+
         try { await ensureMarketplaceCommissionForOrder(order.id) } catch {}
         try { await sendGa4PurchaseForOrder(order.id, 'pagarme') } catch {}
         try { await fulfillPaidOrder(order.id) } catch (e: any) {
