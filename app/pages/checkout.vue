@@ -788,7 +788,9 @@ async function handleGeneratePix() {
       }
     }
 
-    const result: any = await $fetch('/api/create-pix', {
+    const apiUrl = paymentMethod.value === 'credit_card' ? '/api/checkout' : '/api/create-pix'
+
+    const result: any = await $fetch(apiUrl, {
       method: 'POST',
       body: {
         ...body,
