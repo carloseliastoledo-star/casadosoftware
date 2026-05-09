@@ -86,7 +86,9 @@ function getStripe() {
 async function routeStripeCard(input: RouterInput): Promise<RouterResult> {
   const stripe = getStripe()
   const currency = (input.currency || 'usd').toLowerCase()
-  const amount = Math.round((input.amountUsd ?? input.amountBrl) * 100)
+  
+  // Para Stripe, sempre usar amountUsd se disponível, caso contrário não processar
+  const amount = input.amountUsd ? Math.round(input.amountUsd * 100) : Math.round(input.amountBrl * 100)
 
   const pi = await stripe.paymentIntents.create({
     amount,
@@ -110,7 +112,7 @@ async function routeStripeCard(input: RouterInput): Promise<RouterResult> {
     clientSecret: pi.client_secret!,
     publishableKey: String(process.env.STRIPE_PUBLISHABLE_KEY || ''),
     currency,
-    amount: (input.amountUsd ?? input.amountBrl),
+    amount: input.amountUsd ?? input.amountBrl,
   }
 }
 
@@ -186,28 +188,32 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
       })
       return { gateway: 'pagarme', method: 'credit_card', chargeId: res.charge_id, status: res.status }
     } catch (err) {
-      console.warn('[paymentRouter] cartão BR via pagarme falhou, tentando Stripe:', err)
-      return await routeStripeCard(input)
+      console.error('[paymentRouter] cartão BR via pagarme falhou:', err)
+      throw err
     }
   }
 
   // Internacional ou método stripe_card
-  try {
-    return await routeStripeCard(input)
-  } catch (err) {
-    // fallback Pagar.me cartão
-    if (input.card) {
-      console.warn('[paymentRouter] Stripe falhou, tentando Pagar.me como fallback:', err)
-      const res = await createPagarmeCard({
-        orderId: input.orderId,
-        amountBrl: input.amountBrl,
-        installments: 1,
-        customer: buildPagarmeCustomer(input.customer),
-        card: input.card,
-        split,
-      })
-      return { gateway: 'pagarme', method: 'credit_card', chargeId: res.charge_id, status: res.status }
+  if (!isBR || input.method === 'stripe_card') {
+    try {
+      return await routeStripeCard(input)
+    } catch (err) {
+      // fallback Pagar.me cartão
+      if (input.card) {
+        console.warn('[paymentRouter] Stripe falhou, tentando Pagar.me como fallback:', err)
+        const res = await createPagarmeCard({
+          orderId: input.orderId,
+          amountBrl: input.amountBrl,
+          installments: 1,
+          customer: buildPagarmeCustomer(input.customer),
+          card: input.card,
+          split,
+        })
+        return { gateway: 'pagarme', method: 'credit_card', chargeId: res.charge_id, status: res.status }
+      }
+      throw err
     }
-    throw err
   }
+
+  throw new Error('Método de pagamento não suportado para este país')
 }
