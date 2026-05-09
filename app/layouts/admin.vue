@@ -230,11 +230,15 @@ function playNotificationSound() {
 
 function startPolling() {
   console.log('[admin] Iniciando polling a cada 30 segundos')
-  stopPolling()
+  if (pollingInterval.value) {
+    console.log('[admin] Polling já existe, parando anterior')
+    stopPolling()
+  }
   pollingInterval.value = setInterval(() => {
     console.log('[admin] Executando checkHumanPending')
     checkHumanPending()
   }, 30000) // 30 segundos para reduzir carga no banco
+  console.log('[admin] Polling iniciado, interval ID:', pollingInterval.value)
 }
 
 function stopPolling() {
