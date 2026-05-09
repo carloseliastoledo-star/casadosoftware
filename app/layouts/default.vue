@@ -798,7 +798,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Fast and specialized support',
       footerIntlSupport: 'International support in Portuguese, Spanish and English',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) is an independent company.` : `${safeSiteName.value} (ELETROKEYS LTDA) is an independent company.`,
+      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) is an independent company.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) is an independent company.`,
       footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
@@ -828,7 +828,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Atención rápida y especializada',
       footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) es una empresa independiente.` : `${safeSiteName.value} (ELETROKEYS LTDA) es una empresa independiente.`,
+      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) es una empresa independiente.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) es una empresa independiente.`,
       footerDisclaimer2: 'No estamos afiliados a Microsoft.'
     }
   }
@@ -857,7 +857,7 @@ const t = computed(() => {
     footerSupportSubtitle: 'Atendimento rápido e especializado',
     footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',
     whatsappPrefix: 'WhatsApp:',
-    footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) é uma empresa independente.` : `${safeSiteName.value} (ELETROKEYS LTDA) é uma empresa independente.`,
+    footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) é uma empresa independente.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) é uma empresa independente.`,
     footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
 })

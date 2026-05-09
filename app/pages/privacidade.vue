@@ -44,7 +44,7 @@
           <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
         </p>
         <p class="text-sm">
-          ELETROKEYS LTDA — CNPJ 44.694.356/0001-48.
+          Razão Social: Softwares Mundi LTDA — CNPJ: 66.464.267/0001-48.
         </p>
       </div>
 

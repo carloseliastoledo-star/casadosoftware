@@ -40,7 +40,7 @@
       <div class="rounded-xl border bg-white p-5 space-y-3">
         <h2 class="text-xl font-bold text-gray-900">{{ t.section5Title }}</h2>
         <p class="text-sm">
-          ELETROKEYS LTDA — CNPJ 44.694.356/0001-48.
+          Razão Social: Softwares Mundi LTDA — CNPJ: 66.464.267/0001-48.
         </p>
       </div>
 

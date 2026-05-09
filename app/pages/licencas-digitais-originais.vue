@@ -106,7 +106,7 @@
             >
               Ver Contato
             </NuxtLink>
-            <div class="mt-4 text-xs text-white/70">ELETROKEYS LTDA — CNPJ 44.694.356/0001-48</div>
+            <div class="mt-4 text-xs text-white/70">Razão Social: Softwares Mundi LTDA — CNPJ: 66.464.267/0001-48</div>
           </div>
         </div>
       </div>
@@ -177,7 +177,7 @@ useHead({
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "ELETROKEYS LTDA",
+        "name": "Razão Social: Softwares Mundi LTDA",
         "url": "https://www.mercadosoftwares.com.br",
         "logo": "https://www.mercadosoftwares.com.br/logo-mercadosoftwares.png",
         "description": "Empresa especializada em licenças digitais e suporte ao cliente.",
