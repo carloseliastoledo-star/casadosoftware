@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (transferToHuman) {
-    console.log('[chat] pedido humano detectado:', conversationId)
+    console.log('[chat] pedido humano detectado:', conversationId, 'current status:', conversation.status)
     await prisma.chatConversation.update({
       where: { id: conversationId },
       data: { 
@@ -77,6 +77,7 @@ export default defineEventHandler(async (event) => {
         humanRequestedAt: new Date()
       }
     })
+    console.log('[chat] status atualizado para WAITING_HUMAN:', conversationId)
 
     const transferMessage = 'Entendo. Vou encaminhar seu atendimento para um atendente humano verificar com mais segurança.'
 
