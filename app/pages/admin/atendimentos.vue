@@ -175,19 +175,37 @@ async function loadConversations() {
 }
 
 function showNotification(message: string) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('Novo Atendimento - Casa do Software', {
-      body: message,
-      icon: '/favicon.ico'
-    })
+  console.log('[atendimentos] Tentando mostrar notificação:', message)
+  console.log('[atendimentos] Notification permission:', Notification.permission)
+  
+  if ('Notification' in window) {
+    if (Notification.permission === 'granted') {
+      console.log('[atendimentos] Permissão concedida, criando notificação')
+      new Notification('Novo Atendimento - Casa do Software', {
+        body: message,
+        icon: '/favicon.ico'
+      })
+    } else if (Notification.permission === 'default') {
+      console.log('[atendimentos] Permissão não solicitada, solicitando agora')
+      Notification.requestPermission().then(permission => {
+        console.log('[atendimentos] Permissão resultante:', permission)
+        if (permission === 'granted') {
+          new Notification('Novo Atendimento - Casa do Software', {
+            body: message,
+            icon: '/favicon.ico'
+          })
+        }
+      })
+    } else {
+      console.log('[atendimentos] Permissão negada:', Notification.permission)
+    }
+  } else {
+    console.log('[atendimentos] Notificações não suportadas neste navegador')
   }
 }
 
 function playNotificationSound() {
-  const audio = new Audio('/notification.mp3')
-  audio.play().catch(() => {
-    // Ignorar erro se o arquivo de som não existir ou não puder ser reproduzido
-  })
+  // Som opcional - não bloqueia notificação se arquivo não existir
 }
 
 function startPolling() {
