@@ -83,6 +83,13 @@
             >
               {{ closing ? 'Encerrando...' : 'Encerrar atendimento' }}
             </button>
+            <button
+              @click="deleteConversation"
+              class="px-3 py-1.5 bg-gray-700 text-white text-sm rounded hover:bg-gray-800 disabled:opacity-50"
+              :disabled="deleting"
+            >
+              {{ deleting ? 'Deletando...' : 'Deletar' }}
+            </button>
           </div>
         </div>
 
@@ -155,6 +162,7 @@ const replyMessage = ref('')
 const sending = ref(false)
 const takingOver = ref(false)
 const closing = ref(false)
+const deleting = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
 
 const pollingInterval = ref<any>(null)
@@ -261,6 +269,31 @@ async function closeConversation() {
     alert('Erro ao encerrar atendimento. Tente novamente.')
   } finally {
     closing.value = false
+  }
+}
+
+async function deleteConversation() {
+  if (deleting.value || !conversationId.value) return
+
+  if (!confirm('Tem certeza que deseja DELETAR este atendimento? Esta ação não pode ser desfeita.')) return
+
+  deleting.value = true
+
+  try {
+    await $fetch('/api/admin/chat/delete', {
+      method: 'POST',
+      body: {
+        conversationId: conversationId.value
+      }
+    })
+
+    alert('Atendimento deletado com sucesso.')
+    window.location.href = '/admin/atendimentos'
+  } catch (err) {
+    console.error('[atendimento-detalhes] Error deleting conversation:', err)
+    alert('Erro ao deletar atendimento. Tente novamente.')
+  } finally {
+    deleting.value = false
   }
 }
 
