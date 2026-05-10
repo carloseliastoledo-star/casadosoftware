@@ -764,7 +764,7 @@ async function generateMercadoPagoCardToken(): Promise<string> {
 
   try {
     // @ts-ignore - Mercado Pago SDK
-    const mp = new (window as any).MercadoPago({ publicKey })
+    const mp = new (window as any).MercadoPago(publicKey)
     
     const expiryParts = cardExpiry.value.split('/')
     const cardTokenParams = {
