@@ -770,8 +770,8 @@ async function generateMercadoPagoCardToken(): Promise<string> {
     const cardTokenParams = {
       cardNumber: cardNumber.value.replace(/\s/g, ''),
       cardholderName: cardHolder.value.trim(),
-      cardExpirationMonth: parseInt(expiryParts[0] || '0', 10),
-      cardExpirationYear: parseInt(expiryParts[1] || '0', 10),
+      cardExpirationMonth: String(parseInt(expiryParts[0] || '0', 10)).padStart(2, '0'),
+      cardExpirationYear: String(parseInt(expiryParts[1] || '0', 10)).padStart(2, '0'),
       securityCode: cardCvv.value.trim(),
       identificationType: 'CPF',
       identificationNumber: cpf.value.replace(/\D/g, '')
