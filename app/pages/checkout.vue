@@ -788,14 +788,30 @@ async function generateMercadoPagoCardToken(): Promise<string> {
     
     // Capturar mensagens específicas do erro
     let errorMessage = 'Erro ao processar dados do cartão'
+    
+    // Tentar extrair informações do erro
     if (Array.isArray(error)) {
-      errorMessage = error.map((e: any) => e.message || String(e)).join(', ')
+      console.log('Erro é array:', error)
+      errorMessage = error.map((e: any) => {
+        if (e?.message) return e.message
+        if (e?.code) return `Código: ${e.code}`
+        return String(e)
+      }).join(', ')
     } else if (error?.message) {
+      console.log('Erro tem message:', error.message)
       errorMessage = error.message
     } else if (error?.cause) {
+      console.log('Erro tem cause:', error.cause)
       errorMessage = error.cause
+    } else if (error?.response) {
+      console.log('Erro tem response:', error.response)
+      errorMessage = `Erro: ${error.response.status} - ${error.response.statusText}`
+    } else if (error?.status) {
+      console.log('Erro tem status:', error.status)
+      errorMessage = `Erro HTTP ${error.status}`
     }
     
+    console.log('Mensagem de erro final:', errorMessage)
     throw new Error(errorMessage)
   }
 }
