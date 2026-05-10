@@ -785,7 +785,16 @@ async function generateMercadoPagoCardToken(): Promise<string> {
     return token.id
   } catch (error: any) {
     console.error('Erro ao gerar token do Mercado Pago:', error)
-    throw new Error(error?.message || 'Erro ao processar dados do cartão')
+    
+    // Capturar mensagens específicas do erro
+    let errorMessage = 'Erro ao processar dados do cartão'
+    if (Array.isArray(error)) {
+      errorMessage = error.map((e: any) => e.message || String(e)).join(', ')
+    } else if (error?.message) {
+      errorMessage = error.message
+    }
+    
+    throw new Error(errorMessage)
   }
 }
 
