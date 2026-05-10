@@ -395,6 +395,7 @@ const cardNumber = ref('')
 const cardHolder = ref('')
 const cardExpiry = ref('')
 const cardCvv = ref('')
+const cardToken = ref('')
 const pixQrCode = ref('')
 const pixQrUrl = ref('')
 const pixCopiado = ref(false)
@@ -744,6 +745,40 @@ async function handleAposPix() {
   }
 }
 
+async function generateMercadoPagoCardToken(): Promise<string> {
+  if (!import.meta.client) return ''
+  
+  const config = useRuntimeConfig()
+  const publicKey = config.public.mercadopagoPublicKey
+  
+  if (!publicKey) {
+    throw new Error('Mercado Pago public key não configurada')
+  }
+
+  // @ts-ignore - Mercado Pago SDK
+  const mp = new (window as any).MercadoPago(publicKey)
+  
+  const expiryParts = cardExpiry.value.split('/')
+  const cardTokenParams = {
+    cardNumber: cardNumber.value.replace(/\s/g, ''),
+    cardholderName: cardHolder.value.trim(),
+    cardExpirationMonth: parseInt(expiryParts[0] || '0', 10),
+    cardExpirationYear: parseInt('20' + (expiryParts[1] || '0'), 10),
+    securityCode: cardCvv.value.trim(),
+    identificationType: (window as any).MercadoPago.IDENTIFICATION_TYPE.CPF,
+    identificationNumber: cpf.value.replace(/\D/g, '')
+  }
+
+  try {
+    // @ts-ignore - Mercado Pago SDK
+    const token = await mp.createCardToken(cardTokenParams)
+    return token.id
+  } catch (error: any) {
+    console.error('Erro ao gerar token do Mercado Pago:', error)
+    throw new Error('Erro ao processar dados do cartão')
+  }
+}
+
 async function handleGeneratePix() {
   if (loading.value) return
 
@@ -764,7 +799,6 @@ async function handleGeneratePix() {
       'mercado_pago'
     )
 
-    const expiryParts = cardExpiry.value.split('/')
     const body: Record<string, unknown> = {
       produtoId: produtoId.value,
       email: email.value.trim(),
@@ -781,12 +815,10 @@ async function handleGeneratePix() {
     }
 
     if (paymentMethod.value === 'credit_card') {
+      // Gerar token do Mercado Pago
+      const token = await generateMercadoPagoCardToken()
       body.card = {
-        number: cardNumber.value.replace(/\s/g, ''),
-        holder_name: cardHolder.value.trim(),
-        exp_month: parseInt(expiryParts[0] || '0', 10),
-        exp_year: parseInt('20' + (expiryParts[1] || '0'), 10),
-        cvv: cardCvv.value.trim()
+        token: token
       }
     }
 

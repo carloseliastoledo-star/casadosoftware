@@ -162,7 +162,8 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
   if (input.method === 'credit_card' && isBR) {
     if (!input.card) throw new Error('Dados do cartão obrigatórios')
     // ── MercadoPago card (requer token do SDK frontend) ──────────────────────
-    if (cardGw === 'mercadopago' && input.card?.token) {
+    if (cardGw === 'mercadopago') {
+      if (!input.card?.token) throw new Error('Token do Mercado Pago obrigatório')
       try {
         const res = await createMercadoPagoCard({
           orderId: input.orderId,
@@ -173,24 +174,33 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
         })
         return { gateway: 'mercadopago', method: 'credit_card', paymentId: res.payment_id, status: res.status }
       } catch (err) {
-        console.warn('[paymentRouter] cartão MercadoPago falhou, tentando Pagar.me:', err)
+        console.error('[paymentRouter] cartão MercadoPago falhou:', err)
+        throw err
       }
     }
-    // ── Pagar.me card (padrão ou fallback) ──────────────────────────────────
-    try {
-      const res = await createPagarmeCard({
-        orderId: input.orderId,
-        amountBrl: input.amountBrl,
-        installments: input.installments ?? 1,
-        customer: buildPagarmeCustomer(input.customer),
-        card: input.card,
-        split,
-      })
-      return { gateway: 'pagarme', method: 'credit_card', chargeId: res.charge_id, status: res.status }
-    } catch (err) {
-      console.error('[paymentRouter] cartão BR via pagarme falhou:', err)
-      throw err
+    // ── Pagar.me card (se configurado) ──────────────────────────────────
+    if (cardGw === 'pagarme') {
+      try {
+        const res = await createPagarmeCard({
+          orderId: input.orderId,
+          amountBrl: input.amountBrl,
+          installments: input.installments ?? 1,
+          customer: buildPagarmeCustomer(input.customer),
+          card: input.card,
+          split,
+        })
+        return { gateway: 'pagarme', method: 'credit_card', chargeId: res.charge_id, status: res.status }
+      } catch (err) {
+        console.error('[paymentRouter] cartão Pagar.me falhou:', err)
+        throw err
+      }
     }
+    // ── PagBank card (se configurado) ──────────────────────────────────
+    if (cardGw === 'pagbank') {
+      throw new Error('PagBank ainda não implementado para cartão')
+    }
+
+    throw new Error(`Gateway de cartão '${cardGw}' não suportado`)
   }
 
   // Internacional ou método stripe_card
