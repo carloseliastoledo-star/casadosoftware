@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       script: [
-        { src: 'https://sdk.mercadopago.com/js/v2', defer: true }
+        { src: 'https://sdk.mercadopago.com/js/v2' }
       ],
       link: [
         { rel: 'icon', href: process.env.SITE_LOGO_PATH || '/logo-mercadosoftwares.png' },

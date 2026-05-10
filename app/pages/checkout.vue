@@ -752,30 +752,40 @@ async function generateMercadoPagoCardToken(): Promise<string> {
   const publicKey = config.public.mercadopagoPublicKey
   
   if (!publicKey) {
-    throw new Error('Mercado Pago public key não configurada')
+    console.error('Mercado Pago public key não configurada')
+    throw new Error('Erro de configuração: chave pública não configurada')
   }
 
-  // @ts-ignore - Mercado Pago SDK
-  const mp = new (window as any).MercadoPago(publicKey)
-  
-  const expiryParts = cardExpiry.value.split('/')
-  const cardTokenParams = {
-    cardNumber: cardNumber.value.replace(/\s/g, ''),
-    cardholderName: cardHolder.value.trim(),
-    cardExpirationMonth: parseInt(expiryParts[0] || '0', 10),
-    cardExpirationYear: parseInt('20' + (expiryParts[1] || '0'), 10),
-    securityCode: cardCvv.value.trim(),
-    identificationType: (window as any).MercadoPago.IDENTIFICATION_TYPE.CPF,
-    identificationNumber: cpf.value.replace(/\D/g, '')
+  // Verificar se o SDK está carregado
+  if (!(window as any).MercadoPago) {
+    console.error('Mercado Pago SDK não está carregado')
+    throw new Error('Erro: SDK do Mercado Pago não carregado. Aguarde alguns segundos e tente novamente.')
   }
 
   try {
     // @ts-ignore - Mercado Pago SDK
+    const mp = new (window as any).MercadoPago(publicKey)
+    
+    const expiryParts = cardExpiry.value.split('/')
+    const cardTokenParams = {
+      cardNumber: cardNumber.value.replace(/\s/g, ''),
+      cardholderName: cardHolder.value.trim(),
+      cardExpirationMonth: parseInt(expiryParts[0] || '0', 10),
+      cardExpirationYear: parseInt('20' + (expiryParts[1] || '0'), 10),
+      securityCode: cardCvv.value.trim(),
+      identificationType: 'CPF',
+      identificationNumber: cpf.value.replace(/\D/g, '')
+    }
+
+    console.log('Gerando token do Mercado Pago...', cardTokenParams)
+    
+    // @ts-ignore - Mercado Pago SDK
     const token = await mp.createCardToken(cardTokenParams)
+    console.log('Token gerado com sucesso:', token.id)
     return token.id
   } catch (error: any) {
     console.error('Erro ao gerar token do Mercado Pago:', error)
-    throw new Error('Erro ao processar dados do cartão')
+    throw new Error(error?.message || 'Erro ao processar dados do cartão')
   }
 }
 
