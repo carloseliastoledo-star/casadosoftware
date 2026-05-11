@@ -124,6 +124,14 @@ export default defineEventHandler(async (event) => {
     }
   })
 
+  // Log para debug de status
+  orders.forEach((order: any) => {
+    console.log('[admin orders] order id:', order.id)
+    console.log('[admin orders] status:', order.status)
+    console.log('[admin orders] pagoEm:', order.pagoEm)
+    console.log('[admin orders] mercadoPagoPaymentId:', order.mercadoPagoPaymentId)
+  })
+
   const summaryAgg = await (prisma as any).order.aggregate({
     where: paidWhere,
     _count: { id: true },

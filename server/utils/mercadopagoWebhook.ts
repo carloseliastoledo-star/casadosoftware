@@ -65,6 +65,18 @@ export async function processMercadoPagoPayment(dataId: string) {
         }
 
         try {
+          const orderBefore = await anyTx.order.findUnique({
+            where: { id: String(orderId) },
+            select: { id: true, status: true, mercadoPagoPaymentId: true, pagoEm: true }
+          })
+
+          console.log('[mp webhook] order before update:', {
+            id: orderBefore?.id,
+            status: orderBefore?.status,
+            mercadoPagoPaymentId: orderBefore?.mercadoPagoPaymentId,
+            pagoEm: orderBefore?.pagoEm
+          })
+
           order = await anyTx.order.update({
             where: { id: String(orderId) },
             data: {
@@ -85,9 +97,17 @@ export async function processMercadoPagoPayment(dataId: string) {
               affiliateId: true,
               totalAmount: true,
               emailEnviadoEm: true,
-              telegramEnviadoEm: true
+              telegramEnviadoEm: true,
+              status: true,
+              mercadoPagoPaymentId: true,
+              pagoEm: true
             }
           })
+
+          console.log('[mp webhook] updating order id:', order.id)
+          console.log('[mp webhook] status before:', orderBefore?.status)
+          console.log('[mp webhook] status after:', order.status)
+          console.log('[mp webhook] paymentStatus after:', 'approved')
         } catch (err: any) {
           const code = String(err?.code || '')
           if (code === 'P2025') {
