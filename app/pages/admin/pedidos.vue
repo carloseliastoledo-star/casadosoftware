@@ -7,6 +7,13 @@
       </div>
 
       <div class="flex items-center gap-3 flex-wrap">
+        <button
+          @click="refresh"
+          class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+        >
+          Atualizar pedidos
+        </button>
+
         <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
           <input type="checkbox" v-model="showDeleted" class="h-4 w-4 accent-red-600" />
           <span class="text-gray-700">Ver excluídos</span>
@@ -669,6 +676,7 @@ const showDeleted = ref(false)
 const { data, pending, error, refresh } = await useFetch<{ ok: true; orders: OrderDto[]; summary: SummaryDto }>(
   '/api/admin/pedidos',
   {
+    key: `admin-orders-${Date.now()}`,
     server: false,
     query: computed(() => ({
       dateFrom: dateFrom.value || undefined,
