@@ -5,9 +5,6 @@
     <NuxtPage />
   </NuxtLayout>
 
-  <!-- Chat Widget -->
-  <ChatWidget v-if="isPublicSite" />
-
 </template>
 
 <script setup lang="ts">
