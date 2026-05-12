@@ -8,27 +8,29 @@
       </div>
     </div>
 
-    <div v-if="topbarText && !isLicencasDigitais" class="bg-blue-600 text-white text-xs">
-      <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
-        <a
-          v-if="topbarLink"
-          :href="topbarLink"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="hover:underline"
-        >
-          {{ topbarText }}
-        </a>
-        <span v-else>{{ topbarText }}</span>
+    <ClientOnly>
+      <div v-if="topbarText && !isLicencasDigitais" class="bg-blue-600 text-white text-xs">
+        <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
+          <a
+            v-if="topbarLink"
+            :href="topbarLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:underline"
+          >
+            {{ topbarText }}
+          </a>
+          <span v-else>{{ topbarText }}</span>
+        </div>
       </div>
-    </div>
 
-    <div v-if="isLicencasDigitais" class="bg-white text-[11px] text-gray-600 border-b">
-      <div class="max-w-7xl mx-auto px-6 h-9 flex items-center">
-        <span class="mr-2" aria-hidden="true">📍</span>
-        <span>19th Ave New York, NY 95822, USA</span>
+      <div v-if="isLicencasDigitais" class="bg-white text-[11px] text-gray-600 border-b">
+        <div class="max-w-7xl mx-auto px-6 h-9 flex items-center">
+          <span class="mr-2" aria-hidden="true">📍</span>
+          <span>19th Ave New York, NY 95822, USA</span>
+        </div>
       </div>
-    </div>
+    </ClientOnly>
 
     <!-- HEADER -->
     <header v-if="!isLicencasDigitais" class="border-b bg-white shadow-sm sticky top-0 z-40">
