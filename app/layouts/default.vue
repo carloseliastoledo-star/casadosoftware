@@ -319,7 +319,9 @@
     </main>
 
     <!-- WHATSAPP BUTTON -->
-    <WhatsAppButton v-if="!isLicencasDigitais" />
+    <ClientOnly>
+      <WhatsAppButton v-if="!isLicencasDigitais" />
+    </ClientOnly>
 
     <!-- FOOTER -->
     <footer v-if="isLicencasDigitais" class="bg-[#f2f4f3] text-gray-700 mt-20">
