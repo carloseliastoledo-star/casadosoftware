@@ -1,5 +1,7 @@
 <template>
-  <TrackingHead v-if="isPublicSite" />
+  <ClientOnly>
+    <TrackingHead v-if="isPublicSite" />
+  </ClientOnly>
 
   <NuxtLayout>
     <NuxtPage />
