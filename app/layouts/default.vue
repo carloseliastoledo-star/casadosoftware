@@ -318,6 +318,9 @@
       <NuxtPage />
     </main>
 
+    <!-- WHATSAPP BUTTON -->
+    <WhatsAppButton v-if="!isLicencasDigitais" />
+
     <!-- FOOTER -->
     <footer v-if="isLicencasDigitais" class="bg-[#f2f4f3] text-gray-700 mt-20">
       <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-5 gap-12 text-sm">
