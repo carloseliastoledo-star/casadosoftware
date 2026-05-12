@@ -128,6 +128,7 @@ export async function processMercadoPagoPayment(dataId: string) {
         if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
           try {
             const affiliateId = Number((order as any)?.affiliateId ?? 0)
+            console.log('[mp webhook] checking affiliate commission, affiliateId:', affiliateId)
             if (affiliateId) {
               const existing = await anyTx.affiliateCommission.findFirst({
                 where: { orderId: order.id, affiliateId },
@@ -135,6 +136,7 @@ export async function processMercadoPagoPayment(dataId: string) {
               })
 
               if (!existing) {
+                console.log('[mp webhook] no existing commission, creating new one')
                 const affiliate = await anyTx.affiliate.findUnique({
                   where: { id: affiliateId },
                   select: { commissionRate: true }
@@ -144,8 +146,10 @@ export async function processMercadoPagoPayment(dataId: string) {
                 const commissionRate = Number((affiliate as any)?.commissionRate ?? 0)
                 const amount = Math.round(totalAmount * commissionRate * 100) / 100
 
+                console.log('[mp webhook] commission details:', { totalAmount, commissionRate, amount, availableAt })
+
                 if (amount > 0) {
-                  await anyTx.affiliateCommission.create({
+                  const commission = await anyTx.affiliateCommission.create({
                     data: {
                       orderId: order.id,
                       affiliateId,
@@ -154,12 +158,21 @@ export async function processMercadoPagoPayment(dataId: string) {
                     },
                     select: { id: true }
                   })
+                  console.log('[mp webhook] commission created:', commission.id)
+                } else {
+                  console.log('[mp webhook] commission amount is 0, skipping')
                 }
+              } else {
+                console.log('[mp webhook] commission already exists for this order:', existing.id)
               }
+            } else {
+              console.log('[mp webhook] order has no affiliateId')
             }
-          } catch {
-            // ignore
+          } catch (err: any) {
+            console.error('[mp webhook] error creating affiliate commission:', err)
           }
+        } else {
+          console.log('[mp webhook] AFFILIATE_ENABLED is false, skipping commission creation')
         }
 
         if (!order.telegramEnviadoEm) {

@@ -159,7 +159,10 @@ export default defineEventHandler(async (event) => {
   let affiliateRecipientId: string | undefined
   let affiliatePercentage: number | undefined
 
+  console.log('[checkout] affiliate code received:', affiliate)
+
   if (affiliate && String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
+    console.log('[checkout] AFFILIATE_ENABLED is true, looking up affiliate:', affiliate)
     const aff = await (prisma as any).affiliate.findUnique({
       where: { refCode: affiliate },
       select: { id: true, commissionRate: true },
@@ -167,6 +170,15 @@ export default defineEventHandler(async (event) => {
     if (aff) {
       affiliateId = aff.id
       affiliatePercentage = Math.round((aff.commissionRate || 0) * 100)
+      console.log('[checkout] affiliate found:', { id: affiliateId, commissionRate: aff.commissionRate, percentage: affiliatePercentage })
+    } else {
+      console.log('[checkout] affiliate not found for code:', affiliate)
+    }
+  } else {
+    if (!affiliate) {
+      console.log('[checkout] no affiliate code provided')
+    } else {
+      console.log('[checkout] AFFILIATE_ENABLED is false, affiliate code ignored')
     }
   }
 
@@ -245,6 +257,8 @@ export default defineEventHandler(async (event) => {
     },
     select: { id: true },
   })
+
+  console.log('[checkout] order created/reused:', { orderId: order.id, affiliateId, affiliateCode: affiliate })
 
   // Ler gateways configurados no admin
   const validGateways = ['mercadopago', 'pagarme', 'pagbank'] as const
