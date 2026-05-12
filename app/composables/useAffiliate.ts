@@ -12,7 +12,9 @@ export const useAffiliate = () => {
     const expires = new Date(Date.now() + TTL_DAYS * 86400 * 1000).toUTCString()
     document.cookie = `${COOKIE_NAME}=${encodeURIComponent(code)}; path=/; expires=${expires}; SameSite=Lax`
     try { localStorage.setItem(STORAGE_KEY, code) } catch {}
-    console.log('[affiliate] code saved:', code)
+    if (import.meta.client) {
+      console.log('[affiliate] code saved:', code)
+    }
   }
 
   function getRef(): string {
@@ -21,7 +23,9 @@ export const useAffiliate = () => {
       const url = new URL(window.location.href)
       const param = url.searchParams.get('ref') || url.searchParams.get('affiliate')
       if (param) {
-        console.log('[affiliate] code detected in URL:', param)
+        if (import.meta.client) {
+          console.log('[affiliate] code detected in URL:', param)
+        }
         saveRef(param)
         return param
       }
@@ -32,7 +36,9 @@ export const useAffiliate = () => {
       const match = document.cookie.match(new RegExp(`(?:^|; )${COOKIE_NAME}=([^;]*)`))
       if (match) {
         const code = decodeURIComponent(match[1])
-        console.log('[affiliate] code loaded from cookie:', code)
+        if (import.meta.client) {
+          console.log('[affiliate] code loaded from cookie:', code)
+        }
         return code
       }
     }
@@ -41,12 +47,16 @@ export const useAffiliate = () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
-        console.log('[affiliate] code loaded from localStorage:', stored)
+        if (import.meta.client) {
+          console.log('[affiliate] code loaded from localStorage:', stored)
+        }
         return stored
       }
     } catch {}
 
-    console.log('[affiliate] no affiliate code found')
+    if (import.meta.client) {
+      console.log('[affiliate] no affiliate code found')
+    }
     return ''
   }
 
