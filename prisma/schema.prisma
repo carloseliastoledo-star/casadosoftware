@@ -558,3 +558,21 @@ model ChatMessage {
   @@index([createdAt])
 }
 
+model Review {
+  id           String   @id @default(cuid())
+  customerName String
+  productName  String
+  productId    String?
+  rating       Int
+  comment      String   @db.Text
+  source       String   @default("manual")
+  verified     Boolean  @default(true)
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([productId])
+  @@index([published])
+  @@index([createdAt])
+}
+
