@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-const googleReviewUrl = computed(() => {
-  // URL de avaliações do Google Business Profile
-  // Substituir pela URL correta do Google Business da Casa do Software
-  return 'https://search.google.com/local/writereview?placeid=PLACE_ID'
-})
+const { googleReviewsUrl, googleReviewRequestUrl } = useSiteBranding()
 </script>
 
 <template>
@@ -25,7 +21,7 @@ const googleReviewUrl = computed(() => {
 
     <div class="flex flex-col sm:flex-row gap-3">
       <a
-        :href="googleReviewUrl"
+        :href="googleReviewsUrl"
         target="_blank"
         rel="noopener noreferrer"
         class="flex-1 text-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition font-medium text-sm"
@@ -33,7 +29,7 @@ const googleReviewUrl = computed(() => {
         Ver avaliações no Google
       </a>
       <a
-        :href="googleReviewUrl"
+        :href="googleReviewRequestUrl"
         target="_blank"
         rel="noopener noreferrer"
         class="flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium text-sm"

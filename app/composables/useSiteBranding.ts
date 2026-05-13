@@ -20,6 +20,8 @@ export function useSiteBranding() {
     'Rua Almerinda Barão Passoni Vila Aparecida Itupeva - SP CEP 13298808'
   const companyPhone = String((config.public as any).companyPhone || '').trim() || '+55 11 91069-1485'
   const companyEmail = String((config.public as any).companyEmail || '').trim() || 'sac@mercadosoftwares.com.br'
+  const googleReviewsUrl = String((config.public as any).googleReviewsUrl || '').trim() || 'https://maps.app.goo.gl/LqHsKbBC4Y7FjqDo7'
+  const googleReviewRequestUrl = String((config.public as any).googleReviewRequestUrl || '').trim() || 'https://g.page/r/CQzqUpnMFYiKEAE/review'
 
   return {
     siteName,
@@ -32,7 +34,9 @@ export function useSiteBranding() {
     companyCnpj,
     companyAddress,
     companyPhone,
-    companyEmail
+    companyEmail,
+    googleReviewsUrl,
+    googleReviewRequestUrl
   }
 }
 
