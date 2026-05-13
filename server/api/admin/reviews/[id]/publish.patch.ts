@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import { requireAdminSession } from '../../../../../utils/adminSession'
-import prisma from '../../../../../db/prisma'
+import prisma from '../../../../../../db/prisma'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
