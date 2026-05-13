@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const googleReviewUrl = computed(() => {
   // URL de avaliações do Google Business Profile
   // Substituir pela URL correta do Google Business da Casa do Software

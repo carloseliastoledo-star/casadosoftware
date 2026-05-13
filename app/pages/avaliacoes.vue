@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 const { data, pending } = await useFetch<{
   ok: true
   reviews: Array<{
