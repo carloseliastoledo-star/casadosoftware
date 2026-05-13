@@ -1,4 +1,5 @@
-import { defineEventHandler, requireAdminSession } from 'h3'
+import { defineEventHandler } from 'h3'
+import { requireAdminSession } from '../../../utils/adminSession'
 import prisma from '../../../db/prisma'
 import { getMpAccessToken } from '../../../utils/mercadopago.js'
 import { markOrderAsPaid } from '../../../services/markOrderAsPaid.js'
