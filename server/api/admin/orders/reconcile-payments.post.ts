@@ -23,7 +23,12 @@ export default defineEventHandler(async (event) => {
       numero: true,
       mercadoPagoPaymentId: true,
       totalAmount: true,
-      criadoEm: true
+      criadoEm: true,
+      customer: {
+        select: {
+          email: true
+        }
+      }
     },
     orderBy: { criadoEm: 'desc' },
     take: 100
@@ -47,10 +52,12 @@ export default defineEventHandler(async (event) => {
     try {
       let paymentId = order.mercadoPagoPaymentId
 
-      // Se não tem paymentId, tentar buscar por external_reference
+      // Se não tem paymentId, tentar buscar por external_reference ou email
       if (!paymentId) {
-        console.log(`[reconcile-payments] Order ${order.numero} has no paymentId, searching by external_reference`)
-        const searchResp = await fetch(
+        console.log(`[reconcile-payments] Order ${order.numero} has no paymentId, searching by external_reference and email`)
+
+        // Tentar buscar por external_reference (orderId)
+        let searchResp = await fetch(
           `https://api.mercadopago.com/v1/payments/search?external_reference=${encodeURIComponent(order.id)}`,
           {
             headers: {
@@ -64,7 +71,37 @@ export default defineEventHandler(async (event) => {
           const payments = searchData?.results || []
           if (payments.length > 0) {
             paymentId = String(payments[0]?.id || '')
-            console.log(`[reconcile-payments] Found paymentId ${paymentId} for order ${order.numero}`)
+            console.log(`[reconcile-payments] Found paymentId ${paymentId} for order ${order.numero} by external_reference`)
+          }
+        }
+
+        // Se ainda não encontrou, tentar por email do cliente
+        if (!paymentId && order.customer?.email) {
+          searchResp = await fetch(
+            `https://api.mercadopago.com/v1/payments/search?payer.email=${encodeURIComponent(order.customer.email)}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            }
+          )
+
+          if (searchResp.ok) {
+            const searchData = await searchResp.json() as any
+            const payments = searchData?.results || []
+            if (payments.length > 0) {
+              // Filtrar pelo valor do pedido para garantir que é o pagamento correto
+              const orderAmount = Number(order.totalAmount || 0)
+              const matchingPayment = payments.find((p: any) => {
+                const paymentAmount = Number(p?.transaction_amount || 0)
+                return Math.abs(paymentAmount - orderAmount) < 0.01
+              })
+
+              if (matchingPayment) {
+                paymentId = String(matchingPayment?.id || '')
+                console.log(`[reconcile-payments] Found paymentId ${paymentId} for order ${order.numero} by email`)
+              }
+            }
           }
         }
       }
