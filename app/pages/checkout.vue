@@ -19,12 +19,11 @@
         </div>
         <h1 class="text-2xl md:text-3xl font-black text-gray-900">⚡ Você está a 1 passo de ativar seu Office completo</h1>
         <p class="text-green-700 text-sm md:text-base font-bold mt-2">🔥 Entrega imediata após pagamento</p>
-        <p class="text-yellow-600 text-sm font-black mt-2">⭐⭐⭐⭐⭐ Mais de 12.000 clientes atendidos</p>
       </div>
 
-      <div class="text-center text-xs text-gray-500 mb-4">
-        ✅ +3.842 clientes atendidos
-        ⭐ 4.9/5 avaliações
+      <!-- ReviewsSection compacto -->
+      <div class="mb-4">
+        <ReviewsSection :compact="true" />
       </div>
 
       <div class="flex flex-col lg:flex-row gap-6">

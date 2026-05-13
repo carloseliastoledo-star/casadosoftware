@@ -50,6 +50,19 @@ export default defineEventHandler(async (event) => {
       }
     }
   } catch (err: any) {
+    // Se a tabela não existir, retornar dados vazios para não quebrar o frontend
+    if (err?.code === 'P2021' || err?.message?.includes('does not exist') || err?.message?.includes("Unknown table")) {
+      console.log('[reviews] Table does not exist yet, returning empty data')
+      return {
+        ok: true,
+        reviews: [],
+        stats: {
+          total: 0,
+          average: 0
+        }
+      }
+    }
+
     console.error('[reviews] Error:', err)
     throw createError({
       statusCode: 500,

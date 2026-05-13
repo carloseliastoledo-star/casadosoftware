@@ -59,7 +59,10 @@
     <!-- 4. Como funciona -->
     <HomeStepsNew :products-index-path="productsIndexPath" />
 
-    <!-- 5. CTA afiliados -->
+    <!-- 5. Avaliações de clientes -->
+    <ReviewsSection :limit="6" />
+
+    <!-- 6. CTA afiliados -->
     <HomeCtaNew :cta="affiliateCta" />
   </section>
 </template>

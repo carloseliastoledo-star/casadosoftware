@@ -31,6 +31,15 @@ export default defineEventHandler(async (event) => {
       reviews
     }
   } catch (err: any) {
+    // Se a tabela não existir, retornar lista vazia
+    if (err?.code === 'P2021' || err?.message?.includes('does not exist') || err?.message?.includes("Unknown table")) {
+      console.log('[admin reviews] Table does not exist yet, returning empty list')
+      return {
+        ok: true,
+        reviews: []
+      }
+    }
+
     console.error('[admin reviews] Error:', err)
     throw createError({
       statusCode: 500,

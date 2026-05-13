@@ -248,6 +248,11 @@
           </NuxtLink>
         </div>
 
+        <!-- Avaliações de clientes -->
+        <div class="mt-8">
+          <ReviewsSection :product-id="safeProduct.id" :limit="3" />
+        </div>
+
       </div>
 
       <!-- Produto não encontrado -->
