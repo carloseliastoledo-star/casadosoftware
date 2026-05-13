@@ -2,6 +2,7 @@ import { defineEventHandler, readBody, getRouterParam, createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getStoreContext, whereForStore } from '../../../utils/store'
+import { markOrderAsPaid } from '../../../services/markOrderAsPaid.js'
 
 type AllowedStatus = 'PENDING' | 'PAID' | 'REJECTED' | 'CANCELLED'
 
@@ -41,6 +42,17 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Não é possível alterar status para diferente de PAID quando já existe licença vinculada ao pedido'
       })
     }
+    
+    // Se alterando para PAID, usar markOrderAsPaid
+    if (statusRaw === 'PAID' && order.status !== 'PAID') {
+      console.log('[admin patch] Status changing to PAID, calling markOrderAsPaid')
+      await markOrderAsPaid({
+        orderId: id,
+        source: 'manual_admin'
+      })
+      return { ok: true, message: 'Pedido marcado como pago com sucesso' }
+    }
+    
     data.status = statusRaw
     if (statusRaw === 'PAID' && !data.pagoEm) {
       data.pagoEm = new Date()
@@ -49,8 +61,8 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // Data de pagamento manual
-  if (body?.pagoEm !== undefined) {
+  // Data de pagamento manual (só se não estiver mudando para PAID, pois markOrderAsPaid já trata isso)
+  if (body?.pagoEm !== undefined && body?.status !== 'PAID') {
     if (body.pagoEm === null || body.pagoEm === '') {
       data.pagoEm = null
     } else {
