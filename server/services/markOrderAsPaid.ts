@@ -31,6 +31,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
   let telegramReservation: TelegramReservation | null = null
   let telegramPayload: TelegramPayload | null = null
   let emailPayload: EmailPayload | null = null
+  let shouldContinue = false
 
   // ── TRANSACTION: apenas operações de banco (rápido) ──
   await prisma.$transaction(async (tx) => {
@@ -57,8 +58,11 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
     // Se já está PAID e tem pagoEm, evitar duplicidade
     if (orderBefore.status === 'PAID' && orderBefore.pagoEm) {
       console.log('[markOrderAsPaid] Order already PAID, skipping duplicate processing', { orderId })
+      shouldContinue = false
       return
     }
+
+    shouldContinue = true
 
     // Preparar dados de atualização
     const updateData: any = {
@@ -294,7 +298,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
   })
 
   // ── ENVIO DE EMAIL: fora da transação (SMTP não bloqueia o DB) ──
-  if (emailPayload) {
+  if (emailPayload && shouldContinue) {
     const ep = emailPayload
     try {
       const html = renderLicenseEmail({
@@ -340,7 +344,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
   }
 
   // Telegram notification
-  if (telegramReservation && telegramPayload) {
+  if (telegramReservation && telegramPayload && shouldContinue) {
     const payload: TelegramPayload = telegramPayload
     const reservation: TelegramReservation = telegramReservation
     try {
@@ -364,17 +368,21 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
   }
 
   // GA4 tracking
-  try {
-    await sendGa4PurchaseForOrder(orderId, gateway || 'manual')
-  } catch (err) {
-    console.log('[markOrderAsPaid] GA4 tracking error', err)
+  if (shouldContinue) {
+    try {
+      await sendGa4PurchaseForOrder(orderId, gateway || 'manual')
+    } catch (err) {
+      console.log('[markOrderAsPaid] GA4 tracking error', err)
+    }
   }
 
   // Marketplace commission
-  try {
-    await ensureMarketplaceCommissionForOrder(orderId)
-  } catch (err) {
-    console.log('[markOrderAsPaid] Marketplace commission error', err)
+  if (shouldContinue) {
+    try {
+      await ensureMarketplaceCommissionForOrder(orderId)
+    } catch (err) {
+      console.log('[markOrderAsPaid] Marketplace commission error', err)
+    }
   }
 
   console.log('[markOrderAsPaid] COMPLETE', { orderId, source })
