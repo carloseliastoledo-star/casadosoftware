@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'admin'
+})
+
 interface Review {
   id: string
   customerName: string

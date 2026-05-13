@@ -77,6 +77,10 @@
           💸 Saques Afiliados
         </NuxtLink>
 
+        <NuxtLink to="/admin/reviews" class="menu">
+          ⭐ Avaliações
+        </NuxtLink>
+
         <NuxtLink to="/admin/tema-home" class="menu">
           🎨 Tema da Home
         </NuxtLink>
