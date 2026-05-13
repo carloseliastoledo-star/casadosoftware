@@ -134,16 +134,29 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
             console.log('[markOrderAsPaid] Commission details:', { totalAmount, commissionRate, amount, availableAt })
 
             if (amount > 0) {
-              const commission = await anyTx.affiliateCommission.create({
-                data: {
-                  orderId: order.id,
-                  affiliateId,
-                  amount,
-                  availableAt
-                },
-                select: { id: true }
-              })
-              console.log('[markOrderAsPaid] Commission created:', commission.id)
+              try {
+                const commission = await anyTx.affiliateCommission.create({
+                  data: {
+                    orderId: order.id,
+                    affiliateId,
+                    amount,
+                    availableAt
+                  },
+                  select: { id: true }
+                })
+                console.log('[markOrderAsPaid] Commission created:', commission.id)
+              } catch (createErr: any) {
+                const isUniqueConstraintError =
+                  createErr?.code === 'P2002' ||
+                  createErr?.message?.includes('Unique constraint') ||
+                  createErr?.message?.includes('Duplicate entry')
+
+                if (isUniqueConstraintError) {
+                  console.log('[markOrderAsPaid] Affiliate commission already exists, skipping', { orderId, affiliateId })
+                } else {
+                  throw createErr
+                }
+              }
             } else {
               console.log('[markOrderAsPaid] Commission amount is 0, skipping')
             }
