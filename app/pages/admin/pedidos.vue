@@ -14,6 +14,13 @@
           Atualizar pedidos
         </button>
 
+        <button
+          @click="reconcilePayments"
+          class="px-4 py-2 rounded-lg border border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100"
+        >
+          Reconciliar pagamentos pendentes
+        </button>
+
         <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
           <input type="checkbox" v-model="showDeleted" class="h-4 w-4 accent-red-600" />
           <span class="text-gray-700">Ver excluídos</span>
@@ -828,6 +835,35 @@ async function resendOrder(o: OrderDto) {
     await refresh()
   } catch (err: any) {
     alert(err?.data?.statusMessage || 'Erro ao reenviar e-mail')
+  }
+}
+
+async function reconcilePayments() {
+  if (!confirm('Reconciliar pagamentos pendentes dos últimos 7 dias? Isso vai verificar no Mercado Pago e marcar pedidos como pagos automaticamente.')) return
+
+  try {
+    const res: any = await $fetch('/api/admin/orders/reconcile-payments', { method: 'POST' })
+    const results = res?.results
+    if (!results) {
+      alert('Reconciliação concluída sem resultados.')
+      return
+    }
+
+    const message = `
+Reconciliação concluída:
+
+Total verificado: ${results.total}
+Corrigidos para PAID: ${results.reconciled}
+Já estavam PAID: ${results.alreadyPaid}
+Não encontrados: ${results.notFound}
+Não aprovados: ${results.notApproved}
+Erros: ${results.errors}
+    `.trim()
+
+    alert(message)
+    await refresh()
+  } catch (err: any) {
+    alert(err?.data?.statusMessage || 'Erro ao reconciliar pagamentos')
   }
 }
 

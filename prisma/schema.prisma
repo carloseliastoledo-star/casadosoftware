@@ -417,6 +417,7 @@ model AffiliateCommission {
 
   affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
 
+  @@unique([orderId, affiliateId])
   @@index([affiliateId])
 }
 

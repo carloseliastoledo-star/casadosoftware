@@ -57,7 +57,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
 
     // Se já está PAID e tem pagoEm, evitar duplicidade
     if (orderBefore.status === 'PAID' && orderBefore.pagoEm) {
-      console.log('[markOrderAsPaid] Order already PAID, skipping duplicate processing', { orderId })
+      console.log('[markOrderAsPaid] Order already PAID, skipping', { orderId })
       shouldContinue = false
       return
     }
@@ -121,7 +121,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
           })
 
           if (!existing) {
-            console.log('[markOrderAsPaid] No existing commission, creating new one')
+            console.log('[markOrderAsPaid] Creating new commission', { orderId, affiliateId })
             const affiliate = await anyTx.affiliate.findUnique({
               where: { id: affiliateId },
               select: { commissionRate: true }
@@ -148,7 +148,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
               console.log('[markOrderAsPaid] Commission amount is 0, skipping')
             }
           } else {
-            console.log('[markOrderAsPaid] Commission already exists for this order:', existing.id)
+            console.log('[markOrderAsPaid] Commission already exists, skipping', { orderId, affiliateId, commissionId: existing.id })
           }
         } else {
           console.log('[markOrderAsPaid] Order has no affiliateId')
@@ -182,6 +182,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
 
     // Email já enviado?
     if (order.emailEnviadoEm) {
+      console.log('[markOrderAsPaid] Email already sent, skipping', { orderId, sentAt: order.emailEnviadoEm })
       await anyTx.order.update({
         where: { id: order.id },
         data: {
@@ -200,6 +201,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
       select: { id: true }
     })
     if (already) {
+      console.log('[markOrderAsPaid] License already linked, skipping', { orderId, licenseId: already.id })
       await anyTx.order.update({
         where: { id: order.id },
         data: {
