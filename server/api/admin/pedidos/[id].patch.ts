@@ -7,7 +7,8 @@ import { markOrderAsPaid } from '../../../services/markOrderAsPaid.js'
 type AllowedStatus = 'PENDING' | 'PAID' | 'REJECTED' | 'CANCELLED'
 
 export default defineEventHandler(async (event) => {
-  requireAdminSession(event)
+  try {
+    requireAdminSession(event)
 
   const ctx = getStoreContext(event)
 
@@ -116,4 +117,9 @@ export default defineEventHandler(async (event) => {
   })
 
   return { ok: true, order: updated }
+  } catch (err: any) {
+    console.error('[admin patch] Error:', err)
+    const message = err?.data?.statusMessage || err?.message || err?.statusMessage || 'Erro ao atualizar pedido'
+    throw createError({ statusCode: err?.statusCode || 500, statusMessage: message })
+  }
 })
