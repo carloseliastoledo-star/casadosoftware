@@ -310,6 +310,9 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
     }
 
     console.log('[markOrderAsPaid] Transação concluída, licença vinculada:', licenca.id, 'email será enviado fora da tx')
+  }, {
+    maxWait: 10000,
+    timeout: 30000
   })
 
   // ── ENVIO DE EMAIL: fora da transação (SMTP não bloqueia o DB) ──
