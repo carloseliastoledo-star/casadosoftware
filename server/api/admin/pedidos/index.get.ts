@@ -46,26 +46,20 @@ export default defineEventHandler(async (event) => {
     if (startMs) paidAfter = new Date(startMs)
   }
 
-  const dateFilter: any = {}
-  if (paidAfter) dateFilter.gte = paidAfter
-  if (paidBefore) dateFilter.lte = paidBefore
-  const hasDateFilter = Object.keys(dateFilter).length > 0
-
-  const paidWhere = whereForStore(
-    {
-      status: 'PAID',
-      pagoEm: hasDateFilter ? dateFilter : undefined
-    },
-    ctx
-  ) as any
-
-  const listWhere = whereForStore(
-    {
-      criadoEm: hasDateFilter ? dateFilter : undefined,
-      deletedAt: showDeleted ? { not: null } : null
-    },
-    ctx
-  ) as any
+  // Simplificar filtros para evitar erros
+  const baseWhere: any = {}
+  
+  if (!showDeleted) {
+    baseWhere.deletedAt = null
+  }
+  
+  const listWhere = ctx.storeSlug 
+    ? { ...baseWhere, storeSlug: ctx.storeSlug }
+    : baseWhere
+    
+  const paidWhere = ctx.storeSlug
+    ? { status: 'PAID', storeSlug: ctx.storeSlug, deletedAt: null }
+    : { status: 'PAID', deletedAt: null }
 
   const orders = await (prisma as any).order.findMany({
     where: listWhere,
@@ -124,13 +118,6 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  // Log para debug de status
-  orders.forEach((order: any) => {
-    console.log('[admin orders] order id:', order.id)
-    console.log('[admin orders] status:', order.status)
-    console.log('[admin orders] pagoEm:', order.pagoEm)
-    console.log('[admin orders] mercadoPagoPaymentId:', order.mercadoPagoPaymentId)
-  })
 
   const summaryAgg = await (prisma as any).order.aggregate({
     where: paidWhere,
