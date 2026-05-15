@@ -1,19 +1,19 @@
 import { defineEventHandler, createError, readBody } from 'h3'
-import prisma from '../../../db/prisma'
-import { requireAdminSession } from '../../../utils/adminSession'
+import prisma from '../../../db/prisma.js'
+import { requireAdminSession } from '../../../utils/adminSession.js'
 
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
 
   const body = await readBody(event)
-  const refCode = String(body?.refCode || '').trim()
+  const code = String(body?.refCode || body?.code || '').trim()
   const amount = Number(body?.amount)
 
-  if (!refCode) throw createError({ statusCode: 400, statusMessage: 'refCode obrigatório' })
+  if (!code) throw createError({ statusCode: 400, statusMessage: 'code/refCode obrigatório' })
   if (!Number.isFinite(amount) || amount <= 0) throw createError({ statusCode: 400, statusMessage: 'amount inválido' })
 
   const affiliate = await (prisma as any).affiliate.findUnique({
-    where: { refCode },
+    where: { code },
     select: { id: true, name: true, email: true }
   })
 

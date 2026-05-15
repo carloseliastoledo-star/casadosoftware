@@ -190,7 +190,7 @@ export default defineEventHandler(async (event) => {
   if (affiliate && String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
     console.log('[checkout] AFFILIATE_ENABLED is true, looking up affiliate:', affiliate)
     const aff = await (prisma as any).affiliate.findUnique({
-      where: { refCode: affiliate },
+      where: { code: affiliate },
       select: { id: true, commissionRate: true },
     })
     if (aff) {

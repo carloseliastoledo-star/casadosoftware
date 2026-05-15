@@ -1,8 +1,8 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import crypto from 'crypto'
-import prisma from '../../../../db/prisma'
-import { requireAdminSession } from '../../../../utils/adminSession'
-import { sendMail } from '../../../../utils/mailer'
+import prisma from '../../../../db/prisma.js'
+import { requireAdminSession } from '../../../../utils/adminSession.js'
+import { sendMail } from '../../../../utils/mailer.js'
 
 function hashToken(token: string, secret: string) {
   return crypto.createHmac('sha256', secret).update(token).digest('hex')
@@ -35,10 +35,10 @@ export default defineEventHandler(async (event) => {
   if (!Number.isFinite(id) || id <= 0) throw createError({ statusCode: 400, statusMessage: 'id inválido' })
 
   const body = await readBody(event)
-  const refCode = String(body?.refCode || '').trim()
+  const code = String(body?.refCode || body?.code || '').trim()
   const commissionRate = body?.commissionRate != null ? Number(body.commissionRate) : 0.25
 
-  if (!refCode) throw createError({ statusCode: 400, statusMessage: 'refCode obrigatório' })
+  if (!code) throw createError({ statusCode: 400, statusMessage: 'code/refCode obrigatório' })
   if (!Number.isFinite(commissionRate) || commissionRate <= 0 || commissionRate > 1) {
     throw createError({ statusCode: 400, statusMessage: 'commissionRate inválido (0-1)' })
   }
@@ -58,8 +58,8 @@ export default defineEventHandler(async (event) => {
 
   const affiliate = await (prisma as any).affiliate.upsert({
     where: { email },
-    create: { name, email, refCode, commissionRate, isActive: false },
-    update: { name, refCode, commissionRate },
+    create: { name, email, code, commissionRate, isActive: false },
+    update: { name, code, commissionRate },
     select: { id: true }
   })
 

@@ -1,17 +1,20 @@
 import { defineEventHandler, createError } from 'h3'
-import prisma from '../../../../db/prisma'
-import { requireAdminSession } from '../../../../utils/adminSession'
+import prisma from '../../../../db/prisma.js'
+import { requireAdminSession } from '../../../../utils/adminSession.js'
 
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
 
-  const refCode = String((event.context.params as any)?.refCode || '').trim()
-  if (!refCode) throw createError({ statusCode: 400, statusMessage: 'refCode obrigatório' })
+  const code = String((event.context.params as any)?.refCode || '').trim()
+  if (!code) throw createError({ statusCode: 400, statusMessage: 'code obrigatório' })
 
-  const affiliate = await (prisma as any).affiliate.findUnique({
-    where: { refCode },
-    select: { id: true, name: true, email: true, refCode: true, commissionRate: true, isActive: true, createdAt: true }
+  const affiliateRaw = await (prisma as any).affiliate.findUnique({
+    where: { code },
+    select: { id: true, name: true, email: true, code: true, commissionRate: true, isActive: true, createdAt: true }
   })
+  
+  // Mapear code para refCode para compatibilidade
+  const affiliate = affiliateRaw ? { ...affiliateRaw, refCode: affiliateRaw.code } : null
 
   if (!affiliate) throw createError({ statusCode: 404, statusMessage: 'Afiliado não encontrado' })
 

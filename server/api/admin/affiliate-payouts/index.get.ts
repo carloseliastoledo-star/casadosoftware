@@ -1,6 +1,6 @@
 import { defineEventHandler, getQuery } from 'h3'
-import prisma from '../../../db/prisma'
-import { requireAdminSession } from '../../../utils/adminSession'
+import prisma from '../../../db/prisma.js'
+import { requireAdminSession } from '../../../utils/adminSession.js'
 
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
@@ -24,10 +24,16 @@ export default defineEventHandler(async (event) => {
       createdAt: true,
       updatedAt: true,
       affiliate: {
-        select: { id: true, name: true, email: true, refCode: true }
+        select: { id: true, name: true, email: true, code: true }
       }
     }
   })
 
-  return { ok: true, payouts }
+  // Mapear code para refCode nos afiliados para compatibilidade
+  const payoutsMapped = payouts.map((p: any) => ({
+    ...p,
+    affiliate: p.affiliate ? { ...p.affiliate, refCode: p.affiliate.code } : null
+  }))
+
+  return { ok: true, payouts: payoutsMapped }
 })

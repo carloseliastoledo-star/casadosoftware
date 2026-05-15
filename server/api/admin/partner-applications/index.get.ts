@@ -24,12 +24,15 @@ export default defineEventHandler(async (event) => {
 
   const emails = items.map((it: any) => String(it.email || '').trim().toLowerCase()).filter(Boolean)
 
-  const affiliates = emails.length
+  const affiliatesRaw = emails.length
     ? await prismaAny.affiliate.findMany({
         where: { email: { in: emails } },
-        select: { email: true, refCode: true, commissionRate: true }
+        select: { email: true, code: true, commissionRate: true }
       })
     : []
+
+  // Mapear code para refCode para compatibilidade
+  const affiliates = affiliatesRaw.map((a: any) => ({ ...a, refCode: a.code }))
 
   const affiliateMap = new Map(
     affiliates.map((a: any) => [String(a.email).toLowerCase(), a])

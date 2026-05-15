@@ -13,20 +13,26 @@ export default defineEventHandler(async (event) => {
     console.log('[admin/affiliates] Admin autenticado:', session?.email)
 
     console.log('[admin/affiliates] Buscando afiliados...')
-    const affiliates = await (prisma as any).affiliate.findMany({
+    const affiliatesRaw = await (prisma as any).affiliate.findMany({
       orderBy: { createdAt: 'desc' },
-      select: { id: true, name: true, email: true, refCode: true, commissionRate: true, isActive: true, createdAt: true }
+      select: { id: true, name: true, email: true, code: true, commissionRate: true, isActive: true, createdAt: true }
     })
 
-    console.log('[admin/affiliates] Afiliados encontrados:', affiliates?.length || 0)
+    console.log('[admin/affiliates] Afiliados encontrados:', affiliatesRaw?.length || 0)
     
-    if (affiliates?.length > 0) {
+    if (affiliatesRaw?.length > 0) {
       console.log('[admin/affiliates] Sample:', { 
-        id: affiliates[0].id, 
-        name: affiliates[0].name, 
-        email: affiliates[0].email 
+        id: affiliatesRaw[0].id, 
+        name: affiliatesRaw[0].name, 
+        email: affiliatesRaw[0].email 
       })
     }
+    
+    // Mapear code para refCode para compatibilidade com frontend
+    const affiliates = affiliatesRaw.map((a: any) => ({
+      ...a,
+      refCode: a.code
+    }))
     
     console.log('[admin/affiliates] ===== END =====')
 

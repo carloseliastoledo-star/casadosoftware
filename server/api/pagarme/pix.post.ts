@@ -210,7 +210,7 @@ export default defineEventHandler(async (event) => {
 
       if (code) {
         const found = await tx.affiliate.findUnique({
-          where: { refCode: code },
+          where: { code: code },
           select: { id: true }
         })
 

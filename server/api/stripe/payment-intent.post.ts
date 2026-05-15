@@ -178,7 +178,7 @@ export default defineEventHandler(async (event) => {
         const affiliateCode = String(affiliate || '').trim()
         if (affiliateCode) {
           const found = await anyTx.affiliate.findUnique({
-            where: { refCode: affiliateCode },
+            where: { code: affiliateCode },
             select: { id: true }
           })
           affiliateId = found?.id ?? null

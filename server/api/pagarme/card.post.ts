@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
     if (String(process.env.AFFILIATE_ENABLED || '').trim().toLowerCase() === 'true') {
       const code = String(affiliateRef || '').trim()
       if (code) {
-        const found = await tx.affiliate.findUnique({ where: { refCode: code }, select: { id: true } })
+        const found = await tx.affiliate.findUnique({ where: { code: code }, select: { id: true } })
         affiliateId = found?.id ?? null
       }
     }

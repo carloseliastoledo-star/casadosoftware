@@ -1,6 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
-import prisma from '../../../db/prisma'
-import { requireAdminSession } from '../../../utils/adminSession'
+import prisma from '../../../db/prisma.js'
+import { requireAdminSession } from '../../../utils/adminSession.js'
 
 function round2(n: number) {
   return Math.round(n * 100) / 100
@@ -12,10 +12,13 @@ export default defineEventHandler(async (event) => {
   const id = Number((event.context.params as any)?.id)
   if (!Number.isFinite(id) || id <= 0) throw createError({ statusCode: 400, statusMessage: 'id inválido' })
 
-  const affiliate = await (prisma as any).affiliate.findUnique({
+  const affiliateRaw = await (prisma as any).affiliate.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true, refCode: true, commissionRate: true, isActive: true, createdAt: true }
+    select: { id: true, name: true, email: true, code: true, commissionRate: true, isActive: true, createdAt: true }
   })
+  
+  // Mapear code para refCode para compatibilidade
+  const affiliate = affiliateRaw ? { ...affiliateRaw, refCode: affiliateRaw.code } : null
 
   if (!affiliate) throw createError({ statusCode: 404, statusMessage: 'Afiliado não encontrado' })
 
