@@ -1,578 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL")
-}
-
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
-}
-
-enum AdminRole {
-  admin
-  editor
-  agent
-}
-
-enum ChatStatus {
-  AI
-  WAITING_HUMAN
-  HUMAN
-  CLOSED
-}
-
-enum ChatSender {
-  CUSTOMER
-  AI
-  AGENT
-  SYSTEM
-}
-
-model Produto {
-  id        String    @id @default(uuid())
-  wcProductId Int?     @unique
-  vendorId  String?
-  vendor    Vendor?   @relation(fields: [vendorId], references: [id])
-  nome      String
-  nomeEn    String?
-  nomeEs    String?
-  nomeIt    String?
-  nomeFr    String?
-  slug      String    @unique
-  finalUrl  String?
-  descricao String?   @db.Text
-  descricaoEn String? @db.Text
-  descricaoEs String? @db.Text
-  descricaoIt String? @db.Text
-  descricaoFr String? @db.Text
-  preco     Float
-  precoAntigo Float?
-  ativo     Boolean   @default(true)
-  imagem    String?   // 👈 NOVO CAMPO
-  cardItems String?   @db.Text
-  googleAdsConversionLabel    String?
-  googleAdsConversionValue    Float?
-  googleAdsConversionCurrency String?
-  tutorialTitulo    String?
-  tutorialTituloEn  String?
-  tutorialTituloEs  String?
-  tutorialTituloIt  String?
-  tutorialTituloFr  String?
-  tutorialSubtitulo String?
-  tutorialSubtituloEn String?
-  tutorialSubtituloEs String?
-  tutorialSubtituloIt String?
-  tutorialSubtituloFr String?
-  tutorialConteudo  String?   @db.Text
-  tutorialConteudoEn String?  @db.Text
-  tutorialConteudoEs String?  @db.Text
-  tutorialConteudoIt String?  @db.Text
-  tutorialConteudoFr String?  @db.Text
-  seoTitle       String?
-  seoDescription String?   @db.Text
-  seoContent     String?   @db.Text
-  criadoEm  DateTime  @default(now()) @db.DateTime(0)
-  licencas  Licenca[]
-  orders    Order[]
-  produtoCategorias ProdutoCategoria[]
-  precosLoja ProdutoPrecoLoja[]
-  precosMoeda ProdutoPrecoMoeda[]
-}
-
-
-model ProdutoPrecoLoja {
-  id         String   @id @default(uuid())
-  produtoId  String
-  produto    Produto  @relation(fields: [produtoId], references: [id])
-  storeSlug  String
-  preco      Float
-  precoAntigo Float?
-  createdAt  DateTime @default(now()) @db.DateTime(0)
-  updatedAt  DateTime @updatedAt @db.DateTime(0)
-
-  @@unique([produtoId, storeSlug])
-}
-
-
-model ProdutoPrecoMoeda {
-  id         String   @id @default(uuid())
-  produtoId  String
-  produto    Produto  @relation(fields: [produtoId], references: [id])
-  storeSlug  String
-  currency   String
-  amount     Float
-  oldAmount  Float?
-  createdAt  DateTime @default(now()) @db.DateTime(0)
-  updatedAt  DateTime @updatedAt @db.DateTime(0)
-
-  @@unique([produtoId, storeSlug, currency])
-}
-
-
-model Licenca {
-  id          String   @id @default(uuid())
-  chave       String
-  status      String
-  produtoId   String
-  produto     Produto  @relation(fields: [produtoId], references: [id])
-  storeSlug   String?
-  customerId  String?
-  customer    Customer? @relation(fields: [customerId], references: [id])
-  orderId     String?
-  order       Order?    @relation(fields: [orderId], references: [id])
-  criadoEm    DateTime @default(now()) @db.DateTime(0)
 }
 
 model Customer {
-  id        String   @id @default(uuid())
-  email     String
-  storeSlug String?
-  passwordHash String?
-  passwordResetTokenHash String?
-  passwordResetExpiresAt DateTime? @db.DateTime(0)
-  nome      String?
-  whatsapp  String?
-  wcCustomerId Int?
-  cpf       String?
-  criadoEm  DateTime @default(now()) @db.DateTime(0)
-  orders    Order[]
-  licencas  Licenca[]
-  wooOrders WooOrder[]
-
-  @@unique([email, storeSlug])
-}
-
-model Categoria {
-  id       String    @id @default(uuid())
-  wcCategoryId Int?   @unique
-  nome     String
-  slug     String    @unique
-  ativo    Boolean   @default(true)
-  produtoCategorias ProdutoCategoria[]
-}
-
-model ProdutoCategoria {
-  produtoId  String
-  categoriaId String
-  produto    Produto   @relation(fields: [produtoId], references: [id])
-  categoria  Categoria @relation(fields: [categoriaId], references: [id])
-
-  @@id([produtoId, categoriaId])
-}
-
-model WooImportState {
-  key       String   @id
-  resource  String
-  after     DateTime? @db.DateTime(0)
-  nextPage  Int      @default(1)
-  done      Boolean  @default(false)
-  updatedAt DateTime @updatedAt @db.DateTime(0)
-  createdAt DateTime @default(now()) @db.DateTime(0)
-}
-
-model WooOrder {
-  id         String   @id @default(uuid())
-  wcOrderId  Int      @unique
-  status     String
-  total      Float?
-  currency   String?
-  criadoEm   DateTime @db.DateTime(0)
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id])
-  items      WooOrderItem[]
-  createdAt  DateTime @default(now()) @db.DateTime(0)
-  updatedAt  DateTime @updatedAt @db.DateTime(0)
-}
-
-model WooOrderItem {
-  id       String   @id @default(uuid())
-  orderId  String
-  order    WooOrder @relation(fields: [orderId], references: [id])
-  name     String?
-  quantity Int?
-  total    Float?
-}
-
-model Order {
-  id                  String   @id @default(uuid())
-  numero              Int      @unique @default(autoincrement())
-  status              String
-  storeSlug            String?
-  affiliateId          Int?
-  trafficSourceType   String?
-  utmSource           String?
-  utmMedium           String?
-  utmCampaign         String?
-  utmTerm             String?
-  utmContent          String?
-  gclid               String?
-  fbclid              String?
-  referrer            String?  @db.Text
-  landingPage         String?  @db.Text
-  firstTouchSource       String?
-  firstTouchMedium       String?
-  firstTouchCampaign     String?
-  firstTouchContent      String?
-  firstTouchTerm         String?
-  firstTouchGclid        String?
-  firstTouchFbclid       String?
-  firstTouchReferrer     String?  @db.Text
-  firstTouchLandingPage  String?  @db.Text
-  lastTouchSource        String?
-  lastTouchMedium        String?
-  lastTouchCampaign      String?
-  lastTouchContent       String?
-  lastTouchTerm          String?
-  lastTouchGclid         String?
-  lastTouchFbclid        String?
-  lastTouchReferrer      String?  @db.Text
-  lastTouchLandingPage   String?  @db.Text
-  checkoutPage           String?  @db.Text
-  trackingUserAgent      String?  @db.Text
-  trackingDevice         String?
-  currency            String?
-  countryCode         String?
-  produtoId            String
-  produto              Produto  @relation(fields: [produtoId], references: [id])
-  customerId           String
-  customer             Customer @relation(fields: [customerId], references: [id])
-  cupomId              String?
-  cupom                Cupom?   @relation(fields: [cupomId], references: [id])
-  subtotalAmount       Float?
-  pixDiscountPercent   Int?
-  pixDiscountAmount    Float?
-  couponCode           String?
-  couponPercent        Int?
-  couponDiscountAmount Float?
-  totalAmount          Float?
-  mercadoPagoPaymentId String?  @unique
-  mercadoPagoPaymentTypeId String?
-  mercadoPagoPaymentMethodId String?
-  stripePaymentIntentId String? @unique
-  pagarmeChargeId      String?  @unique
-  pagbankChargeId      String?  @unique
-  orderBump            Boolean  @default(false)
-  bumpProductId        String?
-  parentOrderId        String?
-  criadoEm             DateTime @default(now()) @db.DateTime(0)
-  pagoEm               DateTime? @db.DateTime(0)
-  emailEnviadoEm       DateTime? @db.DateTime(0)
-  telegramEnviadoEm    DateTime? @db.DateTime(0)
-  fulfillmentStatus    String?
-  fulfillmentError     String?  @db.Text
-  fulfillmentUpdatedAt DateTime? @db.DateTime(0)
-  deletedAt            DateTime? @db.DateTime(0)
-  licencas             Licenca[]
-
-  affiliate            Affiliate? @relation(fields: [affiliateId], references: [id])
-}
-
-model Vendor {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now()) @db.DateTime(0)
-
-  products  Produto[]
-  commissions Commission[]
-}
-
-model Commission {
-  id             Int      @id @default(autoincrement())
-  orderId        String   @unique
-  affiliateId    Int?
-  vendorId       String
-  platformFee    Float
-  vendorAmount   Float
-  affiliateAmount Float
-  createdAt      DateTime @default(now()) @db.DateTime(0)
-
-  vendor         Vendor   @relation(fields: [vendorId], references: [id])
-  affiliate      Affiliate? @relation(fields: [affiliateId], references: [id])
-
-  @@index([vendorId])
-  @@index([affiliateId])
-}
-
-model Cupom {
-  id        String   @id @default(uuid())
-  code      String   @unique
-  percent   Int
-  active    Boolean  @default(true)
-  startsAt  DateTime? @db.DateTime(0)
-  expiresAt DateTime? @db.DateTime(0)
-  maxUses   Int?
-  usedCount Int      @default(0)
-  createdAt DateTime @default(now()) @db.DateTime(0)
-  orders    Order[]
-}
-
-model Pagina {
-  id          String   @id @default(uuid())
-  titulo      String
-  slug        String   @unique
-  conteudo    String?  @db.Text
-  publicado   Boolean  @default(false)
-  showInFooter Boolean @default(false)
-  footerOrder Int?
-  criadoEm    DateTime @default(now()) @db.DateTime(0)
-  atualizadoEm DateTime @updatedAt @db.DateTime(0)
-}
-
-model BlogPost {
-  id           String   @id @default(uuid())
-  titulo       String
-  slug         String   @unique
-  featuredImage String?  @db.Text
-  excerpt      String?
-  keyword      String?
-  autoSeo      Boolean  @default(false)
-  html         String?  @db.Text
-  publicado    Boolean  @default(false)
-  criadoEm     DateTime @default(now()) @db.DateTime(0)
-  atualizadoEm DateTime @updatedAt @db.DateTime(0)
-
-  translations BlogPostTranslation[]
-}
-
-model BlogPostTranslation {
-  id            String   @id @default(uuid())
-  postId        String
-  post          BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  lang          String
-  titulo        String
-  featuredImage String?  @db.Text
-  excerpt       String?
-  html          String?  @db.Text
-  criadoEm      DateTime @default(now()) @db.DateTime(0)
-  atualizadoEm  DateTime @updatedAt @db.DateTime(0)
-
-  @@unique([postId, lang])
-  @@index([lang])
-}
-
-model AdminUser {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  passwordHash String
-  role         AdminRole @default(editor)
-  createdAt    DateTime  @default(now()) @db.DateTime(0)
-}
-
-model SiteSettings {
-  id                     String   @id @default(uuid())
-  storeSlug               String?  @unique
-  googleAnalyticsId       String?
-  googleAdsConversionId  String?
-  googleAdsConversionLabel String?
-  googleAdsConfigJson     String?  @db.Text
-  headHtml                String?  @db.Text
-  bodyOpenHtml            String?  @db.Text
-  bodyCloseHtml           String?  @db.Text
-  homeBestSellerSlugs     String?  @db.Text
-  homeVideoUrl            String?  @db.Text
-  footerPolicyLinks       String?  @db.Text
-  metaPixelId             String?
-  tiktokPixelId           String?
-  pixGateway              String?  @default("mercadopago")  // mercadopago | pagarme | pagbank
-  cardGateway             String?  @default("mercadopago")  // mercadopago | pagarme | pagbank
-  orderBumpTitle          String?
-  orderBumpDescription    String?  @db.Text
-  orderBumpPrice          Float?   @default(19)
-  orderBumpsJson          String?  @db.Text
-  homeThemeJson           String?  @db.Text
-  createdAt              DateTime @default(now()) @db.DateTime(0)
-  updatedAt              DateTime @updatedAt @db.DateTime(0)
-}
-
-model Affiliate {
-  id              Int      @id @default(autoincrement())
-  name            String
-  email           String   @unique
-  refCode         String   @unique @map("code")
-  passwordHash    String?
-  inviteTokenHash String?
-  inviteExpiresAt DateTime?
-  isActive        Boolean  @default(false)
-  commissionRate  Float    @default(0.25)
-  totalEarnings   Float    @default(0)
-  createdAt       DateTime @default(now())
-
-  orders          Order[]
-  commissions     AffiliateCommission[]
-  marketplaceCommissions Commission[]
-  payoutRequests  AffiliatePayoutRequest[]
-}
-
-model AffiliateCommission {
-  id           Int      @id @default(autoincrement())
-  orderId      String
-  affiliateId  Int
-  amount       Float
-  status       String   @default("pending")
-  availableAt  DateTime?
-  paidAt       DateTime?
-  createdAt    DateTime @default(now())
-
-  affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
-
-  @@unique([orderId, affiliateId])
-  @@index([affiliateId])
-}
-
-model AffiliatePayoutRequest {
-  id          Int      @id @default(autoincrement())
-  affiliateId Int
-  amount      Float
-  status      String   @default("requested")
-  note        String?  @db.Text
-  createdAt   DateTime @default(now()) @db.DateTime(0)
-  updatedAt   DateTime @updatedAt @db.DateTime(0)
-
-  affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
-
-  @@index([affiliateId])
-}
-
-model Lead {
-  id         String   @id @default(uuid())
-  email      String
-  produtoId  String?
-  storeSlug  String?
-  status     String   @default("abandoned")
-  bumpAdded  Boolean  @default(false)
-  totalAmount Float?
-  criadoEm   DateTime @default(now()) @db.DateTime(0)
-  atualizadoEm DateTime @updatedAt @db.DateTime(0)
-
-  @@index([email])
-  @@index([storeSlug])
-}
-
-model AbandonedCheckout {
-  id            String    @id @default(uuid())
-  email         String?
-  phone         String?
-  product       String?
-  checkoutUrl   String?
-  status        String    @default("started")
-  source        String?
-  messageStep   Int       @default(0)
-  lastMessageAt DateTime? @db.DateTime(0)
-  lastSentAt    DateTime? @db.DateTime(0)
-  lockedAt      DateTime? @db.DateTime(0)
-  contactedAt   DateTime? @db.DateTime(0)
-  recoveredAt   DateTime? @db.DateTime(0)
-  repliedAt     DateTime? @db.DateTime(0)
-  createdAt     DateTime  @default(now()) @db.DateTime(0)
-  updatedAt     DateTime  @updatedAt @db.DateTime(0)
-
-  @@index([email])
-  @@index([phone])
-  @@index([status])
-  @@index([product])
-  @@index([createdAt])
-  @@index([contactedAt])
-  @@index([lastMessageAt])
-  @@index([lastSentAt])
-  @@index([lockedAt])
-}
-
-model PartnerApplication {
-  id               Int      @id @default(autoincrement())
-  name             String
-  email            String
-  website          String?
-  social           String?
-  country          String
-  monthlyTraffic   String?
-  promotionPlan    String?
-  createdAt        DateTime @default(now())
-
-  @@index([email])
-}
-
-model SeoPage {
-  id                  String   @id @default(uuid())
-  locale              String
-  slug                String
-  title               String
-  seoTitle            String?
-  seoDescription      String?  @db.Text
-  h1                  String?
-  heroBadge           String?
-  heroDescription     String?  @db.Text
-  contentHtml         String?  @db.LongText
-  faqJson             String?  @db.Text
-  linkedProductSlug   String?
-  linkedCategorySlug  String?
-  templateKey         String   @default("default-money-page")
-  status              String   @default("draft")
-  noindex             Boolean  @default(false)
-  publishedAt         DateTime? @db.DateTime(0)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt @db.DateTime(0)
-
-  @@unique([locale, slug])
-  @@index([locale, status])
-}
-
-model ChatConversation {
-  id            String      @id @default(cuid())
-  customerName  String?
-  customerEmail String?
-  orderNumber   String?
-  status        ChatStatus  @default(AI)
-  sourcePage    String?
-  userIp        String?
-  agentId       String?
-  closedByAgentId String?
-  needsHuman    Boolean     @default(false)
-  humanRequestedAt DateTime?
-  humanNotifiedAt  DateTime?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  messages      ChatMessage[]
-
-  @@index([status])
-  @@index([createdAt])
-  @@index([updatedAt])
-  @@index([agentId])
-  @@index([closedByAgentId])
-  @@index([needsHuman])
-  @@index([humanRequestedAt])
-}
-
-model ChatMessage {
-  id             String      @id @default(cuid())
-  conversationId String
-  sender         ChatSender
-  content        String      @db.Text
-  createdAt      DateTime    @default(now())
-
-  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-
-  @@index([conversationId])
-  @@index([createdAt])
-}
-
-model Review {
   id           String   @id @default(cuid())
-  customerName String
-  productName  String
-  productId    String?
-  rating       Int
-  comment      String   @db.Text
-  source       String   @default("manual")
-  verified     Boolean  @default(true)
-  published    Boolean  @default(false)
+  name         String
+  email        String   @unique
+  licenseLimit Int      @default(0)
+  status       String   @default("active") // active, inactive
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@index([productId])
-  @@index([published])
-  @@index([createdAt])
+  admins      CustomerAdmin[]
+  licenses    LicenseAccount[]
+  logs        LicenseLog[]
 }
 
+model CustomerAdmin {
+  id            String   @id @default(cuid())
+  customerId    String
+  name          String
+  email         String
+  passwordHash  String
+  role          String   @default("admin") // admin, viewer
+  status        String   @default("active") // active, inactive
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([email])
+}
+
+model LicenseAccount {
+  id               String   @id @default(cuid())
+  customerId       String
+  email            String
+  passwordEncrypted String
+  tenantDomain     String?
+  licenseType      String   // business_basic, business_standard, business_premium
+  status           String   @default("active") // active, inactive, expired
+  activationStatus String   @default("not_activated") // not_activated, activated, deactivated
+  deliveredAt      DateTime?
+  lastCheckedAt    DateTime?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  logs     LicenseLog[]
+
+  @@index([customerId])
+  @@index([email])
+  @@index([status])
+}
+
+model LicenseLog {
+  id              String   @id @default(cuid())
+  customerId      String
+  licenseAccountId String?
+  performedBy     String
+  action          String
+  metadata        String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  customer  Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  license   LicenseAccount? @relation(fields: [licenseAccountId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([licenseAccountId])
+  @@index([createdAt])
+}

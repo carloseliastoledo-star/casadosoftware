@@ -32,17 +32,9 @@ definePageMeta({ layout: false })
           </div>
         </div>
 
-        <div class="text-3xl font-bold mb-4">
-          R$ 99,00
-        </div>
-
-        <a href="/checkout" class="inline-block bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-lg text-lg">
-          Garantir acesso agora
+        <a href="https://casadosoftware.com.br" class="inline-block bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-4 rounded-lg text-lg">
+          Conheça nossas soluções
         </a>
-
-        <p class="text-sm text-gray-400 mt-4">
-          Pagamento único • Acesso imediato
-        </p>
 
       </div>
     </section>
@@ -178,11 +170,11 @@ definePageMeta({ layout: false })
     <section class="px-4 py-16 bg-green-500 text-center">
 
       <h2 class="text-2xl md:text-3xl font-bold text-black mb-6">
-        Acesso completo por R$ 99,00
+        Encontre a solução ideal para sua produtividade
       </h2>
 
-      <a href="/checkout" class="inline-block bg-black text-white px-8 py-4 rounded-lg font-bold text-lg">
-        Ativar acesso agora
+      <a href="https://casadosoftware.com.br" class="inline-block bg-black text-white px-8 py-4 rounded-lg font-bold text-lg">
+        Conheça nossas soluções
       </a>
 
     </section>
