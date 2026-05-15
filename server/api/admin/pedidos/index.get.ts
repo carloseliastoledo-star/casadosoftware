@@ -17,39 +17,40 @@ export default defineEventHandler(async (event) => {
     const q = getQuery(event)
     console.log('[admin/orders] query params:', JSON.stringify(q))
     
-    // Query mais simples possível primeiro
-    console.log('[admin/orders] Testando query simples...')
-    const testOrders = await (prisma as any).order.findMany({
-      take: 5,
-      orderBy: { criadoEm: 'desc' }
-    })
-    console.log('[admin/orders] Query simples OK, encontrados:', testOrders?.length || 0)
-    
-    // Query simples - admin vê todos os pedidos ativos
+    // Query com includes de Customer, Produto e Licenca
     const where: any = { deletedAt: null }
     
     console.log('[admin/orders] where clause:', JSON.stringify(where))
-    console.log('[admin/orders] NOTA: Admin vê todos os pedidos (sem filtro storeSlug)')
+    console.log('[admin/orders] Buscando pedidos com Customer, Produto e Licencas...')
     
     const orders = await (prisma as any).order.findMany({
       where,
       orderBy: { criadoEm: 'desc' },
       take: 200,
-      select: {
-        id: true,
-        numero: true,
-        status: true,
-        storeSlug: true,
-        criadoEm: true,
-        pagoEm: true,
-        totalAmount: true,
-        deletedAt: true,
-        produtoId: true,
-        customerId: true
+      include: {
+        Customer: { select: { id: true, email: true, nome: true, whatsapp: true, cpf: true } },
+        Produto: { select: { id: true, nome: true, slug: true } },
+        Licenca: { select: { id: true, chave: true, status: true } }
       }
     })
     
     console.log('[admin/orders] Pedidos encontrados:', orders?.length || 0)
+    
+    // Mapear para o formato esperado pelo frontend
+    const mappedOrders = orders.map((o: any) => ({
+      id: o.id,
+      numero: o.numero,
+      status: o.status,
+      storeSlug: o.storeSlug,
+      criadoEm: o.criadoEm,
+      pagoEm: o.pagoEm,
+      totalAmount: o.totalAmount,
+      mercadoPagoPaymentTypeId: o.mercadoPagoPaymentTypeId,
+      mercadoPagoPaymentMethodId: o.mercadoPagoPaymentMethodId,
+      produto: o.Produto,
+      customer: o.Customer,
+      licencas: o.Licenca
+    }))
     
     // Summary
     const summaryAgg = await (prisma as any).order.aggregate({
@@ -66,7 +67,7 @@ export default defineEventHandler(async (event) => {
     console.log('[admin/orders] Summary:', JSON.stringify(summary))
     console.log('[admin/orders] ===== END =====')
     
-    return { ok: true, orders: orders || [], summary }
+    return { ok: true, orders: mappedOrders, summary }
     
   } catch (err: any) {
     console.error('[admin/orders] ===== ERROR =====')
