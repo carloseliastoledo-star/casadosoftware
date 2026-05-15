@@ -3,6 +3,7 @@
  * Suporta PIX, cartão, order bump e captura de afiliado
  */
 import { defineEventHandler, readBody, createError } from 'h3'
+import { randomUUID } from 'node:crypto'
 import prisma from '#root/server/db/prisma'
 import { getStoreContext } from '#root/server/utils/store'
 import { detectCountry } from '#root/server/utils/detectCountry'
@@ -218,6 +219,7 @@ export default defineEventHandler(async (event) => {
   // Cria pedido (ou reutiliza existente)
   const order = existingOrder ?? await (prisma as any).order.create({
     data: {
+      id: randomUUID(),
       status: 'PENDING',
       storeSlug,
       customerId: customer.id,
