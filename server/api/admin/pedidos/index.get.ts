@@ -1,134 +1,88 @@
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler, getQuery, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
-import { getStoreContext, whereForStore } from '../../../utils/store'
+import { getStoreContext } from '../../../utils/store'
 
 export default defineEventHandler(async (event) => {
-  await requireAdminSession(event)
-
-  const ctx = getStoreContext(event)
-
-  const q = getQuery(event)
-  const period = String((q as any)?.period || '').trim().toLowerCase()
-  const dateFromRaw = String((q as any)?.dateFrom || '').trim()
-  const dateToRaw = String((q as any)?.dateTo || '').trim()
-  const showDeleted = String((q as any)?.showDeleted || '').trim() === '1'
-
-  let paidAfter: Date | null = null
-  let paidBefore: Date | null = null
-
-  if (dateFromRaw) {
-    const d = new Date(dateFromRaw)
-    if (!isNaN(d.getTime())) {
-      d.setHours(0, 0, 0, 0)
-      paidAfter = d
-    }
-  }
-
-  if (dateToRaw) {
-    const d = new Date(dateToRaw)
-    if (!isNaN(d.getTime())) {
-      d.setHours(23, 59, 59, 999)
-      paidBefore = d
-    }
-  }
-
-  if (!paidAfter && period) {
-    const now = Date.now()
-    const startMs =
-      period === 'day'
-        ? now - 24 * 60 * 60 * 1000
-        : period === 'week'
-          ? now - 7 * 24 * 60 * 60 * 1000
-          : period === 'month'
-            ? now - 30 * 24 * 60 * 60 * 1000
-            : null
-    if (startMs) paidAfter = new Date(startMs)
-  }
-
-  // Simplificar filtros para evitar erros
-  const baseWhere: any = {}
+  console.log('[admin/orders] ===== START =====')
   
-  if (!showDeleted) {
-    baseWhere.deletedAt = null
-  }
-  
-  const listWhere = ctx.storeSlug 
-    ? { ...baseWhere, storeSlug: ctx.storeSlug }
-    : baseWhere
+  try {
+    await requireAdminSession(event)
     
-  const paidWhere = ctx.storeSlug
-    ? { status: 'PAID', storeSlug: ctx.storeSlug, deletedAt: null }
-    : { status: 'PAID', deletedAt: null }
-
-  const orders = await (prisma as any).order.findMany({
-    where: listWhere,
-    orderBy: { criadoEm: 'desc' },
-    take: 200,
-    select: {
-      id: true,
-      numero: true,
-      status: true,
-      storeSlug: true,
-      trafficSourceType: true,
-      utmSource: true,
-      utmMedium: true,
-      utmCampaign: true,
-      utmTerm: true,
-      utmContent: true,
-      gclid: true,
-      fbclid: true,
-      referrer: true,
-      landingPage: true,
-      firstTouchSource: true,
-      firstTouchMedium: true,
-      firstTouchCampaign: true,
-      firstTouchContent: true,
-      firstTouchTerm: true,
-      firstTouchGclid: true,
-      firstTouchFbclid: true,
-      firstTouchReferrer: true,
-      firstTouchLandingPage: true,
-      lastTouchSource: true,
-      lastTouchMedium: true,
-      lastTouchCampaign: true,
-      lastTouchContent: true,
-      lastTouchTerm: true,
-      lastTouchGclid: true,
-      lastTouchFbclid: true,
-      lastTouchReferrer: true,
-      lastTouchLandingPage: true,
-      checkoutPage: true,
-      trackingUserAgent: true,
-      trackingDevice: true,
-      criadoEm: true,
-      pagoEm: true,
-      emailEnviadoEm: true,
-      fulfillmentStatus: true,
-      fulfillmentError: true,
-      fulfillmentUpdatedAt: true,
-      mercadoPagoPaymentId: true,
-      mercadoPagoPaymentTypeId: true,
-      mercadoPagoPaymentMethodId: true,
-      totalAmount: true,
-      deletedAt: true,
-      produto: { select: { id: true, nome: true, slug: true } },
-      customer: { select: { id: true, email: true, nome: true, whatsapp: true, cpf: true } },
-      licencas: { select: { id: true, chave: true, status: true } }
+    console.log('[admin/orders] DATABASE_URL defined:', !!process.env.DATABASE_URL)
+    
+    const ctx = getStoreContext(event)
+    console.log('[admin/orders] storeSlug:', ctx.storeSlug || '(null)')
+    
+    const q = getQuery(event)
+    console.log('[admin/orders] query params:', JSON.stringify(q))
+    
+    // Query mais simples possível primeiro
+    console.log('[admin/orders] Testando query simples...')
+    const testOrders = await (prisma as any).order.findMany({
+      take: 5,
+      orderBy: { criadoEm: 'desc' }
+    })
+    console.log('[admin/orders] Query simples OK, encontrados:', testOrders?.length || 0)
+    
+    // Agora aplicar filtros
+    const where: any = { deletedAt: null }
+    
+    if (ctx.storeSlug) {
+      where.storeSlug = ctx.storeSlug
     }
-  })
-
-
-  const summaryAgg = await (prisma as any).order.aggregate({
-    where: paidWhere,
-    _count: { id: true },
-    _sum: { totalAmount: true }
-  })
-
-  const summary = {
-    countPaid: Number(summaryAgg?._count?.id || 0),
-    totalPaid: Number(summaryAgg?._sum?.totalAmount || 0)
+    
+    console.log('[admin/orders] where clause:', JSON.stringify(where))
+    
+    const orders = await (prisma as any).order.findMany({
+      where,
+      orderBy: { criadoEm: 'desc' },
+      take: 200,
+      select: {
+        id: true,
+        numero: true,
+        status: true,
+        storeSlug: true,
+        criadoEm: true,
+        pagoEm: true,
+        totalAmount: true,
+        deletedAt: true,
+        produto: { select: { id: true, nome: true, slug: true } },
+        customer: { select: { id: true, email: true, nome: true, whatsapp: true, cpf: true } },
+        licencas: { select: { id: true, chave: true, status: true } }
+      }
+    })
+    
+    console.log('[admin/orders] Pedidos encontrados:', orders?.length || 0)
+    
+    // Summary
+    const summaryAgg = await (prisma as any).order.aggregate({
+      where: { ...where, status: 'PAID' },
+      _count: { id: true },
+      _sum: { totalAmount: true }
+    })
+    
+    const summary = {
+      countPaid: Number(summaryAgg?._count?.id || 0),
+      totalPaid: Number(summaryAgg?._sum?.totalAmount || 0)
+    }
+    
+    console.log('[admin/orders] Summary:', JSON.stringify(summary))
+    console.log('[admin/orders] ===== END =====')
+    
+    return { ok: true, orders: orders || [], summary }
+    
+  } catch (err: any) {
+    console.error('[admin/orders] ===== ERROR =====')
+    console.error('[admin/orders] full error:', err)
+    console.error('[admin/orders] message:', err?.message)
+    console.error('[admin/orders] code:', err?.code)
+    console.error('[admin/orders] meta:', err?.meta)
+    console.error('[admin/orders] stack:', err?.stack)
+    
+    throw createError({ 
+      statusCode: 503, 
+      statusMessage: `Erro: ${err?.message || 'Erro desconhecido'}` 
+    })
   }
-
-  return { ok: true, orders, summary }
 })
