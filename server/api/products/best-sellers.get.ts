@@ -114,14 +114,6 @@ export default defineEventHandler(async (event) => {
       preco: true,
       precoAntigo: true,
       imagem: true,
-      precosLoja: {
-        where: { storeSlug: storeSlug || undefined },
-        select: { preco: true, precoAntigo: true }
-      },
-      precosMoeda: {
-        where: { storeSlug: storeSlug || undefined },
-        select: { currency: true, amount: true, oldAmount: true }
-      },
       produtoCategorias: { select: { categoria: { select: { slug: true } } } },
       tutorialTitulo: true,
       tutorialSubtitulo: true,
@@ -129,15 +121,13 @@ export default defineEventHandler(async (event) => {
     } as const
 
     const mapProduct = (p: any) => {
-      const override = (p as any).precosLoja?.[0] || null
-
       const effective = resolveEffectivePrice({
         requestedCurrency: intl.currency,
         baseAmount: p.preco,
         baseOldAmount: p.precoAntigo,
-        storeAmountOverride: override?.preco,
-        storeOldAmountOverride: override?.precoAntigo,
-        currencyRows: (p as any).precosMoeda || []
+        storeAmountOverride: null,
+        storeOldAmountOverride: null,
+        currencyRows: []
       })
 
       const effectivePrice = effective.amount
