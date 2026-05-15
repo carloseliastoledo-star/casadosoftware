@@ -8,72 +8,568 @@ datasource db {
 }
 
 model Customer {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  licenseLimit Int      @default(0)
-  status       String   @default("active") // active, inactive
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                     String     @id @default(cuid())
+  email                  String
+  criadoEm               DateTime   @default(now()) @db.DateTime(0)
+  passwordHash           String?
+  nome                   String?
+  whatsapp               String?
+  cpf                    String?
+  wcCustomerId           Int?
+  passwordResetExpiresAt DateTime?  @db.DateTime(0)
+  passwordResetTokenHash String?
+  storeSlug              String?
+  Licenca                Licenca[]
+  Order                  Order[]
+  WooOrder               WooOrder[]
 
-  admins      CustomerAdmin[]
-  licenses    LicenseAccount[]
-  logs        LicenseLog[]
+  @@unique([email, storeSlug])
 }
 
-model CustomerAdmin {
-  id            String   @id @default(cuid())
-  customerId    String
-  name          String
-  email         String
-  passwordHash  String
-  role          String   @default("admin") // admin, viewer
-  status        String   @default("active") // active, inactive
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model AbandonedCheckout {
+  id            String    @id
+  email         String?
+  phone         String?
+  product       String?
+  status        String    @default("started")
+  createdAt     DateTime  @default(now()) @db.DateTime(0)
+  source        String?
+  contactedAt   DateTime? @db.DateTime(0)
+  recoveredAt   DateTime? @db.DateTime(0)
+  checkoutUrl   String?
+  messageStep   Int       @default(0)
+  lastMessageAt DateTime? @db.DateTime(0)
+  repliedAt     DateTime? @db.DateTime(0)
+  updatedAt     DateTime  @db.DateTime(0)
+  lastSentAt    DateTime? @db.DateTime(0)
+  lockedAt      DateTime? @db.DateTime(0)
 
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-
-  @@index([customerId])
+  @@index([contactedAt])
+  @@index([createdAt])
   @@index([email])
-}
-
-model LicenseAccount {
-  id               String   @id @default(cuid())
-  customerId       String
-  email            String
-  passwordEncrypted String
-  tenantDomain     String?
-  licenseType      String   // business_basic, business_standard, business_premium
-  status           String   @default("active") // active, inactive, expired
-  activationStatus String   @default("not_activated") // not_activated, activated, deactivated
-  deliveredAt      DateTime?
-  lastCheckedAt    DateTime?
-  notes            String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  logs     LicenseLog[]
-
-  @@index([customerId])
-  @@index([email])
+  @@index([lastMessageAt])
+  @@index([phone])
+  @@index([product])
   @@index([status])
 }
 
-model LicenseLog {
-  id              String   @id @default(cuid())
-  customerId      String
-  licenseAccountId String?
-  performedBy     String
-  action          String
-  metadata        String?
-  createdAt       DateTime @default(now())
+model AdminUser {
+  id           String         @id
+  email        String         @unique
+  passwordHash String
+  role         AdminUser_role
+  createdAt    DateTime       @default(now()) @db.DateTime(0)
+}
 
-  customer  Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  license   LicenseAccount? @relation(fields: [licenseAccountId], references: [id], onDelete: SetNull)
+model Affiliate {
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  email                  String                   @unique
+  code                   String                   @unique
+  commissionRate         Float                    @default(0.25)
+  totalEarnings          Float                    @default(0)
+  createdAt              DateTime                 @default(now())
+  passwordHash           String?
+  inviteTokenHash        String?
+  inviteExpiresAt        DateTime?
+  isActive               Boolean                  @default(false)
+  AffiliateCommission    AffiliateCommission[]
+  AffiliatePayoutRequest AffiliatePayoutRequest[]
+  Commission             Commission[]
+  Order                  Order[]
+}
 
-  @@index([customerId])
-  @@index([licenseAccountId])
+model AffiliateCommission {
+  id          Int       @id @default(autoincrement())
+  orderId     String
+  affiliateId Int
+  amount      Float
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now())
+  availableAt DateTime?
+  paidAt      DateTime?
+  Affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
+
+  @@unique([orderId, affiliateId])
+  @@index([affiliateId])
+}
+
+model AffiliatePayoutRequest {
+  id          Int       @id @default(autoincrement())
+  affiliateId Int
+  amount      Float
+  status      String    @default("requested")
+  note        String?   @db.Text
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  updatedAt   DateTime  @db.DateTime(0)
+  Affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
+
+  @@index([affiliateId])
+}
+
+model BlogPost {
+  id                  String                @id
+  titulo              String
+  slug                String                @unique
+  html                String?               @db.Text
+  publicado           Boolean               @default(false)
+  criadoEm            DateTime              @default(now()) @db.DateTime(0)
+  atualizadoEm        DateTime              @db.DateTime(0)
+  featuredImage       String?               @db.Text
+  excerpt             String?
+  keyword             String?
+  autoSeo             Boolean               @default(false)
+  BlogPostTranslation BlogPostTranslation[]
+}
+
+model BlogPostTranslation {
+  id            String   @id
+  postId        String
+  lang          String
+  titulo        String
+  featuredImage String?  @db.Text
+  excerpt       String?  @db.VarChar(512)
+  html          String?  @db.Text
+  criadoEm      DateTime @default(now()) @db.DateTime(0)
+  atualizadoEm  DateTime @default(now()) @db.DateTime(0)
+  BlogPost      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, lang])
+  @@index([lang])
+}
+
+model Categoria {
+  id               String             @id
+  nome             String
+  slug             String             @unique
+  wcCategoryId     Int?               @unique
+  ativo            Boolean            @default(true)
+  ProdutoCategoria ProdutoCategoria[]
+}
+
+model ChatConversation {
+  id               String                   @id @db.VarChar(25)
+  customerName     String?                  @db.VarChar(255)
+  customerEmail    String?                  @db.VarChar(255)
+  orderNumber      String?                  @db.VarChar(255)
+  status           ChatConversation_status?
+  sourcePage       String?                  @db.Text
+  userIp           String?                  @db.VarChar(255)
+  agentId          String?                  @db.VarChar(36)
+  closedByAgentId  String?                  @db.VarChar(36)
+  needsHuman       Boolean?                 @default(false)
+  humanRequestedAt DateTime?                @db.DateTime(0)
+  humanNotifiedAt  DateTime?                @db.DateTime(0)
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @default(now())
+
+  @@index([agentId])
+  @@index([closedByAgentId])
   @@index([createdAt])
+  @@index([humanRequestedAt])
+  @@index([needsHuman])
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model ChatMessage {
+  id             String             @id @db.VarChar(25)
+  conversationId String             @db.VarChar(25)
+  sender         ChatMessage_sender
+  content        String             @db.Text
+  createdAt      DateTime           @default(now())
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model Commission {
+  id              Int        @id @default(autoincrement())
+  orderId         String     @unique
+  affiliateId     Int?
+  vendorId        String
+  platformFee     Float
+  vendorAmount    Float
+  affiliateAmount Float
+  createdAt       DateTime   @default(now()) @db.DateTime(0)
+  Affiliate       Affiliate? @relation(fields: [affiliateId], references: [id])
+  Vendor          Vendor     @relation(fields: [vendorId], references: [id])
+
+  @@index([affiliateId])
+  @@index([vendorId])
+}
+
+model Cupom {
+  id        String    @id
+  code      String    @unique
+  percent   Int
+  active    Boolean   @default(true)
+  startsAt  DateTime? @db.DateTime(0)
+  expiresAt DateTime? @db.DateTime(0)
+  maxUses   Int?
+  usedCount Int       @default(0)
+  createdAt DateTime  @default(now()) @db.DateTime(0)
+  Order     Order[]
+}
+
+model Lead {
+  id           String   @id
+  email        String
+  produtoId    String?
+  storeSlug    String?
+  status       String   @default("abandoned")
+  bumpAdded    Boolean  @default(false)
+  totalAmount  Float?
+  criadoEm     DateTime @default(now()) @db.DateTime(0)
+  atualizadoEm DateTime
+
+  @@index([email])
+  @@index([storeSlug])
+}
+
+model Licenca {
+  id         String    @id
+  chave      String
+  status     String
+  produtoId  String
+  criadoEm   DateTime  @default(now())
+  customerId String?
+  orderId    String?
+  storeSlug  String?
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  Order      Order?    @relation(fields: [orderId], references: [id])
+  Produto    Produto   @relation(fields: [produtoId], references: [id])
+
+  @@index([customerId], map: "Licenca_customerId_fkey")
+  @@index([orderId], map: "Licenca_orderId_fkey")
+  @@index([produtoId], map: "Licenca_produtoId_fkey")
+}
+
+model Order {
+  id                         String     @id
+  status                     String
+  produtoId                  String
+  customerId                 String
+  mercadoPagoPaymentId       String?    @unique
+  criadoEm                   DateTime   @default(now()) @db.DateTime(0)
+  pagoEm                     DateTime?  @db.DateTime(0)
+  emailEnviadoEm             DateTime?  @db.DateTime(0)
+  numero                     Int        @unique @default(autoincrement())
+  couponCode                 String?
+  couponDiscountAmount       Float?
+  couponPercent              Int?
+  cupomId                    String?
+  pixDiscountAmount          Float?
+  pixDiscountPercent         Int?
+  subtotalAmount             Float?
+  totalAmount                Float?
+  telegramEnviadoEm          DateTime?  @db.DateTime(0)
+  fulfillmentError           String?    @db.Text
+  fulfillmentStatus          String?
+  fulfillmentUpdatedAt       DateTime?  @db.DateTime(0)
+  mercadoPagoPaymentTypeId   String?
+  mercadoPagoPaymentMethodId String?
+  storeSlug                  String?
+  currency                   String?
+  countryCode                String?
+  stripePaymentIntentId      String?    @unique
+  fbclid                     String?
+  gclid                      String?
+  landingPage                String?    @db.Text
+  referrer                   String?    @db.Text
+  trafficSourceType          String?
+  utmCampaign                String?
+  utmContent                 String?
+  utmMedium                  String?
+  utmSource                  String?
+  utmTerm                    String?
+  affiliateId                Int?
+  pagarmeChargeId            String?    @unique
+  orderBump                  Boolean    @default(false)
+  bumpProductId              String?
+  parentOrderId              String?
+  pagbankChargeId            String?    @unique
+  firstTouchSource           String?
+  firstTouchMedium           String?
+  firstTouchCampaign         String?
+  firstTouchContent          String?
+  firstTouchTerm             String?
+  firstTouchGclid            String?
+  firstTouchFbclid           String?
+  firstTouchReferrer         String?    @db.Text
+  firstTouchLandingPage      String?    @db.Text
+  lastTouchSource            String?
+  lastTouchMedium            String?
+  lastTouchCampaign          String?
+  lastTouchContent           String?
+  lastTouchTerm              String?
+  lastTouchGclid             String?
+  lastTouchFbclid            String?
+  lastTouchReferrer          String?    @db.Text
+  lastTouchLandingPage       String?    @db.Text
+  checkoutPage               String?    @db.Text
+  trackingUserAgent          String?    @db.Text
+  trackingDevice             String?
+  deletedAt                  DateTime?  @db.DateTime(0)
+  Licenca                    Licenca[]
+  Affiliate                  Affiliate? @relation(fields: [affiliateId], references: [id])
+  Cupom                      Cupom?     @relation(fields: [cupomId], references: [id])
+  Customer                   Customer   @relation(fields: [customerId], references: [id])
+  Produto                    Produto    @relation(fields: [produtoId], references: [id])
+
+  @@index([affiliateId], map: "Order_affiliateId_fkey")
+  @@index([cupomId], map: "Order_cupomId_fkey")
+  @@index([customerId], map: "Order_customerId_fkey")
+  @@index([produtoId], map: "Order_produtoId_fkey")
+}
+
+model Pagina {
+  id           String   @id
+  titulo       String
+  slug         String   @unique
+  conteudo     String?  @db.Text
+  publicado    Boolean  @default(false)
+  criadoEm     DateTime @default(now()) @db.DateTime(0)
+  atualizadoEm DateTime @db.DateTime(0)
+  showInFooter Boolean  @default(false)
+  footerOrder  Int?
+}
+
+model PartnerApplication {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String
+  website        String?
+  social         String?
+  country        String
+  monthlyTraffic String?
+  promotionPlan  String?
+  createdAt      DateTime @default(now())
+
+  @@index([email])
+}
+
+model Produto {
+  id                          String              @id
+  nome                        String
+  slug                        String              @unique
+  descricao                   String?             @db.Text
+  preco                       Float
+  criadoEm                    DateTime            @default(now())
+  imagem                      String?
+  tutorialConteudo            String?             @db.Text
+  tutorialSubtitulo           String?
+  tutorialTitulo              String?
+  ativo                       Boolean             @default(true)
+  googleAdsConversionCurrency String?
+  googleAdsConversionLabel    String?
+  googleAdsConversionValue    Float?
+  finalUrl                    String?
+  wcProductId                 Int?                @unique
+  precoAntigo                 Float?
+  cardItems                   String?             @db.Text
+  nomeEn                      String?
+  nomeEs                      String?
+  nomeIt                      String?
+  nomeFr                      String?
+  descricaoEn                 String?             @db.Text
+  descricaoEs                 String?             @db.Text
+  descricaoIt                 String?             @db.Text
+  descricaoFr                 String?             @db.Text
+  tutorialTituloEn            String?
+  tutorialTituloEs            String?
+  tutorialTituloIt            String?
+  tutorialTituloFr            String?
+  tutorialSubtituloEn         String?
+  tutorialSubtituloEs         String?
+  tutorialSubtituloIt         String?
+  tutorialSubtituloFr         String?
+  tutorialConteudoEn          String?             @db.Text
+  tutorialConteudoEs          String?             @db.Text
+  tutorialConteudoIt          String?             @db.Text
+  tutorialConteudoFr          String?             @db.Text
+  vendorId                    String?
+  seoTitle                    String?
+  seoDescription              String?             @db.Text
+  seoContent                  String?             @db.Text
+  Licenca                     Licenca[]
+  Order                       Order[]
+  Vendor                      Vendor?             @relation(fields: [vendorId], references: [id])
+  ProdutoCategoria            ProdutoCategoria[]
+  ProdutoPrecoLoja            ProdutoPrecoLoja[]
+  ProdutoPrecoMoeda           ProdutoPrecoMoeda[]
+
+  @@index([vendorId], map: "Produto_vendorId_fkey")
+}
+
+model ProdutoCategoria {
+  produtoId   String
+  categoriaId String
+  Categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  Produto     Produto   @relation(fields: [produtoId], references: [id])
+
+  @@id([produtoId, categoriaId])
+  @@index([categoriaId], map: "ProdutoCategoria_categoriaId_fkey")
+}
+
+model ProdutoPrecoLoja {
+  id          String   @id
+  produtoId   String
+  storeSlug   String
+  preco       Float
+  precoAntigo Float?
+  createdAt   DateTime @default(now()) @db.DateTime(0)
+  updatedAt   DateTime @db.DateTime(0)
+  Produto     Produto  @relation(fields: [produtoId], references: [id])
+
+  @@unique([produtoId, storeSlug])
+}
+
+model ProdutoPrecoMoeda {
+  id        String   @id
+  produtoId String
+  storeSlug String
+  currency  String
+  amount    Float
+  oldAmount Float?
+  createdAt DateTime @default(now()) @db.DateTime(0)
+  updatedAt DateTime @db.DateTime(0)
+  Produto   Produto  @relation(fields: [produtoId], references: [id])
+
+  @@unique([produtoId, storeSlug, currency])
+}
+
+model Review {
+  id           String   @id
+  customerName String
+  productName  String
+  productId    String?
+  rating       Int
+  comment      String   @db.Text
+  source       String   @default("manual")
+  verified     Boolean  @default(true)
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([productId])
+  @@index([published])
+}
+
+model SeoPage {
+  id                 String    @id
+  locale             String
+  slug               String
+  title              String
+  seoTitle           String?
+  seoDescription     String?   @db.Text
+  h1                 String?
+  heroBadge          String?
+  heroDescription    String?   @db.Text
+  contentHtml        String?   @db.LongText
+  faqJson            String?   @db.Text
+  linkedProductSlug  String?
+  linkedCategorySlug String?
+  templateKey        String    @default("default-money-page")
+  status             String    @default("draft")
+  noindex            Boolean   @default(false)
+  publishedAt        DateTime? @db.DateTime(0)
+  createdAt          DateTime  @default(now()) @db.DateTime(0)
+  updatedAt          DateTime  @db.DateTime(0)
+
+  @@unique([locale, slug])
+  @@index([locale, status])
+}
+
+model SiteSettings {
+  id                       String   @id
+  googleAdsConversionId    String?
+  googleAdsConversionLabel String?
+  createdAt                DateTime @default(now()) @db.DateTime(0)
+  updatedAt                DateTime @db.DateTime(0)
+  googleAnalyticsId        String?
+  headHtml                 String?  @db.Text
+  bodyOpenHtml             String?  @db.Text
+  bodyCloseHtml            String?  @db.Text
+  homeBestSellerSlugs      String?  @db.Text
+  storeSlug                String?  @unique
+  homeVideoUrl             String?  @db.Text
+  footerPolicyLinks        String?  @db.Text
+  pixGateway               String?  @default("mercadopago")
+  cardGateway              String?  @default("mercadopago")
+  metaPixelId              String?  @db.VarChar(64)
+  tiktokPixelId            String?  @db.VarChar(64)
+  orderBumpTitle           String?  @db.VarChar(255)
+  orderBumpDescription     String?  @db.Text
+  orderBumpPrice           Float?   @default(19)
+  homeThemeJson            String?  @db.Text
+  orderBumpsJson           String?  @db.Text
+  googleAdsConfigJson      String?  @db.Text
+}
+
+model Vendor {
+  id         String       @id
+  name       String
+  email      String       @unique
+  createdAt  DateTime     @default(now()) @db.DateTime(0)
+  Commission Commission[]
+  Produto    Produto[]
+}
+
+model WooImportState {
+  key       String    @id
+  resource  String
+  after     DateTime? @db.DateTime(0)
+  nextPage  Int       @default(1)
+  done      Boolean   @default(false)
+  updatedAt DateTime  @db.DateTime(0)
+  createdAt DateTime  @default(now()) @db.DateTime(0)
+}
+
+model WooOrder {
+  id           String         @id
+  wcOrderId    Int            @unique
+  status       String
+  total        Float?
+  currency     String?
+  criadoEm     DateTime       @db.DateTime(0)
+  customerId   String
+  createdAt    DateTime       @default(now()) @db.DateTime(0)
+  updatedAt    DateTime       @db.DateTime(0)
+  Customer     Customer       @relation(fields: [customerId], references: [id])
+  WooOrderItem WooOrderItem[]
+
+  @@index([customerId], map: "WooOrder_customerId_fkey")
+}
+
+model WooOrderItem {
+  id       String   @id
+  orderId  String
+  name     String?
+  quantity Int?
+  total    Float?
+  WooOrder WooOrder @relation(fields: [orderId], references: [id])
+
+  @@index([orderId], map: "WooOrderItem_orderId_fkey")
+}
+
+enum ChatMessage_sender {
+  CUSTOMER
+  AI
+  AGENT
+  SYSTEM
+}
+
+enum AdminUser_role {
+  admin
+  editor
+  agent
+}
+
+enum ChatConversation_status {
+  AI
+  WAITING_HUMAN
+  HUMAN
+  CLOSED
 }
