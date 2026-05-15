@@ -67,7 +67,7 @@ model LicenseLog {
   licenseAccountId String?
   performedBy     String
   action          String
-  metadata        String?  @db.Text
+  metadata        String?
   createdAt       DateTime @default(now())
 
   customer  Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
