@@ -48,8 +48,16 @@
               </div>
             </td>
           </tr>
-          <tr v-if="!affiliates.length" class="border-t">
-            <td class="p-3 text-gray-500" colspan="6">Nenhum afiliado.</td>
+          <tr v-if="pending" class="border-t">
+            <td class="p-3 text-gray-500" colspan="6">Carregando afiliados...</td>
+          </tr>
+          <tr v-else-if="fetchError" class="border-t">
+            <td class="p-3 text-red-600" colspan="6">
+              Erro ao carregar: {{ fetchError?.statusMessage || fetchError?.message || 'Erro desconhecido' }}
+            </td>
+          </tr>
+          <tr v-else-if="!affiliates.length" class="border-t">
+            <td class="p-3 text-gray-500" colspan="6">Nenhum afiliado encontrado.</td>
           </tr>
         </tbody>
       </table>
@@ -107,7 +115,10 @@ type AffiliateRow = {
   isActive: boolean
 }
 
-const { data, refresh } = await useFetch<{ ok: true; affiliates: AffiliateRow[] }>('/api/admin/affiliates', { server: false })
+const { data, refresh, pending, error: fetchError } = await useFetch<{ ok: true; affiliates: AffiliateRow[] }>('/api/admin/affiliates', { 
+  server: false,
+  default: () => ({ ok: true, affiliates: [] })
+})
 
 const affiliates = computed(() => data.value?.affiliates || [])
 
