@@ -11,7 +11,14 @@ import { routePayment } from '#root/server/services/paymentRouter'
 function round2(n: number) { return Math.round(n * 100) / 100 }
 
 export default defineEventHandler(async (event) => {
+  console.log('[checkout] ===== START =====')
+  
   const body = await readBody(event)
+  console.log('[checkout] body keys:', Object.keys(body || {}))
+  console.log('[checkout] produtoId:', body?.produtoId)
+  console.log('[checkout] method:', body?.method)
+  console.log('[checkout] DATABASE_URL defined:', !!process.env.DATABASE_URL)
+  
   const { storeSlug } = getStoreContext(event)
   const country = detectCountry(event)
 
@@ -60,22 +67,25 @@ export default defineEventHandler(async (event) => {
   if (!email || !email.includes('@')) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
   if (!storeSlug) throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
 
+  console.log('[checkout] Buscando produto:', produtoId)
+  
   const produto = await (prisma as any).produto.findFirst({
     where: { id: produtoId, ativo: true },
     select: {
-      id: true, nome: true, preco: true,
-      precosLoja: { where: { storeSlug }, select: { preco: true } },
-      precosMoeda: { where: { storeSlug }, select: { currency: true, amount: true } },
+      id: true, nome: true, preco: true, precoAntigo: true
     },
   })
+  
+  console.log('[checkout] Produto encontrado:', produto ? 'SIM' : 'NÃO')
+  
   if (!produto) throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
 
-  // Preço correto por loja / moeda
-  const lojaPreco = produto.precosLoja?.[0]?.preco
-  const baseBrl = lojaPreco ?? produto.preco
-  const moedaRow = produto.precosMoeda?.find((x: any) => x.currency === currency)
-  const amountBrl = round2(baseBrl)
-  const amountForeign = moedaRow ? round2(moedaRow.amount) : null
+  // Preço base do produto (sem overrides inexistentes)
+  const baseBrl = round2(produto.preco || 0)
+  const amountBrl = baseBrl
+  const amountForeign = null
+  
+  console.log('[checkout] Preço base:', amountBrl)
 
   // Order bump: adiciona segundo produto ao valor total
   let bumpAmount = 0
