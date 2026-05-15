@@ -1,13 +1,16 @@
 import { defineEventHandler, createError } from 'h3'
-import prisma from '../../../db/prisma'
-import { requireAdminSession } from '../../../utils/adminSession'
+import prisma from '../../../db/prisma.js'
+import { requireAdminSession } from '../../../utils/adminSession.js'
 
 export default defineEventHandler(async (event) => {
   console.log('[admin/affiliates] ===== START =====')
+  console.log('[admin/affiliates] NODE_ENV:', process.env.NODE_ENV)
+  console.log('[admin/affiliates] DATABASE_URL presente:', !!process.env.DATABASE_URL)
   
   try {
-    await requireAdminSession(event)
-    console.log('[admin/affiliates] Admin autenticado')
+    console.log('[admin/affiliates] Verificando sessão admin...')
+    const session = requireAdminSession(event)
+    console.log('[admin/affiliates] Admin autenticado:', session?.email)
 
     console.log('[admin/affiliates] Buscando afiliados...')
     const affiliates = await (prisma as any).affiliate.findMany({
