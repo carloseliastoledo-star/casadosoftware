@@ -1,109 +1,66 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
-import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
-import { getIntlContext } from '../../utils/intl'
-import { autoTranslateText } from '../../utils/autoTranslate'
-
-function firstImageFromHtml(html: unknown): string | null {
-  const raw = String(html ?? '')
-  if (!raw) return null
-
-  const match = raw.match(/<img\b[^>]*\bsrc\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i)
-  const src = (match?.[1] || match?.[2] || match?.[3] || '').trim()
-  if (!src) return null
-  return src
-}
-
-function stripHtml(input: unknown): string {
-  const raw = String(input ?? '')
-  return raw
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-function excerptFromHtml(html: unknown, maxLen = 160): string {
-  const decoded = decodeHtmlEntities(html)
-  const txt = stripHtml(decoded)
-  if (!txt) return ''
-  if (txt.length <= maxLen) return txt
-  return `${txt.slice(0, maxLen).trimEnd()}…`
-}
 
 export default defineEventHandler(async (event) => {
+  console.log('[api/blog] ===== START =====')
+  console.log('[api/blog] DATABASE_URL defined:', !!process.env.DATABASE_URL)
+  
   try {
+    // Query baseada na API admin que funciona
+    console.log('[api/blog] Executando query...')
+    
     const posts = await (prisma as any).blogPost.findMany({
       where: { publicado: true },
       orderBy: { criadoEm: 'desc' },
+      take: 50,
       select: {
         id: true,
         titulo: true,
         slug: true,
         featuredImage: true,
         excerpt: true,
-        keyword: true,
-        html: true,
         criadoEm: true,
-        atualizadoEm: true,
-        translations: {
-          select: {
-            lang: true,
-            titulo: true,
-            featuredImage: true,
-            excerpt: true,
-            html: true
-          }
-        }
+        atualizadoEm: true
       }
     })
-
-    const lang = String(getIntlContext(event).language || 'pt')
-
+    
+    console.log('[api/blog] Query sucesso, posts encontrados:', posts?.length || 0)
+    
     const normalized = Array.isArray(posts)
-      ? posts.map((p: any) => {
-          const translation = Array.isArray(p?.translations)
-            ? p.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
-            : null
-
-          const rawTitulo = translation?.titulo || p?.titulo || ''
-          const titulo = (lang !== 'pt' && !translation)
-            ? (autoTranslateText(rawTitulo, { lang: lang as any }) || rawTitulo)
-            : rawTitulo
-
-          const rawExcerpt = translation?.excerpt || p?.excerpt ||
-            excerptFromHtml(translation?.html || p?.html)
-          const descricao = (lang !== 'pt' && !translation)
-            ? (autoTranslateText(rawExcerpt, { lang: lang as any }) || rawExcerpt)
-            : rawExcerpt
-
-          return {
-            titulo,
-            slug: p?.slug,
-            keyword: p?.keyword,
-            featuredImage:
-              translation?.featuredImage ||
-              p?.featuredImage ||
-              firstImageFromHtml(decodeHtmlEntities(translation?.html || p?.html)) ||
-              null,
-            descricao,
-            criadoEm: p?.criadoEm,
-            atualizadoEm: p?.atualizadoEm
-          }
-        })
+      ? posts.map((p: any) => ({
+          titulo: p?.titulo || '',
+          slug: p?.slug || '',
+          featuredImage: p?.featuredImage || null,
+          descricao: p?.excerpt || '',
+          criadoEm: p?.criadoEm,
+          atualizadoEm: p?.atualizadoEm
+        }))
       : []
 
+    console.log('[api/blog] ===== END =====')
     return { ok: true, posts: normalized }
+    
   } catch (err: any) {
-    const message = String(err?.message || '')
+    console.error('[api/blog] ===== ERROR =====')
+    console.error('[api/blog] full error:', err)
+    console.error('[api/blog] message:', err?.message)
+    console.error('[api/blog] code:', err?.code)
+    console.error('[api/blog] meta:', err?.meta)
+    console.error('[api/blog] stack:', err?.stack)
+    
     const code = String(err?.code || '')
-
-    if (code === 'P2021' || message.includes('does not exist') || message.includes("doesn't exist")) {
-      return { ok: true, posts: [] }
+    const message = String(err?.message || '')
+    
+    if (code === 'P2021' || message.includes('does not exist')) {
+      throw createError({ 
+        statusCode: 500, 
+        statusMessage: 'Tabela BlogPost não existe no banco' 
+      })
     }
-
-    console.error('[api][blog][index] db error', err?.message || err)
-    throw createError({ statusCode: 503, statusMessage: 'Serviço temporariamente indisponível' })
+    
+    throw createError({ 
+      statusCode: 503, 
+      statusMessage: `Erro: ${message}` 
+    })
   }
 })
