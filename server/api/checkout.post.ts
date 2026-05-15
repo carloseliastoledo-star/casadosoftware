@@ -20,6 +20,21 @@ export default defineEventHandler(async (event) => {
   console.log('[checkout] method:', body?.method)
   console.log('[checkout] DATABASE_URL defined:', !!process.env.DATABASE_URL)
   
+  // Log tracking data
+  console.log('[checkout tracking] payload:', {
+    utmSource: body?.utm_source,
+    utmMedium: body?.utm_medium,
+    utmCampaign: body?.utm_campaign,
+    gclid: body?.gclid,
+    fbclid: body?.fbclid,
+    referrer: body?.referrer ? 'present' : null,
+    landingPage: body?.landingPage,
+    checkoutPage: body?.checkoutPage,
+    trackingDevice: body?.tracking?.device,
+    hasUserAgent: !!body?.tracking?.user_agent,
+    trafficSourceType: body?.gclid || body?.utm_medium
+  })
+  
   const { storeSlug } = getStoreContext(event)
   const country = detectCountry(event)
 

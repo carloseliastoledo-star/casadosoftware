@@ -58,6 +58,21 @@ export default defineEventHandler(async (event) => {
     
     console.log('[admin/orders] Pedidos encontrados:', orders?.length || 0)
     
+    // Log de sample de tracking
+    if (orders?.length > 0) {
+      const sample = orders[0]
+      console.log('[admin/orders] tracking sample:', {
+        id: sample.id,
+        utmSource: sample.utmSource,
+        utmMedium: sample.utmMedium,
+        utmCampaign: sample.utmCampaign,
+        gclid: sample.gclid,
+        landingPage: sample.landingPage,
+        checkoutPage: sample.checkoutPage,
+        trafficSourceType: sample.trafficSourceType
+      })
+    }
+    
     // Mapear para o formato esperado pelo frontend
     const mappedOrders = orders.map((o: any) => ({
       id: o.id,
@@ -71,7 +86,39 @@ export default defineEventHandler(async (event) => {
       mercadoPagoPaymentMethodId: o.mercadoPagoPaymentMethodId,
       produto: o.Produto,
       customer: o.Customer,
-      licencas: o.Licenca
+      licencas: o.Licenca,
+      // Campos de tracking
+      trafficSourceType: o.trafficSourceType,
+      utmSource: o.utmSource,
+      utmMedium: o.utmMedium,
+      utmCampaign: o.utmCampaign,
+      utmTerm: o.utmTerm,
+      utmContent: o.utmContent,
+      gclid: o.gclid,
+      fbclid: o.fbclid,
+      referrer: o.referrer,
+      landingPage: o.landingPage,
+      checkoutPage: o.checkoutPage,
+      firstTouchSource: o.firstTouchSource,
+      firstTouchMedium: o.firstTouchMedium,
+      firstTouchCampaign: o.firstTouchCampaign,
+      firstTouchContent: o.firstTouchContent,
+      firstTouchTerm: o.firstTouchTerm,
+      firstTouchGclid: o.firstTouchGclid,
+      firstTouchFbclid: o.firstTouchFbclid,
+      firstTouchReferrer: o.firstTouchReferrer,
+      firstTouchLandingPage: o.firstTouchLandingPage,
+      lastTouchSource: o.lastTouchSource,
+      lastTouchMedium: o.lastTouchMedium,
+      lastTouchCampaign: o.lastTouchCampaign,
+      lastTouchContent: o.lastTouchContent,
+      lastTouchTerm: o.lastTouchTerm,
+      lastTouchGclid: o.lastTouchGclid,
+      lastTouchFbclid: o.lastTouchFbclid,
+      lastTouchReferrer: o.lastTouchReferrer,
+      lastTouchLandingPage: o.lastTouchLandingPage,
+      trackingUserAgent: o.trackingUserAgent,
+      trackingDevice: o.trackingDevice
     }))
     
     // Summary - usando o mesmo filtro de data + status PAID
