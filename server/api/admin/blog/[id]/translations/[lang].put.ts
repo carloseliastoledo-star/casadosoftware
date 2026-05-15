@@ -1,4 +1,5 @@
 import { defineEventHandler, readBody, createError } from 'h3'
+import { randomUUID } from 'node:crypto'
 import prisma from '../../../../../db/prisma.js'
 import { requireAdminSession } from '../../../../../utils/adminSession.js'
 import { decodeHtmlEntities } from '../../../../../utils/decodeHtmlEntities.js'
@@ -60,7 +61,7 @@ export default defineEventHandler(async (event) => {
           }
         })
       : await (prisma as any).blogPostTranslation.create({
-          data: { postId, lang, titulo, featuredImage, excerpt, html },
+          data: { id: randomUUID(), postId, lang, titulo, featuredImage, excerpt, html },
           select: {
             id: true,
             postId: true,
