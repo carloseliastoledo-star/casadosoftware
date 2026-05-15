@@ -102,6 +102,8 @@ export default defineEventHandler(async (event) => {
     .replace(/[^a-z0-9-]/g, '')
     .replace(/-+/g, '-')
 
+  console.log('[api/products/[slug]] Buscando produto:', slug)
+  
   let product: any
   try {
     product = await (prisma as any).produto.findUnique({
@@ -140,44 +142,19 @@ export default defineEventHandler(async (event) => {
         tutorialConteudoIt: true,
         tutorialConteudoFr: true,
         criadoEm: true,
-        precosLoja: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { preco: true, precoAntigo: true }
-        },
-        precosMoeda: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { currency: true, amount: true, oldAmount: true }
-        },
-        produtoCategorias: { select: { categoria: { select: { slug: true } } } },
         cardItems: true,
         seoTitle: true,
         seoDescription: true,
         seoContent: true
       }
     })
+    console.log('[api/products/[slug]] Produto encontrado:', product ? 'SIM' : 'NÃO')
   } catch (dbError: any) {
-    console.error('[API PRODUCTS SLUG ERROR]', dbError)
-    return {
-      id: `fallback-${slug}`,
-      name: 'Produto',
-      slug,
-      finalUrl: '/checkout',
-      description: 'Oferta disponível. Finalize sua compra normalmente.',
-      price: 0,
-      precoAntigo: null,
-      currency: 'BRL',
-      image: '/images/fallback-product.png',
-      cardItems: null,
-      categories: [],
-      tutorialTitle: null,
-      tutorialSubtitle: null,
-      tutorialContent: null,
-      seoTitle: null,
-      seoDescription: null,
-      seoContent: null,
-      createdAt: null,
-      fallback: true
-    }
+    console.error('[api/products/[slug]] DB ERROR:', dbError)
+    throw createError({ 
+      statusCode: 503, 
+      statusMessage: `Erro ao buscar produto: ${dbError?.message || 'Erro desconhecido'}` 
+    })
   }
 
   if (!product || !product.ativo) {
@@ -280,16 +257,12 @@ export default defineEventHandler(async (event) => {
       .join('\n')
   })()
 
-  const override = (product as any).precosLoja?.[0] || null
-
-  const effective = resolveEffectivePrice({
-    requestedCurrency: intl.currency,
-    baseAmount: product.preco,
-    baseOldAmount: product.precoAntigo,
-    storeAmountOverride: override?.preco,
-    storeOldAmountOverride: override?.precoAntigo,
-    currencyRows: (product as any).precosMoeda || []
-  })
+  // Usar preço base do produto (sem overrides de loja/precoMoeda)
+  const effective = {
+    amount: product.preco || 0,
+    oldAmount: product.precoAntigo || null,
+    currency: 'BRL'
+  }
 
   const effectivePrice = effective.amount
   const effectiveOldPrice = effective.oldAmount
@@ -305,7 +278,7 @@ export default defineEventHandler(async (event) => {
     currency: effective.currency,
     image: normalizeImageUrl(product.imagem),
     cardItems: translatedCardItems,
-    categories: (product.produtoCategorias || []).map((pc: any) => pc.categoria?.slug).filter(Boolean),
+    categories: [],
     tutorialTitle: translatedTutorialTitle,
     tutorialSubtitle: translatedTutorialSubtitle,
     tutorialContent: translatedTutorialContent,
@@ -318,28 +291,10 @@ export default defineEventHandler(async (event) => {
   } catch (err: any) {
     if (err?.statusCode) throw err
     console.error('[api/products/[slug]] error:', err)
-    const rawSlug = String(event.context.params?.slug || '').trim().toLowerCase()
-    return {
-      id: `fallback-${rawSlug || 'produto'}`,
-      name: 'Produto',
-      slug: rawSlug || 'produto',
-      finalUrl: '/checkout',
-      description: 'Oferta disponível. Finalize sua compra normalmente.',
-      price: 0,
-      precoAntigo: null,
-      currency: 'BRL',
-      image: '/images/fallback-product.png',
-      cardItems: null,
-      categories: [],
-      tutorialTitle: null,
-      tutorialSubtitle: null,
-      tutorialContent: null,
-      seoTitle: null,
-      seoDescription: null,
-      seoContent: null,
-      createdAt: null,
-      fallback: true
-    }
+    throw createError({ 
+      statusCode: 503, 
+      statusMessage: `Erro: ${err?.message || 'Erro desconhecido'}` 
+    })
   } finally {
     console.log('[api/products/[slug]] loaded in', Date.now() - startedAt, 'ms')
   }
