@@ -829,12 +829,15 @@ async function resendOrder(o: OrderDto) {
   if (!o?.id) return
   if (!confirm('Reenviar o e-mail de entrega deste pedido para o cliente?')) return
 
+  const resendingId = o.id
   try {
-    await $fetch(`/api/admin/pedidos/${o.id}/resend`, { method: 'POST' })
-    alert('E-mail reenviado com sucesso.')
+    const res: any = await $fetch(`/api/admin/pedidos/${o.id}/resend`, { method: 'POST' })
+    alert(res?.message || 'E-mail reenviado com sucesso.')
     await refresh()
   } catch (err: any) {
-    alert(err?.data?.statusMessage || 'Erro ao reenviar e-mail')
+    const errorMsg = err?.data?.statusMessage || err?.data?.message || err?.message || 'Erro ao reenviar e-mail'
+    alert('Erro ao reenviar: ' + errorMsg)
+    console.error('[resendOrder] error:', err)
   }
 }
 
