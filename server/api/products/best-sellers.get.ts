@@ -2,8 +2,6 @@ import prisma from '#root/server/db/prisma'
 import { setHeader, createError } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
-import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
-import { autoTranslateText } from '#root/server/utils/autoTranslate'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -12,207 +10,103 @@ function normalizeImageUrl(input: unknown): string | null {
   if (raw.startsWith('http://')) return raw.replace(/^http:\/\//, 'https://')
   if (raw.startsWith('https://')) return raw
   if (raw.startsWith('//')) return `https:${raw}`
-
   if (raw.startsWith('/uploads/')) return raw
-
-  if (/^([a-z0-9-]+\.)+[a-z]{2,}(\/|$)/i.test(raw)) {
-    return `https://${raw}`
-  }
-
-  if (raw.startsWith('/')) {
-    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
-    if (!baseUrl) return raw
-    return `${baseUrl}${raw}`
-  }
-
-  if (/^(wp-content\/|uploads\/)/i.test(raw)) {
-    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
-    if (!baseUrl) return `/${raw}`
-    return `${baseUrl}/${raw}`
-  }
-
-  if (
-    !raw.startsWith('/') &&
-    !/^products\//i.test(raw) &&
-    !/^public\//i.test(raw) &&
-    /\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(raw)
-  ) {
-    const baseUrl = String(process.env.WOOCOMMERCE_BASE_URL || '').trim().replace(/\/+$/, '')
-    if (!baseUrl) return `/${raw.replace(/^\/+/, '')}`
-    return `${baseUrl}/${raw.replace(/^\/+/, '')}`
-  }
+  if (raw.startsWith('/')) return raw
 
   return raw
-}
-
-function parseSlugs(raw: unknown): string[] {
-  const s = String(raw ?? '').trim()
-  if (!s) return []
-
-  // try JSON first
-  try {
-    const parsed = JSON.parse(s)
-    if (Array.isArray(parsed)) {
-      return parsed
-        .map((x) => String(x || '').trim())
-        .filter(Boolean)
-    }
-  } catch {
-    // ignore
-  }
-
-  return s
-    .split(/[\n,]+/g)
-    .map((x) => x.trim())
-    .filter(Boolean)
 }
 
 export default defineEventHandler(async (event) => {
   const startedAt = Date.now()
   setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+  
+  console.log('[api/products/best-sellers] ===== START =====')
+  console.log('[api/products/best-sellers] DATABASE_URL defined:', !!process.env.DATABASE_URL)
+  
   try {
     const { storeSlug } = getStoreContext(event)
-
     const intl = getIntlContext(event)
-
     const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
-    // Try store-specific first, then any record that has slugs
-    const allSettings = await (prisma as any).siteSettings.findMany({
-      select: { id: true, storeSlug: true, homeBestSellerSlugs: true }
+    // Slugs dos produtos mais vendidos
+    const bestSellerSlugs = [
+      "microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive",
+      "office-365",
+      "microsoft-windows-11-pro-chave-esd-32-64-bits",
+      "microsoft-windows-10-pro-chave-esd-32-64-bits",
+      "microsoft-office-365-pcs-mac-ios-e-android",
+      "microsoft-windows-10-pro-1-licenca",
+      "office-2021-pro-plus-windows-11-pro",
+      "microsoft-office-365-vitalicio-microsoft-windows-11-pro-1-licenca",
+      "office-ltsc-pro-plus-2024",
+      "winserver2025"
+    ]
+
+    console.log('[api/products/best-sellers] Buscando produtos...')
+    
+    // Query simples com campos que existem no model Produto
+    const produtos = await (prisma as any).produto.findMany({
+      where: {
+        ativo: true,
+        slug: { in: bestSellerSlugs }
+      },
+      select: {
+        id: true,
+        nome: true,
+        slug: true,
+        descricao: true,
+        preco: true,
+        precoAntigo: true,
+        imagem: true,
+        tutorialTitulo: true,
+        tutorialSubtitulo: true,
+        criadoEm: true,
+        ativo: true
+      }
     })
 
-    let rawSlugsValue: string | null = null
+    console.log('[api/products/best-sellers] Produtos encontrados:', produtos?.length || 0)
 
-    // 1. Try store-specific record
-    if (storeSlug) {
-      const match = allSettings.find((s: any) => s.storeSlug === storeSlug && s.homeBestSellerSlugs)
-      if (match) rawSlugsValue = match.homeBestSellerSlugs
+    if (!produtos || produtos.length === 0) {
+      console.log('[api/products/best-sellers] Nenhum produto encontrado')
+      return []
     }
 
-    // 2. Try legacy (storeSlug null)
-    if (!rawSlugsValue) {
-      const legacy = allSettings.find((s: any) => s.storeSlug === null && s.homeBestSellerSlugs)
-      if (legacy) rawSlugsValue = legacy.homeBestSellerSlugs
-    }
+    // Mapear para o formato esperado pelo frontend
+    const products = produtos.map((p: any) => ({
+      id: p.id,
+      name: lang === 'en' && p.nomeEn ? p.nomeEn : 
+            lang === 'es' && p.nomeEs ? p.nomeEs : p.nome,
+      slug: p.slug,
+      description: lang === 'en' && p.descricaoEn ? p.descricaoEn :
+                   lang === 'es' && p.descricaoEs ? p.descricaoEs : p.descricao,
+      price: p.preco,
+      precoAntigo: p.precoAntigo,
+      currency: 'BRL',
+      image: normalizeImageUrl(p.imagem),
+      categories: [],
+      tutorialTitle: lang === 'en' && p.tutorialTituloEn ? p.tutorialTituloEn :
+                     lang === 'es' && p.tutorialTituloEs ? p.tutorialTituloEs : p.tutorialTitulo,
+      tutorialSubtitle: lang === 'en' && p.tutorialSubtituloEn ? p.tutorialSubtituloEn :
+                        lang === 'es' && p.tutorialSubtituloEs ? p.tutorialSubtituloEs : p.tutorialSubtitulo,
+      createdAt: p.criadoEm
+    }))
 
-    // 3. Fallback: any record with slugs
-    if (!rawSlugsValue) {
-      const any = allSettings.find((s: any) => s.homeBestSellerSlugs)
-      if (any) rawSlugsValue = any.homeBestSellerSlugs
-    }
+    console.log('[api/products/best-sellers] ===== END =====')
+    console.log('[api/products/best-sellers] loaded in', Date.now() - startedAt, 'ms')
+    
+    return products
 
-    const manualSlugs = parseSlugs(rawSlugsValue)
-    console.log('[best-sellers] storeSlug:', storeSlug, 'records:', allSettings.length, 'manualSlugs:', manualSlugs.length)
-
-    const productSelect = {
-      id: true,
-      nome: true,
-      slug: true,
-      descricao: true,
-      cardItems: true,
-      preco: true,
-      precoAntigo: true,
-      imagem: true,
-      produtoCategorias: { select: { categoria: { select: { slug: true } } } },
-      tutorialTitulo: true,
-      tutorialSubtitulo: true,
-      criadoEm: true
-    } as const
-
-    const mapProduct = (p: any) => {
-      const effective = resolveEffectivePrice({
-        requestedCurrency: intl.currency,
-        baseAmount: p.preco,
-        baseOldAmount: p.precoAntigo,
-        storeAmountOverride: null,
-        storeOldAmountOverride: null,
-        currencyRows: []
-      })
-
-      const effectivePrice = effective.amount
-      const effectiveOldPrice = effective.oldAmount
-
-      let translatedName = autoTranslateText(p.nome, { lang }) || p.nome
-      if (p.slug === 'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive') {
-        if (lang === 'en') translatedName = 'Original Office 365 License for PC and Mac – Instant Delivery'
-        else if (lang === 'es') translatedName = 'Licencia original de Office 365 para PC y Mac – Entrega inmediata'
-        else translatedName = 'Licença Office 365 Original para PC e Mac – Entrega Instantânea'
-      }
-      const translatedDescription = autoTranslateText(p.descricao, { lang }) || p.descricao
-      const translatedTutorialTitle = autoTranslateText(p.tutorialTitulo, { lang }) || p.tutorialTitulo
-      const translatedTutorialSubtitle = autoTranslateText(p.tutorialSubtitulo, { lang }) || p.tutorialSubtitulo
-
-      return {
-        id: p.id,
-        name: translatedName,
-        slug: p.slug,
-        description: translatedDescription,
-        cardItems: p.cardItems,
-        price: effectivePrice,
-        precoAntigo: effectiveOldPrice,
-        currency: effective.currency,
-        image: normalizeImageUrl(p.imagem),
-        categories: (p.produtoCategorias || []).map((pc: any) => pc.categoria?.slug).filter(Boolean),
-        tutorialTitle: translatedTutorialTitle,
-        tutorialSubtitle: translatedTutorialSubtitle,
-        createdAt: p.criadoEm
-      }
-    }
-
-    if (manualSlugs.length > 0) {
-      const products = await (prisma as any).produto.findMany({
-        where: {
-          ativo: true,
-          slug: { in: manualSlugs }
-        },
-        select: productSelect
-      })
-
-      const bySlug = new Map(products.map((p: any) => [p.slug, p]))
-      const ordered = manualSlugs.map((slug: any) => bySlug.get(slug)).filter(Boolean) as typeof products
-
-      if (ordered.length > 0) {
-        return ordered.map(mapProduct)
-      }
-    }
-
-    const grouped = await (prisma as any).order.groupBy({
-      by: ['produtoId'],
-      where: { status: 'PAID' },
-      _count: { produtoId: true },
-      orderBy: { _count: { produtoId: 'desc' } },
-      take: 8
-    })
-
-    const productIds = grouped.map((g: any) => g.produtoId)
-    if (productIds.length === 0) {
-      const products = await (prisma as any).produto.findMany({
-        where: { ativo: true },
-        select: productSelect,
-        orderBy: { criadoEm: 'desc' },
-        take: 8
-      })
-      return (products || []).map(mapProduct)
-    }
-
-    const products = await (prisma as any).produto.findMany({
-      where: { ativo: true, id: { in: productIds } },
-      select: productSelect
-    })
-
-    const byId = new Map(products.map((p: any) => [p.id, p]))
-    const ordered = productIds.map((id: any) => byId.get(id)).filter(Boolean) as typeof products
-
-    return ordered.map(mapProduct)
   } catch (error: any) {
     console.error('[api/products/best-sellers] ===== ERROR =====')
     console.error('[api/products/best-sellers] error:', error)
     console.error('[api/products/best-sellers] message:', error?.message)
     console.error('[api/products/best-sellers] code:', error?.code)
     console.error('[api/products/best-sellers] meta:', error?.meta)
-    throw createError({ statusCode: 503, statusMessage: `Erro: ${error?.message || 'Erro desconhecido'}` })
-  } finally {
-    console.log('[api/products/best-sellers] loaded in', Date.now() - startedAt, 'ms')
+    
+    throw createError({ 
+      statusCode: 503, 
+      statusMessage: `Erro: ${error?.message || 'Erro desconhecido'}` 
+    })
   }
 })
