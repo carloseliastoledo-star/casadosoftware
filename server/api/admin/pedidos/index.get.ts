@@ -44,9 +44,8 @@ export default defineEventHandler(async (event) => {
         pagoEm: true,
         totalAmount: true,
         deletedAt: true,
-        produto: { select: { id: true, nome: true, slug: true } },
-        customer: { select: { id: true, email: true, nome: true, whatsapp: true, cpf: true } },
-        licencas: { select: { id: true, chave: true, status: true } }
+        produtoId: true,
+        customerId: true
       }
     })
     
