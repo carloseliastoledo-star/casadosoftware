@@ -25,14 +25,11 @@ export default defineEventHandler(async (event) => {
     })
     console.log('[admin/orders] Query simples OK, encontrados:', testOrders?.length || 0)
     
-    // Agora aplicar filtros
+    // Query simples - admin vê todos os pedidos ativos
     const where: any = { deletedAt: null }
     
-    if (ctx.storeSlug) {
-      where.storeSlug = ctx.storeSlug
-    }
-    
     console.log('[admin/orders] where clause:', JSON.stringify(where))
+    console.log('[admin/orders] NOTA: Admin vê todos os pedidos (sem filtro storeSlug)')
     
     const orders = await (prisma as any).order.findMany({
       where,
