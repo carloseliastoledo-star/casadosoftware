@@ -1,17 +1,26 @@
-import { defineEventHandler, createError } from 'h3'
+import { defineEventHandler, createError, getRouterParam } from 'h3'
 import prisma from '../../db/prisma.js'
-import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities.js'
-import { getIntlContext } from '../../utils/intl'
-import { autoTranslateText } from '../../utils/autoTranslate'
 
 export default defineEventHandler(async (event) => {
-  const slug = String(event.context.params?.slug || '').trim()
-  if (!slug) throw createError({ statusCode: 400, statusMessage: 'slug obrigatório' })
+  console.log('[api/blog/slug] ===== START =====')
+  
+  const slug = getRouterParam(event, 'slug')
+  console.log('[api/blog/slug] slug:', slug)
+  console.log('[api/blog/slug] DATABASE_URL defined:', !!process.env.DATABASE_URL)
+  
+  if (!slug) {
+    console.error('[api/blog/slug] slug não fornecido')
+    throw createError({ statusCode: 400, statusMessage: 'slug obrigatório' })
+  }
 
-  let post: any = null
   try {
-    post = await (prisma as any).blogPost.findUnique({
-      where: { slug },
+    // Query simples primeiro
+    console.log('[api/blog/slug] Buscando post...')
+    const post = await (prisma as any).blogPost.findFirst({
+      where: { 
+        slug,
+        publicado: true 
+      },
       select: {
         id: true,
         titulo: true,
@@ -20,62 +29,50 @@ export default defineEventHandler(async (event) => {
         excerpt: true,
         keyword: true,
         html: true,
-        publicado: true,
         criadoEm: true,
-        atualizadoEm: true,
-        translations: {
-          select: {
-            lang: true,
-            titulo: true,
-            featuredImage: true,
-            excerpt: true,
-            html: true
-          }
-        }
+        atualizadoEm: true
       }
     })
-  } catch (err: any) {
-    const message = String(err?.message || '')
-    const code = String(err?.code || '')
-
-    if (code === 'P2021' || message.includes('does not exist') || message.includes("doesn't exist")) {
+    
+    console.log('[api/blog/slug] Post encontrado:', post ? 'SIM' : 'NÃO')
+    
+    if (!post) {
+      console.error('[api/blog/slug] Post não encontrado ou não publicado')
       throw createError({ statusCode: 404, statusMessage: 'Post não encontrado' })
     }
-
-    console.error('[api][blog][slug] db error', err?.message || err)
-    throw createError({ statusCode: 503, statusMessage: 'Serviço temporariamente indisponível' })
+    
+    const normalized = {
+      titulo: post.titulo,
+      slug: post.slug,
+      featuredImage: post.featuredImage,
+      excerpt: post.excerpt,
+      keyword: post.keyword,
+      html: post.html,
+      criadoEm: post.criadoEm,
+      atualizadoEm: post.atualizadoEm
+    }
+    
+    console.log('[api/blog/slug] ===== END =====')
+    return { ok: true, post: normalized }
+    
+  } catch (err: any) {
+    console.error('[api/blog/slug] ===== ERROR =====')
+    console.error('[api/blog/slug] full error:', err)
+    console.error('[api/blog/slug] message:', err?.message)
+    console.error('[api/blog/slug] code:', err?.code)
+    console.error('[api/blog/slug] meta:', err?.meta)
+    console.error('[api/blog/slug] stack:', err?.stack)
+    
+    const code = String(err?.code || '')
+    const message = String(err?.message || '')
+    
+    if (code === 'P2021' || message.includes('does not exist')) {
+      throw createError({ statusCode: 500, statusMessage: 'Tabela não existe' })
+    }
+    
+    throw createError({ 
+      statusCode: 503, 
+      statusMessage: `Erro: ${message}` 
+    })
   }
-
-  if (!post || !post.publicado) {
-    throw createError({ statusCode: 404, statusMessage: 'Post não encontrado' })
-  }
-
-  const lang = String(getIntlContext(event).language || 'pt')
-  const tr = Array.isArray(post?.translations)
-    ? post.translations.find((t: any) => String(t?.lang || '').toLowerCase() === lang)
-    : null
-
-  const rawTitulo = tr?.titulo || post?.titulo || ''
-  const rawExcerpt = tr?.excerpt || post?.excerpt || null
-
-  const normalized: any = {
-    titulo: (lang !== 'pt' && !tr)
-      ? (autoTranslateText(rawTitulo, { lang: lang as any }) || rawTitulo)
-      : rawTitulo,
-    slug: post?.slug,
-    featuredImage: tr?.featuredImage || post?.featuredImage || null,
-    excerpt: (lang !== 'pt' && !tr && rawExcerpt)
-      ? (autoTranslateText(rawExcerpt, { lang: lang as any }) || rawExcerpt)
-      : rawExcerpt,
-    keyword: post?.keyword || null,
-    html: tr?.html || post?.html || null,
-    criadoEm: post?.criadoEm,
-    atualizadoEm: post?.atualizadoEm
-  }
-
-  if (normalized?.html) {
-    normalized.html = decodeHtmlEntities(normalized.html)
-  }
-
-  return { ok: true, post: normalized }
 })
