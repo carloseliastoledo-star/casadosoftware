@@ -1,5 +1,5 @@
 import prisma from '#root/server/db/prisma'
-import { setHeader } from 'h3'
+import { setHeader, createError } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
 import { getIntlContext } from '#root/server/utils/intl'
 import { resolveEffectivePrice } from '#root/server/utils/productCurrencyPricing'
@@ -216,8 +216,12 @@ export default defineEventHandler(async (event) => {
 
     return ordered.map(mapProduct)
   } catch (error: any) {
+    console.error('[api/products/best-sellers] ===== ERROR =====')
     console.error('[api/products/best-sellers] error:', error)
-    return []
+    console.error('[api/products/best-sellers] message:', error?.message)
+    console.error('[api/products/best-sellers] code:', error?.code)
+    console.error('[api/products/best-sellers] meta:', error?.meta)
+    throw createError({ statusCode: 503, statusMessage: `Erro: ${error?.message || 'Erro desconhecido'}` })
   } finally {
     console.log('[api/products/best-sellers] loaded in', Date.now() - startedAt, 'ms')
   }
