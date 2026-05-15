@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
       customerId: true,
       storeSlug: true,
       emailEnviadoEm: true,
-      licencas: { select: { id: true } }
+      Licenca: { select: { id: true } }
     }
   })
 
@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: `Pedido com status ${orderStatus}. Precisa estar PAID para entregar licença.` })
   }
 
-  if (order.licencas.length > 0) {
+  if (order.Licenca && order.Licenca.length > 0) {
     throw createError({ statusCode: 400, statusMessage: 'Pedido já possui licença vinculada' })
   }
 
