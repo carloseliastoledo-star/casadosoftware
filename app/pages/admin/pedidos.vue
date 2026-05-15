@@ -109,6 +109,7 @@
             <th class="px-2 py-2 text-left w-64">Produto</th>
             <th class="px-2 py-2 text-left w-56">Cliente</th>
             <th class="px-2 py-2 text-left w-20">Status</th>
+            <th class="px-2 py-2 text-left w-24">Origem</th>
             <th class="px-2 py-2 text-left w-28">Meio pgto</th>
             <th class="px-2 py-2 text-left w-24">Criado</th>
             <th class="px-2 py-2 text-left w-24">Pago</th>
@@ -150,6 +151,16 @@
               >
                 {{ o.status }}
               </span>
+            </td>
+            <td class="px-2 py-2 align-top">
+              <span
+                v-if="channelBadge(o)"
+                class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium"
+                :class="channelBadge(o)?.cls"
+              >
+                {{ channelBadge(o)?.label }}
+              </span>
+              <span v-else class="text-gray-400 text-[10px]">-</span>
             </td>
             <td class="px-2 py-2 text-xs text-gray-700 align-top">
               <div class="font-medium">{{ paymentTypeLabel(o) }}</div>
@@ -742,18 +753,59 @@ const fulfillError = ref('')
 
 function channelBadge(o: OrderDto | null): { label: string; cls: string } | null {
   if (!o) return null
+
   const gclid = o.lastTouchGclid || o.firstTouchGclid || o.gclid
   const fbclid = o.lastTouchFbclid || o.firstTouchFbclid || o.fbclid
   const medium = o.lastTouchMedium || o.firstTouchMedium || o.utmMedium
-  const source = o.lastTouchSource || o.firstTouchSource || o.utmSource
+  const source = (o.lastTouchSource || o.firstTouchSource || o.utmSource || '').toLowerCase()
+  const landingPage = (o.landingPage || o.firstTouchLandingPage || o.lastTouchLandingPage || '').toLowerCase()
+  const referrer = (o.referrer || o.firstTouchReferrer || o.lastTouchReferrer || '').toLowerCase()
 
+  // Google Ads (gclid ou medium=cpc/ppc/paid)
   if (gclid) return { label: 'Google Ads', cls: 'bg-blue-100 text-blue-800' }
+  if (medium === 'cpc' || medium === 'ppc' || medium === 'paid' || medium === 'paidsearch') {
+    if (source.includes('google')) return { label: 'Google Ads', cls: 'bg-blue-100 text-blue-800' }
+    return { label: 'Pago', cls: 'bg-amber-100 text-amber-800' }
+  }
+
+  // Meta Ads (fbclid ou source facebook/instagram/meta)
   if (fbclid) return { label: 'Meta Ads', cls: 'bg-indigo-100 text-indigo-800' }
-  if (medium === 'cpc' || medium === 'ppc' || medium === 'paid') return { label: 'Pago', cls: 'bg-amber-100 text-amber-800' }
+  if (source.includes('facebook') || source.includes('instagram') || source.includes('meta') || source === 'fb') {
+    return { label: 'Meta Ads', cls: 'bg-indigo-100 text-indigo-800' }
+  }
+
+  // Google Orgânico
+  if ((source.includes('google') && medium === 'organic') || referrer.includes('google.')) {
+    return { label: 'Google Orgânico', cls: 'bg-green-100 text-green-800' }
+  }
   if (medium === 'organic') return { label: 'Orgânico', cls: 'bg-green-100 text-green-800' }
-  if (source) return { label: `${source} / ${medium || '?'}`, cls: 'bg-gray-100 text-gray-800' }
-  if (o.referrer) return { label: 'Referral', cls: 'bg-purple-100 text-purple-800' }
-  return { label: 'Direto / não identificado', cls: 'bg-gray-100 text-gray-600' }
+
+  // Landing Page
+  if (landingPage.includes('/lp/') || landingPage.includes('/landing/')) {
+    return { label: 'Landing Page', cls: 'bg-yellow-100 text-yellow-800' }
+  }
+
+  // Blog
+  if (landingPage.includes('/blog/')) {
+    return { label: 'Blog', cls: 'bg-purple-100 text-purple-800' }
+  }
+
+  // Referral (tem referrer externo)
+  if (referrer && !referrer.includes('casadosoftware') && !referrer.includes('localhost')) {
+    return { label: 'Referral', cls: 'bg-orange-100 text-orange-800' }
+  }
+
+  // Direto (sem dados de tracking)
+  if (!source && !medium && !gclid && !fbclid && !referrer && !landingPage) {
+    return { label: 'Direto', cls: 'bg-gray-100 text-gray-600' }
+  }
+
+  // Desconhecido (tem algum dado mas não classificou)
+  if (source || medium) {
+    return { label: `${source || '?'} / ${medium || '?'}`, cls: 'bg-gray-100 text-gray-600' }
+  }
+
+  return { label: 'Desconhecido', cls: 'bg-gray-100 text-gray-500' }
 }
 
 function hasFirstTouch(o: OrderDto | null): boolean {
