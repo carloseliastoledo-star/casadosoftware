@@ -20,6 +20,28 @@ export default defineEventHandler(async (event) => {
     // Query com includes de Customer, Produto e Licenca
     const where: any = { deletedAt: null }
     
+    // Filtro por data
+    const dateFrom = String((q as any)?.dateFrom || '').trim()
+    const dateTo = String((q as any)?.dateTo || '').trim()
+    
+    if (dateFrom && dateTo) {
+      const startDate = new Date(dateFrom)
+      startDate.setHours(0, 0, 0, 0)
+      
+      const endDate = new Date(dateTo)
+      endDate.setHours(23, 59, 59, 999)
+      
+      where.criadoEm = {
+        gte: startDate,
+        lte: endDate
+      }
+      
+      console.log('[admin/orders] Filtro de data aplicado:', { 
+        from: startDate.toISOString(), 
+        to: endDate.toISOString() 
+      })
+    }
+    
     console.log('[admin/orders] where clause:', JSON.stringify(where))
     console.log('[admin/orders] Buscando pedidos com Customer, Produto e Licencas...')
     
@@ -52,9 +74,12 @@ export default defineEventHandler(async (event) => {
       licencas: o.Licenca
     }))
     
-    // Summary
+    // Summary - usando o mesmo filtro de data + status PAID
+    const summaryWhere = { ...where, status: 'PAID' }
+    console.log('[admin/orders] summary where:', JSON.stringify(summaryWhere))
+    
     const summaryAgg = await (prisma as any).order.aggregate({
-      where: { ...where, status: 'PAID' },
+      where: summaryWhere,
       _count: { id: true },
       _sum: { totalAmount: true }
     })
