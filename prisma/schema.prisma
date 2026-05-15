@@ -108,10 +108,10 @@ model AffiliatePayoutRequest {
 }
 
 model BlogPost {
-  id                  String                @id
+  id                  String                @id @default(uuid())
   titulo              String
   slug                String                @unique
-  html                String?               @db.Text
+  html                String?               @db.LongText
   publicado           Boolean               @default(false)
   criadoEm            DateTime              @default(now()) @db.DateTime(0)
   atualizadoEm        DateTime              @db.DateTime(0)
@@ -123,13 +123,13 @@ model BlogPost {
 }
 
 model BlogPostTranslation {
-  id            String   @id
+  id            String   @id @default(uuid())
   postId        String
   lang          String
   titulo        String
   featuredImage String?  @db.Text
   excerpt       String?  @db.VarChar(512)
-  html          String?  @db.Text
+  html          String?  @db.LongText
   criadoEm      DateTime @default(now()) @db.DateTime(0)
   atualizadoEm  DateTime @default(now()) @db.DateTime(0)
   BlogPost      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
