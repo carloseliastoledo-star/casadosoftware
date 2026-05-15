@@ -303,6 +303,15 @@ export default defineEventHandler(async (event) => {
       affiliatePercentage,
     })
   } catch (e: any) {
+    console.error('[checkout/payment] ===== ERROR =====')
+    console.error('[checkout/payment] error:', e)
+    console.error('[checkout/payment] message:', e?.message)
+    console.error('[checkout/payment] code:', e?.code)
+    console.error('[checkout/payment] meta:', e?.meta)
+    console.error('[checkout/payment] cause:', e?.cause)
+    console.error('[checkout/payment] stack:', e?.stack)
+    console.error('[checkout/payment] response:', e?.response?.data || e?.response)
+    
     const msg = e?.data?.message || e?.data?.statusMessage || e?.message || 'Erro ao processar pagamento'
     throw createError({ statusCode: 502, statusMessage: msg })
   }
