@@ -160,7 +160,7 @@ export default defineEventHandler(async (event) => {
           descricao: idx.description >= 0 ? row[idx.description] || null : null,
           preco: idx.price >= 0 ? (parseFloatOrNull(row[idx.price]) || 0) : 0,
           precoAntigo: idx.compareAtPrice >= 0 ? parseFloatOrNull(row[idx.compareAtPrice]) : null,
-          imagem: idx.image >= 0 ? row[idx.image] || null : null,
+          imagem: idx.image >= 0 ? (row[idx.image] ? String(row[idx.image]).slice(0, 191) : null) : null,
           ativo: idx.active >= 0 ? parseBoolean(row[idx.active]) : true,
           googleAdsConversionLabel: idx.googleAdsConversionLabel >= 0 ? row[idx.googleAdsConversionLabel] || null : null,
           googleAdsConversionValue: idx.googleAdsConversionValue >= 0 ? parseFloatOrNull(row[idx.googleAdsConversionValue]) : null,
@@ -224,6 +224,7 @@ export default defineEventHandler(async (event) => {
             if (!categoria) {
               categoria = await (prisma as any).categoria.create({
                 data: {
+                  id: crypto.randomUUID(),
                   nome: catNome,
                   slug: catSlug,
                   ativo: true
