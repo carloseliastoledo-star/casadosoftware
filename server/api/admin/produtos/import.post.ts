@@ -154,6 +154,7 @@ export default defineEventHandler(async (event) => {
 
         // Extrair dados
         const data = {
+          id: crypto.randomUUID(),
           nome: name,
           slug: slug,
           descricao: idx.description >= 0 ? row[idx.description] || null : null,
@@ -181,15 +182,16 @@ export default defineEventHandler(async (event) => {
         let produtoId: string
 
         if (existing) {
-          // Atualizar
+          // Atualizar — sem o campo id (não pode atualizar @id)
+          const { id: _id, ...updateData } = data
           await (prisma as any).produto.update({
             where: { slug },
-            data
+            data: updateData
           })
           produtoId = existing.id
           result.updated++
         } else {
-          // Criar
+          // Criar — com id gerado
           const created = await (prisma as any).produto.create({
             data
           })
