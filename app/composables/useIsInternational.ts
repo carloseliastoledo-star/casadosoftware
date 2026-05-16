@@ -37,6 +37,8 @@ export function useIsInternational(): Ref<boolean> {
   return computed<boolean>(() => {
     if (storeSlug.value === 'international') return true
     const h = host.value
-    return h.includes('globalsoftware.store') || h.includes('globalsoftware-preview')
+    if (h.includes('globalsoftware.store')) return true
+    if (h.includes('globalsoftware-prev') && h.includes('vercel.app')) return true
+    return false
   })
 }

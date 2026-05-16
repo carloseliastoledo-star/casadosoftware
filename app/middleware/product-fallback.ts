@@ -4,7 +4,23 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const config = useRuntimeConfig()
   const storeSlug = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
-  if (storeSlug === 'international') {
+
+  const _host = (() => {
+    if (import.meta.server) {
+      try {
+        const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
+        const raw = headers?.['x-forwarded-host'] || headers?.host || ''
+        return String(raw).split(',')[0]?.trim()?.toLowerCase() || ''
+      } catch { return '' }
+    }
+    try { return String(window.location.host || '').toLowerCase() } catch { return '' }
+  })()
+
+  const isIntl = storeSlug === 'international' ||
+    _host.includes('globalsoftware.store') ||
+    (_host.includes('globalsoftware-prev') && _host.includes('vercel.app'))
+
+  if (isIntl) {
     return navigateTo({ path: '/checkout-intl', query: { product: slug } }, { replace: true, redirectCode: 302 })
   }
 
