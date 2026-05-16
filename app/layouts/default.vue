@@ -541,7 +541,7 @@ const logoWebpPath = computed(() => {
 
 const effectiveLogoPath = computed(() => {
   if (isLicencasDigitais.value) return '/licencasdigitais-gvg/logo.png'
-  if (isInternational.value) return String(logoPath || '').trim() || ''
+  if (isInternational.value) return String(logoPath || '').trim() || '/logo-gvg.png'
   return String(logoPath || '').trim() || '/logo-mercadosoftwares.png'
 })
 
