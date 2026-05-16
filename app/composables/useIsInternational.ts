@@ -11,9 +11,14 @@
 export function useIsInternational(): Ref<boolean> {
   const config = useRuntimeConfig()
 
-  const storeSlug = computed(() =>
-    String((config.public as any)?.storeSlug || '').trim().toLowerCase()
-  )
+  // Primary: useState set by store-slug plugin (SSR-safe, hydrated to client)
+  const effectiveSlugState = useState<string>('effective_store_slug', () => '')
+
+  const storeSlug = computed(() => {
+    const fromState = String(effectiveSlugState.value || '').trim().toLowerCase()
+    if (fromState) return fromState
+    return String((config.public as any)?.storeSlug || '').trim().toLowerCase()
+  })
 
   const host = computed<string>(() => {
     if (import.meta.server) {

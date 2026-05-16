@@ -1,50 +1,46 @@
 /**
  * store-slug plugin — runs synchronously before any component setup.
- * Injects the correct storeSlug into runtimeConfig.public based on the
- * request hostname when STORE_SLUG env var is not set.
  *
- * This is needed for Vercel preview URLs (*.vercel.app) where the env var
- * is not configured but the hostname identifies the store.
+ * Uses useState('effective_store_slug') as the SSR-safe propagation mechanism,
+ * identical to how i18n.ts uses useState('ld_server_lang').
+ *
+ * Priority:
+ *  1. STORE_SLUG env var (via runtimeConfig.public.storeSlug)
+ *  2. Request hostname pattern matching
  */
 
-function detectHostFromRequest(): string {
-  if (import.meta.server) {
-    try {
-      const event = useRequestEvent()
-      const fwd = String(event?.node?.req?.headers?.['x-forwarded-host'] || '').trim()
-      const h = String(event?.node?.req?.headers?.host || '').trim()
-      const raw = (fwd || h).split(',')[0]?.trim() || ''
-      return raw.toLowerCase()
-    } catch {
-      return ''
-    }
-  }
-  try {
-    return String(window.location.host || '').toLowerCase()
-  } catch {
-    return ''
-  }
-}
-
-function resolveStoreSlugFromHost(host: string): string {
-  if (!host) return ''
-  if (host.includes('casadosoftware.com.br')) return 'casadosoftware'
-  if (host.includes('licencasdigitais.com.br')) return 'licencasdigitais'
-  if (host.includes('globalsoftware.store')) return 'international'
-  if (host.includes('globalsoftware-prev') && host.includes('vercel.app')) return 'international'
+export function resolveStoreSlugFromHost(host: string): string {
+  const h = String(host || '').toLowerCase()
+  if (!h) return ''
+  if (h.includes('casadosoftware.com.br')) return 'casadosoftware'
+  if (h.includes('licencasdigitais.com.br')) return 'licencasdigitais'
+  if (h.includes('globalsoftware.store')) return 'international'
+  if (h.includes('globalsoftware-prev') && h.includes('vercel.app')) return 'international'
   return ''
 }
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
-  const current = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
+  const fromEnv = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
 
-  if (current) return
+  let resolved = fromEnv
 
-  const host = detectHostFromRequest()
-  const resolved = resolveStoreSlugFromHost(host)
-
-  if (resolved) {
-    ;(config.public as any).storeSlug = resolved
+  if (!resolved) {
+    let host = ''
+    if (import.meta.server) {
+      try {
+        const event = useRequestEvent()
+        const fwd = String(event?.node?.req?.headers?.['x-forwarded-host'] || '').trim()
+        const h = String(event?.node?.req?.headers?.host || '').trim()
+        host = (fwd || h).split(',')[0]?.trim()?.toLowerCase() || ''
+      } catch { /* ignore */ }
+    } else {
+      try { host = String(window.location.host || '').toLowerCase() } catch { /* ignore */ }
+    }
+    resolved = resolveStoreSlugFromHost(host)
   }
+
+  // useState propagates SSR value to client via hydration payload
+  const storeSlugState = useState<string>('effective_store_slug', () => resolved)
+  if (import.meta.server && resolved) storeSlugState.value = resolved
 })

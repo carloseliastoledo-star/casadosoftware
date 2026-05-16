@@ -37,6 +37,7 @@ function detectSubdomainLanguage(host: string): Lang | null {
   if (h.startsWith('fr.')) return 'fr'
   if (h.startsWith('it.')) return 'it'
   if (h.endsWith('.store') || h.includes('casadosoftware.store')) return 'en'
+  if (h.includes('globalsoftware-prev') && h.includes('vercel.app')) return 'en'
   return null
 }
 
