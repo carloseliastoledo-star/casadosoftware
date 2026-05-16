@@ -1,5 +1,6 @@
 import { defineEventHandler, createError, readMultipartFormData } from 'h3'
 import prisma from '#root/server/db/prisma'
+import { getStoreContext } from '#root/server/utils/store'
 
 function parseCSV(content: string): string[][] {
   const lines: string[][] = []
@@ -80,6 +81,8 @@ export default defineEventHandler(async (event) => {
     errors: [] as string[]
   }
 
+  const { storeSlug } = getStoreContext(event)
+
   try {
     // Ler arquivo multipart
     const formData = await readMultipartFormData(event)
@@ -153,17 +156,18 @@ export default defineEventHandler(async (event) => {
         }
 
         // Extrair dados
-        const data = {
+        const preco = idx.price >= 0 ? (parseFloatOrNull(row[idx.price] ?? '') || 0) : 0
+        const createData = {
           id: crypto.randomUUID(),
           nome: name,
           slug: slug,
           descricao: idx.description >= 0 ? row[idx.description] || null : null,
-          preco: idx.price >= 0 ? (parseFloatOrNull(row[idx.price]) || 0) : 0,
-          precoAntigo: idx.compareAtPrice >= 0 ? parseFloatOrNull(row[idx.compareAtPrice]) : null,
-          imagem: idx.image >= 0 ? (row[idx.image] ? String(row[idx.image]).slice(0, 191) : null) : null,
-          ativo: idx.active >= 0 ? parseBoolean(row[idx.active]) : true,
+          preco,
+          precoAntigo: idx.compareAtPrice >= 0 ? parseFloatOrNull(row[idx.compareAtPrice] ?? '') : null,
+          imagem: idx.image >= 0 ? row[idx.image] || null : null,
+          ativo: idx.active >= 0 ? parseBoolean(row[idx.active] ?? '') : true,
           googleAdsConversionLabel: idx.googleAdsConversionLabel >= 0 ? row[idx.googleAdsConversionLabel] || null : null,
-          googleAdsConversionValue: idx.googleAdsConversionValue >= 0 ? parseFloatOrNull(row[idx.googleAdsConversionValue]) : null,
+          googleAdsConversionValue: idx.googleAdsConversionValue >= 0 ? parseFloatOrNull(row[idx.googleAdsConversionValue] ?? '') : null,
           seoTitle: idx.seoTitle >= 0 ? row[idx.seoTitle] || null : null,
           seoDescription: idx.seoDescription >= 0 ? row[idx.seoDescription] || null : null,
           seoContent: idx.seoContent >= 0 ? row[idx.seoContent] || null : null,
@@ -172,31 +176,35 @@ export default defineEventHandler(async (event) => {
           tutorialSubtitulo: idx.tutorialSubtitulo >= 0 ? row[idx.tutorialSubtitulo] || null : null,
           tutorialConteudo: idx.tutorialConteudo >= 0 ? row[idx.tutorialConteudo] || null : null
         }
+        const { id: _id, ...updateData } = createData
 
-        // Verificar se produto existe
-        const existing = await (prisma as any).produto.findUnique({
+        // Upsert produto pelo slug — evita duplicatas
+        const upserted = await (prisma as any).produto.upsert({
           where: { slug },
+          create: createData,
+          update: updateData,
+          select: { id: true, slug: true }
+        })
+        const produtoId: string = upserted.id
+
+        // Verificar se foi criado ou atualizado
+        const wasExisting = await (prisma as any).produto.findFirst({
+          where: { slug, id: { not: createData.id } },
           select: { id: true }
         })
-
-        let produtoId: string
-
-        if (existing) {
-          // Atualizar — sem o campo id (não pode atualizar @id)
-          const { id: _id, ...updateData } = data
-          await (prisma as any).produto.update({
-            where: { slug },
-            data: updateData
-          })
-          produtoId = existing.id
+        if (wasExisting) {
           result.updated++
         } else {
-          // Criar — com id gerado
-          const created = await (prisma as any).produto.create({
-            data
-          })
-          produtoId = created.id
           result.created++
+        }
+
+        // Registrar preço na loja correta (evita dados cruzados entre lojas)
+        if (storeSlug) {
+          await (prisma as any).produtoPrecoLoja.upsert({
+            where: { produtoId_storeSlug: { produtoId, storeSlug } },
+            create: { id: crypto.randomUUID(), produtoId, storeSlug, preco, precoAntigo: createData.precoAntigo ?? null, updatedAt: new Date() },
+            update: { preco, precoAntigo: createData.precoAntigo ?? null, updatedAt: new Date() }
+          })
         }
 
         // Processar categorias
@@ -215,23 +223,18 @@ export default defineEventHandler(async (event) => {
 
             if (!catSlug) continue
 
-            // Buscar ou criar categoria
-            let categoria = await (prisma as any).categoria.findUnique({
+            // Upsert categoria pelo slug — evita duplicatas
+            const catBefore = await (prisma as any).categoria.findUnique({
               where: { slug: catSlug },
               select: { id: true }
             })
-
-            if (!categoria) {
-              categoria = await (prisma as any).categoria.create({
-                data: {
-                  id: crypto.randomUUID(),
-                  nome: catNome,
-                  slug: catSlug,
-                  ativo: true
-                }
-              })
-              result.categoriesCreated++
-            }
+            const categoria = await (prisma as any).categoria.upsert({
+              where: { slug: catSlug },
+              create: { id: crypto.randomUUID(), nome: catNome, slug: catSlug, ativo: true },
+              update: { nome: catNome, ativo: true },
+              select: { id: true }
+            })
+            if (!catBefore) result.categoriesCreated++
 
             // Verificar se relação já existe
             const existingRel = await (prisma as any).produtoCategoria.findUnique({

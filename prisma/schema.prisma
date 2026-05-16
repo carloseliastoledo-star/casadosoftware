@@ -139,7 +139,7 @@ model BlogPostTranslation {
 }
 
 model Categoria {
-  id               String             @id
+  id               String             @id @default(uuid())
   nome             String
   slug             String             @unique
   wcCategoryId     Int?               @unique
@@ -356,7 +356,7 @@ model Produto {
   descricao                   String?             @db.Text
   preco                       Float
   criadoEm                    DateTime            @default(now())
-  imagem                      String?
+  imagem                      String?             @db.Text
   tutorialConteudo            String?             @db.Text
   tutorialSubtitulo           String?
   tutorialTitulo              String?
