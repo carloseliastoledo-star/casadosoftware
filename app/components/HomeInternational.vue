@@ -97,7 +97,7 @@
                 <span v-if="product.usdPrice" class="text-lg font-extrabold text-blue-600">
                   ${{ formatPrice(product.usdPrice) }}
                 </span>
-                <span v-else class="text-sm text-slate-400 italic">Price on request</span>
+                <span v-else class="text-sm text-slate-400 italic">Coming soon</span>
               </div>
               <button class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
                 Buy Now
@@ -235,7 +235,7 @@ function formatPrice(n: number) {
 
 function goToProduct(product: any) {
   const slug = product.slug
-  if (slug) router.push(`/produto/${slug}`)
+  if (slug) router.push({ path: '/checkout-intl', query: { product: slug } })
 }
 
 const trustBadges = [
@@ -304,22 +304,24 @@ interface IntlProduct {
   eurPrice?: number | null
 }
 
-const { data: rawProducts, pending } = await useFetch<any>('/api/products/best-sellers', {
+const { data: rawProducts, pending } = await useFetch<any>('/api/intl/products', {
   server: false,
   lazy: true,
-  default: () => []
+  default: () => ({ ok: true, produtos: [] })
 })
 
 const products = computed<IntlProduct[]>(() => {
-  const list = Array.isArray(rawProducts.value) ? rawProducts.value : []
-  return list.map((p: any) => ({
-    id: p.id,
-    name: p.name || p.nome,
-    nome: p.nome,
-    slug: p.slug,
-    image: p.image || p.imagem,
-    usdPrice: p.usdPrice ?? p.precoUsd ?? null,
-    eurPrice: p.eurPrice ?? p.precoEur ?? null,
-  }))
+  const raw = rawProducts.value
+  const list = Array.isArray(raw) ? raw : Array.isArray(raw?.produtos) ? raw.produtos : []
+  return list
+    .filter((p: any) => p.usdPrice != null && Number(p.usdPrice) > 0)
+    .map((p: any) => ({
+      id: p.id,
+      name: p.name || p.nome,
+      slug: p.slug,
+      image: p.image || p.imagem,
+      usdPrice: Number(p.usdPrice),
+      eurPrice: p.eurPrice ? Number(p.eurPrice) : null,
+    }))
 })
 </script>

@@ -9,7 +9,7 @@
     </div>
 
     <ClientOnly>
-      <div v-if="topbarText && !isLicencasDigitais" class="bg-blue-600 text-white text-xs">
+      <div v-if="topbarText && !isLicencasDigitais && !isInternational" class="bg-blue-600 text-white text-xs">
         <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
           <a
             v-if="topbarLink"
@@ -427,7 +427,7 @@
         <div>
           <div class="font-extrabold text-white text-lg mb-3">{{ siteName }}</div>
           <p class="text-sm text-gray-400 leading-relaxed">{{ footerDescriptionText }}</p>
-          <div v-if="whatsappHref" class="mt-4">
+          <div v-if="whatsappHref && !isInternational" class="mt-4">
             <a :href="whatsappHref" target="_blank" rel="noopener noreferrer"
                class="inline-flex items-center gap-2 text-sm font-semibold text-green-400 hover:text-green-300 transition">
               {{ t.whatsappPrefix }} {{ whatsappLabel }}
@@ -442,9 +442,9 @@
           <div class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">{{ footerLinksTitleText }}</div>
           <ul class="space-y-2 text-sm">
             <li><NuxtLink :to="productsIndexPath" class="hover:text-white transition">{{ t.footerProducts }}</NuxtLink></li>
-            <li><NuxtLink to="/tutoriais" class="hover:text-white transition">{{ t.footerTutorials }}</NuxtLink></li>
-            <li><NuxtLink :to="blogMenuTo" class="hover:text-white transition">{{ t.footerBlog }}</NuxtLink></li>
-            <li><NuxtLink :to="affiliateMenuTo" class="hover:text-white transition">{{ affiliateMenuLabel }}</NuxtLink></li>
+            <li v-if="!isInternational"><NuxtLink to="/tutoriais" class="hover:text-white transition">{{ t.footerTutorials }}</NuxtLink></li>
+            <li v-if="!isInternational"><NuxtLink :to="blogMenuTo" class="hover:text-white transition">{{ t.footerBlog }}</NuxtLink></li>
+            <li v-if="!isInternational"><NuxtLink :to="affiliateMenuTo" class="hover:text-white transition">{{ affiliateMenuLabel }}</NuxtLink></li>
             <li><NuxtLink :to="aboutUsPath" class="hover:text-white transition">{{ t.footerAbout }}</NuxtLink></li>
           </ul>
         </div>
@@ -465,7 +465,7 @@
         <div>
           <div class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">{{ t.footerSupportTitle }}</div>
           <p class="text-sm text-gray-400 mb-4">{{ t.footerIntlSupport }}</p>
-          <div v-if="!isEnDomain" class="text-xs text-gray-500 space-y-1">
+          <div v-if="!isEnDomain && !isInternational" class="text-xs text-gray-500 space-y-1">
             <p v-if="companyLegalName"><span class="font-semibold text-gray-400">Razão Social:</span> {{ companyLegalName }}</p>
             <p v-if="companyCnpj"><span class="font-semibold text-gray-400">CNPJ:</span> {{ companyCnpj }}</p>
             <p v-if="companyAddress"><span class="font-semibold text-gray-400">Endereço:</span> {{ companyAddress }}</p>
@@ -525,6 +525,11 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
+const isInternational = computed(() => {
+  if (normalizedHost.value.includes('globalsoftware.store')) return true
+  return storeSlug.value === 'international'
+})
+
 const isEnDomain = computed(() => {
   const h = normalizedHost.value
   return h.endsWith('.store') || h.includes('casadosoftware.store')
@@ -539,6 +544,7 @@ const logoWebpPath = computed(() => {
 
 const effectiveLogoPath = computed(() => {
   if (isLicencasDigitais.value) return '/licencasdigitais-gvg/logo.png'
+  if (isInternational.value) return String(logoPath || '').trim() || ''
   return String(logoPath || '').trim() || '/logo-mercadosoftwares.png'
 })
 
@@ -620,6 +626,12 @@ const mainMenuBase = [
   { label: 'Jogos', slug: 'jogos', fallbackTo: '/categorias' },
   { label: 'Blog', to: '/blog' },
   { label: 'Contato', to: '/quem-somos' }
+] as const
+
+const intlMenuBase = [
+  { label: 'Windows', slug: 'windows', fallbackTo: '/categories' },
+  { label: 'Office', slug: 'office', fallbackTo: '/categories' },
+  { label: 'Windows Server', slug: 'windows-server', fallbackTo: '/categories' },
 ] as const
 
 type PaginaLinkDto = {
@@ -718,6 +730,17 @@ const contactLabel = computed(() => {
 })
 
 const mainMenu = computed(() => {
+  if (isInternational.value) {
+    return [
+      ...intlMenuBase.map((it) => {
+        const slug = String(it.slug || '').trim()
+        if (categoriasSet.value.has(slug)) return { label: it.label, to: `/category/${slug}` }
+        return { label: it.label, to: it.fallbackTo }
+      }),
+      { label: 'Support', to: '/about-us' },
+    ]
+  }
+
   const base = mainMenuBase.map((it) => {
     if ('to' in it) {
       if (it.label === 'Contato') {
@@ -780,7 +803,7 @@ const footerPolicyLinksParsed = computed<FooterPolicyLinkDto[]>(() => {
 })
 
 const t = computed(() => {
-  if (intl.language.value === 'en') {
+  if (isInternational.value || intl.language.value === 'en') {
     return {
       home: 'Home',
       openMenu: 'Open menu',
@@ -805,7 +828,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Fast and specialized support',
       footerIntlSupport: 'International support in Portuguese, Spanish and English',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) is an independent company.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) is an independent company.`,
+      footerDisclaimer1: `${safeSiteName.value} is an independent company, not affiliated with Microsoft.`,
       footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
