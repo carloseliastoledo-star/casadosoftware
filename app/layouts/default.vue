@@ -866,7 +866,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Atención rápida y especializada',
       footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) es una empresa independiente.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) es una empresa independiente.`,
+      footerDisclaimer1: `${safeSiteName.value} es una empresa independiente.`,
       footerDisclaimer2: 'No estamos afiliados a Microsoft.'
     }
   }
@@ -895,7 +895,7 @@ const t = computed(() => {
     footerSupportSubtitle: 'Atendimento rápido e especializado',
     footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',
     whatsappPrefix: 'WhatsApp:',
-    footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) é uma empresa independente.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) é uma empresa independente.`,
+    footerDisclaimer1: `${safeSiteName.value} é uma empresa independente.`,
     footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
 })
