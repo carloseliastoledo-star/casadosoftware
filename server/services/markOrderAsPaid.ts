@@ -26,7 +26,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
 
   type TelegramReservation = { orderId: string; reservedAt: Date }
   type TelegramPayload = { orderId: string; produtoNome: string; customerEmail: string }
-  type EmailPayload = { orderId: string; customerEmail: string; produtoNome: string; licenseKey: string }
+  type EmailPayload = { orderId: string; customerEmail: string; produtoNome: string; licenseKey: string; storeSlug: string | null }
 
   let telegramReservation: TelegramReservation | null = null
   let telegramPayload: TelegramPayload | null = null
@@ -103,7 +103,8 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
         emailEnviadoEm: true,
         telegramEnviadoEm: true,
         status: true,
-        pagoEm: true
+        pagoEm: true,
+        currency: true
       }
     })
 
@@ -306,7 +307,8 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
       orderId: order.id,
       customerEmail: customer.email,
       produtoNome: produto.nome,
-      licenseKey: licenca.chave
+      licenseKey: licenca.chave,
+      storeSlug: order.storeSlug ?? null
     }
 
     console.log('[markOrderAsPaid] Transação concluída, licença vinculada:', licenca.id, 'email será enviado fora da tx')
@@ -317,12 +319,14 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
 
   // ── ENVIO DE EMAIL: fora da transação (SMTP não bloqueia o DB) ──
   if (emailPayload && shouldContinue) {
-    const ep = emailPayload
+    const ep = emailPayload as { orderId: string; customerEmail: string; produtoNome: string; licenseKey: string; storeSlug: string | null }
     try {
+      const isIntl = String(ep.storeSlug || '') === 'international'
       const html = renderLicenseEmail({
         produtoNome: ep.produtoNome,
         licenseKey: ep.licenseKey,
-        orderId: ep.orderId
+        orderId: ep.orderId,
+        storeSlug: ep.storeSlug || undefined
       })
 
       const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
@@ -330,7 +334,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
       await sendMail({
         to: ep.customerEmail,
         bcc,
-        subject: `Sua licença: ${ep.produtoNome}`,
+        subject: isIntl ? `Your software license: ${ep.produtoNome}` : `Sua licença: ${ep.produtoNome}`,
         html
       })
 

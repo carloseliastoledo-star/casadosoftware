@@ -135,10 +135,12 @@ export async function fulfillPaidOrder(orderId: string) {
       return
     }
 
+    const isIntl = String(order.storeSlug || '') === 'international'
     const html = renderLicenseEmail({
       produtoNome: produto.nome,
       licenseKey: licenca.chave,
-      orderId: order.id
+      orderId: order.id,
+      storeSlug: order.storeSlug || undefined
     })
 
     const now = new Date()
@@ -147,7 +149,7 @@ export async function fulfillPaidOrder(orderId: string) {
       await sendMail({
         to: customer.email,
         bcc,
-        subject: `Sua licença: ${produto.nome}`,
+        subject: isIntl ? `Your software license: ${produto.nome}` : `Sua licença: ${produto.nome}`,
         html
       })
 

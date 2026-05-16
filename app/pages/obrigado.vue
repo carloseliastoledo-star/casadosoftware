@@ -11,10 +11,17 @@ const { siteName } = useSiteBranding()
 const baseUrl = useSiteUrl()
 const intl = useIntlContext()
 
+const isInternational = computed(() => {
+  const slug = String((config.public as any)?.storeSlug || '').trim()
+  return slug === 'international' || intl.language.value === 'en'
+})
+
 const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
 
 useSeoMeta({
-  title: `Obrigado | ${siteName}`
+  title: isInternational.value
+    ? 'Thank you | GlobalSoftware Store'
+    : `Obrigado | ${siteName}`
 })
 
 useHead(() => ({
@@ -47,6 +54,8 @@ function fireFunnelPurchaseTracking() {
   if (!import.meta.client) return
   const order = funnelOrder.value
   if (!order?.orderId) return
+  // Não disparar funnelTracking BRL em pedidos internacionais
+  if (isInternational.value) return
 
   const purchaseKey = `funnel_purchase_${order.orderId}`
   try {
@@ -157,7 +166,8 @@ onMounted(async () => {
     if (status === 'PAID') {
       // Detectar gateway a partir da resposta do backend
       const gateway: 'mercado_pago' | 'stripe' = order.gateway === 'stripe' ? 'stripe' : 'mercado_pago'
-      const currency: 'BRL' | 'USD' = String(order.currency || '').toUpperCase() === 'USD' ? 'USD' : 'BRL'
+      const orderCurrencyUpper = String(order.currency || '').toUpperCase()
+      const currency: 'BRL' | 'USD' | 'EUR' = (orderCurrencyUpper === 'USD' ? 'USD' : orderCurrencyUpper === 'EUR' ? 'EUR' : 'BRL') as any
       const total = Number(order.total || 0)
       const items = Array.isArray(order.items) ? order.items : []
 
@@ -276,17 +286,62 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="bg-gray-50 min-h-screen py-16">
+  <!-- ── INTERNATIONAL LAYOUT ── -->
+  <section v-if="isInternational" class="bg-gray-50 min-h-screen py-16">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+        <div class="inline-flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl text-sm font-semibold">
+          <span>&#10004;</span>
+          Payment confirmed
+        </div>
+
+        <h1 class="mt-6 text-3xl font-extrabold text-gray-900">Thank you for your purchase!</h1>
+        <p class="mt-3 text-gray-700">
+          Your payment has been confirmed.
+        </p>
+
+        <div class="mt-6 space-y-2 text-sm text-gray-700">
+          <div>
+            Your license and order details will be sent to your email.
+          </div>
+          <div>
+            If you don't see it, please check your spam folder.
+          </div>
+        </div>
+
+        <div v-if="orderId || paymentId" class="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm">
+          <div v-if="orderId" class="text-gray-700">
+            <span class="font-semibold">Order:</span> {{ orderId }}
+          </div>
+          <div v-if="paymentId" class="text-gray-700 mt-1">
+            <span class="font-semibold">Payment:</span> {{ paymentId }}
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-col sm:flex-row gap-3">
+          <NuxtLink to="/" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold">
+            Back to Home
+          </NuxtLink>
+          <NuxtLink to="/products" class="bg-white hover:bg-gray-50 text-gray-900 px-5 py-3 rounded-xl font-semibold border border-gray-200">
+            View products
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CASA DO SOFTWARE LAYOUT (sem alteração) ── -->
+  <section v-else class="bg-gray-50 min-h-screen py-16">
     <div class="max-w-3xl mx-auto px-6">
       <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
         <!-- Upsell accepted banner -->
         <div v-if="upsellParam === 'accepted'" class="mb-4 flex items-center gap-2 text-blue-700 bg-blue-50 border border-blue-100 px-4 py-3 rounded-xl text-sm font-semibold">
-          <span>🎁</span>
+          <span>&#127873;</span>
           Windows 11 Pro adicionado ao seu pedido!
         </div>
 
         <div class="inline-flex items-center gap-2 text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-2 rounded-xl text-sm font-semibold">
-          <span>✔</span>
+          <span>&#10004;</span>
           Pagamento confirmado
         </div>
 

@@ -145,7 +145,10 @@ export default defineEventHandler(async (event) => {
         cardItems: true,
         seoTitle: true,
         seoDescription: true,
-        seoContent: true
+        seoContent: true,
+        ProdutoPrecoMoeda: {
+          select: { storeSlug: true, currency: true, amount: true }
+        }
       }
     })
     console.log('[api/products/[slug]] Produto encontrado:', product ? 'SIM' : 'NÃO')
@@ -287,7 +290,12 @@ export default defineEventHandler(async (event) => {
     seoTitle: fixCp850((product as any).seoTitle) || null,
     seoDescription: fixCp850((product as any).seoDescription) || null,
     seoContent: fixCp850((product as any).seoContent) || null,
-    createdAt: product.criadoEm
+    createdAt: product.criadoEm,
+    precosMoeda: ((product as any).ProdutoPrecoMoeda || []).map((x: any) => ({
+      storeSlug: x.storeSlug,
+      currency: String(x.currency || '').toLowerCase(),
+      amount: Number(x.amount)
+    }))
   }
   } catch (err: any) {
     if (err?.statusCode === 404) throw err

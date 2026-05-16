@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid currency. Use usd or eur.' })
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: '2023-10-16' })
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, { apiVersion: '2026-02-25.clover' })
   const prismaAny = prisma as any
 
   try {
@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
           id: true,
           nome: true,
           ativo: true,
-          precosMoeda: {
+          ProdutoPrecoMoeda: {
             where: { storeSlug },
             select: { currency: true, amount: true }
           }
@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
       }
 
       const byCurrency = new Map<string, { currency: string; amount: number }>(
-        (produto.precosMoeda || [])
+        ((produto as any).ProdutoPrecoMoeda || [])
           .map((x: any) => ({
             currency: String(x.currency || '').trim().toLowerCase(),
             amount: Number(x.amount)

@@ -43,6 +43,8 @@ export async function sendMail({ to, bcc, subject, html }: MailParams) {
 
   // Adicionar nome de exibição se não tiver (melhora entregabilidade)
   const from = rawFrom.includes('<') ? rawFrom : `Casa do Software <${rawFrom}>`
+  // nota: o campo "from" usa Casa do Software pois é o remetente SMTP configurado;
+  // o template do e-mail varia por storeSlug (ver renderLicenseEmail)
 
   const transporter = getTransporter()
   const safeBcc = String(bcc || '').trim()
@@ -85,8 +87,77 @@ export function renderLicenseEmail(params: {
   produtoNome: string
   licenseKey: string
   orderId: string
+  storeSlug?: string
 }) {
-  const { produtoNome, licenseKey, orderId } = params
+  const { produtoNome, licenseKey, orderId, storeSlug } = params
+
+  if (storeSlug === 'international') {
+    const intlSiteUrl = String(process.env.INTL_SITE_URL || 'https://globalsoftware.store').replace(/\/$/, '')
+    const intlSiteName = 'GlobalSoftware Store'
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your license - ${escapeHtml(intlSiteName)}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f9fafb; font-family: Arial, Helvetica, sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 32px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; max-width: 600px; width: 100%;">
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #111827; padding: 24px 32px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 20px; font-weight: 700;">${escapeHtml(intlSiteName)}</h1>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px;">
+              <h2 style="margin: 0 0 16px; color: #111827; font-size: 22px;">&#127881; Your license is here!</h2>
+              <p style="margin: 0 0 16px; color: #374151; font-size: 15px; line-height: 1.6;">
+                Payment confirmed. Here are your license details:
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 20px;">
+                <tr>
+                  <td style="padding: 8px 0; color: #6b7280; font-size: 13px; border-bottom: 1px solid #f3f4f6;">Product</td>
+                  <td style="padding: 8px 0; color: #111827; font-size: 14px; font-weight: 600; text-align: right; border-bottom: 1px solid #f3f4f6;">${escapeHtml(produtoNome)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #6b7280; font-size: 13px; border-bottom: 1px solid #f3f4f6;">Order</td>
+                  <td style="padding: 8px 0; color: #111827; font-size: 14px; text-align: right; border-bottom: 1px solid #f3f4f6;">${escapeHtml(orderId)}</td>
+                </tr>
+              </table>
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; border-radius: 8px; margin: 0 0 20px;">
+                <p style="margin: 0 0 6px; color: #15803d; font-size: 12px; font-weight: 600; text-transform: uppercase;">Your License</p>
+                <p style="margin: 0; color: #111827; font-size: 15px; font-family: 'Courier New', Courier, monospace; word-break: break-all; line-height: 1.6;">${escapeHtml(licenseKey)}</p>
+              </div>
+              <p style="margin: 0 0 8px; color: #6b7280; font-size: 13px; line-height: 1.5;">
+                &#128274; Keep this email in a safe place for future reference.
+              </p>
+              <p style="margin: 0; color: #6b7280; font-size: 13px; line-height: 1.5;">
+                Need help? Contact our support team at <a href="${intlSiteUrl}/support" style="color: #2563eb;">${intlSiteUrl.replace('https://', '')}/support</a>
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f9fafb; padding: 20px 32px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                ${escapeHtml(intlSiteName)} &mdash; <a href="${intlSiteUrl}" style="color: #6b7280;">${intlSiteUrl.replace('https://', '')}</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`.trim()
+  }
+
+  // ── Casa do Software (padrão) — sem alteração ──
   const siteUrl = String(process.env.SITE_URL || 'https://casadosoftware.com.br').replace(/\/$/, '')
   const siteName = 'Casa do Software'
 
