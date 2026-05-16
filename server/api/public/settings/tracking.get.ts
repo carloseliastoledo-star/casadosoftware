@@ -6,6 +6,7 @@ const SELECT = {
   googleAnalyticsId: true,
   googleAdsConversionId: true,
   googleAdsConversionLabel: true,
+  googleAdsConfigJson: true,
   metaPixelId: true,
   tiktokPixelId: true,
   headHtml: true,
@@ -34,6 +35,7 @@ export default defineEventHandler(async () => {
         ga4Id: null,
         googleAdsConversionId: null,
         googleAdsLabel: null,
+        googleAdsAccounts: [],
         metaPixelId: null,
         tiktokPixelId: null,
         headHtml: null,
@@ -41,10 +43,26 @@ export default defineEventHandler(async () => {
       }
     }
 
+    // Parse múltiplas contas Google Ads do JSON
+    let googleAdsAccounts: Array<{ conversionId: string; conversionLabel: string }> = []
+    if (settings.googleAdsConfigJson) {
+      try {
+        const parsed = JSON.parse(String(settings.googleAdsConfigJson))
+        if (Array.isArray(parsed)) {
+          googleAdsAccounts = parsed.filter(
+            (acc: any) => acc?.conversionId && acc?.conversionLabel
+          )
+        }
+      } catch {
+        googleAdsAccounts = []
+      }
+    }
+
     return {
       ga4Id: String(settings.googleAnalyticsId || '').trim() || null,
       googleAdsConversionId: String(settings.googleAdsConversionId || '').trim() || null,
       googleAdsLabel: String(settings.googleAdsConversionLabel || '').trim() || null,
+      googleAdsAccounts,
       metaPixelId: String(settings.metaPixelId || '').trim() || null,
       tiktokPixelId: String(settings.tiktokPixelId || '').trim() || null,
       headHtml: String(settings.headHtml || '') || null,
@@ -56,6 +74,7 @@ export default defineEventHandler(async () => {
       ga4Id: null,
       googleAdsConversionId: null,
       googleAdsLabel: null,
+      googleAdsAccounts: [],
       metaPixelId: null,
       tiktokPixelId: null,
       headHtml: null,

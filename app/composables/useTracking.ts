@@ -49,13 +49,30 @@ function safeCurrency(currency?: string) {
 /**
  * Busca configurações de tracking do endpoint público
  */
-async function getTrackingSettings() {
+type GoogleAdsAccount = {
+  conversionId: string
+  conversionLabel: string
+}
+
+type TrackingSettings = {
+  ga4Id: string | null
+  googleAdsConversionId: string | null
+  googleAdsLabel: string | null
+  googleAdsAccounts: GoogleAdsAccount[]
+  metaPixelId: string | null
+  tiktokPixelId: string | null
+  headHtml: string | null
+  bodyStartHtml: string | null
+}
+
+async function getTrackingSettings(): Promise<TrackingSettings> {
   try {
-    const data = await $fetch('/api/public/settings/tracking')
+    const data = await $fetch<TrackingSettings>('/api/public/settings/tracking')
     return data || {
       ga4Id: null,
       googleAdsConversionId: null,
       googleAdsLabel: null,
+      googleAdsAccounts: [],
       metaPixelId: null,
       tiktokPixelId: null,
       headHtml: null,
@@ -66,6 +83,7 @@ async function getTrackingSettings() {
       ga4Id: null,
       googleAdsConversionId: null,
       googleAdsLabel: null,
+      googleAdsAccounts: [],
       metaPixelId: null,
       tiktokPixelId: null,
       headHtml: null,
@@ -234,23 +252,51 @@ export function trackPurchase(order: TrackingOrder) {
 /**
  * Dispara conversão do Google Ads
  * Só deve ser chamado na página /obrigado
+ * Dispara para a conta principal e todas as contas do JSON
  */
 export async function trackGoogleAdsConversion(payload: Record<string, unknown> = {}) {
   if (!import.meta.client) return
   
   try {
     const settings = await getTrackingSettings()
-    const googleAdsConversionId = String(settings.googleAdsConversionId || '').trim()
-    const googleAdsLabel = String(settings.googleAdsLabel || '').trim()
-
-    if (!googleAdsConversionId || !googleAdsLabel) return
-
     const gtag = getGtag()
     if (!gtag) return
 
-    gtag('event', 'conversion', {
-      send_to: `${googleAdsConversionId}/${googleAdsLabel}`,
-      ...payload
+    // Conta principal
+    const primaryId = String(settings.googleAdsConversionId || '').trim()
+    const primaryLabel = String(settings.googleAdsLabel || '').trim()
+
+    // Array para rastrear conversões já disparadas (evita duplicatas)
+    const sentConversions = new Set<string>()
+
+    // Dispara para conta principal
+    if (primaryId && primaryLabel) {
+      const sendTo = `${primaryId}/${primaryLabel}`
+      if (!sentConversions.has(sendTo)) {
+        gtag('event', 'conversion', {
+          send_to: sendTo,
+          ...payload
+        })
+        sentConversions.add(sendTo)
+      }
+    }
+
+    // Dispara para todas as contas do JSON
+    const accounts = Array.isArray(settings.googleAdsAccounts) ? settings.googleAdsAccounts : []
+    accounts.forEach((account: GoogleAdsAccount) => {
+      const accId = String(account?.conversionId || '').trim()
+      const accLabel = String(account?.conversionLabel || '').trim()
+      if (accId && accLabel) {
+        const sendTo = `${accId}/${accLabel}`
+        // Evita duplicar se a conta do JSON for a mesma da principal
+        if (!sentConversions.has(sendTo)) {
+          gtag('event', 'conversion', {
+            send_to: sendTo,
+            ...payload
+          })
+          sentConversions.add(sendTo)
+        }
+      }
     })
   } catch {}
 }

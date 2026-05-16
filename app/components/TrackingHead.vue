@@ -6,6 +6,7 @@ const { data: trackingSettings } = await useFetch('/api/public/settings/tracking
     ga4Id: null,
     googleAdsConversionId: null,
     googleAdsLabel: null,
+    googleAdsAccounts: [] as Array<{ conversionId: string; conversionLabel: string }>,
     metaPixelId: null,
     tiktokPixelId: null,
     headHtml: null,
@@ -33,9 +34,10 @@ function loadDelayedTracking() {
   const settings = trackingSettings.value as any
   const ga4Id = String(settings?.ga4Id || '').trim()
   const googleAdsConversionId = String(settings?.googleAdsConversionId || '').trim()
+  const googleAdsAccounts = Array.isArray(settings?.googleAdsAccounts) ? settings.googleAdsAccounts : []
   const metaPixelId = String(settings?.metaPixelId || '').trim()
   const tiktokPixelId = String(settings?.tiktokPixelId || '').trim()
-  const primaryGtagId = ga4Id || googleAdsConversionId
+  const primaryGtagId = ga4Id || googleAdsConversionId || (googleAdsAccounts[0]?.conversionId)
   const w = window as any
 
   if (primaryGtagId) {
@@ -45,6 +47,14 @@ function loadDelayedTracking() {
     w.gtag('js', new Date())
     if (ga4Id) w.gtag('config', ga4Id, { send_page_view: false })
     if (googleAdsConversionId) w.gtag('config', googleAdsConversionId)
+    
+    // Configurar múltiplas contas Google Ads do JSON
+    googleAdsAccounts.forEach((account: { conversionId: string; conversionLabel: string }) => {
+      const accId = String(account?.conversionId || '').trim()
+      if (accId && accId !== googleAdsConversionId) {
+        w.gtag('config', accId)
+      }
+    })
   }
 
   if (metaPixelId && !w.fbq) {
