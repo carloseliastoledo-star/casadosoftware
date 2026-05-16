@@ -219,24 +219,27 @@ async function loadProduct() {
   productLoading.value = true
   priceError.value = ''
   try {
-    const data: any = await $fetch(`/api/products/${encodeURIComponent(productSlug.value)}`)
-    const p = data?.product || data
+    const data: any = await $fetch('/api/intl/products')
+    const list: any[] = Array.isArray(data) ? data : Array.isArray(data?.produtos) ? data.produtos : []
+    const p = list.find((x: any) => x.slug === productSlug.value)
 
-    const usdPriceMoeda = p?.precosMoeda?.find((x: any) => x.currency === 'usd')
-    const eurPriceMoeda = p?.precosMoeda?.find((x: any) => x.currency === 'eur')
+    if (!p) {
+      priceError.value = 'Product not found.'
+      return
+    }
 
-    const rawDesc = String(p?.nomeEn || p?.name || p?.descricaoCurta || p?.shortDescription || p?.descricao || p?.description || '')
+    const rawDesc = String(p?.descricao || p?.description || '')
       .replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
     const descShort = rawDesc.length > 120 ? rawDesc.slice(0, 120) + '…' : rawDesc
 
     product.value = {
       id: String(p?.id || ''),
-      nome: String(p?.nomeEn || p?.name || p?.nome || ''),
+      nome: String(p?.name || p?.nome || ''),
       slug: String(p?.slug || productSlug.value),
-      imagem: p?.imagem || p?.image || null,
+      imagem: p?.image || p?.imagem || null,
       descricao: descShort || null,
-      usdPrice: usdPriceMoeda ? Number(usdPriceMoeda.amount) : (p?.usdPrice ?? null),
-      eurPrice: eurPriceMoeda ? Number(eurPriceMoeda.amount) : (p?.eurPrice ?? null),
+      usdPrice: p?.usdPrice ? Number(p.usdPrice) : null,
+      eurPrice: p?.eurPrice ? Number(p.eurPrice) : null,
     }
   } catch (err: any) {
     priceError.value = err?.data?.statusMessage || 'Product not found.'
