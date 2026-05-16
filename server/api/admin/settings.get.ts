@@ -72,6 +72,7 @@ export default defineEventHandler(async (event) => {
       googleAnalyticsId: true,
       googleAdsConversionId: true,
       googleAdsConversionLabel: true,
+      googleAdsConfigJson: true,
       metaPixelId: true,
       tiktokPixelId: true,
       headHtml: true,
@@ -85,7 +86,7 @@ export default defineEventHandler(async (event) => {
       orderBumpTitle: true,
       orderBumpDescription: true,
       orderBumpPrice: true,
-        orderBumpsJson: true
+      orderBumpsJson: true
     }
   })
 
@@ -97,6 +98,7 @@ export default defineEventHandler(async (event) => {
       googleAnalyticsId: true,
       googleAdsConversionId: true,
       googleAdsConversionLabel: true,
+      googleAdsConfigJson: true,
       metaPixelId: true,
       tiktokPixelId: true,
       headHtml: true,
@@ -110,7 +112,7 @@ export default defineEventHandler(async (event) => {
       orderBumpTitle: true,
       orderBumpDescription: true,
       orderBumpPrice: true,
-        orderBumpsJson: true
+      orderBumpsJson: true
     }
   })
 
@@ -124,6 +126,7 @@ export default defineEventHandler(async (event) => {
       googleAnalyticsId: true,
       googleAdsConversionId: true,
       googleAdsConversionLabel: true,
+      googleAdsConfigJson: true,
       metaPixelId: true,
       tiktokPixelId: true,
       headHtml: true,
@@ -137,7 +140,7 @@ export default defineEventHandler(async (event) => {
       orderBumpTitle: true,
       orderBumpDescription: true,
       orderBumpPrice: true,
-        orderBumpsJson: true
+      orderBumpsJson: true
     }
   })
 

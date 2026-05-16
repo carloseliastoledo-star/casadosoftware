@@ -14,8 +14,8 @@ const SELECT = {
   bodyCloseHtml: true
 }
 
-export default defineEventHandler(async () => {
-  const { storeSlug } = getStoreContext()
+export default defineEventHandler(async (event) => {
+  const { storeSlug } = getStoreContext(event)
   const prismaAny = prisma as any
 
   try {

@@ -261,6 +261,7 @@ export default defineEventHandler(async (event) => {
           googleAnalyticsId: googleAnalyticsId || null,
           googleAdsConversionId: googleAdsConversionId || null,
           googleAdsConversionLabel: googleAdsConversionLabel || null,
+          googleAdsConfigJson: googleAdsConfigJson || null,
           metaPixelId: metaPixelId || null,
           tiktokPixelId: tiktokPixelId || null,
           headHtml,
@@ -274,13 +275,14 @@ export default defineEventHandler(async (event) => {
           orderBumpTitle,
           orderBumpDescription,
           orderBumpPrice,
-            orderBumpsJson
-          },
+          orderBumpsJson
+        },
         select: {
           id: true,
           googleAnalyticsId: true,
           googleAdsConversionId: true,
           googleAdsConversionLabel: true,
+          googleAdsConfigJson: true,
           metaPixelId: true,
           tiktokPixelId: true,
           headHtml: true,
@@ -294,8 +296,8 @@ export default defineEventHandler(async (event) => {
           orderBumpTitle: true,
           orderBumpDescription: true,
           orderBumpPrice: true,
-            orderBumpsJson: true
-          }
+          orderBumpsJson: true
+        }
       })
     : await prismaAny.siteSettings.create({
         data: {
@@ -303,6 +305,7 @@ export default defineEventHandler(async (event) => {
           googleAnalyticsId: googleAnalyticsId || null,
           googleAdsConversionId: googleAdsConversionId || null,
           googleAdsConversionLabel: googleAdsConversionLabel || null,
+          googleAdsConfigJson: googleAdsConfigJson || null,
           metaPixelId: metaPixelId || null,
           tiktokPixelId: tiktokPixelId || null,
           headHtml,
@@ -316,13 +319,14 @@ export default defineEventHandler(async (event) => {
           orderBumpTitle,
           orderBumpDescription,
           orderBumpPrice,
-            orderBumpsJson
-          },
+          orderBumpsJson
+        },
         select: {
           id: true,
           googleAnalyticsId: true,
           googleAdsConversionId: true,
           googleAdsConversionLabel: true,
+          googleAdsConfigJson: true,
           metaPixelId: true,
           tiktokPixelId: true,
           headHtml: true,
@@ -336,8 +340,8 @@ export default defineEventHandler(async (event) => {
           orderBumpTitle: true,
           orderBumpDescription: true,
           orderBumpPrice: true,
-            orderBumpsJson: true
-          }
+          orderBumpsJson: true
+        }
       })
 
   return { ok: true, settings }
