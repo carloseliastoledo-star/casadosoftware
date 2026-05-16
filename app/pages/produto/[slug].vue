@@ -389,14 +389,14 @@ const whyPriceCardClass = computed(() => {
 const route = useRoute()
 const slug = route.params.slug as string
 
-if (import.meta.server && isInternational.value) {
-  await navigateTo({ path: '/checkout-intl', query: { product: slug } }, { redirectCode: 302 })
+if (isInternational.value) {
+  await navigateTo({ path: '/checkout-intl', query: { product: slug } }, { replace: true, redirectCode: 302 })
 }
 
 if (import.meta.client) {
-  watchEffect(() => {
+  onMounted(() => {
     if (isInternational.value) {
-      navigateTo({ path: '/checkout-intl', query: { product: slug } })
+      navigateTo({ path: '/checkout-intl', query: { product: slug } }, { replace: true })
     }
   })
 }

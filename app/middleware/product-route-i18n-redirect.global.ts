@@ -1,4 +1,17 @@
 export default defineNuxtRouteMiddleware((to) => {
+  const config = useRuntimeConfig()
+  const storeSlug = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
+
+  if (storeSlug === 'international') {
+    const path = String(to.path || '')
+    const productMatch = path.match(/^\/produto\/([^/]+)/i)
+    if (productMatch) {
+      const slug = productMatch[1]
+      return navigateTo({ path: '/checkout-intl', query: { product: slug } }, { replace: true, redirectCode: 302 })
+    }
+    return
+  }
+
   const host = (() => {
     if (import.meta.server) {
       try {
