@@ -1,6 +1,7 @@
 <template>
   <HomeCasaSoftware v-if="isCasaDoSoftware" :home-theme="homeTheme" />
   <HomeCenterKeys v-else-if="isLicencasDigitais" :only-best-sellers="true" :home-theme="homeTheme" />
+  <HomeInternational v-else-if="isInternational" />
   <HomeCenterKeys v-else :only-best-sellers="false" :home-theme="homeTheme" />
 
   <div v-if="debugHost" class="fixed bottom-3 left-3 z-[9999] max-w-[92vw] rounded-lg bg-black/70 text-white text-xs p-3">
@@ -18,6 +19,7 @@ definePageMeta({ ssr: false, layout: 'default' })
 import { useJsonLd } from '~/composables/useJsonLd'
 import { getCasaHomeJsonLdBundle } from '~/services/casaJsonLd'
 import { useHomeTheme } from '~/composables/useHomeTheme'
+import HomeInternational from '~/components/HomeInternational.vue'
 
 const { homeTheme } = useHomeTheme()
 
@@ -104,13 +106,18 @@ const normalizedHost = computed(() => {
 
 const isCasaDoSoftware = computed(() => {
   if (normalizedHost.value.includes('casadosoftware.com.br')) return true
-  if (normalizedHost.value.endsWith('.store')) return true
+  if (normalizedHost.value.endsWith('.store') && !normalizedHost.value.includes('globalsoftware.store')) return true
   return storeSlug.value === 'casadosoftware'
 })
 
 const isLicencasDigitais = computed(() => {
   if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
   return storeSlug.value === 'licencasdigitais'
+})
+
+const isInternational = computed(() => {
+  if (normalizedHost.value.includes('globalsoftware.store')) return true
+  return storeSlug.value === 'international'
 })
 
 const applyCasaSeo = computed(() => {

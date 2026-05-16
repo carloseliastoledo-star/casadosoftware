@@ -31,6 +31,7 @@ function mapHostToStoreSlug(host: string) {
   if (!h) return ''
   if (h.includes('casadosoftware.com.br')) return 'casadosoftware'
   if (h.includes('licencasdigitais.com.br')) return 'licencasdigitais'
+  if (h.includes('globalsoftware.store')) return 'international'
   return normalizeSlug(h)
 }
 
