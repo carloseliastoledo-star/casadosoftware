@@ -47,12 +47,12 @@
             </button>
 
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
-              <picture v-if="effectiveLogoPath">
+              <picture v-if="effectiveLogoPath && !isNationalLogoInIntl">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
                 <img :src="effectiveLogoPath" :alt="siteName" class="h-12 md:h-14 w-auto" />
               </picture>
               <span class="text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
-                {{ siteName }}
+                {{ isInternational ? 'gvgmall' : siteName }}
               </span>
             </NuxtLink>
           </div>
@@ -539,11 +539,20 @@ const logoWebpPath = computed(() => {
   return ''
 })
 
+const NATIONAL_LOGOS = ['/logo.png', '/logo-mercadosoftwares.png', '']
+
 const effectiveLogoPath = computed(() => {
   if (isLicencasDigitais.value) return '/licencasdigitais-gvg/logo.png'
-  if (isInternational.value) return String(logoPath || '').trim() || '/logo-gvg.png'
+  if (isInternational.value) {
+    const lp = String(logoPath || '').trim()
+    return NATIONAL_LOGOS.includes(lp) ? '/logo-gvg.png' : lp
+  }
   return String(logoPath || '').trim() || '/logo-mercadosoftwares.png'
 })
+
+const isNationalLogoInIntl = computed(() =>
+  isInternational.value && NATIONAL_LOGOS.includes(String(logoPath || '').trim())
+)
 
 const effectiveLogoWebpPath = computed(() => {
   const raw = String(effectiveLogoPath.value || '').trim()

@@ -45,28 +45,17 @@
           <!-- CONTACT INFO -->
           <div class="bg-white border border-slate-200 rounded-2xl p-5">
             <h2 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wide">Contact Information</h2>
-            <div class="space-y-3">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
-                <input
-                  v-model="form.name"
-                  type="text"
-                  placeholder="John Smith"
-                  class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Email Address <span class="text-red-500">*</span></label>
-                <input
-                  v-model="form.email"
-                  type="email"
-                  placeholder="you@example.com"
-                  class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  :class="{ 'border-red-400 bg-red-50': showValidation && !isEmailValid }"
-                />
-                <p v-if="showValidation && !isEmailValid" class="text-xs text-red-500 mt-1">Please enter a valid email address.</p>
-                <p class="text-xs text-slate-400 mt-1">Your license key will be sent to this email.</p>
-              </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Email Address <span class="text-red-500">*</span></label>
+              <input
+                v-model="form.email"
+                type="email"
+                placeholder="you@example.com"
+                class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                :class="{ 'border-red-400 bg-red-50': showValidation && !isEmailValid }"
+              />
+              <p v-if="showValidation && !isEmailValid" class="text-xs text-red-500 mt-1">Please enter a valid email address.</p>
+              <p class="text-xs text-slate-400 mt-1">Your license key will be sent to this email.</p>
             </div>
           </div>
 
@@ -200,6 +189,7 @@ interface IntlProduct {
   nome: string
   slug: string
   imagem: string | null
+  descricao: string | null
   usdPrice: number | null
   eurPrice: number | null
 }
@@ -235,11 +225,16 @@ async function loadProduct() {
     const usdPriceMoeda = p?.precosMoeda?.find((x: any) => x.currency === 'usd')
     const eurPriceMoeda = p?.precosMoeda?.find((x: any) => x.currency === 'eur')
 
+    const rawDesc = String(p?.nomeEn || p?.name || p?.descricaoCurta || p?.shortDescription || p?.descricao || p?.description || '')
+      .replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+    const descShort = rawDesc.length > 120 ? rawDesc.slice(0, 120) + '…' : rawDesc
+
     product.value = {
       id: String(p?.id || ''),
-      nome: String(p?.nome || p?.name || ''),
+      nome: String(p?.nomeEn || p?.name || p?.nome || ''),
       slug: String(p?.slug || productSlug.value),
       imagem: p?.imagem || p?.image || null,
+      descricao: descShort || null,
       usdPrice: usdPriceMoeda ? Number(usdPriceMoeda.amount) : (p?.usdPrice ?? null),
       eurPrice: eurPriceMoeda ? Number(eurPriceMoeda.amount) : (p?.eurPrice ?? null),
     }
@@ -378,26 +373,31 @@ const ProductSummaryCard = defineComponent({
   },
   template: `
     <div>
-      <div v-if="loading" class="flex items-center gap-3 animate-pulse">
-        <div class="w-14 h-14 bg-slate-100 rounded-xl flex-shrink-0" />
-        <div class="flex-1 space-y-2">
-          <div class="h-3 bg-slate-100 rounded w-3/4" />
-          <div class="h-3 bg-slate-100 rounded w-1/2" />
+      <div v-if="loading" class="animate-pulse space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="w-20 h-20 bg-slate-100 rounded-xl flex-shrink-0" />
+          <div class="flex-1 space-y-2">
+            <div class="h-3 bg-slate-100 rounded w-3/4" />
+            <div class="h-3 bg-slate-100 rounded w-1/2" />
+          </div>
         </div>
       </div>
-      <div v-else-if="product" class="flex items-start gap-3">
-        <img
-          v-if="product.imagem || product.image"
-          :src="product.imagem || product.image"
-          :alt="product.nome || product.name"
-          class="w-14 h-14 object-contain rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0"
-        />
-        <div class="w-14 h-14 bg-slate-50 border border-slate-100 rounded-xl flex-shrink-0 flex items-center justify-center text-2xl" v-else>📦</div>
-        <div class="flex-1 min-w-0">
-          <p class="font-bold text-slate-900 text-sm leading-snug">{{ product.nome || product.name }}</p>
-          <p class="text-xs text-slate-500 mt-0.5">Digital license — instant delivery</p>
-          <p v-if="!error" class="text-base font-extrabold text-blue-600 mt-1.5">{{ formatted }}</p>
-          <p v-else class="text-xs text-amber-600 mt-1">Price unavailable</p>
+      <div v-else-if="product">
+        <div class="flex items-start gap-4">
+          <img
+            v-if="product.imagem || product.image"
+            :src="product.imagem || product.image"
+            :alt="product.nome || product.name"
+            class="w-20 h-20 object-contain rounded-xl bg-slate-50 border border-slate-100 flex-shrink-0"
+          />
+          <div class="w-20 h-20 bg-slate-50 border border-slate-100 rounded-xl flex-shrink-0 flex items-center justify-center text-3xl" v-else>📦</div>
+          <div class="flex-1 min-w-0">
+            <p class="font-bold text-slate-900 text-sm leading-snug">{{ product.nome || product.name }}</p>
+            <p v-if="product.descricao" class="text-xs text-slate-500 mt-1 leading-relaxed">{{ product.descricao }}</p>
+            <p v-else class="text-xs text-slate-500 mt-0.5">Digital license — instant delivery</p>
+            <p v-if="!error" class="text-base font-extrabold text-blue-600 mt-2">{{ formatted }}</p>
+            <p v-else class="text-xs text-amber-600 mt-1">Price unavailable</p>
+          </div>
         </div>
       </div>
       <div v-else class="text-sm text-slate-400 text-center py-4">No product selected.</div>

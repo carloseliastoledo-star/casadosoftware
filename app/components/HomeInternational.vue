@@ -233,10 +233,6 @@ function formatPrice(n: number) {
   return Number(n).toFixed(2)
 }
 
-function goToProduct(product: any) {
-  const slug = product.slug
-  if (slug) router.push({ path: '/checkout-intl', query: { product: slug } })
-}
 
 const trustBadges = [
   { icon: '⚡', title: 'Instant Delivery', desc: 'License key sent to your email in minutes.' },
@@ -302,6 +298,10 @@ interface IntlProduct {
   image?: string | null
   usdPrice?: number | null
   eurPrice?: number | null
+}
+
+function goToProduct(product: IntlProduct) {
+  navigateTo(`/product/${product.slug}`)
 }
 
 const { data: rawProducts, pending } = await useFetch<any>('/api/intl/products', {
