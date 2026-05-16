@@ -15,6 +15,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
   const isIntl = storeSlug === 'international' ||
     _host.includes('globalsoftware.store') ||
+    _host.includes('gvgmall.co') ||
     (_host.includes('globalsoftware-prev') && _host.includes('vercel.app'))
 
   if (isIntl) {

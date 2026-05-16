@@ -227,6 +227,7 @@ const isLicencasDigitais = computed(() => {
 
 const isInternational = computed(() => {
   if (normalizedHost.value.includes('globalsoftware.store')) return true
+  if (normalizedHost.value.includes('gvgmall.co')) return true
   return storeSlug.value === 'international'
 })
 
