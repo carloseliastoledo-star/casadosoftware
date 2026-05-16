@@ -1,6 +1,7 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
+import { getStoreContext } from '../../../utils/store.js'
 
 export default defineEventHandler(async (event) => {
   console.log('[admin/affiliates] ===== START =====')
@@ -11,6 +12,11 @@ export default defineEventHandler(async (event) => {
     console.log('[admin/affiliates] Verificando sessão admin...')
     const session = requireAdminSession(event)
     console.log('[admin/affiliates] Admin autenticado:', session?.email)
+
+    const { storeSlug } = getStoreContext(event)
+    if (storeSlug === 'international') {
+      return { ok: true, affiliates: [] }
+    }
 
     console.log('[admin/affiliates] Buscando afiliados...')
     const affiliatesRaw = await (prisma as any).affiliate.findMany({

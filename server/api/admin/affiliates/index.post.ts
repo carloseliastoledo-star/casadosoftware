@@ -1,11 +1,17 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
+import { getStoreContext } from '../../../utils/store.js'
 
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
 
   const body = await readBody(event)
+
+  const { storeSlug } = getStoreContext(event)
+  if (storeSlug === 'international') {
+    return { ok: false, error: 'Affiliate creation not available in international store yet.' }
+  }
 
   const name = String(body?.name || '').trim()
   const email = String(body?.email || '').trim().toLowerCase()

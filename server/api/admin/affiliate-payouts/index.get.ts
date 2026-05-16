@@ -1,9 +1,15 @@
 import { defineEventHandler, getQuery } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
+import { getStoreContext } from '../../../utils/store.js'
 
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
+
+  const { storeSlug } = getStoreContext(event)
+  if (storeSlug === 'international') {
+    return { ok: true, payouts: [] }
+  }
 
   const q = getQuery(event)
   const status = String((q as any)?.status || '').trim()
