@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
-import { requireAdminSession } from '../../../utils/adminSession'
-import prisma from '../../../db/prisma'
+import { randomUUID } from 'crypto'
+import { requireAdminSession } from '../../../utils/adminSession.js'
+import prisma from '../../../db/prisma.js'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -34,6 +35,7 @@ export default defineEventHandler(async (event) => {
   try {
     const review = await (prisma as any).review.create({
       data: {
+        id: randomUUID(),
         customerName: String(customerName),
         productName: String(productName),
         productId: productId ? String(productId) : null,
