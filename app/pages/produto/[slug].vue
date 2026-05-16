@@ -266,6 +266,7 @@
 import { useIntlContext } from '#imports'
 import { trackViewItem } from '~/composables/useTracking'
 import { useEcommerceTracking } from '~/composables/useEcommerceTracking'
+import { useIsInternational } from '~/composables/useIsInternational'
 
 function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[]; USE_PROFILES?: any }): string {
   const str = String(html || '')
@@ -276,6 +277,8 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
 }
 
 definePageMeta({ ssr: true, middleware: ['product-fallback'] })
+
+const isInternational = useIsInternational()
 
 const intl = useIntlContext()
 
@@ -329,11 +332,6 @@ const isCasaDoSoftware = computed(() => {
 const isLicencasDigitais = computed(() => {
   if (normalizedHost.value.includes('licencasdigitais.com.br')) return true
   return storeSlug.value === 'licencasdigitais'
-})
-
-const isInternational = computed(() => {
-  if (normalizedHost.value.includes('globalsoftware.store')) return true
-  return storeSlug.value === 'international'
 })
 
 const sectionClass = computed(() => {
@@ -390,6 +388,18 @@ const whyPriceCardClass = computed(() => {
 
 const route = useRoute()
 const slug = route.params.slug as string
+
+if (import.meta.server && isInternational.value) {
+  await navigateTo({ path: '/checkout-intl', query: { product: slug } }, { redirectCode: 302 })
+}
+
+if (import.meta.client) {
+  watchEffect(() => {
+    if (isInternational.value) {
+      navigateTo({ path: '/checkout-intl', query: { product: slug } })
+    }
+  })
+}
 
 const { hreflangLinks: productHreflang } = useSeoLocale({
   pageType: 'product',

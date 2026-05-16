@@ -47,11 +47,11 @@
             </button>
 
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
-              <picture>
+              <picture v-if="effectiveLogoPath">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
                 <img :src="effectiveLogoPath" :alt="siteName" class="h-12 md:h-14 w-auto" />
               </picture>
-              <span class="hidden sm:block text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
+              <span class="text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
                 {{ siteName }}
               </span>
             </NuxtLink>
@@ -525,10 +525,7 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
-const isInternational = computed(() => {
-  if (normalizedHost.value.includes('globalsoftware.store')) return true
-  return storeSlug.value === 'international'
-})
+const isInternational = useIsInternational()
 
 const isEnDomain = computed(() => {
   const h = normalizedHost.value
@@ -802,8 +799,10 @@ const footerPolicyLinksParsed = computed<FooterPolicyLinkDto[]>(() => {
   }
 })
 
+const isIntlOrEn = computed(() => isInternational.value || intl.language.value === 'en')
+
 const t = computed(() => {
-  if (isInternational.value || intl.language.value === 'en') {
+  if (isIntlOrEn.value) {
     return {
       home: 'Home',
       openMenu: 'Open menu',
