@@ -331,6 +331,11 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
+const isInternational = computed(() => {
+  if (normalizedHost.value.includes('globalsoftware.store')) return true
+  return storeSlug.value === 'international'
+})
+
 const sectionClass = computed(() => {
   return isLicencasDigitais.value ? 'bg-white min-h-screen' : 'bg-gray-50 min-h-screen py-10'
 })
@@ -1321,6 +1326,13 @@ const t = computed(() => {
 
 function buyNow() {
   const p = safeProduct.value as any
+  const slugValue = String(p?.slug || slug || '')
+
+  if (isInternational.value) {
+    navigateTo({ path: '/checkout-intl', query: { product: slugValue } })
+    return
+  }
+
   try {
     ecomAddToCart({
       item_id: p?.id || '',
@@ -1331,7 +1343,6 @@ function buyNow() {
   } catch {
     // ignore
   }
-  const slugValue = String(p?.slug || slug || '')
   navigateTo({ path: '/checkout', query: { product: slugValue } })
 }
 </script>
