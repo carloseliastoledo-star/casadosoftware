@@ -3,21 +3,51 @@ import prisma from '../../db/prisma'
 
 const STORE_SLUG = 'international'
 
-const INTL_PRODUCT_SLUGS = [
-  'office-2021-pro-plus',
-  'office-ltsc-pro-plus-2024',
-  'microsoft-windows-11-pro-chave-esd-32-64-bits',
-  'office-2021-pro-plus-windows-11-pro',
-  'microsoft-windows-server-2022-standard-download-nota-fiscal',
-]
-
-const INTL_NAME_MAP: Record<string, string> = {
-  'office-2021-pro-plus': 'Office 2021 Professional Plus',
-  'office-ltsc-pro-plus-2024': 'Office 2024 Professional Plus',
-  'microsoft-windows-11-pro-chave-esd-32-64-bits': 'Windows 11 Pro Digital License',
-  'office-2021-pro-plus-windows-11-pro': 'Office 2021 Pro Plus + Windows 11 Pro',
-  'microsoft-windows-server-2022-standard-download-nota-fiscal': 'Windows Server 2022 Standard',
+type IntlProductConfig = {
+  nameEn: string
+  usdPrice: number
+  oldUsdPrice?: number
 }
+
+const INTL_PRODUCTS: Record<string, IntlProductConfig> = {
+  'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive': {
+    nameEn: 'Microsoft 365 – 5 Devices, 1TB OneDrive',
+    usdPrice: 29.99,
+    oldUsdPrice: 49.99,
+  },
+  'office-365': {
+    nameEn: 'Office 365 Original License – Instant Delivery',
+    usdPrice: 19.99,
+    oldUsdPrice: 34.99,
+  },
+  'microsoft-windows-11-pro-chave-esd-32-64-bits': {
+    nameEn: 'Windows 11 Pro – Digital License ESD',
+    usdPrice: 14.99,
+    oldUsdPrice: 29.99,
+  },
+  'microsoft-windows-10-pro-chave-esd-32-64-bits': {
+    nameEn: 'Windows 10 Pro – Digital License ESD',
+    usdPrice: 12.99,
+    oldUsdPrice: 24.99,
+  },
+  'office-2021-pro-plus-windows-11-pro': {
+    nameEn: 'Office 2021 Pro Plus + Windows 11 Pro Bundle',
+    usdPrice: 24.99,
+    oldUsdPrice: 44.99,
+  },
+  'office-ltsc-pro-plus-2024': {
+    nameEn: 'Office 2024 Professional Plus',
+    usdPrice: 34.99,
+    oldUsdPrice: 59.99,
+  },
+  'winserver2025': {
+    nameEn: 'Windows Server 2025 Standard',
+    usdPrice: 39.99,
+    oldUsdPrice: 69.99,
+  },
+}
+
+const INTL_PRODUCT_SLUGS = Object.keys(INTL_PRODUCTS)
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -40,32 +70,41 @@ export default defineEventHandler(async (event) => {
 
     const produtoIds = produtos.map((p: any) => p.id)
 
-    const precos = await (prisma as any).produtoPrecoMoeda.findMany({
-      where: { produtoId: { in: produtoIds }, storeSlug: STORE_SLUG, currency: 'usd' },
-      select: { produtoId: true, amount: true, oldAmount: true }
-    })
-
-    const priceMap = new Map<string, { amount: number; oldAmount: number | null }>()
-    for (const r of precos) {
-      priceMap.set(r.produtoId, { amount: Number(r.amount), oldAmount: r.oldAmount ? Number(r.oldAmount) : null })
+    // Try to get prices from DB first (ProdutoPrecoMoeda), fall back to hardcoded config
+    let dbPriceMap = new Map<string, { amount: number; oldAmount: number | null }>()
+    try {
+      const precos = await (prisma as any).produtoPrecoMoeda.findMany({
+        where: { produtoId: { in: produtoIds }, storeSlug: STORE_SLUG, currency: 'usd' },
+        select: { produtoId: true, amount: true, oldAmount: true }
+      })
+      for (const r of precos) {
+        dbPriceMap.set(r.produtoId, { amount: Number(r.amount), oldAmount: r.oldAmount ? Number(r.oldAmount) : null })
+      }
+    } catch {
+      // DB prices not available, use hardcoded fallback
     }
 
-    const resultado = produtos
-      .filter((p: any) => priceMap.has(p.id))
-      .map((p: any) => {
-        const intlPrice = priceMap.get(p.id)!
-        return {
-          id: p.id,
-          name: INTL_NAME_MAP[p.slug] || p.nomeEn || p.nome,
-          slug: p.slug,
-          usdPrice: intlPrice.amount,
-          oldUsdPrice: intlPrice.oldAmount,
-          currency: 'usd',
-          storeSlug: STORE_SLUG,
-          image: normalizeImageUrl(p.imagem),
-          cardItems: p.cardItems,
-        }
-      })
+    const resultado = produtos.map((p: any) => {
+      const cfg = INTL_PRODUCTS[p.slug as string]
+      const dbPrice = dbPriceMap.get(p.id)
+
+      const usdPrice = dbPrice?.amount ?? cfg?.usdPrice ?? null
+      const oldUsdPrice = dbPrice?.oldAmount ?? cfg?.oldUsdPrice ?? null
+
+      if (!usdPrice) return null
+
+      return {
+        id: p.id,
+        name: cfg?.nameEn || p.nomeEn || p.nome,
+        slug: p.slug,
+        usdPrice,
+        oldUsdPrice,
+        currency: 'usd',
+        storeSlug: STORE_SLUG,
+        image: normalizeImageUrl(p.imagem),
+        cardItems: p.cardItems,
+      }
+    }).filter(Boolean)
 
     return { ok: true, produtos: resultado }
   } catch (error: any) {
