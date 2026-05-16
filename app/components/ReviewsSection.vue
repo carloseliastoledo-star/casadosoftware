@@ -41,11 +41,11 @@ const stats = computed(() => data.value?.stats || { total: 0, average: 0 })
 <template>
   <div v-if="!pending && reviews.length > 0" class="reviews-section">
     <!-- Versão compacta para checkout -->
-    <div v-if="compact" class="flex items-center gap-2 text-sm">
-      <RatingStars :rating="stats.average" size="sm" />
-      <span class="font-semibold text-gray-900">{{ stats.average }}/5</span>
-      <span class="text-gray-600">—</span>
-      <span class="text-gray-600">{{ stats.total }} avaliações</span>
+    <div v-if="compact" class="flex items-center gap-2 text-sm flex-wrap">
+      <span class="text-yellow-500 tracking-tight">★★★★★</span>
+      <span class="font-semibold text-gray-900">4,9 de nota</span>
+      <span class="text-gray-400">•</span>
+      <span class="text-gray-600">Mais de 20 mil clientes atendidos</span>
     </div>
 
     <!-- Versão completa para Home, produto e página de avaliações -->
