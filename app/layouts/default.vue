@@ -49,10 +49,10 @@
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
               <picture v-if="effectiveLogoPath && !isNationalLogoInIntl">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-                <img :src="effectiveLogoPath" :alt="siteName" class="h-12 md:h-14 w-auto" />
+                <img :src="effectiveLogoPath" :alt="siteName" :class="isInternational ? 'h-36 md:h-40 w-auto' : 'h-12 md:h-14 w-auto'" />
               </picture>
-              <span class="text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
-                {{ isInternational ? 'gvgmall' : siteName }}
+              <span v-if="!isInternational" class="text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
+                {{ siteName }}
               </span>
             </NuxtLink>
           </div>
