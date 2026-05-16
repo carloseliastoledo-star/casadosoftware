@@ -128,11 +128,6 @@ export default defineNuxtConfig({
     'pages:extend'(pages) {
       const productFile = resolve(__dirname, 'app/pages/produto/[slug].vue')
       pages.push({
-        name: 'product-slug',
-        path: '/product/:slug',
-        file: productFile
-      })
-      pages.push({
         name: 'producto-slug',
         path: '/producto/:slug',
         file: productFile
