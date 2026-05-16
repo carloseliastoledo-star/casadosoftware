@@ -58,21 +58,16 @@ export default defineEventHandler(async (event) => {
   } catch (err: any) {
     console.error('[api/blog/slug] ===== ERROR =====')
     console.error('[api/blog/slug] full error:', err)
-    console.error('[api/blog/slug] message:', err?.message)
-    console.error('[api/blog/slug] code:', err?.code)
-    console.error('[api/blog/slug] meta:', err?.meta)
-    console.error('[api/blog/slug] stack:', err?.stack)
     
-    const code = String(err?.code || '')
-    const message = String(err?.message || '')
-    
-    if (code === 'P2021' || message.includes('does not exist')) {
-      throw createError({ statusCode: 500, statusMessage: 'Tabela não existe' })
+    // Se já é um erro 404, propaga
+    if (err?.statusCode === 404) {
+      throw err
     }
     
+    // Para qualquer outro erro, retorna 404 para não expor erros internos aos bots
     throw createError({ 
-      statusCode: 503, 
-      statusMessage: `Erro: ${message}` 
+      statusCode: 404, 
+      statusMessage: 'Post não encontrado'
     })
   }
 })

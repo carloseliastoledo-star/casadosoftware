@@ -151,9 +151,10 @@ export default defineEventHandler(async (event) => {
     console.log('[api/products/[slug]] Produto encontrado:', product ? 'SIM' : 'NÃO')
   } catch (dbError: any) {
     console.error('[api/products/[slug]] DB ERROR:', dbError)
+    // Retorna 404 para não expor erros de DB aos bots
     throw createError({ 
-      statusCode: 503, 
-      statusMessage: `Erro ao buscar produto: ${dbError?.message || 'Erro desconhecido'}` 
+      statusCode: 404, 
+      statusMessage: 'Produto não encontrado'
     })
   }
 
@@ -289,11 +290,12 @@ export default defineEventHandler(async (event) => {
     createdAt: product.criadoEm
   }
   } catch (err: any) {
-    if (err?.statusCode) throw err
+    if (err?.statusCode === 404) throw err
     console.error('[api/products/[slug]] error:', err)
+    // Retorna 404 para não expor erros internos
     throw createError({ 
-      statusCode: 503, 
-      statusMessage: `Erro: ${err?.message || 'Erro desconhecido'}` 
+      statusCode: 404, 
+      statusMessage: 'Produto não encontrado'
     })
   } finally {
     console.log('[api/products/[slug]] loaded in', Date.now() - startedAt, 'ms')
