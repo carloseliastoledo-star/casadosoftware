@@ -225,11 +225,7 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
-const isInternational = computed(() => {
-  if (normalizedHost.value.includes('globalsoftware.store')) return true
-  if (normalizedHost.value.includes('gvgmall.co')) return true
-  return storeSlug.value === 'international'
-})
+const isInternational = useIsInternational()
 
 const apiUrl = computed(() =>
   isInternational.value ? `/api/intl/category/${slug}` : `/api/categorias/${slug}`
