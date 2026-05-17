@@ -1,10 +1,10 @@
 ALTER TABLE `SeoPage` ADD COLUMN IF NOT EXISTS `storeSlug` VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
 
--- Drop old unique index if it exists (slug+locale without storeSlug)
+-- Clean up any partial indexes from previous failed runs
 DROP INDEX IF EXISTS `SeoPage_locale_slug_key` ON `SeoPage`;
+DROP INDEX IF EXISTS `SeoPage_storeSlug_locale_slug_key` ON `SeoPage`;
+DROP INDEX IF EXISTS `SeoPage_storeSlug_locale_status_idx` ON `SeoPage`;
 
--- Create new unique index with storeSlug
-CREATE UNIQUE INDEX IF NOT EXISTS `SeoPage_storeSlug_locale_slug_key` ON `SeoPage`(`storeSlug`, `locale`, `slug`);
-
--- Create search index
-CREATE INDEX IF NOT EXISTS `SeoPage_storeSlug_locale_status_idx` ON `SeoPage`(`storeSlug`, `locale`, `status`);
+-- Create indexes (MySQL does NOT support IF NOT EXISTS on CREATE INDEX)
+CREATE UNIQUE INDEX `SeoPage_storeSlug_locale_slug_key` ON `SeoPage`(`storeSlug`, `locale`, `slug`);
+CREATE INDEX `SeoPage_storeSlug_locale_status_idx` ON `SeoPage`(`storeSlug`, `locale`, `status`);
