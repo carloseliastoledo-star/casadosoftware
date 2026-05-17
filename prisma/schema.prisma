@@ -368,6 +368,7 @@ model Produto {
   id                          String              @id
   nome                        String
   slug                        String              @unique
+  slugEn                      String?             @unique
   descricao                   String?             @db.Text
   preco                       Float
   criadoEm                    DateTime            @default(now())

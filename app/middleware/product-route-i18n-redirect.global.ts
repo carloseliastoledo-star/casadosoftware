@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
       try {
         const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>
-        const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
+        const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers.host || ''
         const first = String(raw || '').split(',')[0]?.trim()
         return String(first || '').toLowerCase()
       } catch {
@@ -23,11 +23,57 @@ export default defineNuxtRouteMiddleware((to) => {
 
   const isEnHost = host.startsWith('en.')
   const isEsHost = host.startsWith('es.')
-  if (!isEnHost && !isEsHost) return
+  
+  // Detect international domain (not .com.br, localhost, or vercel.app)
+  const isIntlDomain = 
+    !host.endsWith('.com.br') && 
+    !host.includes('.com.br:') && 
+    !host.includes('localhost') && 
+    !host.includes('127.0.0.1') && 
+    !host.includes('.vercel.app') && 
+    host.length > 0
+
+  if (!isEnHost && !isEsHost && !isIntlDomain) return
 
   const path = String(to.path || '')
   const normalized = path.endsWith('/') && path.length > 1 ? path.slice(0, -1) : path
 
+  // International domain redirects
+  if (isIntlDomain) {
+    // Direct redirects
+    const intlDirectMap: Record<string, string> = {
+      '/produtos': '/products',
+      '/categorias': '/categories',
+      '/quem-somos': '/about-us',
+      '/entrega-digital': '/digital-delivery',
+      '/reembolso': '/refund-policy',
+      '/privacidade': '/privacy-policy',
+      '/termos': '/terms-of-use'
+    }
+
+    const mappedIntlDirect = intlDirectMap[normalized]
+    if (mappedIntlDirect) {
+      return navigateTo({ path: mappedIntlDirect, query: to.query, hash: to.hash }, { redirectCode: 301, replace: true })
+    }
+
+    // Product redirect: /produto/[slug] -> /product/[slugEn or slug]
+    const productMatch = normalized.match(/^\/produto\/([^/]+)$/i)
+    if (productMatch) {
+      const slug = productMatch[1]
+      return navigateTo({ path: `/product/${slug}`, query: to.query, hash: to.hash }, { redirectCode: 301, replace: true })
+    }
+
+    // Category redirect: /categoria/[slug] -> /category/[slug]
+    const categoryMatch = normalized.match(/^\/categoria\/([^/]+)$/i)
+    if (categoryMatch) {
+      const slug = categoryMatch[1]
+      return navigateTo({ path: `/category/${slug}`, query: to.query, hash: to.hash }, { redirectCode: 301, replace: true })
+    }
+
+    return
+  }
+
+  // Subdomain redirects (existing logic)
   const directMap: Record<string, string> = isEnHost
     ? {
         '/produtos': '/products',

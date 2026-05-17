@@ -51,6 +51,7 @@ interface Props {
     id: string
     nome: string
     slug: string
+    slugEn?: string | null
     imagem?: string | null
     descricao?: string | null
     preco?: number | null
@@ -62,7 +63,18 @@ const props = defineProps<Props>()
 const intl = useIntlContext()
 const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
 
-const productPath = computed(() => `${productsIndexPath.value}/${props.product.slug}`)
+const productPath = computed(() => {
+  const s = props.product.slug
+  const slugEn = props.product.slugEn
+  
+  // On international domains always use /product/ with slugEn if available
+  if (intl.isIntl.value) {
+    const slugToUse = slugEn || s
+    return `/product/${slugToUse}`
+  }
+  
+  return `${productsIndexPath.value}/${s}`
+})
 
 const productName = computed(() => props.product.nome || 'Produto')
 

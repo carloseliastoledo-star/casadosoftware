@@ -3,8 +3,11 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { locale: _i18nLocale } = useI18n()
+const _intl = useIntlContext()
 
 const effectiveLang = computed<'pt' | 'en' | 'es' | 'fr' | 'it'>(() => {
+  const intlLang = _intl.language.value
+  if (intlLang && intlLang !== 'pt') return intlLang
   const l = String(_i18nLocale.value || '').toLowerCase()
   return (l === 'en' || l === 'es' || l === 'fr' || l === 'it') ? (l as any) : 'pt'
 })
@@ -14,6 +17,7 @@ interface Product {
   name?: string
   nome?: string
   slug: string
+  slugEn?: string | null
   price?: number
   preco?: number
   old_price?: number | null
@@ -42,7 +46,15 @@ const productImage = computed(() => {
 
 const productPath = computed(() => {
   const s = String((props.product as any)?.slug || '').trim()
+  const slugEn = String((props.product as any)?.slugEn || '').trim()
   if (!s) return '/'
+
+  // On international domains always use /product/ with slugEn if available
+  if (_intl.isIntl.value) {
+    const slugToUse = slugEn || s
+    return `/product/${slugToUse}`
+  }
+
   const lang = effectiveLang.value
   const segment = lang === 'en' ? 'product' : lang === 'es' ? 'producto' : 'produto'
   return `/${segment}/${s}`

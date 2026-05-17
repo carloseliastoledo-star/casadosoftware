@@ -115,7 +115,7 @@ function urlEntry(loc: string, lastmod?: string, priority = '0.8', changefreq = 
 }
 
 export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
-  let products: Array<{ slug: string; criadoEm: Date | null }> = []
+  let products: Array<{ slug: string; slugEn: string | null; criadoEm: Date | null }> = []
   let categories: Array<{ slug: string }> = []
   let posts: Array<{ slug: string; atualizadoEm: Date | null }> = []
   let seoPages: Array<{ slug: string; updatedAt: Date | null }> = []
@@ -124,7 +124,7 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
 
   try {
     const results = await Promise.all([
-      prisma.produto.findMany({ where: { ativo: true }, select: { slug: true, criadoEm: true } }),
+      prisma.produto.findMany({ where: { ativo: true }, select: { slug: true, slugEn: true, criadoEm: true } }),
       prisma.categoria.findMany({ select: { slug: true } }),
       (prisma as any).blogPost.findMany({ where: { publicado: true }, select: { slug: true, atualizadoEm: true } }),
       (prisma as any).seoPage.findMany({
@@ -161,7 +161,9 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
 
   // Products
   for (const prod of products) {
-    const s = safeSlug(prod?.slug)
+    // Use slugEn for EN store config, fallback to slug
+    const slugToUse = (cfg === EN_STORE_CONFIG && prod.slugEn) ? prod.slugEn : prod.slug
+    const s = safeSlug(slugToUse)
     if (!s) continue
     const lastmod = prod.criadoEm ? new Date(prod.criadoEm).toISOString().slice(0, 10) : undefined
     entries.push(urlEntry(base + cfg.productPath(s), lastmod, '0.9', 'weekly'))

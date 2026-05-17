@@ -431,7 +431,8 @@ const isIntlDomain = computed(() => {
 
 const { hreflangLinks: productHreflang } = useSeoLocale({
   pageType: 'product',
-  slug: computed(() => String((safeProduct.value as any)?.slug || slug || ''))
+  slug: computed(() => String((safeProduct.value as any)?.slug || slug || '')),
+  slugEn: computed(() => String((safeProduct.value as any)?.slugEn || ''))
 })
 
 const lang = computed(() => effectiveLang.value)
@@ -458,6 +459,14 @@ const baseUrl = useSiteUrl()
 const canonicalUrl = computed(() => {
   const s = String(slug || '').trim()
   if (!s) return baseUrl ? `${baseUrl}/` : ''
+  
+  // On international domains, use slugEn for canonical URL if available
+  if (isIntlDomain.value) {
+    const slugEn = String((safeProduct.value as any)?.slugEn || '').trim()
+    const slugToUse = slugEn || s
+    return baseUrl ? `${baseUrl}/product/${slugToUse}` : ''
+  }
+  
   const segment = lang.value === 'en' ? 'product' : 'produto'
   return baseUrl ? `${baseUrl}/${segment}/${s}` : ''
 })

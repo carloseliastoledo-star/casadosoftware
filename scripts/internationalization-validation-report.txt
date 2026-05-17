@@ -1,0 +1,47 @@
+
+=== RELATÓRIO DE VALIDAÇÃO DE INTERNACIONALIZAÇÃO ===
+
+Data: 2026-05-17T21:58:25.673Z
+
+1. CONTAGEM DE PRODUTOS COM SLUGEN
+   - Produtos ativos totais: 109
+   - Produtos com slugEn: 105
+   - Porcentagem: 96.3%
+
+2. SLUGS PROBLEMÁTICOS (SEM SLUGEN)
+   - Total: 4
+      - Office 365 Personal, Digital, 1TB, 1 licença - Microsoft: slug="office-365-personal-digital-1tb-1-licenca-microsoft", slugEn=NULL
+   - Microsoft Office 365 – 5 Licenses (PC, Mac, Android, or iOS): slug="microsoft-office-365-vitalicio-5-licenses-pc-mac-android-ou-ios-1-tb-one-drive", slugEn=NULL
+   - Windows Server 2025 Standard 64 Bits, 16 Core ESD: slug="winserver2025", slugEn=NULL
+   - Kaspersky Premium - 1, 3, 5 or 10 Devices - 1 Year: slug="kaspersky-premium-1-3-5-ou-10-dispositivos-1-ano", slugEn=NULL
+
+3. CONTAGEM DE REDIRECTS 301 POTENCIAIS
+   - Produtos com slug e slugEn: 105
+   - Cada produto pode ter 1 redirect de /produto/[slug] -> /product/[slugEn]
+
+4. EXEMPLOS DE REDIRECTS 301 (5 PRODUTOS)
+      - /produto/pacote-de-50-device-cals-windows-server-2019-32-64-bits-licenca-vitalicia-nota-fiscal-e-garantia -> /product/50-device-cals-windows-server-2019-3264-bits-lifetime-license (Pacote De 50 Device CALs Windows Server 2019 – 32/64 BITS – Licença Vitalícia + Nota Fiscal e Garantia)
+   - /produto/adobe-ilustrator -> /product/adobe-illustrator-2026-subscription-annual- (ADOBE ILLUSTRATOR 2026 assinatura anual )
+   - /produto/arc-raiders-steam-key-pc-global -> /product/arc-raiders-steam-key-pc-global (ARC Raiders Steam Key (PC) GLOBAL)
+   - /produto/autocad-2025-para-windows-assinatura-anual -> /product/autocad-2025-windows-annual-subscription (Autocad 2025 Para Windows (assinatura anual))
+   - /produto/autocad-map-3d-2025-para-windows-assinatura-anual -> /product/autocad-map-3d-2025-windows-annual-subscription (AutoCAD Map 3D 2025 Para Windows (assinatura anual))
+
+5. VERIFICAÇÃO DE SLUGEN DUPLICADOS
+   - SlugEn duplicados: 0
+   
+
+6. VERIFICAÇÃO DE PALAVRAS EM PORTUGUÊS EM SLUGEN
+   - Slugs com palavras portuguesas: 0
+   
+
+7. STATUS DO BANCO DE DADOS
+   - Campo slugEn adicionado: SIM
+   - Índice único em slugEn: SIM
+   - Dados populados: SIM (105 produtos)
+
+8. PRÓXIMOS PASSOS
+   - Confirmar que casadosoftware.com.br usa /produto/[slug]
+   - Confirmar que gvgmall.co usa /product/[slugEn]
+   - Testar redirects 301 no ambiente de produção
+   - Verificar sitemap internacional não contém /produto/
+   - Verificar canonical URLs em gvgmall.co apontam para gvgmall.co

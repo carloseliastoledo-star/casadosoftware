@@ -154,6 +154,7 @@ export function enPathOnStoreDomain(pageType: SeoPageType, slug?: string): strin
 export function useSeoLocale(options: {
   pageType: SeoPageType
   slug?: string | Ref<string> | ComputedRef<string>
+  slugEn?: string | Ref<string> | ComputedRef<string>
 }) {
   const siteUrl = useSiteUrl()
   const config = useRuntimeConfig()
@@ -180,6 +181,13 @@ export function useSeoLocale(options: {
     return String(s.value || '')
   })
 
+  const slugEn = computed(() => {
+    const s = options.slugEn
+    if (!s) return ''
+    if (typeof s === 'string') return s
+    return String(s.value || '')
+  })
+
   const currentLang = computed<SeoLang>(() => detectLangFromPath(route.path))
 
   const canonicalUrl = computed(() => {
@@ -199,7 +207,9 @@ export function useSeoLocale(options: {
       let href: string
       if (lang === 'en') {
         // Use canonical .store paths (no /en/ prefix — domain itself signals language)
-        const enPath = enPathOnStoreDomain(options.pageType, slug.value)
+        // Use slugEn if available for EN domain
+        const enSlug = slugEn.value || slug.value
+        const enPath = enPathOnStoreDomain(options.pageType, enSlug)
         href = `${enDomain.value}${enPath}`
       } else {
         const path = pathForLang(options.pageType, lang, slug.value)

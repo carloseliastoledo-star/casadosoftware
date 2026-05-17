@@ -1,0 +1,117 @@
+=== RELATÓRIO DE VALIDAÇÃO DE SLUGS ===
+
+Total de produtos: 109
+Slugs válidos: 92
+Slugs com problemas: 17
+
+=== PRODUTOS COM PROBLEMAS ===
+
+Autocad 2025 Para Windows (assinatura anual)
+  SlugEn: autocad-2025-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+AutoCAD Map 3D 2025 Para Windows (assinatura anual)
+  SlugEn: autocad-map-3d-2025-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+Civil 3D 2025 Para Windows (assinatura anual)
+  SlugEn: civil-3d-2025-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+Inventor Pro 2026 Para Windows (assinatura anual)
+  SlugEn: inventor-pro-2026-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+Maya 2025 Para Windows (assinatura anual)
+  SlugEn: maya-2025-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+MICROSOFT OFFICE HOME & BUSINESS 2016 PARA MAC – 32 / 64 BITS – ESD
+  SlugEn: microsoft-office-home-business-2016-para-mac-32-64-bits-esd
+  Problemas:
+    - Contém palavra em português: "para"
+
+MICROSOFT OFFICE HOME & BUSINESS 2019 PARA MAC – 32 / 64 BITS – ESD
+  SlugEn: microsoft-office-home-business-2019-para-mac-32-64-bits-esd
+  Problemas:
+    - Contém palavra em português: "para"
+
+MICROSOFT WINDOWS SERVER 2016 STANDARD – (DOWNLOAD) + NOTA FISCAL
+  SlugEn: microsoft-windows-server-2016-standard-download-nota-fiscal
+  Problemas:
+    - Contém palavra em português: "nota"
+    - Contém palavra em português: "fiscal"
+
+MICROSOFT WINDOWS SERVER 2022 STANDARD – (DOWNLOAD) + NOTA FISCAL
+  SlugEn: microsoft-windows-server-2022-standard-download-nota-fiscal
+  Problemas:
+    - Contém palavra em português: "nota"
+    - Contém palavra em português: "fiscal"
+
+Office 2024 Home and Business – PC/Mac – Licença Vitalícia + Nota Fiscal e Garantia
+  SlugEn: officand-2024-homand-and-businandss-pcmac-licandnsand-lifandtimand-invoicand-fiscal-and-warranty
+  Problemas:
+    - Contém palavra em português: "fiscal"
+
+Office 365 Original para PC e Mac – Entrega Instantânea
+  SlugEn: office-365-original-para-pc-e-mac-delivery-instantnea
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "instantnea"
+    - Erro ortográfico: "instantnea" deve ser "instant"
+
+Pacote De 50 Device CALs Windows Server 2019 – 32/64 BITS – Licença Vitalícia + Nota Fiscal e Garantia
+  SlugEn: pacote-de-50-device-cals-windows-server-2019-3264-bits-license-vitalcia-nota-fiscal-e-garantia
+  Problemas:
+    - Contém palavra em português: "vitalcia"
+    - Contém palavra em português: "nota"
+    - Contém palavra em português: "fiscal"
+    - Contém palavra em português: "garantia"
+    - Erro ortográfico: "vitalcia" deve ser "lifetime"
+
+Recap Pro 2025 Para Windows (assinatura anual)
+  SlugEn: recap-pro-2025-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+Revit 2025 Para Windows (assinatura anual)
+  SlugEn: revit-2025-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+Robot Structural Analysis Pro 2025 Para Windows (assinatura anual)
+  SlugEn: robot-structural-analysis-pro-2025-para-windows-assinatura-anual
+  Problemas:
+    - Contém palavra em português: "para"
+    - Contém palavra em português: "assinatura"
+    - Contém palavra em português: "anual"
+
+Windows 10 Pro – Licença Digital com Ativação Online
+  SlugEn: windows-10-pro-license-digital-com-activation-online
+  Problemas:
+    - Contém palavra em português: "com"
+
+Windows 11 Pro – Licença Digital com Ativação Online
+  SlugEn: windows-11-pro-license-digital-com-activation-online
+  Problemas:
+    - Contém palavra em português: "com"
+
