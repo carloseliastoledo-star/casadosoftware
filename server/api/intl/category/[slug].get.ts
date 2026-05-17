@@ -1,4 +1,4 @@
-import { defineEventHandler, getRouterParam, createError, setHeader } from 'h3'
+import { defineEventHandler, getRouterParam, getQuery, createError, setHeader } from 'h3'
 import prisma from '../../../db/prisma'
 
 function normalizeImageUrl(input: unknown): string | null {
@@ -108,6 +108,8 @@ export default defineEventHandler(async (event) => {
   const slug = String(getRouterParam(event, 'slug') || '').trim().toLowerCase()
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'slug required' })
 
+  const debug = String(getQuery(event)?.debug || '') === '1'
+
   try {
     console.log('[intl/category] slug=', slug, 'resolvedStore=', resolvedStore)
 
@@ -179,7 +181,7 @@ export default defineEventHandler(async (event) => {
       console.log('[intl/category] direct products=', produtosRaw.length)
     }
 
-    const produtos = produtosRaw.map((p: any) => {
+    const produtosComPreco = produtosRaw.map((p: any) => {
       const precos: any[] = p.ProdutoPrecoMoeda || []
       const usd = precos.find((x: any) => String(x.currency).toLowerCase() === 'usd')
       const eur = precos.find((x: any) => String(x.currency).toLowerCase() === 'eur')
@@ -202,7 +204,9 @@ export default defineEventHandler(async (event) => {
         cardItems: p.cardItems,
         createdAt: p.criadoEm
       }
-    }).filter((p: any) => p.usdPrice != null && p.usdPrice > 0)
+    })
+
+    const produtos = produtosComPreco.filter((p: any) => p.usdPrice != null && p.usdPrice > 0)
 
     console.log('[intl/category] final products after price filter=', produtos.length)
 
@@ -212,10 +216,33 @@ export default defineEventHandler(async (event) => {
       slug
     }
 
+    if (debug) {
+      return {
+        ok: true,
+        categoria,
+        produtos,
+        _debug: {
+          totalBeforePriceFilter: produtosRaw.length,
+          afterPriceFilter: produtos.length,
+          sampleProducts: produtosRaw.slice(0, 5).map((p: any) => ({
+            nome: p.nome,
+            usdPrice: p.ProdutoPrecoMoeda?.find((x: any) => String(x.currency).toLowerCase() === 'usd')?.amount ?? null
+          }))
+        }
+      }
+    }
+
     return { ok: true, categoria, produtos }
 
   } catch (error: any) {
+    console.error('[intl/category] ERROR:', error?.message || error)
     if (error?.statusCode === 404) throw error
-    throw createError({ statusCode: 503, statusMessage: `Error: ${error?.message || 'Unknown error'}` })
+    // Em caso de erro inesperado, retornar categoria vazia em vez de 500
+    return {
+      ok: true,
+      categoria: { id: slug, nome: mapSlugToName(slug), slug },
+      produtos: [],
+      _error: String(error?.message || 'Unknown error')
+    }
   }
 })

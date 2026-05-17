@@ -35,6 +35,10 @@
       </div>
 
       <div v-if="pending" class="text-center py-16 text-gray-500">Loading...</div>
+      <div v-else-if="apiError" class="text-center py-16 text-red-600">
+        <div class="font-semibold">Error loading category.</div>
+        <div class="text-sm mt-1 text-gray-500">{{ apiError }}</div>
+      </div>
       <div v-else-if="!categoria" class="text-center py-16 text-red-600">Category not found.</div>
       <div v-else-if="sortedProdutos.length === 0" class="text-center py-16 text-gray-500">
         No products available in this category yet.
@@ -240,15 +244,8 @@ const { data, pending, error } = await useFetch(() => apiUrl.value, {
   })
 })
 
-if (import.meta.server) {
-  console.log('[category-page] SSR apiUrl=', apiUrl.value, 'isInternational=', isInternational.value)
-  console.log('[category-page] SSR data=', JSON.stringify(data.value))
-  if (error.value) {
-    console.error('[category-page] SSR error=', error.value)
-  }
-}
-
 const categoria = computed(() => (data.value as any)?.categoria || null)
+const apiError = computed(() => error.value || (data.value as any)?._error || null)
 
 const produtos = computed(() =>
   Array.isArray((data.value as any)?.produtos)
