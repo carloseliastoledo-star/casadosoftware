@@ -1,13 +1,16 @@
 import { defineEventHandler } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
+import { getStoreContext } from '../../../utils/store.js'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  const { storeSlug } = getStoreContext(event)
   const prismaAny = prisma as any
 
   const items = await prismaAny.partnerApplication.findMany({
+    where: { storeSlug },
     orderBy: { createdAt: 'desc' },
     select: {
       id: true,

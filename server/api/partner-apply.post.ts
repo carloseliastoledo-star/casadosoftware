@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { sendMail } from '../utils/mailer'
+import { getStoreContext } from '../utils/store'
 
 function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -42,6 +43,7 @@ export default defineEventHandler(async (event) => {
   if (monthlyTraffic.length > 120) throw createError({ statusCode: 400, statusMessage: 'Monthly traffic is too long' })
   if (promotionPlan.length > 2000) throw createError({ statusCode: 400, statusMessage: 'Promotion plan is too long' })
 
+  const { storeSlug } = getStoreContext(event)
   const prismaAny = prisma as any
 
   try {
@@ -52,6 +54,7 @@ export default defineEventHandler(async (event) => {
         website: website || null,
         social: social || null,
         country,
+        storeSlug,
         monthlyTraffic: monthlyTraffic || null,
         promotionPlan: promotionPlan || null,
       },

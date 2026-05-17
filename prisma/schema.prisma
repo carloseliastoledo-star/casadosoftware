@@ -115,7 +115,8 @@ model AffiliatePayoutRequest {
 model BlogPost {
   id                  String                @id @default(uuid())
   titulo              String
-  slug                String                @unique
+  slug                String
+  storeSlug           String                @default("casadosoftware")
   html                String?               @db.LongText
   publicado           Boolean               @default(false)
   criadoEm            DateTime              @default(now()) @db.DateTime(0)
@@ -125,6 +126,9 @@ model BlogPost {
   keyword             String?
   autoSeo             Boolean               @default(false)
   BlogPostTranslation BlogPostTranslation[]
+
+  @@unique([storeSlug, slug])
+  @@index([storeSlug])
 }
 
 model BlogPostTranslation {
@@ -351,11 +355,13 @@ model PartnerApplication {
   website        String?
   social         String?
   country        String
+  storeSlug      String   @default("casadosoftware")
   monthlyTraffic String?
   promotionPlan  String?
   createdAt      DateTime @default(now())
 
   @@index([email])
+  @@index([storeSlug])
 }
 
 model Produto {

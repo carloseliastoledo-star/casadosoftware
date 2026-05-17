@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
 import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities.js'
+import { getStoreContext } from '../../../utils/store.js'
 
 function stripScripts(html: string): string {
   return html
@@ -14,6 +15,7 @@ function stripScripts(html: string): string {
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  const { storeSlug } = getStoreContext(event)
   const body = await readBody(event)
 
   const titulo = String(body?.titulo || '').trim()
@@ -36,6 +38,7 @@ export default defineEventHandler(async (event) => {
         id: randomUUID(),
         titulo,
         slug,
+        storeSlug,
         featuredImage,
         html,
         publicado

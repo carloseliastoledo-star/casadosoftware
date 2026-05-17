@@ -1,5 +1,6 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
+import { getStoreContext } from '../../utils/store.js'
 
 export default defineEventHandler(async (event) => {
   console.log('[api/blog] ===== START =====')
@@ -9,8 +10,9 @@ export default defineEventHandler(async (event) => {
     // Query baseada na API admin que funciona
     console.log('[api/blog] Executando query...')
     
+    const { storeSlug } = getStoreContext(event)
     const posts = await (prisma as any).blogPost.findMany({
-      where: { publicado: true },
+      where: { publicado: true, storeSlug },
       orderBy: { criadoEm: 'desc' },
       take: 50,
       select: {
