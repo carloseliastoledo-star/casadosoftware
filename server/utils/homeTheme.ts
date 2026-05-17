@@ -142,6 +142,72 @@ export function defaultHomeTheme(): HomeTheme {
   }
 }
 
+export function defaultHomeThemeIntl(): HomeTheme {
+  return {
+    schemaVersion: 1,
+    colors: {
+      primary: '#2563eb',
+      secondary: '#0f172a',
+      accent: '#22c55e',
+      background: '#f8fafc',
+      surface: '#ffffff',
+      text: '#111827',
+      mutedText: '#64748b'
+    },
+    sections: {
+      hero: true,
+      benefits: true,
+      products: true,
+      steps: true,
+      faq: true,
+      cta: true
+    },
+    hero: {
+      badge: 'Genuine Software Licenses — Instant Delivery',
+      title: 'Original Software Licenses',
+      subtitle: 'Windows, Office, and more — 100% genuine licenses delivered instantly to your email. Secure checkout with Stripe.',
+      primaryCtaLabel: 'View Licenses',
+      primaryCtaUrl: '/products',
+      secondaryCtaLabel: 'How It Works',
+      secondaryCtaUrl: '#how-it-works',
+      imageUrl: ''
+    },
+    benefits: [
+      { enabled: true, icon: 'zap', title: 'Instant Delivery', body: 'License key sent to your email in minutes after payment.' },
+      { enabled: true, icon: 'shield', title: 'Secure Payment', body: 'Powered by Stripe — no card data stored.' },
+      { enabled: true, icon: 'headphones', title: 'Global Support', body: 'Customer support available worldwide.' }
+    ],
+    products: {
+      enabled: true,
+      title: 'Featured Licenses',
+      subtitle: 'Best-selling software licenses, ready for instant activation.',
+      productSlugs: []
+    },
+    steps: [
+      { enabled: true, title: 'Choose Your License', body: 'Browse our catalog and select the software you need.' },
+      { enabled: true, title: 'Pay Securely with Stripe', body: 'Complete checkout with credit/debit card. USD and EUR accepted.' },
+      { enabled: true, title: 'Receive Your Key by Email', body: 'Your license key is delivered instantly to your inbox.' }
+    ],
+    faq: [
+      { enabled: true, question: 'Are the licenses genuine?', answer: 'Yes. All licenses are 100% authentic and sourced from official channels.' },
+      { enabled: true, question: 'How quickly will I receive my license?', answer: 'License keys are delivered to your email within minutes of payment confirmation.' }
+    ],
+    cta: {
+      enabled: true,
+      kicker: 'Ready to get your license?',
+      title: 'Original Software at the Best Price',
+      subtitle: 'Instant delivery. Secure payment. Genuine software.',
+      buttonLabel: 'Browse Licenses',
+      buttonUrl: '/products'
+    },
+    seo: {
+      title: 'Original Software Licenses — Instant Delivery | GVGMall',
+      description: 'Buy genuine Windows, Office and more software licenses. Instant email delivery, secure Stripe checkout.',
+      ogImage: ''
+    }
+  }
+}
+
 function isSafeString(v: unknown): boolean {
   if (typeof v !== 'string') return false
   if (DANGEROUS_PATTERN.test(v)) return false
