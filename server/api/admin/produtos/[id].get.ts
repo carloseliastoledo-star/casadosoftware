@@ -15,17 +15,17 @@ export default defineEventHandler(async (event) => {
   const produto = await (prisma as any).produto.findFirst({
     where: { id, ...(storeSlug ? { storeSlug } : {}) },
     include: {
-      precosLoja: {
+      ProdutoPrecoLoja: {
         where: { storeSlug: storeSlug || undefined },
         select: { preco: true, precoAntigo: true }
       },
-      precosMoeda: {
+      ProdutoPrecoMoeda: {
         where: { storeSlug: storeSlug || undefined },
         select: { currency: true, amount: true, oldAmount: true }
       },
-      produtoCategorias: {
+      ProdutoCategoria: {
         include: {
-          categoria: { select: { id: true, nome: true, slug: true } }
+          Categoria: { select: { id: true, nome: true, slug: true } }
         }
       }
     }
@@ -38,11 +38,11 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const categorias = ((produto as any).produtoCategorias || []).map((pc: any) => pc.categoria).filter(Boolean)
-  const override = (produto as any).precosLoja?.[0] || null
+  const categorias = ((produto as any).ProdutoCategoria || []).map((pc: any) => pc.Categoria).filter(Boolean)
+  const override = (produto as any).ProdutoPrecoLoja?.[0] || null
 
   const byCurrency = new Map(
-    ((produto as any).precosMoeda || [])
+    ((produto as any).ProdutoPrecoMoeda || [])
       .map((x: any) => ({
         currency: String(x.currency || '').trim().toLowerCase(),
         amount: x.amount == null ? null : Number(x.amount)
