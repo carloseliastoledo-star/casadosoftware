@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
     
     // Query com includes de Customer, Produto e Licenca
     const where: any = { deletedAt: null }
+    if (ctx.storeSlug) where.storeSlug = ctx.storeSlug
     
     // Filtro por data
     const dateFrom = String((q as any)?.dateFrom || '').trim()
