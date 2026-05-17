@@ -19,9 +19,6 @@ export default defineEventHandler(async (event) => {
   }
 
   const stripePublishableKey = process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.STRIPE_PUBLISHABLE_KEY || ''
-  if (!stripePublishableKey) {
-    throw createError({ statusCode: 500, statusMessage: 'STRIPE_PUBLISHABLE_KEY not configured' })
-  }
 
   const { storeSlug: detectedSlug } = getStoreContext(event)
   const storeSlug = detectedSlug || 'international'
