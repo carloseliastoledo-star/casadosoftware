@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
 
     // 1. Tentar como categoria técnica (slug real no banco)
     const categoriaDb = await (prisma as any).categoria.findFirst({
-      where: { slug, storeSlug: resolvedStore, ativo: true },
+      where: { slug, ativo: true },
       select: { id: true, nome: true, slug: true }
     })
 
