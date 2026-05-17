@@ -2,9 +2,13 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { requireAdminSession } from '#root/server/utils/adminSession'
 import { normalizeCouponCode } from '#root/server/utils/coupon'
+import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
+
+  const ctx = getStoreContext(event)
+  const storeSlug = ctx.storeSlug || 'casadosoftware'
 
   const body = await readBody(event)
 
@@ -33,6 +37,7 @@ export default defineEventHandler(async (event) => {
   return await prisma.cupom.create({
     data: {
       code,
+      storeSlug,
       percent: Math.round(percent),
       active,
       startsAt,

@@ -201,7 +201,8 @@ model Commission {
 
 model Cupom {
   id        String    @id
-  code      String    @unique
+  code      String
+  storeSlug String    @default("casadosoftware")
   percent   Int
   active    Boolean   @default(true)
   startsAt  DateTime? @db.DateTime(0)
@@ -210,6 +211,9 @@ model Cupom {
   usedCount Int       @default(0)
   createdAt DateTime  @default(now()) @db.DateTime(0)
   Order     Order[]
+
+  @@unique([storeSlug, code])
+  @@index([storeSlug])
 }
 
 model Lead {

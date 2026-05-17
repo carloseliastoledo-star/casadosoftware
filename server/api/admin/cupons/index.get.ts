@@ -1,11 +1,17 @@
 import { defineEventHandler } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { requireAdminSession } from '#root/server/utils/adminSession'
+import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  const ctx = getStoreContext(event)
+  const where: any = {}
+  if (ctx.storeSlug) where.storeSlug = ctx.storeSlug
+
   const cupons = await prisma.cupom.findMany({
+    where,
     orderBy: { createdAt: 'desc' },
     take: 500,
     select: {
