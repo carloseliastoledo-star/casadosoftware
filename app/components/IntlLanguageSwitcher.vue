@@ -47,7 +47,15 @@ const AVAILABLE_LABELS: Record<string, string> = {
   it: 'Questa pagina è disponibile anche in'
 }
 
-const currentLang = computed(() => detectLangFromPath(route.path))
+const intl = useIntlContext()
+
+const currentLang = computed(() => {
+  const l = intl.language.value
+  if (l && l !== 'pt') return l
+  // On intl domains force EN
+  if (intl.isIntl.value) return 'en'
+  return detectLangFromPath(route.path)
+})
 
 const label = computed(() => AVAILABLE_LABELS[currentLang.value] || AVAILABLE_LABELS.en)
 

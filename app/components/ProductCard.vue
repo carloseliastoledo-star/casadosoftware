@@ -102,6 +102,8 @@ const productPrice = computed(() => {
 const productCurrencyLower = computed(() => {
   const c = String((props.product as any)?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
+  // On intl domains always use USD as fallback, never BRL
+  if (_intl.isIntl.value) return 'usd'
   return effectiveLang.value === 'pt' ? 'brl' : 'usd'
 })
 
