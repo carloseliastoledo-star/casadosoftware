@@ -76,6 +76,21 @@
 
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
+              <!-- Language selector — international only -->
+              <div v-if="isInternational" class="flex items-center gap-1.5 h-10 rounded-md border border-gray-200 bg-white px-2">
+                <span class="text-sm" aria-hidden="true">🌐</span>
+                <select
+                  class="bg-transparent text-xs font-semibold text-gray-800 outline-none cursor-pointer"
+                  :value="intl.language.value"
+                  aria-label="Language"
+                  @change="(e) => { intl.setLanguage((e.target as HTMLSelectElement).value as any) }"
+                >
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+
               <select
                 v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
@@ -170,6 +185,21 @@
 
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
+              <!-- Language selector — international only -->
+              <div v-if="isInternational" class="flex items-center gap-1.5 h-10 rounded-md border border-gray-200 bg-white px-2">
+                <span class="text-sm" aria-hidden="true">🌐</span>
+                <select
+                  class="bg-transparent text-xs font-semibold text-gray-800 outline-none cursor-pointer"
+                  :value="intl.language.value"
+                  aria-label="Language"
+                  @change="(e) => { intl.setLanguage((e.target as HTMLSelectElement).value as any) }"
+                >
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+
               <select
                 v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
@@ -249,6 +279,23 @@
         </div>
 
         <nav class="p-5 flex-1 overflow-y-auto">
+          <!-- Mobile language selector — international only -->
+          <div v-if="isInternational" class="mb-4">
+            <div class="flex items-center gap-2 h-11 rounded-lg border border-gray-200 bg-white px-3">
+              <span class="text-base" aria-hidden="true">🌐</span>
+              <select
+                class="flex-1 bg-transparent text-sm font-semibold text-gray-800 outline-none cursor-pointer"
+                :value="intl.language.value"
+                aria-label="Language"
+                @change="(e) => { intl.setLanguage((e.target as HTMLSelectElement).value as any); mobileMenuOpen = false }"
+              >
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
+          </div>
+
           <div v-if="isEnDomain" class="grid gap-3 mb-5 grid-cols-2">
             <select
               class="h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
