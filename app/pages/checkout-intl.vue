@@ -330,9 +330,15 @@ async function mountStripeElements(secret: string, publishableKey: string) {
       stripeError.value = 'Stripe.js failed to load. Please disable ad-blockers and refresh.'
       return
     }
+    console.log('[checkout-intl] publishableKey mode:', publishableKey.startsWith('pk_live') ? 'LIVE' : 'TEST')
+    console.log('[checkout-intl] clientSecret mode:', secret.startsWith('pi_') ? 'unknown' : secret.substring(0, 20))
     stripeInstance = StripeConstructor(publishableKey)
     stripeElements = stripeInstance.elements({ clientSecret: secret, appearance: { theme: 'stripe' } })
     const paymentElement = stripeElements.create('payment')
+    paymentElement.on('loaderror', (event: any) => {
+      stripeError.value = `Stripe load error: ${event?.error?.message || 'Unknown error. Check that publishable key matches the payment intent mode (live/test).'}`
+      console.error('[checkout-intl] loaderror:', event?.error)
+    })
     paymentElement.mount('#stripe-payment-element')
     console.log('[checkout-intl] Stripe Elements mounted')
   } catch (err: any) {
