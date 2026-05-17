@@ -176,6 +176,8 @@ const paymentDone = ref(false)
 let stripeInstance: any = null
 let stripeElements: any = null
 
+const config = useRuntimeConfig()
+
 function setCurrency(cur: 'usd' | 'eur') {
   currency.value = cur
   clientSecret.value = ''
@@ -300,8 +302,12 @@ async function handlePayment() {
       clientSecret.value = res.clientSecret
       orderId.value = res.orderId || ''
 
+      // publishableKey: API response > runtimeConfig fallback
+      const pubKey = res.publishableKey || (config.public as any)?.stripePublishableKey || ''
+      console.log('[checkout-intl] publishableKey present:', !!pubKey, 'orderId:', res.orderId)
+
       await nextTick()
-      await mountStripeElements(res.clientSecret, res.publishableKey)
+      await mountStripeElements(res.clientSecret, pubKey)
     } else {
       await confirmPayment()
     }
@@ -313,17 +319,26 @@ async function handlePayment() {
 }
 
 async function mountStripeElements(secret: string, publishableKey: string) {
-  const StripeConstructor = await loadStripe()
-  if (!StripeConstructor || !publishableKey) {
-    stripeError.value = 'Stripe failed to load. Please refresh and try again.'
-    return
+  try {
+    if (!publishableKey) {
+      stripeError.value = 'Stripe publishable key is not configured. Please contact support.'
+      console.error('[checkout-intl] missing publishableKey')
+      return
+    }
+    const StripeConstructor = await loadStripe()
+    if (!StripeConstructor) {
+      stripeError.value = 'Stripe.js failed to load. Please disable ad-blockers and refresh.'
+      return
+    }
+    stripeInstance = StripeConstructor(publishableKey)
+    stripeElements = stripeInstance.elements({ clientSecret: secret, appearance: { theme: 'stripe' } })
+    const paymentElement = stripeElements.create('payment')
+    paymentElement.mount('#stripe-payment-element')
+    console.log('[checkout-intl] Stripe Elements mounted')
+  } catch (err: any) {
+    stripeError.value = err?.message || 'Failed to initialize Stripe. Please refresh.'
+    console.error('[checkout-intl] mountStripeElements error:', err)
   }
-
-  stripeInstance = StripeConstructor(publishableKey)
-  stripeElements = stripeInstance.elements({ clientSecret: secret, appearance: { theme: 'stripe' } })
-
-  const paymentElement = stripeElements.create('payment')
-  paymentElement.mount('#stripe-payment-element')
 }
 
 async function confirmPayment() {
