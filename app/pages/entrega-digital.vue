@@ -33,7 +33,7 @@
         </p>
       </div>
 
-      <p class="text-sm text-gray-600">
+      <p v-if="intl.language.value === 'pt'" class="text-sm text-gray-600">
         Razão Social: Softwares Mundi LTDA — CNPJ: 66.464.267/0001-48.
       </p>
         </div>
@@ -47,8 +47,13 @@ const { supportEmail, siteName } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 
+const isIntlDomain = computed(() => intl.currencyLower.value !== 'brl')
+
 const t = computed(() => {
-  if (intl.language.value === 'en') {
+  const lang = intl.language.value
+  const effectiveLang = (isIntlDomain.value && lang === 'pt') ? 'en' : lang
+
+  if (effectiveLang === 'en') {
     return {
       title: 'Digital delivery',
       intro: 'Our products are digital. Delivery method and instructions are available on each product page.',
@@ -70,7 +75,7 @@ const t = computed(() => {
     }
   }
 
-  if (intl.language.value === 'es') {
+  if (effectiveLang === 'es') {
     return {
       title: 'Entrega digital',
       intro: 'Nuestros productos son digitales. El método de entrega y las instrucciones se indican en la página de cada producto.',
@@ -89,6 +94,26 @@ const t = computed(() => {
         'El plazo estimado de entrega se informa al momento de la compra y en la página del producto. Si tienes dudas, nuestro soporte ayuda rápidamente.',
       supportTitle: 'Soporte',
       supportPrefix: 'Si no recibes la entrega dentro del plazo informado, contáctanos por e-mail '
+    }
+  }
+
+  if (effectiveLang === 'fr') {
+    return {
+      title: 'Livraison numérique',
+      intro: 'Nos produits sont numériques. Le mode de livraison et les instructions figurent sur la page de chaque produit.',
+      howReceiveTitle: 'Comment vous recevez',
+      howReceiveItem1: "Livraison par e-mail à l'adresse utilisée lors de l'achat et/ou disponibilité dans l'espace client.",
+      howReceiveItem2: 'La livraison a lieu après confirmation du paiement.',
+      howReceiveItem3: 'Le contenu et les instructions varient selon le produit acheté.',
+      m365Title: 'Microsoft 365 (abonnement annuel)',
+      m365Intro: 'Pour les abonnements Microsoft 365/Office 365, la livraison se fait via un compte fourni valide pour la période indiquée.',
+      m365Item1: 'Vous recevez les identifiants de connexion par e-mail après confirmation du paiement.',
+      m365Item2: "L'accès se fait avec le compte fourni.",
+      m365Item3: "Les instructions d'accès/installation sont incluses dans la livraison.",
+      deadlineTitle: 'Délai',
+      deadlineBody: 'Le délai estimé de livraison est indiqué lors du paiement et sur la page du produit. En cas de doute, notre support vous aide rapidement.',
+      supportTitle: 'Support',
+      supportPrefix: 'Si vous ne recevez pas la livraison dans le délai indiqué, contactez-nous par e-mail '
     }
   }
 

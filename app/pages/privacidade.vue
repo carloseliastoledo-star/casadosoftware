@@ -43,7 +43,7 @@
           {{ t.section5Prefix }}
           <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
         </p>
-        <p class="text-sm">
+        <p v-if="intl.language.value === 'pt'" class="text-sm">
           Razão Social: Softwares Mundi LTDA — CNPJ: 66.464.267/0001-48.
         </p>
       </div>
@@ -64,8 +64,13 @@ const { supportEmail, siteName } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 
+const isIntlDomain = computed(() => intl.currencyLower.value !== 'brl')
+
 const t = computed(() => {
-  if (intl.language.value === 'en') {
+  const lang = intl.language.value
+  const effectiveLang = (isIntlDomain.value && lang === 'pt') ? 'en' : lang
+
+  if (effectiveLang === 'en') {
     return {
       title: 'Privacy policy',
       intro: 'This policy describes how we collect and use information when browsing and purchasing on this website.',
@@ -85,7 +90,7 @@ const t = computed(() => {
     }
   }
 
-  if (intl.language.value === 'es') {
+  if (effectiveLang === 'es') {
     return {
       title: 'Política de privacidad',
       intro: 'Esta política describe cómo recopilamos y utilizamos información al navegar y comprar en este sitio.',
@@ -102,6 +107,24 @@ const t = computed(() => {
       section5Title: '5. Contacto',
       section5Prefix: 'Para solicitudes relacionadas con la privacidad: ',
       footerNote: 'Esta política puede ser actualizada.'
+    }
+  }
+
+  if (effectiveLang === 'fr') {
+    return {
+      title: 'Politique de confidentialité',
+      intro: 'Cette politique décrit comment nous collectons et utilisons vos informations lors de la navigation et des achats sur ce site.',
+      section1Title: '1. Données collectées',
+      section1Body: 'Nous pouvons collecter des données fournies lors de l\'inscription et de l\'achat, telles que nom, e-mail et informations nécessaires à la commande.',
+      section2Title: '2. Finalité',
+      section2Body: 'Nous utilisons ces données pour traiter les commandes, fournir du support, prévenir la fraude et améliorer l\'expérience utilisateur.',
+      section3Title: '3. Cookies et mesure',
+      section3Body: 'Nous pouvons utiliser des cookies et technologies similaires pour le fonctionnement, les statistiques et l\'amélioration du service.',
+      section4Title: '4. Partage',
+      section4Body: 'Nous ne vendons pas vos données. Nous partageons des informations uniquement si nécessaire pour traiter les paiements, respecter les obligations légales ou protéger les droits.',
+      section5Title: '5. Contact',
+      section5Prefix: 'Pour toute demande liée à la confidentialité : ',
+      footerNote: 'Cette politique peut être mise à jour.'
     }
   }
 

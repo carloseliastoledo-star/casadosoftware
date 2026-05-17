@@ -39,7 +39,7 @@
 
       <div class="rounded-xl border bg-white p-5 space-y-3">
         <h2 class="text-xl font-bold text-gray-900">{{ t.section5Title }}</h2>
-        <p class="text-sm">
+        <p v-if="intl.language.value === 'pt'" class="text-sm">
           Razão Social: Softwares Mundi LTDA — CNPJ: 66.464.267/0001-48.
         </p>
       </div>
@@ -60,8 +60,13 @@ const { siteName } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 
+const isIntlDomain = computed(() => intl.currencyLower.value !== 'brl')
+
 const t = computed(() => {
-  if (intl.language.value === 'en') {
+  const lang = intl.language.value
+  const effectiveLang = (isIntlDomain.value && lang === 'pt') ? 'en' : lang
+
+  if (effectiveLang === 'en') {
     return {
       title: 'Terms of use',
       intro: 'By accessing and using this website, you agree to the terms and conditions described below.',
@@ -78,7 +83,7 @@ const t = computed(() => {
     }
   }
 
-  if (intl.language.value === 'es') {
+  if (effectiveLang === 'es') {
     return {
       title: 'Términos de uso',
       intro: 'Al acceder y utilizar este sitio, aceptas los términos y condiciones descritos a continuación.',
@@ -92,6 +97,23 @@ const t = computed(() => {
       section4Body: 'Marcas, nombres comerciales y logotipos citados pertenecen a sus respectivos propietarios.',
       section5Title: '5. Empresa',
       footerNote: 'Estos términos pueden actualizarse periódicamente.'
+    }
+  }
+
+  if (effectiveLang === 'fr') {
+    return {
+      title: 'Conditions d\'utilisation',
+      intro: 'En accédant à ce site et en l\'utilisant, vous acceptez les termes et conditions décrits ci-dessous.',
+      section1Title: '1. Produits numériques',
+      section1Body: 'Les produits vendus sont numériques. Les conditions de livraison, instructions et prérequis sont décrits sur la page du produit.',
+      section2Title: '2. Utilisation correcte',
+      section2Body: 'Vous vous engagez à fournir des informations exactes lors de l\'achat et à utiliser le site de manière licite.',
+      section3Title: '3. Support',
+      section3Body: 'Nous fournissons un support pour les questions liées à la livraison et à l\'utilisation du produit.',
+      section4Title: '4. Propriété intellectuelle',
+      section4Body: 'Les marques, noms commerciaux et logos mentionnés appartiennent à leurs propriétaires respectifs.',
+      section5Title: '5. Société',
+      footerNote: 'Ces conditions peuvent être mises à jour périodiquement.'
     }
   }
 

@@ -55,8 +55,13 @@ const { supportEmail, siteName } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
 
+const isIntlDomain = computed(() => intl.currencyLower.value !== 'brl')
+
 const t = computed(() => {
-  if (intl.language.value === 'en') {
+  const lang = intl.language.value
+  const effectiveLang = (isIntlDomain.value && lang === 'pt') ? 'en' : lang
+
+  if (effectiveLang === 'en') {
     return {
       title: 'Refund policy',
       intro: 'This policy describes the refund conditions for digital products purchased on this website.',
@@ -74,7 +79,7 @@ const t = computed(() => {
     }
   }
 
-  if (intl.language.value === 'es') {
+  if (effectiveLang === 'es') {
     return {
       title: 'Política de reembolso',
       intro: 'Esta política describe las condiciones de reembolso para productos digitales adquiridos en este sitio.',
@@ -89,6 +94,24 @@ const t = computed(() => {
       section3Suffix: ' indicando el número del pedido y el motivo.',
       section4Title: '4. Plazo',
       section4Body: 'Responderemos tu solicitud en hasta 2 días hábiles, y el plazo de procesamiento del reembolso depende del medio de pago.'
+    }
+  }
+
+  if (effectiveLang === 'fr') {
+    return {
+      title: 'Politique de remboursement',
+      intro: 'Cette politique décrit les conditions de remboursement pour les produits numériques achetés sur ce site.',
+      section1Title: '1. Produit numérique',
+      section1Body: 'S\'agissant d\'un produit numérique, le remboursement peut dépendre du statut de livraison et de l\'utilisation du contenu.',
+      section2Title: '2. Conditions de remboursement',
+      section2Item1: 'Echec de livraison après support et tentative de résolution.',
+      section2Item2: 'Incompatibilité prouvée avec les prérequis indiqués sur la page du produit.',
+      section2Item3: 'Double facturation ou erreur opérationnelle.',
+      section3Title: '3. Comment faire une demande',
+      section3Prefix: 'Contactez-nous par e-mail ',
+      section3Suffix: ' en indiquant votre numéro de commande et le motif.',
+      section4Title: '4. Délai',
+      section4Body: 'Nous répondrons dans un délai de 2 jours ouvrables et le délai de traitement du remboursement dépend du moyen de paiement.'
     }
   }
 
