@@ -172,6 +172,11 @@ export function useIntlContext() {
   const locale = computed<ClientIntl['locale']>(() => languageToLocale(language.value))
 
   const currencyLower = computed<ClientIntl['currencyLower']>(() => {
+    // SSR: trust plugin-detected language — it has the real host header
+    if (import.meta.server && _pluginLang.value) {
+      return defaultCurrencyForLanguage(normalizeLanguage(_pluginLang.value))
+    }
+
     const sub = detectSubdomainLanguage(host.value)
     if (sub) {
       return defaultCurrencyForLanguage(sub)
