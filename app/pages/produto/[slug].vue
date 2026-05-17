@@ -326,20 +326,8 @@ const normalizedHost = computed(() => {
   return h4.replace(/\.$/, '')
 })
 
-// Detect intl domain — client value (from window.location.host) overrides SSR after hydration
-const isIntlDomain = computed(() => {
-  // After onMounted, _clientIsIntl is authoritative (always correct from window.location.host)
-  if (_clientIsIntl.value !== null) return _clientIsIntl.value
-  // SSR / pre-hydration: use normalizedHost from synchronous request context
-  const h = normalizedHost.value
-  if (!h) return false
-  if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
-  if (h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1')) return false
-  if (h.includes('.vercel.app')) return false
-  return true
-})
-
 // On international domains, always use EN regardless of SSR language detection
+// isIntlDomain defined below after route is declared
 const effectiveLang = computed(() => {
   if (isIntlDomain.value) return intl.language.value !== 'pt' ? intl.language.value : 'en'
   return intl.language.value
@@ -413,6 +401,22 @@ const whyPriceCardClass = computed(() => {
 
 const route = useRoute()
 const slug = route.params.slug as string
+
+// Detect intl domain — uses route.path (/product/ alias only exists on intl) + host + client override
+const isIntlDomain = computed(() => {
+  // After onMounted, _clientIsIntl is authoritative (always correct from window.location.host)
+  if (_clientIsIntl.value !== null) return _clientIsIntl.value
+  // Route path: /product/ (no accent) alias only exists on intl domains
+  const p = String(route.path || '')
+  if (p.startsWith('/product/') || p.startsWith('/category/') || p.startsWith('/products')) return true
+  // SSR / pre-hydration: use normalizedHost from synchronous request context
+  const h = normalizedHost.value
+  if (!h) return false
+  if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
+  if (h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1')) return false
+  if (h.includes('.vercel.app')) return false
+  return true
+})
 
 const { hreflangLinks: productHreflang } = useSeoLocale({
   pageType: 'product',
