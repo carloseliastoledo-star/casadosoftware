@@ -1,8 +1,5 @@
--- Migration re-created after second manual cleanup of failed entry from Railway
--- Adds storeSlug column and indexes to SeoPage table
+-- Migration to add indexes to SeoPage.storeSlug (column already exists from previous attempt)
 -- Note: Railway MySQL does NOT support IF NOT EXISTS syntax
-ALTER TABLE `SeoPage` ADD COLUMN `storeSlug` VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
-
 DROP INDEX `SeoPage_locale_slug_key` ON `SeoPage`;
 DROP INDEX `SeoPage_storeSlug_locale_slug_key` ON `SeoPage`;
 DROP INDEX `SeoPage_storeSlug_locale_status_idx` ON `SeoPage`;
