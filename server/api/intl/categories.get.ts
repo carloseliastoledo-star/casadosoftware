@@ -8,7 +8,6 @@ export default defineEventHandler(async (event) => {
   try {
     const categorias = await (prisma as any).categoria.findMany({
       where: {
-        storeSlug: STORE_SLUG,
         ativo: true
       },
       orderBy: { nome: 'asc' },
@@ -16,7 +15,6 @@ export default defineEventHandler(async (event) => {
         id: true,
         nome: true,
         slug: true,
-        storeSlug: true,
         _count: {
           select: {
             ProdutoCategoria: true
@@ -38,7 +36,6 @@ export default defineEventHandler(async (event) => {
         id: c.id,
         nome: c.nome,
         slug: c.slug,
-        storeSlug: c.storeSlug,
         produtoCount: c._count?.ProdutoCategoria ?? 0
       }))
     }
