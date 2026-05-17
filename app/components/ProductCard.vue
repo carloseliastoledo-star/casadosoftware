@@ -6,10 +6,18 @@ import { useI18n } from 'vue-i18n'
 // boundaries regardless of experimental.asyncContext, unlike useNuxtApp()-based composables.
 // The i18n plugin (i18n.ts) correctly sets locale='en' for .store domain.
 const { locale: _i18nLocale } = useI18n()
+const _intl = useIntlContext()
 
 const effectiveLang = computed<'pt' | 'en' | 'es' | 'fr' | 'it'>(() => {
+  // useIntlContext is the most reliable source (reads host header on SSR)
+  const intlLang = _intl.language.value
+  if (intlLang && intlLang !== 'pt') return intlLang
+  // fallback to i18n locale
   const l = String(_i18nLocale.value || '').toLowerCase()
-  return (l === 'en' || l === 'es' || l === 'fr' || l === 'it') ? (l as any) : 'pt'
+  if (l === 'en' || l === 'es' || l === 'fr' || l === 'it') return l as any
+  // On intl domains force EN even if both sources say PT
+  if (_intl.currencyLower.value !== 'brl') return 'en'
+  return 'pt'
 })
 
 interface Product {
@@ -66,6 +74,8 @@ const productPath = computed(() => {
   const segment =
     lang === 'en' ? 'product' :
     lang === 'es' ? 'producto' :
+    lang === 'fr' ? 'product' :
+    lang === 'it' ? 'product' :
     'produto'
 
   return `/${segment}/${s}`
