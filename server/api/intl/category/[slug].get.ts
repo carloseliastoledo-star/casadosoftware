@@ -66,16 +66,6 @@ export default defineEventHandler(async (event) => {
   try {
     console.log('[intl/category] slug=', slug, 'resolvedStore=', resolvedStore)
 
-    // 1. Tentar como categoria técnica (slug real no banco)
-    const categoriaDb = await (prisma as any).categoria.findFirst({
-      where: { slug, ativo: true },
-      select: { id: true, nome: true, slug: true }
-    })
-
-    console.log('[intl/category] categoriaDb=', categoriaDb ? 'found' : 'not found')
-
-    let produtosRaw: any[] = []
-
     const produtoSelect = {
       id: true, nome: true, nomeEn: true, slug: true,
       imagem: true, cardItems: true, criadoEm: true,
@@ -87,38 +77,22 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    if (categoriaDb) {
-      // Categoria existe → buscar produtos por relação (apenas produtos disponíveis para international)
-      produtosRaw = await (prisma as any).produto.findMany({
-        where: {
-          ativo: true,
-          ProdutoCategoria: { some: { categoriaId: categoriaDb.id } },
-          OR: [
-            { ProdutoPrecoLoja: { some: { storeSlug: resolvedStore } } },
-            { ProdutoPrecoLoja: { none: {} } }
-          ]
-        },
-        select: produtoSelect
-      })
-      console.log('[intl/category] relation products=', produtosRaw.length)
-    }
+    // Buscar todos os produtos disponíveis para international (mesma lógica da home)
+    const produtosRaw = await (prisma as any).produto.findMany({
+      where: {
+        ativo: true,
+        ProdutoPrecoLoja: { some: { storeSlug: resolvedStore } }
+      },
+      select: produtoSelect
+    })
+    
+    console.log('[intl/category] total intl products=', produtosRaw.length)
 
-    // 2. Fallback: se categoria não existe no banco, buscar por nome (apenas produtos disponíveis para international)
-    if (!categoriaDb && produtosRaw.length === 0) {
-      const todosProdutos = await (prisma as any).produto.findMany({
-        where: {
-          ativo: true,
-          OR: [
-            { ProdutoPrecoLoja: { some: { storeSlug: resolvedStore } } },
-            { ProdutoPrecoLoja: { none: {} } }
-          ]
-        },
-        select: produtoSelect
-      })
-      console.log('[intl/category] total intl products=', todosProdutos.length)
-      produtosRaw = todosProdutos.filter((p: any) => matchesCommercialSlug(slug, p.nome))
-      console.log('[intl/category] after JS filter=', produtosRaw.length)
-    }
+    // Filtrar por nome/categoria usando matchesCommercialSlug
+    const produtosFiltrados = produtosRaw.filter((p: any) => matchesCommercialSlug(slug, p.nome))
+    console.log('[intl/category] after JS filter=', produtosFiltrados.length)
+    produtosRaw.length = 0
+    produtosRaw.push(...produtosFiltrados)
 
     // 3. Buscar preços USD via ProdutoPrecoMoeda (override)
     const produtoIds = produtosRaw.map((p: any) => p.id)
