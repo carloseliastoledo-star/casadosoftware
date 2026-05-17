@@ -12,20 +12,9 @@ export default defineEventHandler(async (event) => {
     const { storeSlug } = getStoreContext(event)
     console.log('[admin/produtos] storeSlug:', storeSlug || '(null)')
 
-    // international: strict filter - only products explicitly assigned to that store
-    // casadosoftware (and others): also include legacy orphan products (no ProdutoPrecoLoja at all)
-    const isStrict = storeSlug === 'international'
-    const storeFilter = storeSlug
-      ? isStrict
-        ? { ProdutoPrecoLoja: { some: { storeSlug } } }
-        : { OR: [
-            { ProdutoPrecoLoja: { some: { storeSlug } } },
-            { ProdutoPrecoLoja: { none: {} } }
-          ] }
-      : {}
-
+    // Admin should show all products regardless of storeSlug (for management purposes)
+    // This is different from the public-facing API which filters by store
     const products = await (prisma as any).produto.findMany({
-      where: storeFilter,
       select: {
         id: true,
         nome: true,
