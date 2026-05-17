@@ -41,7 +41,7 @@
         </p>
       </div>
 
-      <p class="text-sm text-gray-600">
+      <p v-if="intl.language.value === 'pt'" class="text-sm text-gray-600">
         Razão Social: Softwares Mundi LTDA — CNPJ: 66.464.267/0001-48.
       </p>
         </div>
