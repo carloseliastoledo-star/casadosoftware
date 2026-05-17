@@ -178,9 +178,11 @@ export function useIntlContext() {
       return defaultCurrencyForLanguage(sub)
     }
 
+    // Hard override: intl domains always USD/EUR, cookie must not override this
     if (isEnDomain.value) return 'usd'
 
     const fromCookie = normalizeCurrency(currencyCookie.value)
+    // Only trust cookie if NOT on an intl domain
     if (fromCookie) return fromCookie
 
     if (subdomainMode.value) {
