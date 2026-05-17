@@ -24,78 +24,31 @@ function mapSlugToName(slug: string): string {
   return map[slug] || slug
 }
 
-function buildCommercialWhere(slug: string): any {
-  const base = { ativo: true }
+function matchesCommercialSlug(slug: string, nome: string): boolean {
+  const n = nome.toLowerCase()
   switch (slug) {
     case 'windows':
-      return {
-        ...base,
-        nome: { contains: 'Windows', mode: 'insensitive' as const },
-        NOT: { nome: { contains: 'Server', mode: 'insensitive' as const } }
-      }
+      return n.includes('windows') && !n.includes('server')
     case 'windows-server':
-      return {
-        ...base,
-        nome: { contains: 'Windows Server', mode: 'insensitive' as const }
-      }
+      return n.includes('windows server')
     case 'office':
-      return {
-        ...base,
-        OR: [
-          { nome: { contains: 'Office', mode: 'insensitive' as const } },
-          { nome: { contains: 'Microsoft 365', mode: 'insensitive' as const } },
-          { nome: { contains: '365', mode: 'insensitive' as const } }
-        ]
-      }
+      return n.includes('office') || n.includes('microsoft 365') || n.includes('365')
     case 'adobe':
-      return {
-        ...base,
-        OR: [
-          { nome: { contains: 'Adobe', mode: 'insensitive' as const } },
-          { nome: { contains: 'Photoshop', mode: 'insensitive' as const } },
-          { nome: { contains: 'Illustrator', mode: 'insensitive' as const } },
-          { nome: { contains: 'Creative Cloud', mode: 'insensitive' as const } },
-          { nome: { contains: 'Acrobat', mode: 'insensitive' as const } }
-        ]
-      }
+      return n.includes('adobe') || n.includes('photoshop') || n.includes('illustrator') ||
+             n.includes('creative cloud') || n.includes('acrobat')
     case 'autodesk':
-      return {
-        ...base,
-        OR: [
-          { nome: { contains: 'Autodesk', mode: 'insensitive' as const } },
-          { nome: { contains: 'AutoCAD', mode: 'insensitive' as const } },
-          { nome: { contains: '3DS Max', mode: 'insensitive' as const } },
-          { nome: { contains: 'SketchUp', mode: 'insensitive' as const } }
-        ]
-      }
+      return n.includes('autodesk') || n.includes('autocad') || n.includes('3ds max') ||
+             n.includes('sketchup')
     case 'games':
-      return {
-        ...base,
-        OR: [
-          { nome: { contains: 'Steam', mode: 'insensitive' as const } },
-          { nome: { contains: 'Xbox', mode: 'insensitive' as const } },
-          { nome: { contains: 'PSN', mode: 'insensitive' as const } },
-          { nome: { contains: 'EA SPORTS', mode: 'insensitive' as const } },
-          { nome: { contains: 'Battlefield', mode: 'insensitive' as const } },
-          { nome: { contains: 'ARC Raiders', mode: 'insensitive' as const } },
-          { nome: { contains: 'Game', mode: 'insensitive' as const } }
-        ]
-      }
+      return n.includes('steam') || n.includes('xbox') || n.includes('psn') ||
+             n.includes('ea sports') || n.includes('battlefield') || n.includes('arc raiders') ||
+             n.includes('game')
     case 'electronics':
-      return {
-        ...base,
-        OR: [
-          { nome: { contains: 'Keyboard', mode: 'insensitive' as const } },
-          { nome: { contains: 'Router', mode: 'insensitive' as const } },
-          { nome: { contains: 'Mouse', mode: 'insensitive' as const } },
-          { nome: { contains: 'Monitor', mode: 'insensitive' as const } },
-          { nome: { contains: 'Headset', mode: 'insensitive' as const } },
-          { nome: { contains: 'Webcam', mode: 'insensitive' as const } },
-          { nome: { contains: 'Electronics', mode: 'insensitive' as const } }
-        ]
-      }
+      return n.includes('keyboard') || n.includes('router') || n.includes('mouse') ||
+             n.includes('monitor') || n.includes('headset') || n.includes('webcam') ||
+             n.includes('electronics')
     default:
-      return null
+      return false
   }
 }
 
@@ -141,34 +94,12 @@ export default defineEventHandler(async (event) => {
         }
       })
       console.log('[intl/category] relation products=', produtosRaw.length)
-      // Fallback: se nenhum produto vinculado, tentar buscar por nome
-      if (produtosRaw.length === 0) {
-        const commercialWhere = buildCommercialWhere(slug)
-        console.log('[intl/category] fallback where=', JSON.stringify(commercialWhere))
-        if (commercialWhere) {
-          produtosRaw = await (prisma as any).produto.findMany({
-            where: { storeSlug: resolvedStore, ...commercialWhere },
-            select: {
-              id: true, nome: true, nomeEn: true, slug: true,
-              imagem: true, cardItems: true, criadoEm: true,
-              ProdutoPrecoMoeda: {
-                where: { storeSlug: resolvedStore },
-                select: { currency: true, amount: true, oldAmount: true }
-              }
-            }
-          })
-          console.log('[intl/category] fallback products=', produtosRaw.length)
-        }
-      }
-    } else {
-      // 2. Tentar como categoria comercial (filtro por nome)
-      const commercialWhere = buildCommercialWhere(slug)
-      console.log('[intl/category] direct where=', JSON.stringify(commercialWhere))
-      if (!commercialWhere) {
-        throw createError({ statusCode: 404, statusMessage: 'Category not found' })
-      }
-      produtosRaw = await (prisma as any).produto.findMany({
-        where: { storeSlug: resolvedStore, ...commercialWhere },
+    }
+
+    // 2. Fallback: buscar todos os produtos internacionais e filtrar por nome no JS
+    if (produtosRaw.length === 0) {
+      const todosProdutos = await (prisma as any).produto.findMany({
+        where: { storeSlug: resolvedStore, ativo: true },
         select: {
           id: true, nome: true, nomeEn: true, slug: true,
           imagem: true, cardItems: true, criadoEm: true,
@@ -178,7 +109,9 @@ export default defineEventHandler(async (event) => {
           }
         }
       })
-      console.log('[intl/category] direct products=', produtosRaw.length)
+      console.log('[intl/category] total intl products=', todosProdutos.length)
+      produtosRaw = todosProdutos.filter((p: any) => matchesCommercialSlug(slug, p.nome))
+      console.log('[intl/category] after JS filter=', produtosRaw.length)
     }
 
     const produtosComPreco = produtosRaw.map((p: any) => {
@@ -237,7 +170,6 @@ export default defineEventHandler(async (event) => {
   } catch (error: any) {
     console.error('[intl/category] ERROR:', error?.message || error)
     if (error?.statusCode === 404) throw error
-    // Em caso de erro inesperado, retornar categoria vazia em vez de 500
     return {
       ok: true,
       categoria: { id: slug, nome: mapSlugToName(slug), slug },
