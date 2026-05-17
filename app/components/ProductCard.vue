@@ -389,6 +389,8 @@ const categoryBg = computed(() => {
 })
 
 const isIntlProduct = computed(() => {
+  // Domain context is the primary signal — if on gvgmall.co always use intl checkout
+  if (_intl.currencyLower.value !== 'brl') return true
   const currency = String((props.product as any)?.currency || '').toLowerCase()
   const store = String((props.product as any)?.storeSlug || '').toLowerCase()
   return store === 'international' || (currency !== '' && currency !== 'brl')

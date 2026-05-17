@@ -350,6 +350,13 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lp' })
 
+// Guard: redirect to intl checkout on international domains
+const _checkoutIntl = useIntlContext()
+if (_checkoutIntl.currencyLower.value !== 'brl') {
+  const route_ = useRoute()
+  await navigateTo({ path: '/checkout-intl', query: route_.query }, { redirectCode: 302 })
+}
+
 const route = useRoute()
 const { trackMeta, trackGtag, trackBeginCheckout } = useTracking()
 const { trackBeginCheckout: ecomBeginCheckout } = useEcommerceTracking()

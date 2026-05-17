@@ -279,6 +279,13 @@ definePageMeta({ ssr: true, middleware: ['product-fallback'] })
 
 const intl = useIntlContext()
 
+// Guard: redirect to EN product page on international domains
+if (intl.currencyLower.value !== 'brl') {
+  const _r = useRoute()
+  const _slug = String(_r.params.slug || '').trim()
+  if (_slug) await navigateTo(`/product/${_slug}`, { redirectCode: 301 })
+}
+
 const { siteName } = useSiteBranding()
 
 const config = useRuntimeConfig()
@@ -1332,7 +1339,8 @@ function buyNow() {
     // ignore
   }
   const slugValue = String(p?.slug || slug || '')
-  navigateTo({ path: '/checkout', query: { product: slugValue } })
+  const checkoutPath = intl.currencyLower.value !== 'brl' ? '/checkout-intl' : '/checkout'
+  navigateTo({ path: checkoutPath, query: { product: slugValue } })
 }
 </script>
 
