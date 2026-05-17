@@ -1,6 +1,6 @@
--- Migration re-created after manual cleanup of failed entry from PlanetScale
+-- Migration re-created after manual cleanup of failed entry from Railway
 -- Adds storeSlug column and indexes to SeoPage table
--- Note: PlanetScale/Vitess does NOT support IF NOT EXISTS syntax
+-- Note: Railway MySQL does NOT support IF NOT EXISTS syntax
 ALTER TABLE `SeoPage` ADD COLUMN `storeSlug` VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
 
 DROP INDEX `SeoPage_locale_slug_key` ON `SeoPage`;
