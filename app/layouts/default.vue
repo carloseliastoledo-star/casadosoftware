@@ -47,7 +47,7 @@
             </button>
 
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
-              <picture v-if="effectiveLogoPath && !isNationalLogoInIntl">
+              <picture v-if="effectiveLogoPath">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
                 <img :src="effectiveLogoPath" :alt="siteName" :class="isInternational ? 'h-36 md:h-40 w-auto' : 'h-12 md:h-14 w-auto'" />
               </picture>
