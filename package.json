@@ -6,7 +6,7 @@
     "node": ">=20 <21"
   },
   "scripts": {
-    "build": "prisma generate && npx prisma migrate resolve --rolled-back \"20260518000000_fix_seo_page_store_slug\" || true && prisma migrate deploy && nuxt build",
+    "build": "prisma generate && node prisma/resolve-failed-migration.mjs && prisma migrate deploy && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",

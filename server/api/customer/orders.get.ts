@@ -28,8 +28,8 @@ export default defineEventHandler(async (event) => {
         storeSlug: true,
         criadoEm: true,
         pagoEm: true,
-        produto: { select: { id: true, nome: true, slug: true } },
-        licencas: { select: { id: true, chave: true, status: true } }
+        Produto: { select: { id: true, nome: true, slug: true } },
+        Licenca: { select: { id: true, chave: true, status: true } }
       }
     })
 
