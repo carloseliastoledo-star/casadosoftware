@@ -491,7 +491,7 @@
             <li><NuxtLink :to="productsIndexPath" class="hover:text-white transition">{{ t.footerProducts }}</NuxtLink></li>
             <li v-if="!isInternational"><NuxtLink to="/tutoriais" class="hover:text-white transition">{{ t.footerTutorials }}</NuxtLink></li>
             <li v-if="!isInternational"><NuxtLink :to="blogMenuTo" class="hover:text-white transition">{{ t.footerBlog }}</NuxtLink></li>
-            <li v-if="!isInternational"><NuxtLink :to="affiliateMenuTo" class="hover:text-white transition">{{ affiliateMenuLabel }}</NuxtLink></li>
+            <li><NuxtLink :to="affiliateMenuTo" class="hover:text-white transition">{{ affiliateMenuLabel }}</NuxtLink></li>
             <li><NuxtLink :to="aboutUsPath" class="hover:text-white transition">{{ t.footerAbout }}</NuxtLink></li>
           </ul>
         </div>
@@ -807,6 +807,7 @@ const mainMenu = computed(() => {
       { label: 'Games', to: '/category/games' },
       { label: 'Electronics', to: '/category/electronics' },
       { label: 'Blog', to: '/blog' },
+      { label: affiliateMenuLabel.value, to: affiliateMenuTo.value },
       { label: 'Support', to: '/support' },
     ]
   }
