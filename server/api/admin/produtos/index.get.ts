@@ -12,8 +12,16 @@ export default defineEventHandler(async (event) => {
     const { storeSlug } = getStoreContext(event)
     console.log('[admin/produtos] storeSlug:', storeSlug || '(null)')
 
+    // international: strict filter - only products explicitly assigned to that store
+    // casadosoftware (and others): also include legacy orphan products (no ProdutoPrecoLoja at all)
+    const isStrict = storeSlug === 'international'
     const storeFilter = storeSlug
-      ? { ProdutoPrecoLoja: { some: { storeSlug } } }
+      ? isStrict
+        ? { ProdutoPrecoLoja: { some: { storeSlug } } }
+        : { OR: [
+            { ProdutoPrecoLoja: { some: { storeSlug } } },
+            { ProdutoPrecoLoja: { none: {} } }
+          ] }
       : {}
 
     const products = await (prisma as any).produto.findMany({

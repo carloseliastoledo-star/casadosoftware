@@ -1,10 +1,12 @@
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
+import { getStoreContext } from '#root/server/utils/store'
 import { createError } from 'h3'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
+  const { storeSlug } = getStoreContext(event)
   const id = event.context.params.id
 
   const produto = await prisma.produto.findUnique({
@@ -16,9 +18,19 @@ export default defineEventHandler(async (event) => {
           orders: true,
           licencas: true
         }
-      }
+      },
+      ProdutoPrecoLoja: { select: { storeSlug: true } }
     }
   })
+
+  // Guard: if storeSlug is 'international', only allow deleting products that belong to it
+  // For casadosoftware/others: allow orphan products (legacy) + explicitly owned ones
+  if (produto && storeSlug === 'international') {
+    const belongsToStore = (produto as any).ProdutoPrecoLoja?.some((l: any) => l.storeSlug === storeSlug)
+    if (!belongsToStore) {
+      throw createError({ statusCode: 403, statusMessage: 'Produto não pertence a esta loja.' })
+    }
+  }
 
   if (!produto) {
     throw createError({
