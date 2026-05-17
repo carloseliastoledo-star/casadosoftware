@@ -31,68 +31,68 @@ function buildCommercialWhere(slug: string): any {
     case 'windows':
       return {
         ...base,
-        nome: { contains: 'Windows' },
-        NOT: { nome: { contains: 'Server' } }
+        nome: { contains: 'Windows', mode: 'insensitive' as const },
+        NOT: { nome: { contains: 'Server', mode: 'insensitive' as const } }
       }
     case 'windows-server':
       return {
         ...base,
-        nome: { contains: 'Windows Server' }
+        nome: { contains: 'Windows Server', mode: 'insensitive' as const }
       }
     case 'office':
       return {
         ...base,
         OR: [
-          { nome: { contains: 'Office' } },
-          { nome: { contains: 'Microsoft 365' } },
-          { nome: { contains: '365' } }
+          { nome: { contains: 'Office', mode: 'insensitive' as const } },
+          { nome: { contains: 'Microsoft 365', mode: 'insensitive' as const } },
+          { nome: { contains: '365', mode: 'insensitive' as const } }
         ]
       }
     case 'adobe':
       return {
         ...base,
         OR: [
-          { nome: { contains: 'Adobe' } },
-          { nome: { contains: 'Photoshop' } },
-          { nome: { contains: 'Illustrator' } },
-          { nome: { contains: 'Creative Cloud' } },
-          { nome: { contains: 'Acrobat' } }
+          { nome: { contains: 'Adobe', mode: 'insensitive' as const } },
+          { nome: { contains: 'Photoshop', mode: 'insensitive' as const } },
+          { nome: { contains: 'Illustrator', mode: 'insensitive' as const } },
+          { nome: { contains: 'Creative Cloud', mode: 'insensitive' as const } },
+          { nome: { contains: 'Acrobat', mode: 'insensitive' as const } }
         ]
       }
     case 'autodesk':
       return {
         ...base,
         OR: [
-          { nome: { contains: 'Autodesk' } },
-          { nome: { contains: 'AutoCAD' } },
-          { nome: { contains: '3DS Max' } },
-          { nome: { contains: 'SketchUp' } }
+          { nome: { contains: 'Autodesk', mode: 'insensitive' as const } },
+          { nome: { contains: 'AutoCAD', mode: 'insensitive' as const } },
+          { nome: { contains: '3DS Max', mode: 'insensitive' as const } },
+          { nome: { contains: 'SketchUp', mode: 'insensitive' as const } }
         ]
       }
     case 'games':
       return {
         ...base,
         OR: [
-          { nome: { contains: 'Steam' } },
-          { nome: { contains: 'Xbox' } },
-          { nome: { contains: 'PSN' } },
-          { nome: { contains: 'EA SPORTS' } },
-          { nome: { contains: 'Battlefield' } },
-          { nome: { contains: 'ARC Raiders' } },
-          { nome: { contains: 'Game' } }
+          { nome: { contains: 'Steam', mode: 'insensitive' as const } },
+          { nome: { contains: 'Xbox', mode: 'insensitive' as const } },
+          { nome: { contains: 'PSN', mode: 'insensitive' as const } },
+          { nome: { contains: 'EA SPORTS', mode: 'insensitive' as const } },
+          { nome: { contains: 'Battlefield', mode: 'insensitive' as const } },
+          { nome: { contains: 'ARC Raiders', mode: 'insensitive' as const } },
+          { nome: { contains: 'Game', mode: 'insensitive' as const } }
         ]
       }
     case 'electronics':
       return {
         ...base,
         OR: [
-          { nome: { contains: 'Keyboard' } },
-          { nome: { contains: 'Router' } },
-          { nome: { contains: 'Mouse' } },
-          { nome: { contains: 'Monitor' } },
-          { nome: { contains: 'Headset' } },
-          { nome: { contains: 'Webcam' } },
-          { nome: { contains: 'Electronics' } }
+          { nome: { contains: 'Keyboard', mode: 'insensitive' as const } },
+          { nome: { contains: 'Router', mode: 'insensitive' as const } },
+          { nome: { contains: 'Mouse', mode: 'insensitive' as const } },
+          { nome: { contains: 'Monitor', mode: 'insensitive' as const } },
+          { nome: { contains: 'Headset', mode: 'insensitive' as const } },
+          { nome: { contains: 'Webcam', mode: 'insensitive' as const } },
+          { nome: { contains: 'Electronics', mode: 'insensitive' as const } }
         ]
       }
     default:
