@@ -180,6 +180,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: ['/category/:slug'] })
+
 const route = useRoute()
 const slug = String(route.params.slug || '')
   .trim()

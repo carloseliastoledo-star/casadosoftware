@@ -275,7 +275,7 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
   return str
 }
 
-definePageMeta({ ssr: true, middleware: ['intl-product-redirect', 'product-fallback'] })
+definePageMeta({ ssr: true, alias: ['/product/:slug'], middleware: ['product-fallback'] })
 
 const intl = useIntlContext()
 
