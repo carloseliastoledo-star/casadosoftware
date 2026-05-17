@@ -9,7 +9,7 @@
     </div>
 
     <ClientOnly>
-      <div v-if="topbarText && !isLicencasDigitais" class="bg-blue-600 text-white text-xs">
+      <div v-if="topbarText && !useIntlLayout" class="bg-blue-600 text-white text-xs">
         <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
           <a
             v-if="topbarLink"
@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <div v-if="isLicencasDigitais" class="bg-white text-[11px] text-gray-600 border-b">
+      <div v-if="useIntlLayout" class="bg-white text-[11px] text-gray-600 border-b">
         <div class="max-w-7xl mx-auto px-6 h-9 flex items-center">
           <span class="mr-2" aria-hidden="true">📍</span>
           <span>19th Ave New York, NY 95822, USA</span>
@@ -33,7 +33,7 @@
     </ClientOnly>
 
     <!-- HEADER -->
-    <header v-if="!isLicencasDigitais" class="border-b bg-white shadow-sm sticky top-0 z-40">
+    <header v-if="!useIntlLayout" class="border-b bg-white shadow-sm sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6">
         <div class="h-16 md:h-20 flex items-center justify-between gap-4">
           <div class="flex items-center gap-4 min-w-0">
@@ -148,7 +148,7 @@
       </div>
     </header>
 
-    <header v-else class="bg-white border-b sticky top-0 z-40">
+    <header v-else-if="useIntlLayout" class="bg-white border-b sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6">
         <div class="h-20 flex items-center justify-between gap-6">
           <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
@@ -322,11 +322,11 @@
 
     <!-- WHATSAPP BUTTON -->
     <ClientOnly>
-      <WhatsAppButton v-if="!isLicencasDigitais" />
+      <WhatsAppButton v-if="!useIntlLayout" />
     </ClientOnly>
 
     <!-- FOOTER -->
-    <footer v-if="isLicencasDigitais" class="bg-[#f2f4f3] text-gray-700 mt-20">
+    <footer v-if="useIntlLayout" class="bg-[#f2f4f3] text-gray-700 mt-20">
       <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-5 gap-12 text-sm">
         <div class="md:col-span-1">
           <img src="/licencasdigitais-gvg/logo-footer.svg" :alt="siteName" class="h-9 w-auto" loading="lazy" decoding="async" />
@@ -525,10 +525,21 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
+const isInternational = computed(() => {
+  if (storeSlug.value === 'international') return true
+  const h = normalizedHost.value
+  if (h.includes('gvgmall.co')) return true
+  if (h.includes('globalsoftware.store')) return true
+  return false
+})
+
 const isEnDomain = computed(() => {
+  if (isInternational.value) return true
   const h = normalizedHost.value
   return h.endsWith('.store') || h.includes('casadosoftware.store')
 })
+
+const useIntlLayout = computed(() => isLicencasDigitais.value || isInternational.value)
 
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()
@@ -538,6 +549,7 @@ const logoWebpPath = computed(() => {
 })
 
 const effectiveLogoPath = computed(() => {
+  if (isInternational.value) return String(logoPath || '').trim() || '/logo-gvgmall.png'
   if (isLicencasDigitais.value) return '/licencasdigitais-gvg/logo.png'
   return String(logoPath || '').trim() || '/logo-mercadosoftwares.png'
 })
