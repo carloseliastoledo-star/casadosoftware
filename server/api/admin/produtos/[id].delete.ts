@@ -50,6 +50,14 @@ export default defineEventHandler(async (event) => {
     where: { produtoId: id }
   })
 
+  await (prisma as any).produtoPrecoLoja.deleteMany({
+    where: { produtoId: id }
+  })
+
+  await (prisma as any).produtoPrecoMoeda.deleteMany({
+    where: { produtoId: id }
+  })
+
   await prisma.produto.delete({
     where: { id }
   })
