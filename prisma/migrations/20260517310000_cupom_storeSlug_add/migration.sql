@@ -1,0 +1,1 @@
+ALTER TABLE Cupom ADD COLUMN storeSlug VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
