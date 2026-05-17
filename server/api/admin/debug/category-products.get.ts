@@ -8,22 +8,19 @@ export default defineEventHandler(async (event) => {
   const q = getQuery(event)
   const slug = String(q.slug || '').trim().toLowerCase()
 
+  const intlFilter = { ativo: true, ProdutoPrecoLoja: { some: { storeSlug: 'international' } } }
+
   const totalProdutos = await (prisma as any).produto.count({
-    where: { storeSlug: 'international', ativo: true }
+    where: intlFilter
   })
 
   const windowsProdutos = await (prisma as any).produto.count({
-    where: {
-      storeSlug: 'international',
-      ativo: true,
-      nome: { contains: 'Windows' }
-    }
+    where: { ...intlFilter, nome: { contains: 'Windows' } }
   })
 
   const officeProdutos = await (prisma as any).produto.count({
     where: {
-      storeSlug: 'international',
-      ativo: true,
+      ...intlFilter,
       OR: [
         { nome: { contains: 'Office' } },
         { nome: { contains: '365' } }
@@ -32,7 +29,7 @@ export default defineEventHandler(async (event) => {
   })
 
   const sample = await (prisma as any).produto.findMany({
-    where: { storeSlug: 'international', ativo: true },
+    where: intlFilter,
     take: 5,
     select: { id: true, nome: true, slug: true }
   })

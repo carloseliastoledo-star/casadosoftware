@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
   const produtos = await (prisma as any).produto.findMany({
-    where: { storeSlug: 'international', ativo: true },
+    where: { ativo: true, ProdutoPrecoMoeda: { some: { storeSlug: 'international' } } },
     select: {
       id: true,
       nome: true,
