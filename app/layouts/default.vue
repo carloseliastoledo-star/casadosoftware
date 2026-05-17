@@ -718,10 +718,14 @@ const { data } = await useFetch<{ ok: true; paginas: PaginaLinkDto[] }>('/api/pa
   default: () => null
 })
 
-const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaLinkDto[] }>('/api/categorias', {
-  server: true,
-  default: () => null
-})
+const categoriasUrl = computed(() =>
+  isInternational.value ? '/api/intl/categories' : '/api/categorias'
+)
+
+const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaLinkDto[] }>(
+  () => categoriasUrl.value,
+  { server: true, default: () => null }
+)
 
 const paginas = computed(() => data.value?.paginas || [])
 const categorias = computed(() => categoriasData.value?.categorias || [])
