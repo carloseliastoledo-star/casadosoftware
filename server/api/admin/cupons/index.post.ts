@@ -1,4 +1,5 @@
 import { createError, defineEventHandler, readBody } from 'h3'
+import { randomUUID } from 'node:crypto'
 import prisma from '#root/server/db/prisma'
 import { requireAdminSession } from '#root/server/utils/adminSession'
 import { normalizeCouponCode } from '#root/server/utils/coupon'
@@ -36,6 +37,7 @@ export default defineEventHandler(async (event) => {
 
   return await prisma.cupom.create({
     data: {
+      id: randomUUID(),
       code,
       storeSlug,
       percent: Math.round(percent),
