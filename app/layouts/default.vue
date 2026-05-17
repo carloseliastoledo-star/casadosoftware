@@ -799,7 +799,6 @@ const contactLabel = computed(() => {
 const mainMenu = computed(() => {
   if (isInternational.value) {
     return [
-      { label: 'Home', to: '/' },
       { label: 'Windows', to: '/category/windows' },
       { label: 'Office', to: '/category/office' },
       { label: 'Windows Server', to: '/category/windows-server' },
@@ -807,7 +806,7 @@ const mainMenu = computed(() => {
       { label: 'Autodesk', to: '/category/autodesk' },
       { label: 'Games', to: '/category/games' },
       { label: 'Electronics', to: '/category/electronics' },
-      { label: 'Support', to: '/about-us' },
+      { label: 'Support', to: '/support' },
     ]
   }
 

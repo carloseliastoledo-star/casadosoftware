@@ -119,7 +119,7 @@ export default defineEventHandler(async (event) => {
     let produtosRaw: any[] = []
 
     if (categoriaDb) {
-      // Categoria técnica existe → buscar produtos por relação
+      // Categoria existe → buscar produtos por relação
       produtosRaw = await (prisma as any).produto.findMany({
         where: {
           storeSlug: resolvedStore,
@@ -135,6 +135,23 @@ export default defineEventHandler(async (event) => {
           }
         }
       })
+      // Fallback: se nenhum produto vinculado, tentar buscar por nome
+      if (produtosRaw.length === 0) {
+        const commercialWhere = buildCommercialWhere(slug)
+        if (commercialWhere) {
+          produtosRaw = await (prisma as any).produto.findMany({
+            where: { storeSlug: resolvedStore, ...commercialWhere },
+            select: {
+              id: true, nome: true, nomeEn: true, slug: true,
+              imagem: true, cardItems: true, criadoEm: true,
+              ProdutoPrecoMoeda: {
+                where: { storeSlug: resolvedStore },
+                select: { currency: true, amount: true, oldAmount: true }
+              }
+            }
+          })
+        }
+      }
     } else {
       // 2. Tentar como categoria comercial (filtro por nome)
       const commercialWhere = buildCommercialWhere(slug)
