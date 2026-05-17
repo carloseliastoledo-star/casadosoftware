@@ -110,11 +110,15 @@ export default defineEventHandler(async (event) => {
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'slug required' })
 
   try {
+    console.log('[intl/category] slug=', slug, 'resolvedStore=', resolvedStore)
+
     // 1. Tentar como categoria técnica (slug real no banco)
     const categoriaDb = await (prisma as any).categoria.findFirst({
       where: { slug, storeSlug: resolvedStore, ativo: true },
       select: { id: true, nome: true, slug: true }
     })
+
+    console.log('[intl/category] categoriaDb=', categoriaDb ? 'found' : 'not found')
 
     let produtosRaw: any[] = []
 
@@ -135,9 +139,11 @@ export default defineEventHandler(async (event) => {
           }
         }
       })
+      console.log('[intl/category] relation products=', produtosRaw.length)
       // Fallback: se nenhum produto vinculado, tentar buscar por nome
       if (produtosRaw.length === 0) {
         const commercialWhere = buildCommercialWhere(slug)
+        console.log('[intl/category] fallback where=', JSON.stringify(commercialWhere))
         if (commercialWhere) {
           produtosRaw = await (prisma as any).produto.findMany({
             where: { storeSlug: resolvedStore, ...commercialWhere },
@@ -150,11 +156,13 @@ export default defineEventHandler(async (event) => {
               }
             }
           })
+          console.log('[intl/category] fallback products=', produtosRaw.length)
         }
       }
     } else {
       // 2. Tentar como categoria comercial (filtro por nome)
       const commercialWhere = buildCommercialWhere(slug)
+      console.log('[intl/category] direct where=', JSON.stringify(commercialWhere))
       if (!commercialWhere) {
         throw createError({ statusCode: 404, statusMessage: 'Category not found' })
       }
@@ -169,6 +177,7 @@ export default defineEventHandler(async (event) => {
           }
         }
       })
+      console.log('[intl/category] direct products=', produtosRaw.length)
     }
 
     const produtos = produtosRaw.map((p: any) => {
@@ -195,6 +204,8 @@ export default defineEventHandler(async (event) => {
         createdAt: p.criadoEm
       }
     }).filter((p: any) => p.usdPrice != null && p.usdPrice > 0)
+
+    console.log('[intl/category] final products after price filter=', produtos.length)
 
     const categoria = categoriaDb || {
       id: slug,
