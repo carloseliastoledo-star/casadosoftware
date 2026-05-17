@@ -7,12 +7,10 @@ export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
   const { storeSlug } = getStoreContext(event)
-  console.log('[api/admin/settings.put] storeSlug:', storeSlug)
 
   const prismaAny = prisma as any
 
   const body = await readBody(event)
-  console.log('[api/admin/settings.put] body keys:', Object.keys(body || {}))
 
   const headHtml = body?.headHtml === null || body?.headHtml === undefined
     ? null
@@ -256,8 +254,6 @@ export default defineEventHandler(async (event) => {
     select: { id: true }
   })
 
-  console.log('[api/admin/settings.put] existing:', existing)
-
   try {
     const settings = existing
       ? await prismaAny.siteSettings.update({
@@ -327,6 +323,7 @@ export default defineEventHandler(async (event) => {
           orderBumpDescription,
           orderBumpPrice,
           orderBumpsJson,
+          createdAt: new Date(),
           updatedAt: new Date()
         },
         select: {
@@ -354,7 +351,6 @@ export default defineEventHandler(async (event) => {
 
     return { ok: true, settings }
   } catch (error: any) {
-    console.error('[api/admin/settings.put] Error:', error)
     throw createError({ statusCode: 500, statusMessage: error?.message || 'Erro ao salvar configurações' })
   }
 })
