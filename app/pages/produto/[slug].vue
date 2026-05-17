@@ -914,12 +914,20 @@ function onImageError(e: Event) {
   el.src = '/products/placeholder.svg'
 }
 
-const isBrl = computed(() => intl.currencyLower.value === 'brl')
+const effectiveCurrencyLower = computed(() => {
+  const c = String((safeProduct.value as any)?.currency || '').trim().toLowerCase()
+  if (c === 'usd' || c === 'eur' || c === 'brl') return c
+  // On intl domains always USD, never fall back to BRL from SSR context
+  if (intl.isIntl.value) return 'usd'
+  return intl.currencyLower.value || 'brl'
+})
+
+const isBrl = computed(() => effectiveCurrencyLower.value === 'brl')
 
 const formattedPrice = computed(() => {
-  const currencyLower = String((safeProduct.value as any)?.currency || intl.currencyLower.value).trim().toLowerCase()
-  const currency = currencyLower === 'usd' ? 'USD' : currencyLower === 'eur' ? 'EUR' : 'BRL'
-  return Number(safeProduct.value.preco || 0).toLocaleString(intl.locale.value, {
+  const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
+  const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
+  return Number(safeProduct.value.preco || 0).toLocaleString(locale, {
     style: 'currency',
     currency
   })
@@ -930,9 +938,9 @@ const formattedOldPrice = computed(() => {
   if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
   if (Number(oldPrice) <= Number(safeProduct.value.preco || 0)) return null
 
-  const currencyLower = String((safeProduct.value as any)?.currency || intl.currencyLower.value).trim().toLowerCase()
-  const currency = currencyLower === 'usd' ? 'USD' : currencyLower === 'eur' ? 'EUR' : 'BRL'
-  return Number(oldPrice).toLocaleString(intl.locale.value, {
+  const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
+  const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
+  return Number(oldPrice).toLocaleString(locale, {
     style: 'currency',
     currency
   })
