@@ -1,14 +1,16 @@
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
-import { createError } from 'h3'
+import { createError, getRequestHeader } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
   const { storeSlug } = getStoreContext(event)
+  const id = (event.context.params as any)?.id
 
-  const id = event.context.params.id
+  const _host = getRequestHeader(event, 'x-forwarded-host') || getRequestHeader(event, 'x-original-host') || getRequestHeader(event, 'host') || ''
+  console.log('[produto/edit]', { id, storeSlug, host: _host, STORE_SLUG: process.env.STORE_SLUG, SITE_URL: process.env.SITE_URL })
 
   const produto = await (prisma as any).produto.findFirst({
     where: { id, ...(storeSlug ? { storeSlug } : {}) },
