@@ -69,7 +69,20 @@ export default defineEventHandler(async (event) => {
   }
 
   const categoriasProvided = Array.isArray(body.categorias)
-  const categorias = categoriasProvided ? body.categorias.map((s: any) => String(s).trim()).filter(Boolean) : []
+  const categoriasSlugs = categoriasProvided ? body.categorias.map((s: any) => String(s).trim()).filter(Boolean) : []
+
+  // Buscar IDs das categorias para conectar corretamente (Prisma composite unique slug_storeSlug)
+  let categoriaIds: string[] = []
+  if (categoriasSlugs.length > 0 && storeSlug) {
+    const catRecords = await (prisma as any).categoria.findMany({
+      where: {
+        storeSlug,
+        slug: { in: categoriasSlugs }
+      },
+      select: { id: true }
+    })
+    categoriaIds = catRecords.map((c: any) => c.id)
+  }
 
   const precoAntigoProvided = body.precoAntigo !== undefined
   const rawPrecoAntigo = body.precoAntigo === null || body.precoAntigo === undefined ? '' : String(body.precoAntigo).trim()
@@ -118,8 +131,8 @@ export default defineEventHandler(async (event) => {
           ? {
               ProdutoCategoria: {
                 deleteMany: {},
-                create: categorias.map((slug: string) => ({
-                  Categoria: { connect: { slug } }
+                create: categoriaIds.map((categoriaId: string) => ({
+                  categoriaId
                 }))
               }
             }

@@ -66,7 +66,20 @@ export default defineEventHandler(async (event) => {
 
   const imagem = normalizeImageUrl(body.imagem)
 
-  const categorias = Array.isArray(body.categorias) ? body.categorias.map((s: any) => String(s).trim()).filter(Boolean) : []
+  const categoriasSlugs = Array.isArray(body.categorias) ? body.categorias.map((s: any) => String(s).trim()).filter(Boolean) : []
+
+  // Buscar IDs das categorias para conectar corretamente (Prisma composite unique slug_storeSlug)
+  let categoriaIds: string[] = []
+  if (categoriasSlugs.length > 0 && storeSlug) {
+    const catRecords = await (prisma as any).categoria.findMany({
+      where: {
+        storeSlug,
+        slug: { in: categoriasSlugs }
+      },
+      select: { id: true }
+    })
+    categoriaIds = catRecords.map((c: any) => c.id)
+  }
 
   const rawPrecoUsd = body.precoUsd === null || body.precoUsd === undefined ? '' : String(body.precoUsd).trim()
   const precoUsd = rawPrecoUsd === '' ? null : Number(rawPrecoUsd)
@@ -137,10 +150,10 @@ export default defineEventHandler(async (event) => {
     }
 
     // Categorias
-    if (categorias.length) {
-      data.produtoCategorias = {
-        create: categorias.map((slug: string) => ({
-          categoria: { connect: { slug } }
+    if (categoriaIds.length) {
+      data.ProdutoCategoria = {
+        create: categoriaIds.map((categoriaId: string) => ({
+          categoriaId
         }))
       }
     }
