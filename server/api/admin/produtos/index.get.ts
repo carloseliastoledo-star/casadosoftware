@@ -12,9 +12,14 @@ export default defineEventHandler(async (event) => {
     const { storeSlug } = getStoreContext(event)
     console.log('[admin/produtos] storeSlug:', storeSlug || '(null)')
 
+    const where: any = {}
+    if (storeSlug) where.storeSlug = storeSlug
+
     const products = await (prisma as any).produto.findMany({
+      where,
       select: {
         id: true,
+        storeSlug: true,
         nome: true,
         slug: true,
         finalUrl: true,

@@ -15,26 +15,31 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'no-store')
 
   try {
-    // 1. Buscar preços internacionais via ProdutoPrecoLoja (salvo pelo importador CSV)
-    const precoLoja = await (prisma as any).produtoPrecoLoja.findMany({
-      where: { storeSlug: STORE_SLUG },
+    // 1. Buscar produtos com storeSlug=international diretamente
+    const produtos = await (prisma as any).produto.findMany({
+      where: { storeSlug: STORE_SLUG, ativo: true },
       select: {
-        produtoId: true,
+        id: true,
+        nome: true,
+        nomeEn: true,
+        slug: true,
+        imagem: true,
+        cardItems: true,
         preco: true,
         precoAntigo: true,
-        Produto: {
-          select: { id: true, nome: true, nomeEn: true, slug: true, imagem: true, cardItems: true, ativo: true }
+        ProdutoPrecoLoja: {
+          where: { storeSlug: STORE_SLUG },
+          select: { preco: true, precoAntigo: true },
+          take: 1
         }
-      }
+      },
+      orderBy: { criadoEm: 'desc' }
     })
 
-    // 2. Filtrar apenas produtos ativos
-    const ativos = precoLoja.filter((r: any) => r.Produto?.ativo)
+    if (!produtos.length) return { ok: true, produtos: [] }
 
-    if (!ativos.length) return { ok: true, produtos: [] }
-
-    // 3. Tentar buscar preços USD via ProdutoPrecoMoeda (opcional, para override)
-    const produtoIds = ativos.map((r: any) => r.produtoId)
+    // 2. Tentar buscar preços USD via ProdutoPrecoMoeda (opcional, para override)
+    const produtoIds = produtos.map((p: any) => p.id)
     const usdPriceMap = new Map<string, { amount: number; oldAmount: number | null }>()
     try {
       const moedas = await (prisma as any).produtoPrecoMoeda.findMany({
@@ -45,15 +50,15 @@ export default defineEventHandler(async (event) => {
         usdPriceMap.set(m.produtoId, { amount: Number(m.amount), oldAmount: m.oldAmount ? Number(m.oldAmount) : null })
       }
     } catch {
-      // fallback: usar preco de ProdutoPrecoLoja
+      // sem override USD — usa preco base
     }
 
-    // 4. Montar resposta
-    const resultado = ativos.map((r: any) => {
-      const p = r.Produto
-      const usd = usdPriceMap.get(r.produtoId)
-      const usdPrice = usd?.amount ?? Number(r.preco)
-      const oldUsdPrice = usd?.oldAmount ?? (r.precoAntigo ? Number(r.precoAntigo) : null)
+    // 3. Montar resposta — prioridade: ProdutoPrecoMoeda > ProdutoPrecoLoja > Produto.preco
+    const resultado = produtos.map((p: any) => {
+      const usd = usdPriceMap.get(p.id)
+      const lojaPreco = p.ProdutoPrecoLoja?.[0]
+      const usdPrice = usd?.amount ?? Number(lojaPreco?.preco ?? p.preco)
+      const oldUsdPrice = usd?.oldAmount ?? (lojaPreco?.precoAntigo ? Number(lojaPreco.precoAntigo) : (p.precoAntigo ? Number(p.precoAntigo) : null))
 
       return {
         id: p.id,

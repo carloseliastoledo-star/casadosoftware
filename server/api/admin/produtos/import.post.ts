@@ -159,6 +159,7 @@ export default defineEventHandler(async (event) => {
         const preco = idx.price >= 0 ? (parseFloatOrNull(row[idx.price] ?? '') || 0) : 0
         const createData = {
           id: crypto.randomUUID(),
+          storeSlug: storeSlug || 'casadosoftware',
           nome: name,
           slug: slug,
           descricao: idx.description >= 0 ? row[idx.description] || null : null,

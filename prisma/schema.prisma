@@ -351,6 +351,7 @@ model PartnerApplication {
 
 model Produto {
   id                          String              @id
+  storeSlug                   String              @default("casadosoftware")
   nome                        String
   slug                        String              @unique
   descricao                   String?             @db.Text
