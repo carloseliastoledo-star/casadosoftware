@@ -1,46 +1,6 @@
 import { defineEventHandler, getRouterParam, createError, setHeader } from 'h3'
 import prisma from '../../../db/prisma'
-
-const STORE_SLUG = 'international'
-
-// Hardcoded category metadata for fallback
-const INTL_CATEGORIES: Record<string, { name: string; productSlugs: string[] }> = {
-  'windows': {
-    name: 'Windows',
-    productSlugs: [
-      'microsoft-windows-11-pro-chave-esd-32-64-bits',
-      'microsoft-windows-10-pro-chave-esd-32-64-bits',
-      'office-2021-pro-plus-windows-11-pro',
-      'winserver2025',
-    ]
-  },
-  'office': {
-    name: 'Office',
-    productSlugs: [
-      'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive',
-      'office-365',
-      'office-ltsc-pro-plus-2024',
-      'office-2021-pro-plus-windows-11-pro',
-    ]
-  },
-  'windows-server': {
-    name: 'Windows Server',
-    productSlugs: [
-      'winserver2025',
-    ]
-  },
-}
-
-// USD prices per slug (same as products.get.ts)
-const INTL_USD_PRICES: Record<string, { nameEn: string; usdPrice: number; oldUsdPrice?: number }> = {
-  'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive': { nameEn: 'Microsoft 365 – 5 Devices, 1TB OneDrive', usdPrice: 29.99, oldUsdPrice: 49.99 },
-  'office-365': { nameEn: 'Office 365 Original License – Instant Delivery', usdPrice: 19.99, oldUsdPrice: 34.99 },
-  'microsoft-windows-11-pro-chave-esd-32-64-bits': { nameEn: 'Windows 11 Pro – Digital License ESD', usdPrice: 14.99, oldUsdPrice: 29.99 },
-  'microsoft-windows-10-pro-chave-esd-32-64-bits': { nameEn: 'Windows 10 Pro – Digital License ESD', usdPrice: 12.99, oldUsdPrice: 24.99 },
-  'office-2021-pro-plus-windows-11-pro': { nameEn: 'Office 2021 Pro Plus + Windows 11 Pro Bundle', usdPrice: 24.99, oldUsdPrice: 44.99 },
-  'office-ltsc-pro-plus-2024': { nameEn: 'Office 2024 Professional Plus', usdPrice: 34.99, oldUsdPrice: 59.99 },
-  'winserver2025': { nameEn: 'Windows Server 2025 Standard', usdPrice: 39.99, oldUsdPrice: 69.99 },
-}
+import { getStoreContext } from '#root/server/utils/store'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -55,57 +15,69 @@ function normalizeImageUrl(input: unknown): string | null {
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300')
 
+  const { storeSlug } = getStoreContext(event)
+  const resolvedStore = storeSlug || 'international'
+
   const slug = String(getRouterParam(event, 'slug') || '').trim().toLowerCase()
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'slug required' })
 
-  const catConfig = INTL_CATEGORIES[slug]
-  if (!catConfig) throw createError({ statusCode: 404, statusMessage: 'Category not found' })
-
   try {
-    // Fetch product data from DB for the slugs in this category
-    const produtos = await (prisma as any).produto.findMany({
-      where: { slug: { in: catConfig.productSlugs }, ativo: true },
-      select: { id: true, nome: true, nomeEn: true, slug: true, imagem: true, cardItems: true, criadoEm: true }
+    // Buscar categoria pelo slug + storeSlug
+    const categoria = await (prisma as any).categoria.findFirst({
+      where: { slug, storeSlug: resolvedStore, ativo: true },
+      select: { id: true, nome: true, slug: true }
     })
 
-    // Try DB prices first, fall back to hardcoded
-    let dbPriceMap = new Map<string, { amount: number; oldAmount: number | null }>()
-    try {
-      const produtoIds = produtos.map((p: any) => p.id)
-      const precosIntl = await (prisma as any).produtoPrecoMoeda.findMany({
-        where: { produtoId: { in: produtoIds }, storeSlug: STORE_SLUG, currency: 'usd' },
-        select: { produtoId: true, amount: true, oldAmount: true }
-      })
-      for (const r of precosIntl) {
-        dbPriceMap.set(r.produtoId, { amount: Number(r.amount), oldAmount: r.oldAmount ? Number(r.oldAmount) : null })
-      }
-    } catch { /* use hardcoded */ }
+    if (!categoria) throw createError({ statusCode: 404, statusMessage: 'Category not found' })
 
-    const produtosMapeados = produtos.map((p: any) => {
-      const cfg = INTL_USD_PRICES[p.slug as string]
-      const dbPrice = dbPriceMap.get(p.id)
-      const usdPrice = dbPrice?.amount ?? cfg?.usdPrice ?? null
-      const oldUsdPrice = dbPrice?.oldAmount ?? cfg?.oldUsdPrice ?? null
-      if (!usdPrice) return null
+    // Buscar produtos da categoria com preços USD e EUR
+    const produtosRaw = await (prisma as any).produto.findMany({
+      where: {
+        storeSlug: resolvedStore,
+        ativo: true,
+        ProdutoCategoria: { some: { categoriaId: categoria.id } }
+      },
+      select: {
+        id: true,
+        nome: true,
+        nomeEn: true,
+        slug: true,
+        imagem: true,
+        cardItems: true,
+        criadoEm: true,
+        ProdutoPrecoMoeda: {
+          where: { storeSlug: resolvedStore },
+          select: { currency: true, amount: true, oldAmount: true }
+        }
+      }
+    })
+
+    const produtos = produtosRaw.map((p: any) => {
+      const precos: any[] = p.ProdutoPrecoMoeda || []
+      const usd = precos.find((x: any) => String(x.currency).toLowerCase() === 'usd')
+      const eur = precos.find((x: any) => String(x.currency).toLowerCase() === 'eur')
+      const usdPrice = usd ? Number(usd.amount) : null
+      const oldUsdPrice = usd?.oldAmount ? Number(usd.oldAmount) : null
+      const eurPrice = eur ? Number(eur.amount) : null
       return {
         id: p.id,
-        name: cfg?.nameEn || p.nomeEn || p.nome,
+        name: p.nomeEn || p.nome,
         slug: p.slug,
         price: usdPrice,
+        usdPrice,
+        oldUsdPrice,
+        eurPrice,
         precoAntigo: oldUsdPrice,
         currency: 'usd',
-        storeSlug: STORE_SLUG,
+        storeSlug: resolvedStore,
         image: normalizeImageUrl(p.imagem),
+        imagem: normalizeImageUrl(p.imagem),
         cardItems: p.cardItems,
         createdAt: p.criadoEm
       }
-    }).filter(Boolean)
+    }).filter((p: any) => p.usdPrice != null && p.usdPrice > 0)
 
-    return {
-      ok: true,
-      categoria: { id: slug, nome: catConfig.name, slug },
-      produtos: produtosMapeados
-    }
+    return { ok: true, categoria, produtos }
 
   } catch (error: any) {
     if (error?.statusCode === 404) throw error

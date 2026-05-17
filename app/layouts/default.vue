@@ -681,11 +681,20 @@ const mainMenuBase = [
   { label: 'Contato', to: '/quem-somos' }
 ] as const
 
-const intlMenuBase = [
-  { label: 'Windows', slug: 'windows', fallbackTo: '/categories' },
-  { label: 'Office', slug: 'office', fallbackTo: '/categories' },
-  { label: 'Windows Server', slug: 'windows-server', fallbackTo: '/categories' },
-] as const
+// Mapa de slug → label amigável para categorias internacionais
+const INTL_SLUG_LABELS: Record<string, string> = {
+  'windows': 'Windows',
+  'office': 'Office',
+  'windows-server': 'Windows Server',
+  'software-computer-software-operating-systems': 'Operating Systems',
+  'software-computer-software-office-application-software': 'Office',
+  'software-video-game-software': 'Games',
+  'software-computer-software-multimedia-design-software-3d-modeling-software': 'Design & 3D',
+  'software-computer-software-multimedia-design-software-web-design-software': 'Web Design',
+  'electronics-networking-bridges-routers': 'Routers',
+  'electronics-networking-bridges-routers-wireless-routers': 'Wireless Routers',
+  'electronics-electronics-accessories-computer-components-input-devices-keyboards': 'Keyboards',
+}
 
 type PaginaLinkDto = {
   titulo: string
@@ -784,12 +793,14 @@ const contactLabel = computed(() => {
 
 const mainMenu = computed(() => {
   if (isInternational.value) {
+    const intlItems = categorias.value
+      .slice(0, 6)
+      .map((cat) => ({
+        label: INTL_SLUG_LABELS[cat.slug] || cat.nome,
+        to: `/category/${cat.slug}`
+      }))
     return [
-      ...intlMenuBase.map((it) => {
-        const slug = String(it.slug || '').trim()
-        if (categoriasSet.value.has(slug)) return { label: it.label, to: `/category/${slug}` }
-        return { label: it.label, to: it.fallbackTo }
-      }),
+      ...(intlItems.length ? intlItems : [{ label: 'Products', to: '/products' }]),
       { label: 'Support', to: '/about-us' },
     ]
   }
