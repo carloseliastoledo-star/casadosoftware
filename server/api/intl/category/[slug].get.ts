@@ -80,9 +80,9 @@ export default defineEventHandler(async (event) => {
       // Categoria existe → buscar produtos por relação
       produtosRaw = await (prisma as any).produto.findMany({
         where: {
-          storeSlug: resolvedStore,
           ativo: true,
-          ProdutoCategoria: { some: { categoriaId: categoriaDb.id } }
+          ProdutoCategoria: { some: { categoriaId: categoriaDb.id } },
+          ProdutoPrecoMoeda: { some: { storeSlug: resolvedStore } }
         },
         select: {
           id: true, nome: true, nomeEn: true, slug: true,
@@ -99,7 +99,7 @@ export default defineEventHandler(async (event) => {
     // 2. Fallback: buscar todos os produtos internacionais e filtrar por nome no JS
     if (produtosRaw.length === 0) {
       const todosProdutos = await (prisma as any).produto.findMany({
-        where: { storeSlug: resolvedStore, ativo: true },
+        where: { ativo: true, ProdutoPrecoMoeda: { some: { storeSlug: resolvedStore } } },
         select: {
           id: true, nome: true, nomeEn: true, slug: true,
           imagem: true, cardItems: true, criadoEm: true,
