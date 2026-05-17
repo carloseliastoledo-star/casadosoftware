@@ -705,6 +705,7 @@ type CategoriaLinkDto = {
   id: string
   nome: string
   slug: string
+  produtoCount?: number
 }
 
 const { cart } = useCart()
@@ -798,7 +799,7 @@ const contactLabel = computed(() => {
 const mainMenu = computed(() => {
   if (isInternational.value) {
     const intlItems = categorias.value
-      .slice(0, 6)
+      .filter((cat) => (cat.produtoCount ?? 1) > 0)
       .map((cat) => ({
         label: INTL_SLUG_LABELS[cat.slug] || cat.nome,
         to: `/category/${cat.slug}`
