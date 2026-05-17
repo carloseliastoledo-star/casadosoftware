@@ -69,37 +69,52 @@
         </NuxtLink>
       </div>
 
-      <div v-if="pending" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div v-for="n in 4" :key="n" class="bg-slate-100 rounded-2xl h-64 animate-pulse" />
+      <!-- Skeleton -->
+      <div v-if="pending" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7">
+        <div v-for="n in 8" :key="n" class="bg-slate-100 rounded-2xl h-[420px] animate-pulse" />
       </div>
 
-      <div v-else-if="products.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Cards -->
+      <div v-else-if="products.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-7">
         <div
           v-for="product in products.slice(0, 8)"
           :key="product.id"
-          class="group bg-white border border-slate-200 hover:border-blue-300 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
+          class="group flex flex-col bg-white border border-slate-200 hover:border-blue-400 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-200 cursor-pointer min-h-[420px]"
           @click="goToProduct(product)"
         >
-          <div class="bg-slate-50 p-6 flex items-center justify-center h-40">
+          <!-- Image -->
+          <div class="bg-slate-50 flex items-center justify-center h-56 shrink-0 overflow-hidden">
             <img
               :src="product.image || '/products/placeholder.svg'"
               :alt="product.name || product.nome"
-              class="max-h-full max-w-full object-contain"
+              class="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-300"
               loading="lazy"
             />
           </div>
-          <div class="p-4">
-            <h3 class="font-bold text-slate-900 text-sm leading-snug line-clamp-2 mb-2">
+
+          <!-- Body -->
+          <div class="flex flex-col flex-1 p-5">
+            <h3 class="font-extrabold text-slate-900 text-base leading-snug line-clamp-3 mb-3 min-h-[3.5rem]">
               {{ product.name || product.nome }}
             </h3>
-            <div class="flex items-center justify-between mt-3">
-              <div>
-                <span v-if="product.usdPrice" class="text-lg font-extrabold text-blue-600">
+
+            <!-- Footer: price + button -->
+            <div class="mt-auto pt-3 border-t border-slate-100 flex flex-col gap-3">
+              <div class="flex items-baseline gap-2">
+                <span v-if="product.usdPrice" class="text-3xl font-black text-blue-600 leading-none">
                   ${{ formatPrice(product.usdPrice) }}
                 </span>
-                <span v-else class="text-sm text-slate-400 italic">Coming soon</span>
+                <span
+                  v-if="product.oldUsdPrice && product.oldUsdPrice > product.usdPrice"
+                  class="text-sm text-slate-400 line-through"
+                >
+                  ${{ formatPrice(product.oldUsdPrice) }}
+                </span>
+                <span v-if="!product.usdPrice" class="text-sm text-slate-400 italic">Coming soon</span>
               </div>
-              <button class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+              <button
+                class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold text-sm py-3 rounded-xl transition shadow-sm hover:shadow-md"
+              >
                 Buy Now
               </button>
             </div>
