@@ -6,7 +6,7 @@
     "node": ">=20 <21"
   },
   "scripts": {
-    "build": "prisma migrate deploy && nuxt build",
+    "build": "prisma generate && prisma migrate deploy && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",
