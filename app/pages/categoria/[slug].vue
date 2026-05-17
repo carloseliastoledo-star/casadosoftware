@@ -231,13 +231,22 @@ const apiUrl = computed(() =>
   isInternational.value ? `/api/intl/category/${slug}` : `/api/categorias/${slug}`
 )
 
-const { data, pending } = await useFetch(() => apiUrl.value, {
+const { data, pending, error } = await useFetch(() => apiUrl.value, {
+  server: true,
   default: () => ({
     ok: false,
     categoria: null,
     produtos: []
   })
 })
+
+if (import.meta.server) {
+  console.log('[category-page] SSR apiUrl=', apiUrl.value, 'isInternational=', isInternational.value)
+  console.log('[category-page] SSR data=', JSON.stringify(data.value))
+  if (error.value) {
+    console.error('[category-page] SSR error=', error.value)
+  }
+}
 
 const categoria = computed(() => (data.value as any)?.categoria || null)
 
