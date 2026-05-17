@@ -103,8 +103,8 @@ export default defineEventHandler(async (event) => {
       console.log('[intl/category] relation products=', produtosRaw.length)
     }
 
-    // 2. Fallback: buscar todos os produtos internacionais e filtrar por nome no JS
-    if (produtosRaw.length === 0) {
+    // 2. Fallback: se categoria não existe no banco, buscar por nome (apenas produtos disponíveis para international)
+    if (!categoriaDb && produtosRaw.length === 0) {
       const todosProdutos = await (prisma as any).produto.findMany({
         where: {
           ativo: true,
