@@ -49,7 +49,8 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   const langCookie = useCookie<string | null>('ld_lang', { sameSite: 'lax', path: '/' })
 
-  const initialLang = subdomainLang || normalizeLang(langCookie.value)
+  const cookieLang = langCookie.value ? normalizeLang(langCookie.value) : null
+  const initialLang = cookieLang || subdomainLang || 'en'
 
   // Expose detected language to useIntlContext() via Nuxt state.
   // This is the most reliable SSR language source: the plugin runs synchronously
@@ -77,11 +78,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     watch(
       () => langCookie.value,
       (next) => {
-        if (subdomainLang) {
-          i18n.global.locale.value = subdomainLang
-          return
-        }
-        i18n.global.locale.value = normalizeLang(next)
+        const cookieVal = next ? normalizeLang(next) : null
+        i18n.global.locale.value = cookieVal || subdomainLang || 'en'
       }
     )
   }

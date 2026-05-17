@@ -81,6 +81,7 @@ function detectSubdomainLanguage(host: string): ClientIntl['language'] | null {
   if (h.startsWith('es.')) return 'es'
   if (h.startsWith('fr.')) return 'fr'
   if (h.startsWith('it.')) return 'it'
+  if (h.includes('gvgmall.co') || h.includes('globalsoftware.store')) return 'en'
   return null
 }
 
@@ -153,12 +154,13 @@ export function useIntlContext() {
     const fromPath = detectLanguageFromPath()
     if (fromPath) return fromPath
 
+    // Cookie has priority over domain detection so the user's language selector works
+    const cookie = String(langCookie.value || '').trim()
+    if (cookie) return normalizeLanguage(cookie)
+
     if (sub) return sub
 
     if (isEnDomain.value) return 'en'
-
-    const cookie = String(langCookie.value || '').trim()
-    if (cookie) return normalizeLanguage(cookie)
 
     if (!import.meta.server) {
       const n = detectLanguageFromNavigator()
