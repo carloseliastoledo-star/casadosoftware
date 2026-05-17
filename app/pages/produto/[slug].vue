@@ -275,16 +275,9 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
   return str
 }
 
-definePageMeta({ ssr: true, middleware: ['product-fallback'] })
+definePageMeta({ ssr: true, middleware: ['intl-product-redirect', 'product-fallback'] })
 
 const intl = useIntlContext()
-
-// Guard: redirect to EN product page on international domains
-if (intl.currencyLower.value !== 'brl') {
-  const _r = useRoute()
-  const _slug = String(_r.params.slug || '').trim()
-  if (_slug) await navigateTo(`/product/${_slug}`, { redirectCode: 301 })
-}
 
 const { siteName } = useSiteBranding()
 

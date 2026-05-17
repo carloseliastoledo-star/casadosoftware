@@ -69,13 +69,13 @@ const productPath = computed(() => {
   const s = String((props.product as any)?.slug || '').trim()
   if (!s) return '/'
 
-  const lang = effectiveLang.value
+  // On international domains always use /product/ (EN route)
+  if (_intl.isIntl.value) return `/product/${s}`
 
+  const lang = effectiveLang.value
   const segment =
     lang === 'en' ? 'product' :
     lang === 'es' ? 'producto' :
-    lang === 'fr' ? 'product' :
-    lang === 'it' ? 'product' :
     'produto'
 
   return `/${segment}/${s}`
