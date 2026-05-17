@@ -93,7 +93,7 @@ const intl = useIntlContext()
 const ui = computed(() => {
   const isEn = intl.language.value === 'en'
   return {
-    heroTitle:   isEn ? 'Casa do Software Blog'              : 'Blog Casa do Software',
+    heroTitle:   isEn ? 'Blog'              : 'Blog Casa do Software',
     heroSub:     isEn ? 'Guides, tutorials and news about Windows, Office and digital licenses.' : 'Guias, tutoriais e novidades sobre Windows, Office e licenças digitais.',
     popular:     isEn ? '🔥 Popular articles'                : '🔥 Artigos populares',
     readMore:    isEn ? 'Read article →'                     : 'Ler artigo →',
