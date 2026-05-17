@@ -160,18 +160,18 @@
 
         <!-- ── CTA REPETIDO ── -->
         <div class="mt-10 flex flex-col items-center text-center gap-4">
-          <p class="text-sm text-slate-500">🔥 Não perca esta oferta — preço pode mudar a qualquer momento</p>
+          <p class="text-sm text-slate-500">{{ t.ctaUrgency }}</p>
           <button
             type="button"
             class="inline-flex items-center gap-3 bg-[#00e676] hover:bg-[#00ff87] active:scale-[0.98] text-[#010d1a] text-lg font-black uppercase tracking-widest px-12 py-4 rounded-xl transition-all duration-200 shadow-[0_0_30px_rgba(0,230,118,0.35)]"
             @click="buyNow"
           >
-            🛒 COMPRAR AGORA
+            {{ t.buyNowBtn }}
           </button>
           <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-slate-500">
-            <span>🔒 Pagamento seguro</span>
-            <span>📧 Entrega por e-mail</span>
-            <span>↩️ 7 dias de garantia</span>
+            <span>🔒 {{ t.ctaPayment }}</span>
+            <span>📧 {{ t.ctaEmail }}</span>
+            <span>↩️ {{ t.ctaGuarantee }}</span>
           </div>
         </div>
 
@@ -237,14 +237,14 @@
           class="mt-8 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div>
-            <div class="text-xl font-extrabold text-white">Ganhe dinheiro indicando este produto.</div>
-            <div class="mt-1 text-slate-400 text-sm">Torne-se afiliado.</div>
+            <div class="text-xl font-extrabold text-white">{{ t.affiliateTitle }}</div>
+            <div class="mt-1 text-slate-400 text-sm">{{ t.affiliateSub }}</div>
           </div>
           <NuxtLink
             to="/partner-apply"
             class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
-            Quero me inscrever
+            {{ t.affiliateBtn }}
           </NuxtLink>
         </div>
 
@@ -1216,7 +1216,14 @@ const t = computed(() => {
       trustVerified: 'Verified product',
       trustClients: '+1000 clients',
       trustFastDelivery: 'Fast delivery',
-      urgencyStock: '⚡ Limited digital stock — get yours now before it runs out!'
+      urgencyStock: '⚡ Limited digital stock — get yours now before it runs out!',
+      ctaUrgency: '🔥 Don’t miss this offer — price may change at any time',
+      ctaPayment: 'Secure payment',
+      ctaEmail: 'Email delivery',
+      ctaGuarantee: '7-day guarantee',
+      affiliateTitle: 'Earn money recommending this product.',
+      affiliateSub: 'Become an affiliate.',
+      affiliateBtn: 'I want to sign up'
     }
   }
 
@@ -1260,7 +1267,14 @@ const t = computed(() => {
       trustVerified: 'Producto verificado',
       trustClients: '+1000 clientes',
       trustFastDelivery: 'Envío inmediato',
-      urgencyStock: '⚡ Stock digital limitado — ¡consigue el tuyo antes de que se agote!'
+      urgencyStock: '⚡ Stock digital limitado — ¡consigue el tuyo antes de que se agote!',
+      ctaUrgency: '🔥 No te pierdas esta oferta — el precio puede cambiar en cualquier momento',
+      ctaPayment: 'Pago seguro',
+      ctaEmail: 'Entrega por e-mail',
+      ctaGuarantee: 'Garantía de 7 días',
+      affiliateTitle: 'Gana dinero recomendando este producto.',
+      affiliateSub: 'Conviértete en afiliado.',
+      affiliateBtn: 'Quiero registrarme'
     }
   }
 
@@ -1304,7 +1318,14 @@ const t = computed(() => {
       trustVerified: 'Prodotto verificato',
       trustClients: '+1000 clienti',
       trustFastDelivery: 'Consegna immediata',
-      urgencyStock: '⚡ Stock digitale limitato — assicurati il tuo prima che finisca!'
+      urgencyStock: '⚡ Stock digitale limitato — assicurati il tuo prima che finisca!',
+      ctaUrgency: '🔥 Non perdere questa offerta — il prezzo può cambiare in qualsiasi momento',
+      ctaPayment: 'Pagamento sicuro',
+      ctaEmail: 'Consegna via e-mail',
+      ctaGuarantee: 'Garanzia 7 giorni',
+      affiliateTitle: 'Guadagna consigliando questo prodotto.',
+      affiliateSub: 'Diventa affiliato.',
+      affiliateBtn: 'Voglio iscrivermi'
     }
   }
 
@@ -1348,7 +1369,14 @@ const t = computed(() => {
       trustVerified: 'Produit vérifié',
       trustClients: '+1000 clients',
       trustFastDelivery: 'Livraison immédiate',
-      urgencyStock: '⚡ Stock numérique limité — obtenez le vôtre avant épuisement !'
+      urgencyStock: '⚡ Stock numérique limité — obtenez le vôtre avant épuisement !',
+      ctaUrgency: '🔥 Ne manquez pas cette offre — le prix peut changer à tout moment',
+      ctaPayment: 'Paiement sécurisé',
+      ctaEmail: 'Livraison par e-mail',
+      ctaGuarantee: 'Garantie 7 jours',
+      affiliateTitle: 'Gagnez de l’argent en recommandant ce produit.',
+      affiliateSub: 'Devenez affilié.',
+      affiliateBtn: 'Je veux m’inscrire'
     }
   }
 
@@ -1391,7 +1419,14 @@ const t = computed(() => {
     trustVerified: 'Produto verificado',
     trustClients: '+1000 clientes',
     trustFastDelivery: 'Envio imediato',
-    urgencyStock: '⚡ Estoque digital limitado — garanta o seu agora antes que acabe!'
+    urgencyStock: '⚡ Estoque digital limitado — garanta o seu agora antes que acabe!',
+    ctaUrgency: '🔥 Não perca esta oferta — preço pode mudar a qualquer momento',
+    ctaPayment: 'Pagamento seguro',
+    ctaEmail: 'Entrega por e-mail',
+    ctaGuarantee: '7 dias de garantia',
+    affiliateTitle: 'Ganhe dinheiro indicando este produto.',
+    affiliateSub: 'Torne-se afiliado.',
+    affiliateBtn: 'Quero me inscrever'
   }
 })
 
