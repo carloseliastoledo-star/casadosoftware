@@ -88,12 +88,11 @@ export default defineEventHandler(async (event) => {
     }
 
     if (categoriaDb) {
-      // Categoria existe → buscar produtos por relação
+      // Categoria existe → buscar produtos por relação (sem filtro por loja para mostrar todos)
       produtosRaw = await (prisma as any).produto.findMany({
         where: {
           ativo: true,
-          ProdutoCategoria: { some: { categoriaId: categoriaDb.id } },
-          ProdutoPrecoLoja: { some: { storeSlug: resolvedStore } }
+          ProdutoCategoria: { some: { categoriaId: categoriaDb.id } }
         },
         select: produtoSelect
       })
@@ -103,7 +102,7 @@ export default defineEventHandler(async (event) => {
     // 2. Fallback: buscar todos os produtos internacionais e filtrar por nome no JS
     if (produtosRaw.length === 0) {
       const todosProdutos = await (prisma as any).produto.findMany({
-        where: { ativo: true, ProdutoPrecoLoja: { some: { storeSlug: resolvedStore } } },
+        where: { ativo: true },
         select: produtoSelect
       })
       console.log('[intl/category] total intl products=', todosProdutos.length)
