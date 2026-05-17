@@ -317,14 +317,14 @@ const host = import.meta.server
   ? shallowRef(_ssrHost)
   : computed(() => String(window.location.host || '').toLowerCase())
 
-// Client-side override: after hydration, re-read host from window to fix any SSR mismatch
-const _clientIsIntl = ref<boolean | null>(null)
-onMounted(() => {
+// Client-side: detect intl immediately (not waiting for onMounted) so ClientOnly renders correctly
+const _clientIsIntl = ref<boolean | null>((() => {
+  if (!import.meta.client) return null
   const h = String(window.location.host || '').toLowerCase()
-  const intl = h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')
-  const notIntl = h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1') || h.includes('.vercel.app')
-  _clientIsIntl.value = intl ? true : notIntl ? false : true
-})
+  if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
+  if (h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1') || h.includes('.vercel.app')) return false
+  return true
+})())
 
 const normalizedHost = computed(() => {
   const h0 = String(host.value || '').trim().toLowerCase()
