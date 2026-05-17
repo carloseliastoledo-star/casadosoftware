@@ -287,27 +287,26 @@ const storeSlug = computed(() => String((config.public as any)?.storeSlug || '')
 
 const affiliateEnabled = computed(() => Boolean((config.public as any)?.affiliateEnabled))
 
-const host = computed(() => {
-  if (process.server) {
+// CRITICAL: read host synchronously in setup — useRequestURL/useRequestHeaders
+// only work in synchronous setup context, NOT inside computed (lazy evaluation loses request context)
+const _ssrHost = (() => {
+  if (import.meta.server) {
     try {
       const url = useRequestURL()
       if (url?.host) return String(url.host).toLowerCase()
-    } catch {
-      // ignore
-    }
-
+    } catch { /* ignore */ }
     try {
-      const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>
-      const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers?.host || ''
-      const first = String(raw).split(',')[0]?.trim()
-      return String(first || '').toLowerCase()
-    } catch {
-      return ''
-    }
+      const event = useRequestEvent()
+      const raw = String(event?.node?.req?.headers?.['x-forwarded-host'] || event?.node?.req?.headers?.host || '')
+      return String(raw.split(',')[0]?.trim() || '').toLowerCase()
+    } catch { /* ignore */ }
   }
+  return ''
+})()
 
-  return String(window.location.host || '').toLowerCase()
-})
+const host = import.meta.server
+  ? shallowRef(_ssrHost)
+  : computed(() => String(window.location.host || '').toLowerCase())
 
 const normalizedHost = computed(() => {
   const h0 = String(host.value || '').trim().toLowerCase()
