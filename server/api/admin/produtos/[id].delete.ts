@@ -15,8 +15,8 @@ export default defineEventHandler(async (event) => {
       id: true,
       _count: {
         select: {
-          orders: true,
-          licencas: true
+          Order: true,
+          Licenca: true
         }
       },
       ProdutoPrecoLoja: { select: { storeSlug: true } }
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (produto._count.orders > 0) {
+  if ((produto._count as any).Order > 0) {
     await prisma.produto.update({
       where: { id },
       data: { ativo: false }
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  if (produto._count.licencas > 0) {
+  if ((produto._count as any).Licenca > 0) {
     await prisma.licenca.deleteMany({
       where: { produtoId: id }
     })
