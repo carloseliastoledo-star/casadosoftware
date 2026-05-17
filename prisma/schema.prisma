@@ -459,6 +459,7 @@ model Review {
 
 model SeoPage {
   id                 String    @id
+  storeSlug          String    @default("casadosoftware")
   locale             String
   slug               String
   title              String
@@ -478,8 +479,8 @@ model SeoPage {
   createdAt          DateTime  @default(now()) @db.DateTime(0)
   updatedAt          DateTime  @db.DateTime(0)
 
-  @@unique([locale, slug])
-  @@index([locale, status])
+  @@unique([storeSlug, locale, slug])
+  @@index([storeSlug, locale, status])
 }
 
 model SiteSettings {

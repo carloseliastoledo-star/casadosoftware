@@ -37,8 +37,8 @@ export default defineEventHandler(async (event) => {
   const status = body?.status === 'published' ? 'published' : 'draft'
   const noindex = Boolean(body?.noindex)
 
-  if (!locale || !['pt', 'en'].includes(locale))
-    throw createError({ statusCode: 400, statusMessage: 'locale deve ser pt ou en' })
+  if (!locale || !['pt', 'en', 'es', 'fr', 'it'].includes(locale))
+    throw createError({ statusCode: 400, statusMessage: 'locale inválido' })
   if (!slug || slug.length < 2)
     throw createError({ statusCode: 400, statusMessage: 'Slug inválido (mín. 2 caracteres)' })
   if (!title)

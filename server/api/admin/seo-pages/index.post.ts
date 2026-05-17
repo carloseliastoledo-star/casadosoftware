@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
+import { getStoreContext } from '../../../utils/store'
 import { Prisma } from '@prisma/client'
 
 function sanitizeSlug(raw: string) {
@@ -15,6 +16,9 @@ function sanitizeSlug(raw: string) {
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
+
+  const ctx = getStoreContext(event)
+  const storeSlug = ctx.storeSlug || 'casadosoftware'
 
   const body = await readBody(event)
 
@@ -34,8 +38,8 @@ export default defineEventHandler(async (event) => {
   const status = body?.status === 'published' ? 'published' : 'draft'
   const noindex = Boolean(body?.noindex)
 
-  if (!locale || !['pt', 'en'].includes(locale))
-    throw createError({ statusCode: 400, statusMessage: 'locale deve ser pt ou en' })
+  if (!locale || !['pt', 'en', 'es', 'fr', 'it'].includes(locale))
+    throw createError({ statusCode: 400, statusMessage: 'locale inválido' })
   if (!slug || slug.length < 2)
     throw createError({ statusCode: 400, statusMessage: 'Slug inválido (mín. 2 caracteres)' })
   if (!title)
@@ -52,6 +56,7 @@ export default defineEventHandler(async (event) => {
 
     const page = await (prisma as any).seoPage.create({
       data: {
+        storeSlug,
         locale,
         slug,
         title,
