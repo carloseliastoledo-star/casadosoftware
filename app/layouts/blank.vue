@@ -78,22 +78,44 @@
 const { siteName, logoPath, supportEmail, whatsappNumber, companyLegalName, companyCnpj } = useSiteBranding()
 const intl = useIntlContext()
 
-// SSR: trust plugin-detected language (most reliable source - has real host header)
+// Read _pluginLang synchronously — same state key set by i18n.ts plugin
 const _pluginLang = useState<string | null>('ld_server_lang', () => null)
 
-// Detect intl domain directly from host
-const isIntl = computed(() => {
-  const h = String(intl.host.value || (import.meta.client ? window.location.host : '')).toLowerCase()
+// Read host synchronously in setup (useRequestURL/useRequestEvent only reliable synchronously)
+const _ssrHost = (() => {
+  if (import.meta.server) {
+    try {
+      const url = useRequestURL()
+      if (url?.host) return String(url.host).toLowerCase()
+    } catch { /* ignore */ }
+    try {
+      const event = useRequestEvent()
+      const raw = String(event?.node?.req?.headers?.['x-forwarded-host'] || event?.node?.req?.headers?.host || '')
+      return String(raw.split(',')[0]?.trim() || '').toLowerCase()
+    } catch { /* ignore */ }
+  }
+  return ''
+})()
+
+const isEn = computed(() => {
+  // SSR: plugin lang is most reliable (has real host header from i18n.ts)
+  if (import.meta.server) {
+    if (_pluginLang.value === 'en') return true
+    if (_pluginLang.value && _pluginLang.value !== 'en') return false
+    // Fallback: use synchronously-captured host
+    const h = _ssrHost
+    if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
+    if (h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1') || h.includes('.vercel.app')) return false
+    return h.length > 0
+  }
+  // Client: use window.location.host directly
+  const h = String(window.location.host || '').toLowerCase()
   if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
   if (h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1') || h.includes('.vercel.app')) return false
   return h.length > 0
 })
 
-// SSR: use _pluginLang if host detection fails; client: use intl.language or isIntl
-const isEn = computed(() => {
-  if (import.meta.server && _pluginLang.value) return _pluginLang.value === 'en'
-  return isIntl.value || intl.language.value === 'en'
-})
+const isIntl = isEn
 
 const aboutUsPath = computed(() => (isEn.value ? '/about-us' : '/quem-somos'))
 const digitalDeliveryPath = computed(() => (isEn.value ? '/digital-delivery' : '/entrega-digital'))
