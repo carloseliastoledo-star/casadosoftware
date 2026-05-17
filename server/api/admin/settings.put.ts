@@ -307,6 +307,7 @@ export default defineEventHandler(async (event) => {
       })
     : await prismaAny.siteSettings.create({
         data: {
+          id: crypto.randomUUID(),
           storeSlug,
           googleAnalyticsId: googleAnalyticsId || null,
           googleAdsConversionId: googleAdsConversionId || null,
