@@ -1,9 +1,13 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
+import { getStoreContext } from '../../../utils/store.js'
 
 export default defineEventHandler(async (event) => {
   await requireAdminSession(event)
+
+  const ctx = getStoreContext(event)
+  const storeSlug = ctx.storeSlug || 'casadosoftware'
 
   const body = await readBody(event)
 
@@ -20,8 +24,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const affiliate = await (prisma as any).affiliate.upsert({
-    where: { email },
-    create: { name, email, code, commissionRate, isActive: false },
+    where: { Affiliate_storeSlug_email_key: { storeSlug, email } },
+    create: { name, email, code, storeSlug, commissionRate, isActive: false },
     update: { name, code, commissionRate },
     select: { id: true }
   })
