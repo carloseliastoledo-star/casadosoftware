@@ -23,15 +23,6 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  // Guard: if storeSlug is 'international', only allow deleting products that belong to it
-  // For casadosoftware/others: allow orphan products (legacy) + explicitly owned ones
-  if (produto && storeSlug === 'international') {
-    const belongsToStore = (produto as any).ProdutoPrecoLoja?.some((l: any) => l.storeSlug === storeSlug)
-    if (!belongsToStore) {
-      throw createError({ statusCode: 403, statusMessage: 'Produto não pertence a esta loja.' })
-    }
-  }
-
   if (!produto) {
     throw createError({
       statusCode: 404,
