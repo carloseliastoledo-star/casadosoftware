@@ -318,9 +318,19 @@ const normalizedHost = computed(() => {
   return h4.replace(/\.$/, '')
 })
 
+// Detect intl domain directly from host — avoids circular dependency with isIntl/currencyLower
+const isIntlDomain = computed(() => {
+  const h = String(intl.host.value || '').toLowerCase()
+  if (!h) return false
+  if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
+  if (h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1')) return false
+  if (h.includes('.vercel.app')) return false
+  return h.length > 0
+})
+
 // On international domains, always use EN regardless of SSR language detection
 const effectiveLang = computed(() => {
-  if (intl.isIntl.value) return intl.language.value !== 'pt' ? intl.language.value : 'en'
+  if (isIntlDomain.value) return intl.language.value !== 'pt' ? intl.language.value : 'en'
   return intl.language.value
 })
 
@@ -917,8 +927,8 @@ function onImageError(e: Event) {
 const effectiveCurrencyLower = computed(() => {
   const c = String((safeProduct.value as any)?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
-  // On intl domains always USD, never fall back to BRL from SSR context
-  if (intl.isIntl.value) return 'usd'
+  // Use direct host detection — avoids circular dependency with isIntl/currencyLower
+  if (isIntlDomain.value) return 'usd'
   return intl.currencyLower.value || 'brl'
 })
 
