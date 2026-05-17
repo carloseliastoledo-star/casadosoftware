@@ -1,11 +1,11 @@
-﻿-- AlterTable
-ALTER TABLE `SeoPage` ADD COLUMN `storeSlug` VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
+﻿-- AlterTable: add storeSlug if not exists
+ALTER TABLE `SeoPage` ADD COLUMN IF NOT EXISTS `storeSlug` VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
 
--- DropIndex
-DROP INDEX `SeoPage_locale_slug_key` ON `SeoPage`;
+-- DropIndex: drop old unique index (ignore error if already gone)
+ALTER TABLE `SeoPage` DROP INDEX IF EXISTS `SeoPage_locale_slug_key`;
 
--- CreateIndex
-CREATE UNIQUE INDEX `SeoPage_storeSlug_locale_slug_key` ON `SeoPage`(`storeSlug`, `locale`, `slug`);
+-- CreateIndex: new unique with storeSlug
+CREATE UNIQUE INDEX IF NOT EXISTS `SeoPage_storeSlug_locale_slug_key` ON `SeoPage`(`storeSlug`, `locale`, `slug`);
 
--- CreateIndex
-CREATE INDEX `SeoPage_storeSlug_locale_status_idx` ON `SeoPage`(`storeSlug`, `locale`, `status`);
+-- CreateIndex: new index for filtering
+CREATE INDEX IF NOT EXISTS `SeoPage_storeSlug_locale_status_idx` ON `SeoPage`(`storeSlug`, `locale`, `status`);
