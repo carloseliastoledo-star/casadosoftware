@@ -64,9 +64,16 @@ export default defineEventHandler(async (event) => {
           id: true,
           nome: true,
           ativo: true,
+          preco: true,
+          precoAntigo: true,
           ProdutoPrecoMoeda: {
             where: { storeSlug },
             select: { currency: true, amount: true }
+          },
+          ProdutoPrecoLoja: {
+            where: { storeSlug },
+            select: { preco: true },
+            take: 1
           }
         }
       })
@@ -75,26 +82,28 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404, statusMessage: 'Product not found' })
       }
 
-      const byCurrency = new Map<string, { currency: string; amount: number }>(
+      // Prioridade: ProdutoPrecoMoeda > ProdutoPrecoLoja > produto.preco (fallback)
+      const byCurrency = new Map<string, number>(
         ((produto as any).ProdutoPrecoMoeda || [])
-          .map((x: any) => ({
-            currency: String(x.currency || '').trim().toLowerCase(),
-            amount: Number(x.amount)
-          }))
-          .filter((x: any) => x.currency && Number.isFinite(x.amount) && x.amount > 0)
-          .map((x: any) => [x.currency, x])
+          .filter((x: any) => x.currency && Number.isFinite(Number(x.amount)) && Number(x.amount) > 0)
+          .map((x: any) => [String(x.currency).trim().toLowerCase(), Number(x.amount)])
       )
 
-      const priceRow = byCurrency.get(currencyRequested)
-
-      if (!priceRow || !Number.isFinite(priceRow.amount) || priceRow.amount <= 0) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: `This product does not have a price in ${currencyRequested.toUpperCase()}. Please contact support or try another currency.`
-        })
+      let totalAmount: number
+      if (byCurrency.has(currencyRequested)) {
+        totalAmount = round2(byCurrency.get(currencyRequested)!)
+      } else {
+        // Fallback: usar preco base do produto (mesmo sem ProdutoPrecoMoeda)
+        const lojaPreco = (produto as any).ProdutoPrecoLoja?.[0]
+        const basePreco = lojaPreco?.preco ? Number(lojaPreco.preco) : Number((produto as any).preco ?? 0)
+        if (!Number.isFinite(basePreco) || basePreco <= 0) {
+          throw createError({
+            statusCode: 400,
+            statusMessage: `This product does not have a price configured. Please contact support.`
+          })
+        }
+        totalAmount = round2(basePreco)
       }
-
-      const totalAmount = round2(priceRow.amount)
 
       const reuseAfter = new Date(Date.now() - 60 * 60 * 1000)
       const existing = await tx.order.findFirst({
