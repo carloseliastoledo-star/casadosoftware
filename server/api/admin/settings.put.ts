@@ -326,7 +326,8 @@ export default defineEventHandler(async (event) => {
           orderBumpTitle,
           orderBumpDescription,
           orderBumpPrice,
-          orderBumpsJson
+          orderBumpsJson,
+          updatedAt: new Date()
         },
         select: {
           id: true,
