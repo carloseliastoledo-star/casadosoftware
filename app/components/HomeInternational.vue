@@ -439,10 +439,11 @@ const faq = computed(() => {
 })
 
 interface IntlProduct {
-  id: string | number
+  id: number
   name?: string
   nome?: string
   slug: string
+  slugEn?: string | null
   image?: string | null
   usdPrice?: number | null
   eurPrice?: number | null
@@ -450,7 +451,8 @@ interface IntlProduct {
 }
 
 function goToProduct(product: IntlProduct) {
-  navigateTo(`/product/${product.slug}`)
+  const slugToUse = product.slugEn || product.slug
+  navigateTo(`/product/${slugToUse}`)
 }
 
 const { data: homeTheme } = await useFetch<any>('/api/home-theme', {
@@ -478,6 +480,7 @@ const products = computed<IntlProduct[]>(() => {
       id: p.id,
       name: p.name || p.nome,
       slug: p.slug,
+      slugEn: p.slugEn,
       image: p.image || p.imagem,
       usdPrice: Number(p.usdPrice),
       oldUsdPrice: p.oldUsdPrice ? Number(p.oldUsdPrice) : null,
