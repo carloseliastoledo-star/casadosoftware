@@ -1,5 +1,59 @@
 <template>
-  <section v-if="isLicencasDigitais" class="bg-white min-h-screen">
+  <section v-if="isInternational" class="bg-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-6 pt-8 pb-12">
+      <!-- Breadcrumb -->
+      <div class="text-xs text-gray-500">
+        <NuxtLink to="/" class="hover:text-blue-600">Home</NuxtLink>
+        <span class="mx-2">/</span>
+        <NuxtLink to="/categories" class="hover:text-blue-600">Categories</NuxtLink>
+        <span class="mx-2">/</span>
+        <span class="text-gray-700">{{ categoria?.nome || 'Category' }}</span>
+      </div>
+
+      <div class="mt-3 flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900">
+            {{ categoria?.nome || 'Category' }}
+          </h1>
+          <div class="mt-1 text-sm text-gray-600">
+            {{ sortedProdutos.length }} item{{ sortedProdutos.length === 1 ? '' : 's' }} available
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="text-xs font-semibold text-gray-600">Sort</div>
+          <select
+            v-model="sort"
+            class="h-10 rounded-md border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
+            aria-label="Sort"
+          >
+            <option value="featured">Featured</option>
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div v-if="pending" class="text-center py-16 text-gray-500">Loading...</div>
+      <div v-else-if="apiError" class="text-center py-16 text-red-600">
+        <div class="font-semibold">Error loading category.</div>
+        <div class="text-sm mt-1 text-gray-500">{{ apiError }}</div>
+      </div>
+      <div v-else-if="!categoria" class="text-center py-16 text-red-600">Category not found.</div>
+      <div v-else-if="sortedProdutos.length === 0" class="text-center py-16 text-gray-500">
+        No products available in this category yet.
+      </div>
+      <div v-else class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ProductCard
+          v-for="p in sortedProdutos"
+          :key="p.id + (p.imagem || p.image || '')"
+          :product="p"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section v-else-if="isLicencasDigitais" class="bg-white min-h-screen">
     <div class="max-w-7xl mx-auto px-6 pt-8 pb-12">
       <div class="text-xs text-gray-500">
         <NuxtLink to="/" class="hover:text-blue-600">Home</NuxtLink>
@@ -175,7 +229,14 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
-const { data, pending } = await useFetch(() => `/api/categorias/${slug}`, {
+const isInternational = useIsInternational()
+
+const apiUrl = computed(() =>
+  isInternational.value ? `/api/intl/category/${slug}` : `/api/categorias/${slug}`
+)
+
+const { data, pending, error } = await useFetch(() => apiUrl.value, {
+  server: true,
   default: () => ({
     ok: false,
     categoria: null,
@@ -184,6 +245,7 @@ const { data, pending } = await useFetch(() => `/api/categorias/${slug}`, {
 })
 
 const categoria = computed(() => (data.value as any)?.categoria || null)
+const apiError = computed(() => error.value || (data.value as any)?._error || null)
 
 const produtos = computed(() =>
   Array.isArray((data.value as any)?.produtos)

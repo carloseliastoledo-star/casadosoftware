@@ -9,7 +9,7 @@
     </div>
 
     <ClientOnly>
-      <div v-if="topbarText && !useIntlLayout" class="bg-blue-600 text-white text-xs">
+      <div v-if="topbarText && !isLicencasDigitais && !isInternational" class="bg-blue-600 text-white text-xs">
         <div class="max-w-7xl mx-auto px-6 py-2 flex items-center justify-center font-semibold">
           <a
             v-if="topbarLink"
@@ -24,7 +24,7 @@
         </div>
       </div>
 
-      <div v-if="useIntlLayout" class="bg-white text-[11px] text-gray-600 border-b">
+      <div v-if="isLicencasDigitais" class="bg-white text-[11px] text-gray-600 border-b">
         <div class="max-w-7xl mx-auto px-6 h-9 flex items-center">
           <span class="mr-2" aria-hidden="true">📍</span>
           <span>19th Ave New York, NY 95822, USA</span>
@@ -33,7 +33,7 @@
     </ClientOnly>
 
     <!-- HEADER -->
-    <header v-if="!useIntlLayout" class="border-b bg-white shadow-sm sticky top-0 z-40">
+    <header v-if="!isLicencasDigitais" class="border-b bg-white shadow-sm sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6">
         <div class="h-16 md:h-20 flex items-center justify-between gap-4">
           <div class="flex items-center gap-4 min-w-0">
@@ -47,11 +47,11 @@
             </button>
 
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
-              <picture>
+              <picture v-if="effectiveLogoPath && !isNationalLogoInIntl">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-                <img :src="effectiveLogoPath" :alt="siteName" class="h-12 md:h-14 w-auto" />
+                <img :src="effectiveLogoPath" :alt="siteName" :class="isInternational ? 'h-36 md:h-40 w-auto' : 'h-12 md:h-14 w-auto'" />
               </picture>
-              <span class="hidden sm:block text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
+              <span v-if="!isInternational" class="text-base md:text-lg font-extrabold tracking-tight text-gray-900 truncate">
                 {{ siteName }}
               </span>
             </NuxtLink>
@@ -76,6 +76,21 @@
 
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
+              <!-- Language selector — international only -->
+              <div v-if="isInternational" class="flex items-center gap-1.5 h-10 rounded-md border border-gray-200 bg-white px-2">
+                <span class="text-sm" aria-hidden="true">🌐</span>
+                <select
+                  class="bg-transparent text-xs font-semibold text-gray-800 outline-none cursor-pointer"
+                  :value="intl.language.value"
+                  aria-label="Language"
+                  @change="(e) => { intl.setLanguage((e.target as HTMLSelectElement).value as any) }"
+                >
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+
               <select
                 v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
@@ -148,7 +163,7 @@
       </div>
     </header>
 
-    <header v-else-if="useIntlLayout" class="bg-white border-b sticky top-0 z-40">
+    <header v-else class="bg-white border-b sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6">
         <div class="h-20 flex items-center justify-between gap-6">
           <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
@@ -170,6 +185,21 @@
 
           <div class="flex items-center gap-3">
             <div class="hidden md:flex items-center gap-2">
+              <!-- Language selector — international only -->
+              <div v-if="isInternational" class="flex items-center gap-1.5 h-10 rounded-md border border-gray-200 bg-white px-2">
+                <span class="text-sm" aria-hidden="true">🌐</span>
+                <select
+                  class="bg-transparent text-xs font-semibold text-gray-800 outline-none cursor-pointer"
+                  :value="intl.language.value"
+                  aria-label="Language"
+                  @change="(e) => { intl.setLanguage((e.target as HTMLSelectElement).value as any) }"
+                >
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+
               <select
                 v-if="isEnDomain"
                 class="h-10 rounded-md border border-gray-200 bg-white px-2 text-xs font-semibold text-gray-800"
@@ -249,6 +279,23 @@
         </div>
 
         <nav class="p-5 flex-1 overflow-y-auto">
+          <!-- Mobile language selector — international only -->
+          <div v-if="isInternational" class="mb-4">
+            <div class="flex items-center gap-2 h-11 rounded-lg border border-gray-200 bg-white px-3">
+              <span class="text-base" aria-hidden="true">🌐</span>
+              <select
+                class="flex-1 bg-transparent text-sm font-semibold text-gray-800 outline-none cursor-pointer"
+                :value="intl.language.value"
+                aria-label="Language"
+                @change="(e) => { intl.setLanguage((e.target as HTMLSelectElement).value as any); mobileMenuOpen = false }"
+              >
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+              </select>
+            </div>
+          </div>
+
           <div v-if="isEnDomain" class="grid gap-3 mb-5 grid-cols-2">
             <select
               class="h-11 rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-800"
@@ -322,11 +369,11 @@
 
     <!-- WHATSAPP BUTTON -->
     <ClientOnly>
-      <WhatsAppButton v-if="!useIntlLayout" />
+      <WhatsAppButton v-if="!isLicencasDigitais" />
     </ClientOnly>
 
     <!-- FOOTER -->
-    <footer v-if="useIntlLayout" class="bg-[#f2f4f3] text-gray-700 mt-20">
+    <footer v-if="isLicencasDigitais" class="bg-[#f2f4f3] text-gray-700 mt-20">
       <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-5 gap-12 text-sm">
         <div class="md:col-span-1">
           <img src="/licencasdigitais-gvg/logo-footer.svg" :alt="siteName" class="h-9 w-auto" loading="lazy" decoding="async" />
@@ -427,7 +474,7 @@
         <div>
           <div class="font-extrabold text-white text-lg mb-3">{{ siteName }}</div>
           <p class="text-sm text-gray-400 leading-relaxed">{{ footerDescriptionText }}</p>
-          <div v-if="whatsappHref" class="mt-4">
+          <div v-if="whatsappHref && !isInternational" class="mt-4">
             <a :href="whatsappHref" target="_blank" rel="noopener noreferrer"
                class="inline-flex items-center gap-2 text-sm font-semibold text-green-400 hover:text-green-300 transition">
               {{ t.whatsappPrefix }} {{ whatsappLabel }}
@@ -442,9 +489,9 @@
           <div class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">{{ footerLinksTitleText }}</div>
           <ul class="space-y-2 text-sm">
             <li><NuxtLink :to="productsIndexPath" class="hover:text-white transition">{{ t.footerProducts }}</NuxtLink></li>
-            <li><NuxtLink to="/tutoriais" class="hover:text-white transition">{{ t.footerTutorials }}</NuxtLink></li>
-            <li><NuxtLink :to="blogMenuTo" class="hover:text-white transition">{{ t.footerBlog }}</NuxtLink></li>
-            <li><NuxtLink :to="affiliateMenuTo" class="hover:text-white transition">{{ affiliateMenuLabel }}</NuxtLink></li>
+            <li v-if="!isInternational"><NuxtLink to="/tutoriais" class="hover:text-white transition">{{ t.footerTutorials }}</NuxtLink></li>
+            <li v-if="!isInternational"><NuxtLink :to="blogMenuTo" class="hover:text-white transition">{{ t.footerBlog }}</NuxtLink></li>
+            <li v-if="!isInternational"><NuxtLink :to="affiliateMenuTo" class="hover:text-white transition">{{ affiliateMenuLabel }}</NuxtLink></li>
             <li><NuxtLink :to="aboutUsPath" class="hover:text-white transition">{{ t.footerAbout }}</NuxtLink></li>
           </ul>
         </div>
@@ -465,7 +512,7 @@
         <div>
           <div class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">{{ t.footerSupportTitle }}</div>
           <p class="text-sm text-gray-400 mb-4">{{ t.footerIntlSupport }}</p>
-          <div v-if="!isEnDomain" class="text-xs text-gray-500 space-y-1">
+          <div v-if="!isEnDomain && !isInternational" class="text-xs text-gray-500 space-y-1">
             <p v-if="companyLegalName"><span class="font-semibold text-gray-400">Razão Social:</span> {{ companyLegalName }}</p>
             <p v-if="companyCnpj"><span class="font-semibold text-gray-400">CNPJ:</span> {{ companyCnpj }}</p>
             <p v-if="companyAddress"><span class="font-semibold text-gray-400">Endereço:</span> {{ companyAddress }}</p>
@@ -525,21 +572,12 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
-const isInternational = computed(() => {
-  if (storeSlug.value === 'international') return true
-  const h = normalizedHost.value
-  if (h.includes('gvgmall.co')) return true
-  if (h.includes('globalsoftware.store')) return true
-  return false
-})
+const isInternational = useIsInternational()
 
 const isEnDomain = computed(() => {
-  if (isInternational.value) return true
   const h = normalizedHost.value
   return h.endsWith('.store') || h.includes('casadosoftware.store')
 })
-
-const useIntlLayout = computed(() => isLicencasDigitais.value || isInternational.value)
 
 const logoWebpPath = computed(() => {
   const raw = String(logoPath || '').trim()
@@ -548,11 +586,20 @@ const logoWebpPath = computed(() => {
   return ''
 })
 
+const NATIONAL_LOGOS = ['/logo.png', '/logo-mercadosoftwares.png', '']
+
 const effectiveLogoPath = computed(() => {
-  if (isInternational.value) return String(logoPath || '').trim() || '/logo-gvgmall.png'
   if (isLicencasDigitais.value) return '/licencasdigitais-gvg/logo.png'
+  if (isInternational.value) {
+    const lp = String(logoPath || '').trim()
+    return NATIONAL_LOGOS.includes(lp) ? '/logo-gvg.png' : lp
+  }
   return String(logoPath || '').trim() || '/logo-mercadosoftwares.png'
 })
+
+const isNationalLogoInIntl = computed(() =>
+  isInternational.value && NATIONAL_LOGOS.includes(String(logoPath || '').trim())
+)
 
 const effectiveLogoWebpPath = computed(() => {
   const raw = String(effectiveLogoPath.value || '').trim()
@@ -634,6 +681,21 @@ const mainMenuBase = [
   { label: 'Contato', to: '/quem-somos' }
 ] as const
 
+// Mapa de slug → label amigável para categorias internacionais
+const INTL_SLUG_LABELS: Record<string, string> = {
+  'windows': 'Windows',
+  'office': 'Office',
+  'windows-server': 'Windows Server',
+  'software-computer-software-operating-systems': 'Operating Systems',
+  'software-computer-software-office-application-software': 'Office',
+  'software-video-game-software': 'Games',
+  'software-computer-software-multimedia-design-software-3d-modeling-software': 'Design & 3D',
+  'software-computer-software-multimedia-design-software-web-design-software': 'Web Design',
+  'electronics-networking-bridges-routers': 'Routers',
+  'electronics-networking-bridges-routers-wireless-routers': 'Wireless Routers',
+  'electronics-electronics-accessories-computer-components-input-devices-keyboards': 'Keyboards',
+}
+
 type PaginaLinkDto = {
   titulo: string
   slug: string
@@ -643,6 +705,7 @@ type CategoriaLinkDto = {
   id: string
   nome: string
   slug: string
+  produtoCount?: number
 }
 
 const { cart } = useCart()
@@ -656,10 +719,14 @@ const { data } = await useFetch<{ ok: true; paginas: PaginaLinkDto[] }>('/api/pa
   default: () => null
 })
 
-const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaLinkDto[] }>('/api/categorias', {
-  server: true,
-  default: () => null
-})
+const categoriasUrl = computed(() =>
+  isInternational.value ? '/api/intl/categories' : '/api/categorias'
+)
+
+const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaLinkDto[] }>(
+  () => categoriasUrl.value,
+  { server: true, default: () => null }
+)
 
 const paginas = computed(() => data.value?.paginas || [])
 const categorias = computed(() => categoriasData.value?.categorias || [])
@@ -730,6 +797,19 @@ const contactLabel = computed(() => {
 })
 
 const mainMenu = computed(() => {
+  if (isInternational.value) {
+    return [
+      { label: 'Windows', to: '/category/windows' },
+      { label: 'Office', to: '/category/office' },
+      { label: 'Windows Server', to: '/category/windows-server' },
+      { label: 'Adobe', to: '/category/adobe' },
+      { label: 'Autodesk', to: '/category/autodesk' },
+      { label: 'Games', to: '/category/games' },
+      { label: 'Electronics', to: '/category/electronics' },
+      { label: 'Support', to: '/support' },
+    ]
+  }
+
   const base = mainMenuBase.map((it) => {
     if ('to' in it) {
       if (it.label === 'Contato') {
@@ -791,8 +871,10 @@ const footerPolicyLinksParsed = computed<FooterPolicyLinkDto[]>(() => {
   }
 })
 
+const isIntlOrEn = computed(() => isInternational.value || intl.language.value === 'en')
+
 const t = computed(() => {
-  if (intl.language.value === 'en') {
+  if (isIntlOrEn.value) {
     return {
       home: 'Home',
       openMenu: 'Open menu',
@@ -817,7 +899,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Fast and specialized support',
       footerIntlSupport: 'International support in Portuguese, Spanish and English',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) is an independent company.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) is an independent company.`,
+      footerDisclaimer1: `${safeSiteName.value} is an independent company, not affiliated with Microsoft.`,
       footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
@@ -847,7 +929,7 @@ const t = computed(() => {
       footerSupportSubtitle: 'Atención rápida y especializada',
       footerIntlSupport: 'Atención internacional en Portugués, Español e Inglés',
       whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) es una empresa independiente.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) es una empresa independiente.`,
+      footerDisclaimer1: `${safeSiteName.value} es una empresa independiente.`,
       footerDisclaimer2: 'No estamos afiliados a Microsoft.'
     }
   }
@@ -876,7 +958,7 @@ const t = computed(() => {
     footerSupportSubtitle: 'Atendimento rápido e especializado',
     footerIntlSupport: 'Atendimento Internacional em Português, Espanhol e Inglês',
     whatsappPrefix: 'WhatsApp:',
-    footerDisclaimer1: isLicencasDigitais.value ? `${safeSiteName.value} (MERCADO SOFTWARES LTDA) é uma empresa independente.` : `${safeSiteName.value} (Razão Social: Softwares Mundi LTDA) é uma empresa independente.`,
+    footerDisclaimer1: `${safeSiteName.value} é uma empresa independente.`,
     footerDisclaimer2: 'Não somos afiliados à Microsoft.'
   }
 })

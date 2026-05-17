@@ -378,10 +378,20 @@ const categoryBg = computed(() => {
   return '#061b33'
 })
 
+const isIntlProduct = computed(() => {
+  const currency = String((props.product as any)?.currency || '').toLowerCase()
+  const store = String((props.product as any)?.storeSlug || '').toLowerCase()
+  return store === 'international' || (currency !== '' && currency !== 'brl')
+})
+
 function buyNow(event: Event) {
   event.preventDefault()
   event.stopPropagation()
-  navigateTo({ path: '/checkout', query: { product: props.product.slug } })
+  if (isIntlProduct.value) {
+    navigateTo({ path: '/checkout-intl', query: { product: props.product.slug } })
+  } else {
+    navigateTo({ path: '/checkout', query: { product: props.product.slug } })
+  }
 }
 </script>
 
@@ -425,7 +435,7 @@ function buyNow(event: Event) {
 
       <!-- Subtítulo -->
       <p class="mt-0.5 text-[9px] font-extrabold tracking-[0.22em] uppercase text-cyan-400">
-        LICENÇA DIGITAL
+        {{ isIntlProduct ? 'DIGITAL LICENSE' : 'LICENÇA DIGITAL' }}
       </p>
 
       <!-- Preço -->
