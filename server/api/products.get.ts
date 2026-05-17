@@ -61,9 +61,14 @@ export default defineEventHandler(async (event) => {
 
     const lang = langFromQuery || (intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : intl.language === 'it' ? 'it' : intl.language === 'fr' ? 'fr' : 'pt')
 
+    const storeFilter = storeSlug
+      ? { ProdutoPrecoLoja: { some: { storeSlug } } }
+      : {}
+
     const products = await (prisma as any).produto.findMany({
       where: {
-        ativo: true
+        ativo: true,
+        ...storeFilter
       },
       select: {
         id: true,

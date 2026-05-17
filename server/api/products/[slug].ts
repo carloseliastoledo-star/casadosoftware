@@ -135,9 +135,15 @@ export default defineEventHandler(async (event) => {
         precosMoeda: {
           where: { storeSlug: storeSlug || undefined },
           select: { currency: true, amount: true, oldAmount: true }
-        }
+        },
+        ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { storeSlug: true }, take: 1 } : undefined
       }
     })
+
+    // Guard: if storeSlug defined, product must belong to this store
+    if (product && storeSlug && !(product.ProdutoPrecoLoja?.length)) {
+      product = null
+    }
   } catch (dbError: any) {
     console.error('[API PRODUCTS SLUG ERROR]', dbError)
     return {

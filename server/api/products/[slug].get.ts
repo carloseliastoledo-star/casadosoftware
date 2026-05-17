@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
   try {
   const rawSlug = event.context.params?.slug
 
-  const { storeSlug } = getStoreContext()
+  const { storeSlug } = getStoreContext(event)
 
   const intl = getIntlContext(event)
 
@@ -145,9 +145,15 @@ export default defineEventHandler(async (event) => {
         cardItems: true,
         seoTitle: true,
         seoDescription: true,
-        seoContent: true
+        seoContent: true,
+        ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { storeSlug: true }, take: 1 } : undefined
       }
     })
+
+    // Guard: if storeSlug defined, product must belong to this store
+    if (product && storeSlug && !(product.ProdutoPrecoLoja?.length)) {
+      product = null
+    }
     console.log('[api/products/[slug]] Produto encontrado:', product ? 'SIM' : 'NÃO')
   } catch (dbError: any) {
     console.error('[api/products/[slug]] DB ERROR:', dbError)
