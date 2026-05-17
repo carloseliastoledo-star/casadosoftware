@@ -1,6 +1,5 @@
 import { defineEventHandler, getRouterParam, createError, setHeader } from 'h3'
 import prisma from '../../../db/prisma'
-import { getStoreContext } from '#root/server/utils/store'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -103,8 +102,8 @@ function buildCommercialWhere(slug: string): any {
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300')
 
-  const { storeSlug } = getStoreContext(event)
-  const resolvedStore = storeSlug || 'international'
+  // Esta API é específica da loja internacional — sempre buscar storeSlug='international'
+  const resolvedStore = 'international'
 
   const slug = String(getRouterParam(event, 'slug') || '').trim().toLowerCase()
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'slug required' })
