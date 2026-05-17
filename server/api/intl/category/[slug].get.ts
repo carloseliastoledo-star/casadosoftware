@@ -76,22 +76,26 @@ export default defineEventHandler(async (event) => {
 
     let produtosRaw: any[] = []
 
+    const produtoSelect = {
+      id: true, nome: true, nomeEn: true, slug: true,
+      imagem: true, cardItems: true, criadoEm: true,
+      preco: true, precoAntigo: true,
+      ProdutoPrecoLoja: {
+        where: { storeSlug: resolvedStore },
+        select: { preco: true, precoAntigo: true },
+        take: 1
+      }
+    }
+
     if (categoriaDb) {
       // Categoria existe → buscar produtos por relação
       produtosRaw = await (prisma as any).produto.findMany({
         where: {
           ativo: true,
           ProdutoCategoria: { some: { categoriaId: categoriaDb.id } },
-          ProdutoPrecoMoeda: { some: { storeSlug: resolvedStore } }
+          ProdutoPrecoLoja: { some: { storeSlug: resolvedStore } }
         },
-        select: {
-          id: true, nome: true, nomeEn: true, slug: true,
-          imagem: true, cardItems: true, criadoEm: true,
-          ProdutoPrecoMoeda: {
-            where: { storeSlug: resolvedStore },
-            select: { currency: true, amount: true, oldAmount: true }
-          }
-        }
+        select: produtoSelect
       })
       console.log('[intl/category] relation products=', produtosRaw.length)
     }
@@ -99,28 +103,34 @@ export default defineEventHandler(async (event) => {
     // 2. Fallback: buscar todos os produtos internacionais e filtrar por nome no JS
     if (produtosRaw.length === 0) {
       const todosProdutos = await (prisma as any).produto.findMany({
-        where: { ativo: true, ProdutoPrecoMoeda: { some: { storeSlug: resolvedStore } } },
-        select: {
-          id: true, nome: true, nomeEn: true, slug: true,
-          imagem: true, cardItems: true, criadoEm: true,
-          ProdutoPrecoMoeda: {
-            where: { storeSlug: resolvedStore },
-            select: { currency: true, amount: true, oldAmount: true }
-          }
-        }
+        where: { ativo: true, ProdutoPrecoLoja: { some: { storeSlug: resolvedStore } } },
+        select: produtoSelect
       })
       console.log('[intl/category] total intl products=', todosProdutos.length)
       produtosRaw = todosProdutos.filter((p: any) => matchesCommercialSlug(slug, p.nome))
       console.log('[intl/category] after JS filter=', produtosRaw.length)
     }
 
+    // 3. Buscar preços USD via ProdutoPrecoMoeda (override)
+    const produtoIds = produtosRaw.map((p: any) => p.id)
+    const usdPriceMap = new Map<string, { amount: number; oldAmount: number | null }>()
+    if (produtoIds.length > 0) {
+      try {
+        const moedas = await (prisma as any).produtoPrecoMoeda.findMany({
+          where: { produtoId: { in: produtoIds }, storeSlug: resolvedStore, currency: 'usd' },
+          select: { produtoId: true, amount: true, oldAmount: true }
+        })
+        for (const m of moedas) {
+          usdPriceMap.set(m.produtoId, { amount: Number(m.amount), oldAmount: m.oldAmount ? Number(m.oldAmount) : null })
+        }
+      } catch { /* sem override */ }
+    }
+
     const produtos = produtosRaw.map((p: any) => {
-      const precos: any[] = p.ProdutoPrecoMoeda || []
-      const usd = precos.find((x: any) => String(x.currency).toLowerCase() === 'usd')
-      const eur = precos.find((x: any) => String(x.currency).toLowerCase() === 'eur')
-      const usdPrice = usd ? Number(usd.amount) : null
-      const oldUsdPrice = usd?.oldAmount ? Number(usd.oldAmount) : null
-      const eurPrice = eur ? Number(eur.amount) : null
+      const usdOverride = usdPriceMap.get(p.id)
+      const lojaPreco = p.ProdutoPrecoLoja?.[0]
+      const usdPrice = usdOverride?.amount ?? Number(lojaPreco?.preco ?? p.preco ?? 0)
+      const oldUsdPrice = usdOverride?.oldAmount ?? (lojaPreco?.precoAntigo ? Number(lojaPreco.precoAntigo) : (p.precoAntigo ? Number(p.precoAntigo) : null))
       return {
         id: p.id,
         name: p.nomeEn || p.nome,
@@ -128,7 +138,7 @@ export default defineEventHandler(async (event) => {
         price: usdPrice,
         usdPrice,
         oldUsdPrice,
-        eurPrice,
+        eurPrice: null,
         precoAntigo: oldUsdPrice,
         currency: 'usd',
         storeSlug: resolvedStore,

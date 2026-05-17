@@ -8,38 +8,32 @@ export default defineEventHandler(async (event) => {
   const q = getQuery(event)
   const slug = String(q.slug || '').trim().toLowerCase()
 
-  const intlFilter = { ativo: true, ProdutoPrecoLoja: { some: { storeSlug: 'international' } } }
+  const intlFilter = { ativo: true, ProdutoPrecoMoeda: { some: { storeSlug: 'international' } } }
 
-  const totalProdutos = await (prisma as any).produto.count({
-    where: intlFilter
-  })
+  const totalProdutos = await (prisma as any).produto.count({ where: intlFilter })
 
-  const windowsProdutos = await (prisma as any).produto.count({
-    where: { ...intlFilter, nome: { contains: 'Windows' } }
-  })
-
-  const officeProdutos = await (prisma as any).produto.count({
-    where: {
-      ...intlFilter,
-      OR: [
-        { nome: { contains: 'Office' } },
-        { nome: { contains: '365' } }
-      ]
-    }
-  })
-
-  const sample = await (prisma as any).produto.findMany({
+  const allProdutos = await (prisma as any).produto.findMany({
     where: intlFilter,
-    take: 5,
-    select: { id: true, nome: true, slug: true }
+    select: {
+      id: true, nome: true, nomeEn: true, slug: true,
+      ProdutoPrecoMoeda: {
+        where: { storeSlug: 'international' },
+        select: { currency: true, amount: true }
+      }
+    },
+    orderBy: { nome: 'asc' },
+    take: 100
   })
 
   return {
     ok: true,
     slug: slug || 'none',
     totalProdutos,
-    windowsProdutos,
-    officeProdutos,
-    sampleProducts: sample
+    produtos: allProdutos.map((p: any) => ({
+      nome: p.nome,
+      nomeEn: p.nomeEn || null,
+      slug: p.slug,
+      precos: p.ProdutoPrecoMoeda
+    }))
   }
 })
