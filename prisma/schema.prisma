@@ -140,11 +140,15 @@ model BlogPostTranslation {
 
 model Categoria {
   id               String             @id @default(uuid())
+  storeSlug        String             @default("casadosoftware")
   nome             String
-  slug             String             @unique
+  slug             String
   wcCategoryId     Int?               @unique
   ativo            Boolean            @default(true)
   ProdutoCategoria ProdutoCategoria[]
+
+  @@unique([slug, storeSlug])
+  @@index([storeSlug])
 }
 
 model ChatConversation {

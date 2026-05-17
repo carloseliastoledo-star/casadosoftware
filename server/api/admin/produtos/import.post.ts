@@ -224,14 +224,15 @@ export default defineEventHandler(async (event) => {
 
             if (!catSlug) continue
 
-            // Upsert categoria pelo slug — evita duplicatas
+            // Upsert categoria pelo slug + storeSlug — evita duplicatas por loja
+            const catStoreSlug = storeSlug || 'casadosoftware'
             const catBefore = await (prisma as any).categoria.findUnique({
-              where: { slug: catSlug },
+              where: { slug_storeSlug: { slug: catSlug, storeSlug: catStoreSlug } },
               select: { id: true }
             })
             const categoria = await (prisma as any).categoria.upsert({
-              where: { slug: catSlug },
-              create: { id: crypto.randomUUID(), nome: catNome, slug: catSlug, ativo: true },
+              where: { slug_storeSlug: { slug: catSlug, storeSlug: catStoreSlug } },
+              create: { id: crypto.randomUUID(), nome: catNome, slug: catSlug, storeSlug: catStoreSlug, ativo: true },
               update: { nome: catNome, ativo: true },
               select: { id: true }
             })
