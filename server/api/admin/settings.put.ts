@@ -7,10 +7,12 @@ export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
   const { storeSlug } = getStoreContext(event)
+  console.log('[api/admin/settings.put] storeSlug:', storeSlug)
 
   const prismaAny = prisma as any
 
   const body = await readBody(event)
+  console.log('[api/admin/settings.put] body keys:', Object.keys(body || {}))
 
   const headHtml = body?.headHtml === null || body?.headHtml === undefined
     ? null
@@ -254,30 +256,33 @@ export default defineEventHandler(async (event) => {
     select: { id: true }
   })
 
-  const settings = existing
-    ? await prismaAny.siteSettings.update({
-        where: { id: existing.id },
-        data: {
-          googleAnalyticsId: googleAnalyticsId || null,
-          googleAdsConversionId: googleAdsConversionId || null,
-          googleAdsConversionLabel: googleAdsConversionLabel || null,
-          googleAdsConfigJson: googleAdsConfigJson || null,
-          metaPixelId: metaPixelId || null,
-          tiktokPixelId: tiktokPixelId || null,
-          headHtml,
-          bodyOpenHtml,
-          bodyCloseHtml,
-          homeBestSellerSlugs,
-          homeVideoUrl,
-          footerPolicyLinks,
-          pixGateway,
-          cardGateway,
-          orderBumpTitle,
-          orderBumpDescription,
-          orderBumpPrice,
-          orderBumpsJson,
-          updatedAt: new Date()
-        },
+  console.log('[api/admin/settings.put] existing:', existing)
+
+  try {
+    const settings = existing
+      ? await prismaAny.siteSettings.update({
+          where: { id: existing.id },
+          data: {
+            googleAnalyticsId: googleAnalyticsId || null,
+            googleAdsConversionId: googleAdsConversionId || null,
+            googleAdsConversionLabel: googleAdsConversionLabel || null,
+            googleAdsConfigJson: googleAdsConfigJson || null,
+            metaPixelId: metaPixelId || null,
+            tiktokPixelId: tiktokPixelId || null,
+            headHtml,
+            bodyOpenHtml,
+            bodyCloseHtml,
+            homeBestSellerSlugs,
+            homeVideoUrl,
+            footerPolicyLinks,
+            pixGateway,
+            cardGateway,
+            orderBumpTitle,
+            orderBumpDescription,
+            orderBumpPrice,
+            orderBumpsJson,
+            updatedAt: new Date()
+          },
         select: {
           id: true,
           googleAnalyticsId: true,
@@ -345,7 +350,11 @@ export default defineEventHandler(async (event) => {
         }
       })
 
-  return { ok: true, settings }
+    return { ok: true, settings }
+  } catch (error: any) {
+    console.error('[api/admin/settings.put] Error:', error)
+    throw createError({ statusCode: 500, statusMessage: error?.message || 'Erro ao salvar configurações' })
+  }
 })
 
 
