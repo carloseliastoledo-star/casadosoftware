@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, statusMessage: 'STRIPE_SECRET_KEY not configured' })
   }
 
-  if (!process.env.STRIPE_PUBLISHABLE_KEY) {
+  const stripePublishableKey = process.env.NUXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || process.env.STRIPE_PUBLISHABLE_KEY || ''
+  if (!stripePublishableKey) {
     throw createError({ statusCode: 500, statusMessage: 'STRIPE_PUBLISHABLE_KEY not configured' })
   }
 
@@ -183,7 +184,7 @@ export default defineEventHandler(async (event) => {
       clientSecret: result.clientSecret,
       currency: result.currency,
       amount: result.amount,
-      publishableKey: String(process.env.STRIPE_PUBLISHABLE_KEY || '')
+      publishableKey: stripePublishableKey
     }
   } catch (err: any) {
     console.error('[intl][payment-intent] failed', {
