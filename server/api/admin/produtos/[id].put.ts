@@ -2,6 +2,7 @@ import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getDefaultProductDescription } from '../../../utils/productDescriptionTemplate'
 import { getStoreContext } from '#root/server/utils/store'
+import { createError, readBody } from 'h3'
 
 function normalizeImageUrl(input: unknown): string | null {
   const raw = String(input ?? '').trim()
@@ -89,6 +90,12 @@ export default defineEventHandler(async (event) => {
   const imagem = normalizeImageUrl(body.imagem)
 
   try {
+    const exists = await (prisma as any).produto.findFirst({
+      where: { id, ...(storeSlug ? { storeSlug } : {}) },
+      select: { id: true }
+    })
+    if (!exists) throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
+
     const updated = await (prisma as any).produto.update({
       where: { id },
       data: {

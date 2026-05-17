@@ -10,8 +10,8 @@ export default defineEventHandler(async (event) => {
 
   const id = event.context.params.id
 
-  const produto = await (prisma as any).produto.findUnique({
-    where: { id },
+  const produto = await (prisma as any).produto.findFirst({
+    where: { id, ...(storeSlug ? { storeSlug } : {}) },
     include: {
       precosLoja: {
         where: { storeSlug: storeSlug || undefined },

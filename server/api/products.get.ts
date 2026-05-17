@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
   const startedAt = Date.now()
   setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
   try {
-    const { storeSlug } = getStoreContext()
+    const { storeSlug } = getStoreContext(event)
 
     const intl = getIntlContext(event)
 
@@ -63,7 +63,8 @@ export default defineEventHandler(async (event) => {
 
     const products = await (prisma as any).produto.findMany({
       where: {
-        ativo: true
+        ativo: true,
+        ...(storeSlug ? { storeSlug } : {})
       },
       select: {
         id: true,
