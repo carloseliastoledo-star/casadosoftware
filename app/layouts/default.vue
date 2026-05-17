@@ -798,14 +798,15 @@ const contactLabel = computed(() => {
 
 const mainMenu = computed(() => {
   if (isInternational.value) {
-    const intlItems = categorias.value
-      .filter((cat) => (cat.produtoCount ?? 1) > 0)
-      .map((cat) => ({
-        label: INTL_SLUG_LABELS[cat.slug] || cat.nome,
-        to: `/category/${cat.slug}`
-      }))
     return [
-      ...(intlItems.length ? intlItems : [{ label: 'Products', to: '/products' }]),
+      { label: 'Home', to: '/' },
+      { label: 'Windows', to: '/category/windows' },
+      { label: 'Office', to: '/category/office' },
+      { label: 'Windows Server', to: '/category/windows-server' },
+      { label: 'Adobe', to: '/category/adobe' },
+      { label: 'Autodesk', to: '/category/autodesk' },
+      { label: 'Games', to: '/category/games' },
+      { label: 'Electronics', to: '/category/electronics' },
       { label: 'Support', to: '/about-us' },
     ]
   }
