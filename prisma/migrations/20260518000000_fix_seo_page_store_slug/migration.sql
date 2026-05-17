@@ -1,4 +1,4 @@
--- Migration re-created after manual cleanup of failed entry from Railway
+-- Migration re-created after second manual cleanup of failed entry from Railway
 -- Adds storeSlug column and indexes to SeoPage table
 -- Note: Railway MySQL does NOT support IF NOT EXISTS syntax
 ALTER TABLE `SeoPage` ADD COLUMN `storeSlug` VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
