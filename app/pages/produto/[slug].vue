@@ -287,21 +287,25 @@ const storeSlug = computed(() => String((config.public as any)?.storeSlug || '')
 
 const affiliateEnabled = computed(() => Boolean((config.public as any)?.affiliateEnabled))
 
-// CRITICAL: read host synchronously in setup — useRequestURL/useRequestHeaders
+// CRITICAL: read host AND path synchronously in setup — useRequestURL/useRequestHeaders/useRequestEvent
 // only work in synchronous setup context, NOT inside computed (lazy evaluation loses request context)
-const _ssrHost = (() => {
+const { _ssrHost, _ssrPath } = (() => {
   if (import.meta.server) {
     try {
       const url = useRequestURL()
-      if (url?.host) return String(url.host).toLowerCase()
+      if (url?.host) return { _ssrHost: String(url.host).toLowerCase(), _ssrPath: String(url.pathname || '') }
     } catch { /* ignore */ }
     try {
       const event = useRequestEvent()
-      const raw = String(event?.node?.req?.headers?.['x-forwarded-host'] || event?.node?.req?.headers?.host || '')
-      return String(raw.split(',')[0]?.trim() || '').toLowerCase()
+      const rawHost = String(event?.node?.req?.headers?.['x-forwarded-host'] || event?.node?.req?.headers?.host || '')
+      const rawPath = String(event?.node?.req?.url || '')
+      return {
+        _ssrHost: String(rawHost.split(',')[0]?.trim() || '').toLowerCase(),
+        _ssrPath: rawPath.split('?')[0] || ''
+      }
     } catch { /* ignore */ }
   }
-  return ''
+  return { _ssrHost: '', _ssrPath: '' }
 })()
 
 const host = import.meta.server
@@ -402,14 +406,16 @@ const whyPriceCardClass = computed(() => {
 const route = useRoute()
 const slug = route.params.slug as string
 
-// Detect intl domain — uses route.path (/product/ alias only exists on intl) + host + client override
+// Detect intl domain — multi-signal: client window > SSR path > SSR host
 const isIntlDomain = computed(() => {
-  // After onMounted, _clientIsIntl is authoritative (always correct from window.location.host)
+  // 1. After onMounted, window.location.host is authoritative
   if (_clientIsIntl.value !== null) return _clientIsIntl.value
-  // Route path: /product/ (no accent) alias only exists on intl domains
+  // 2. SSR real request path (/product/ only exists on intl domains)
+  if (_ssrPath.startsWith('/product/') || _ssrPath.startsWith('/category/') || _ssrPath.startsWith('/products')) return true
+  // 3. Client route.path (same logic, covers client-side navigation)
   const p = String(route.path || '')
   if (p.startsWith('/product/') || p.startsWith('/category/') || p.startsWith('/products')) return true
-  // SSR / pre-hydration: use normalizedHost from synchronous request context
+  // 4. SSR host detection
   const h = normalizedHost.value
   if (!h) return false
   if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
