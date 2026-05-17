@@ -34,22 +34,15 @@ function mapHostToStoreSlug(host: string) {
   if (h.includes('globalsoftware.store')) return 'international'
   if (h.includes('gvgmall.co')) return 'international'
   if (h.includes('globalsoftware-prev') && h.includes('vercel.app')) return 'international'
-  return normalizeSlug(h)
+  // Host não reconhecido — deixar fallback (STORE_SLUG ou SITE_URL) decidir
+  return ''
 }
 
 export function getStoreContext(event?: H3Event): StoreContext {
   const storeSlugEnv = normalizeSlug(process.env.STORE_SLUG || '')
   const includeLegacy = String(process.env.STORE_INCLUDE_LEGACY || '').trim() === 'true'
 
-  if (storeSlugEnv) {
-    return { storeSlug: storeSlugEnv, includeLegacy }
-  }
-
-  const siteUrl = String(process.env.SITE_URL || '').trim()
-  if (siteUrl) {
-    return { storeSlug: normalizeSlug(siteUrl), includeLegacy }
-  }
-
+  // 1. Host da request tem prioridade máxima (permite multi-store na mesma instância)
   if (event) {
     const host =
       getRequestHeader(event, 'x-forwarded-host') ||
@@ -58,6 +51,17 @@ export function getStoreContext(event?: H3Event): StoreContext {
       ''
     const inferred = mapHostToStoreSlug(host)
     if (inferred) return { storeSlug: inferred, includeLegacy }
+  }
+
+  // 2. Env var STORE_SLUG (fallback para deployments single-store)
+  if (storeSlugEnv) {
+    return { storeSlug: storeSlugEnv, includeLegacy }
+  }
+
+  // 3. SITE_URL como último fallback
+  const siteUrl = String(process.env.SITE_URL || '').trim()
+  if (siteUrl) {
+    return { storeSlug: normalizeSlug(siteUrl), includeLegacy }
   }
 
   return { storeSlug: null, includeLegacy }
