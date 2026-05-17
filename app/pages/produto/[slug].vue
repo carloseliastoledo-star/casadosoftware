@@ -41,7 +41,7 @@
 
             <!-- Urgência topo -->
             <div class="inline-flex items-center gap-2 bg-orange-500/15 border border-orange-500/40 rounded-full px-4 py-1.5 text-sm font-bold text-orange-400 w-fit">
-              🔥 Oferta por tempo limitado
+              {{ t.urgencyBadge }}
             </div>
 
             <!-- Título -->
@@ -77,29 +77,29 @@
               class="w-full bg-[#00e676] hover:bg-[#00ff87] active:scale-[0.98] text-[#010d1a] text-lg font-black uppercase tracking-widest py-4 rounded-xl transition-all duration-200 shadow-[0_0_30px_rgba(0,230,118,0.35)]"
               @click="buyNow"
             >
-              🛒 COMPRAR AGORA
+              {{ t.buyNowBtn }}
             </button>
 
             <!-- Microcopy -->
             <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-400">
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> Entrega imediata</span>
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> Ativação em minutos</span>
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> Compra segura</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> {{ t.microInstant }}</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> {{ t.microActivation }}</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> {{ t.microSecure }}</span>
             </div>
 
             <!-- Benefícios -->
             <div class="grid grid-cols-2 gap-3">
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> Licença original
+                <span class="text-[#00e676]">✔</span> {{ t.benefitOriginal }}
               </div>
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> Entrega automática
+                <span class="text-[#00e676]">✔</span> {{ t.benefitAutoDelivery }}
               </div>
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> Suporte incluso
+                <span class="text-[#00e676]">✔</span> {{ t.benefitSupport }}
               </div>
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> Garantia de 7 dias
+                <span class="text-[#00e676]">✔</span> {{ t.benefitGuarantee }}
               </div>
             </div>
 
@@ -107,19 +107,19 @@
             <div class="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
               <div class="flex flex-col items-center text-center gap-1">
                 <span class="text-2xl">🔒</span>
-                <span class="text-[10px] font-semibold text-slate-400">Compra segura</span>
+                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustSecure }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
                 <span class="text-2xl">⭐</span>
-                <span class="text-[10px] font-semibold text-slate-400">Produto verificado</span>
+                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustVerified }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
                 <span class="text-2xl">💬</span>
-                <span class="text-[10px] font-semibold text-slate-400">+1000 clientes</span>
+                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustClients }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
                 <span class="text-2xl">⚡</span>
-                <span class="text-[10px] font-semibold text-slate-400">Envio imediato</span>
+                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustFastDelivery }}</span>
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@
         <!-- ── BANNER URGÊNCIA ── -->
         <div class="mt-10 flex items-center justify-center gap-3 bg-red-600/10 border border-red-500/30 rounded-2xl px-6 py-4">
           <span class="text-xl">⚡</span>
-          <span class="text-sm font-bold text-red-400">Estoque digital limitado — garanta o seu agora antes que acabe!</span>
+          <span class="text-sm font-bold text-red-400">{{ t.urgencyStock }}</span>
         </div>
 
         <!-- ── O QUE ESTÁ INCLUÍDO ── -->
@@ -317,9 +317,15 @@ const normalizedHost = computed(() => {
   return h4.replace(/\.$/, '')
 })
 
-const productsIndexPath = computed(() => (intl.language.value === 'en' ? '/products' : '/produtos'))
-const categoryPathPrefix = computed(() => (intl.language.value === 'en' ? '/category' : '/categoria'))
-const digitalDeliveryPath = computed(() => (intl.language.value === 'en' ? '/digital-delivery' : '/entrega-digital'))
+// On international domains, always use EN regardless of SSR language detection
+const effectiveLang = computed(() => {
+  if (intl.isIntl.value) return intl.language.value !== 'pt' ? intl.language.value : 'en'
+  return intl.language.value
+})
+
+const productsIndexPath = computed(() => (effectiveLang.value === 'en' ? '/products' : '/produtos'))
+const categoryPathPrefix = computed(() => (effectiveLang.value === 'en' ? '/category' : '/categoria'))
+const digitalDeliveryPath = computed(() => (effectiveLang.value === 'en' ? '/digital-delivery' : '/entrega-digital'))
 
 const isCasaDoSoftware = computed(() => {
   if (normalizedHost.value.includes('casadosoftware.com.br')) return true
@@ -391,7 +397,7 @@ const { hreflangLinks: productHreflang } = useSeoLocale({
   slug: computed(() => String((safeProduct.value as any)?.slug || slug || ''))
 })
 
-const lang = computed(() => intl.language.value)
+const lang = computed(() => effectiveLang.value)
 
 const isClient = import.meta.client
 
@@ -404,8 +410,8 @@ const isOffice365FiveLicenses = computed(() => {
 
 const pageH1 = computed(() => {
   if (isCasaDoSoftware.value && isOffice365FiveLicenses.value) {
-    if (intl.language.value === 'en') return 'Original Office 365 License for PC and Mac – Instant Delivery'
-    if (intl.language.value === 'es') return 'Licencia original de Office 365 para PC y Mac – Entrega inmediata'
+    if (effectiveLang.value === 'en') return 'Original Office 365 License for PC and Mac – Instant Delivery'
+    if (effectiveLang.value === 'es') return 'Licencia original de Office 365 para PC y Mac – Entrega inmediata'
     return 'Licença Office 365 Original para PC e Mac – Entrega Instantânea'
   }
   return String(safeProduct.value.nome || '')
@@ -467,7 +473,7 @@ const safeProduct = computed(() => {
 
   const nomeRaw = (p as any).nome ?? ''
   const nameRaw = (p as any).name ?? ''
-  const nome = intl.language.value === 'pt' ? nomeRaw || nameRaw : nameRaw || nomeRaw
+  const nome = effectiveLang.value === 'pt' ? nomeRaw || nameRaw : nameRaw || nomeRaw
   const descricaoBase = (p as any).descricao ?? (p as any).description ?? ''
   const preco = Number((p as any).preco ?? (p as any).price ?? 0)
   const slugValue = (p as any).slug ?? ''
@@ -583,7 +589,7 @@ const seoTitle = computed(() => {
   if (customSeoTitle) return customSeoTitle
 
   const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
-  const lang = intl.language.value
+  const lang = effectiveLang.value
   const base = String(siteName || 'Casa do Software')
 
   if (isCasaDoSoftware.value) {
@@ -640,7 +646,7 @@ const seoDescription = computed(() => {
   if (customSeoDesc) return customSeoDesc
 
   const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
-  const lang = intl.language.value
+  const lang = effectiveLang.value
 
   if (isCasaDoSoftware.value) {
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
@@ -964,7 +970,7 @@ const installments12 = computed(() => {
 })
 
 const defaultIncludedItems = computed(() => {
-  if (intl.language.value === 'en') {
+  if (effectiveLang.value === 'en') {
     return [
       'Fast delivery after confirmation',
       'Permanent digital license',
@@ -977,7 +983,7 @@ const defaultIncludedItems = computed(() => {
     ]
   }
 
-  if (intl.language.value === 'es') {
+  if (effectiveLang.value === 'es') {
     return [
       'Envío rápido tras la confirmación',
       'Licencia digital permanente',
@@ -990,7 +996,7 @@ const defaultIncludedItems = computed(() => {
     ]
   }
 
-  if (intl.language.value === 'it') {
+  if (effectiveLang.value === 'it') {
     return [
       'Consegna rapida dopo la conferma',
       'Licenza digitale permanente',
@@ -1003,7 +1009,7 @@ const defaultIncludedItems = computed(() => {
     ]
   }
 
-  if (intl.language.value === 'fr') {
+  if (effectiveLang.value === 'fr') {
     return [
       'Livraison rapide après confirmation',
       'Licence numérique permanente',
@@ -1037,7 +1043,7 @@ const includedItems = computed(() => {
     .filter(Boolean)
   if (!items.length) return defaultIncludedItems.value
 
-  if (intl.language.value === 'pt') return items
+  if (effectiveLang.value === 'pt') return items
 
   const dictEn: Record<string, string> = {
     'Envio imediato após confirmação': 'Fast delivery after confirmation',
@@ -1145,7 +1151,7 @@ const includedItems = computed(() => {
     'Instalação simples': 'Installation simple'
   }
 
-  const lang = intl.language.value
+  const lang = effectiveLang.value
   const dict = lang === 'en' ? dictEn : lang === 'es' ? dictEs : lang === 'it' ? dictIt : dictFr
 
   function looksLikePt(s: string): boolean {
@@ -1170,7 +1176,7 @@ const isMicrosoft365 = computed(() => {
 })
 
 const t = computed(() => {
-  if (intl.language.value === 'en') {
+  if (effectiveLang.value === 'en') {
     return {
       home: 'Home',
       products: 'Products',
@@ -1196,11 +1202,25 @@ const t = computed(() => {
       ms365Bullet2: 'Delivery via a provided account (login and password) after payment confirmation.',
       ms365Bullet3: 'Access is via the provided account (it is not activation on an existing personal Microsoft account).',
       ms365HelpPrefix: 'Questions? See',
-      ms365HelpLink: 'Digital delivery'
+      ms365HelpLink: 'Digital delivery',
+      urgencyBadge: '🔥 Limited time offer',
+      buyNowBtn: '🛒 BUY NOW',
+      microInstant: 'Instant delivery',
+      microActivation: 'Activation in minutes',
+      microSecure: 'Secure purchase',
+      benefitOriginal: 'Original license',
+      benefitAutoDelivery: 'Automatic delivery',
+      benefitSupport: 'Support included',
+      benefitGuarantee: '7-day guarantee',
+      trustSecure: 'Secure purchase',
+      trustVerified: 'Verified product',
+      trustClients: '+1000 clients',
+      trustFastDelivery: 'Fast delivery',
+      urgencyStock: '⚡ Limited digital stock — get yours now before it runs out!'
     }
   }
 
-  if (intl.language.value === 'es') {
+  if (effectiveLang.value === 'es') {
     return {
       home: 'Inicio',
       products: 'Productos',
@@ -1226,11 +1246,25 @@ const t = computed(() => {
       ms365Bullet2: 'Entrega mediante una cuenta proporcionada (usuario y contraseña) tras la confirmación del pago.',
       ms365Bullet3: 'El acceso se realiza con la cuenta proporcionada (no es activación en una cuenta Microsoft personal ya existente).',
       ms365HelpPrefix: '¿Dudas? Consulta',
-      ms365HelpLink: 'Entrega digital'
+      ms365HelpLink: 'Entrega digital',
+      urgencyBadge: '🔥 Oferta por tiempo limitado',
+      buyNowBtn: '🛒 COMPRAR AHORA',
+      microInstant: 'Entrega inmediata',
+      microActivation: 'Activación en minutos',
+      microSecure: 'Compra segura',
+      benefitOriginal: 'Licencia original',
+      benefitAutoDelivery: 'Entrega automática',
+      benefitSupport: 'Soporte incluido',
+      benefitGuarantee: 'Garantía de 7 días',
+      trustSecure: 'Compra segura',
+      trustVerified: 'Producto verificado',
+      trustClients: '+1000 clientes',
+      trustFastDelivery: 'Envío inmediato',
+      urgencyStock: '⚡ Stock digital limitado — ¡consigue el tuyo antes de que se agote!'
     }
   }
 
-  if (intl.language.value === 'it') {
+  if (effectiveLang.value === 'it') {
     return {
       home: 'Home',
       products: 'Prodotti',
@@ -1256,11 +1290,25 @@ const t = computed(() => {
       ms365Bullet2: 'Consegna tramite un account fornito (login e password) dopo la conferma del pagamento.',
       ms365Bullet3: "L'accesso avviene con l'account fornito (non è un’attivazione su un account Microsoft personale già esistente).",
       ms365HelpPrefix: 'Dubbi? Vedi',
-      ms365HelpLink: 'Consegna digitale'
+      ms365HelpLink: 'Consegna digitale',
+      urgencyBadge: '🔥 Offerta a tempo limitato',
+      buyNowBtn: '🛒 ACQUISTA ORA',
+      microInstant: 'Consegna immediata',
+      microActivation: 'Attivazione in minuti',
+      microSecure: 'Acquisto sicuro',
+      benefitOriginal: 'Licenza originale',
+      benefitAutoDelivery: 'Consegna automatica',
+      benefitSupport: 'Supporto incluso',
+      benefitGuarantee: 'Garanzia 7 giorni',
+      trustSecure: 'Acquisto sicuro',
+      trustVerified: 'Prodotto verificato',
+      trustClients: '+1000 clienti',
+      trustFastDelivery: 'Consegna immediata',
+      urgencyStock: '⚡ Stock digitale limitato — assicurati il tuo prima che finisca!'
     }
   }
 
-  if (intl.language.value === 'fr') {
+  if (effectiveLang.value === 'fr') {
     return {
       home: 'Accueil',
       products: 'Produits',
@@ -1286,7 +1334,21 @@ const t = computed(() => {
       ms365Bullet2: 'Livraison via un compte fourni (identifiant et mot de passe) après confirmation du paiement.',
       ms365Bullet3: "L'accès se fait avec le compte fourni (ce n'est pas une activation sur un compte Microsoft personnel existant).",
       ms365HelpPrefix: 'Des questions ? Voir',
-      ms365HelpLink: 'Livraison numérique'
+      ms365HelpLink: 'Livraison numérique',
+      urgencyBadge: '🔥 Offre à durée limitée',
+      buyNowBtn: '🛒 ACHETER MAINTENANT',
+      microInstant: 'Livraison immédiate',
+      microActivation: 'Activation en minutes',
+      microSecure: 'Achat sécurisé',
+      benefitOriginal: 'Licence originale',
+      benefitAutoDelivery: 'Livraison automatique',
+      benefitSupport: 'Support inclus',
+      benefitGuarantee: 'Garantie 7 jours',
+      trustSecure: 'Achat sécurisé',
+      trustVerified: 'Produit vérifié',
+      trustClients: '+1000 clients',
+      trustFastDelivery: 'Livraison immédiate',
+      urgencyStock: '⚡ Stock numérique limité — obtenez le vôtre avant épuisement !'
     }
   }
 
@@ -1315,7 +1377,21 @@ const t = computed(() => {
     ms365Bullet2: 'Entrega por conta fornecida (login e senha) após a confirmação do pagamento.',
     ms365Bullet3: 'O acesso é feito com a conta fornecida (não é ativação em uma conta Microsoft pessoal já existente).',
     ms365HelpPrefix: 'Dúvidas? Consulte',
-    ms365HelpLink: 'Entrega digital'
+    ms365HelpLink: 'Entrega digital',
+    urgencyBadge: '🔥 Oferta por tempo limitado',
+    buyNowBtn: '🛒 COMPRAR AGORA',
+    microInstant: 'Entrega imediata',
+    microActivation: 'Ativação em minutos',
+    microSecure: 'Compra segura',
+    benefitOriginal: 'Licença original',
+    benefitAutoDelivery: 'Entrega automática',
+    benefitSupport: 'Suporte incluso',
+    benefitGuarantee: 'Garantia de 7 dias',
+    trustSecure: 'Compra segura',
+    trustVerified: 'Produto verificado',
+    trustClients: '+1000 clientes',
+    trustFastDelivery: 'Envio imediato',
+    urgencyStock: '⚡ Estoque digital limitado — garanta o seu agora antes que acabe!'
   }
 })
 
