@@ -1,3 +1,5 @@
+-- Migration re-created after manual cleanup of failed entry from PlanetScale
+-- Adds storeSlug column and indexes to SeoPage table
 ALTER TABLE `SeoPage` ADD COLUMN `storeSlug` VARCHAR(191) NOT NULL DEFAULT 'casadosoftware';
 
 DROP INDEX IF EXISTS `SeoPage_locale_slug_key` ON `SeoPage`;
