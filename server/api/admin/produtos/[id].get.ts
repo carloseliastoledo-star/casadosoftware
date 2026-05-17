@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
   const { storeSlug } = getStoreContext(event)
 
   const id = event.context.params.id
+  console.log('[admin/produtos/[id]] id=', id, 'storeSlug=', storeSlug)
 
   const produto = await (prisma as any).produto.findUnique({
     where: { id },
@@ -28,6 +29,8 @@ export default defineEventHandler(async (event) => {
       }
     }
   })
+
+  console.log('[admin/produtos/[id]] produto=', produto ? 'found' : 'not found')
 
   if (!produto) {
     throw createError({
