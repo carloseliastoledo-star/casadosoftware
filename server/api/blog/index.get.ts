@@ -11,8 +11,10 @@ export default defineEventHandler(async (event) => {
     console.log('[api/blog] Executando query...')
     
     const { storeSlug } = getStoreContext(event)
+    const isIntl = storeSlug === 'international'
+
     const posts = await (prisma as any).blogPost.findMany({
-      where: { publicado: true, storeSlug },
+      where: { publicado: true, storeSlug: isIntl ? 'casadosoftware' : storeSlug },
       orderBy: { criadoEm: 'desc' },
       take: 50,
       select: {
@@ -22,21 +24,27 @@ export default defineEventHandler(async (event) => {
         featuredImage: true,
         excerpt: true,
         criadoEm: true,
-        atualizadoEm: true
+        atualizadoEm: true,
+        BlogPostTranslation: isIntl
+          ? { where: { lang: 'en' }, select: { titulo: true, excerpt: true, featuredImage: true }, take: 1 }
+          : false
       }
     })
-    
+
     console.log('[api/blog] Query sucesso, posts encontrados:', posts?.length || 0)
-    
+
     const normalized = Array.isArray(posts)
-      ? posts.map((p: any) => ({
-          titulo: p?.titulo || '',
-          slug: p?.slug || '',
-          featuredImage: p?.featuredImage || null,
-          descricao: p?.excerpt || '',
-          criadoEm: p?.criadoEm,
-          atualizadoEm: p?.atualizadoEm
-        }))
+      ? posts.map((p: any) => {
+          const tr = isIntl ? (p?.BlogPostTranslation?.[0] || null) : null
+          return {
+            titulo: tr?.titulo || p?.titulo || '',
+            slug: p?.slug || '',
+            featuredImage: tr?.featuredImage || p?.featuredImage || null,
+            descricao: tr?.excerpt || p?.excerpt || '',
+            criadoEm: p?.criadoEm,
+            atualizadoEm: p?.atualizadoEm
+          }
+        })
       : []
 
     console.log('[api/blog] ===== END =====')

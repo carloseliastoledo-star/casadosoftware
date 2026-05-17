@@ -1,5 +1,6 @@
 import { defineEventHandler, createError, getRouterParam } from 'h3'
 import prisma from '../../db/prisma.js'
+import { getStoreContext } from '../../utils/store.js'
 
 export default defineEventHandler(async (event) => {
   console.log('[api/blog/slug] ===== START =====')
@@ -16,10 +17,14 @@ export default defineEventHandler(async (event) => {
   try {
     // Query simples primeiro
     console.log('[api/blog/slug] Buscando post...')
+    const { storeSlug } = getStoreContext(event)
+    const isIntl = storeSlug === 'international'
+
     const post = await (prisma as any).blogPost.findFirst({
-      where: { 
+      where: {
         slug,
-        publicado: true 
+        publicado: true,
+        storeSlug: isIntl ? 'casadosoftware' : storeSlug
       },
       select: {
         id: true,
@@ -30,7 +35,10 @@ export default defineEventHandler(async (event) => {
         keyword: true,
         html: true,
         criadoEm: true,
-        atualizadoEm: true
+        atualizadoEm: true,
+        BlogPostTranslation: isIntl
+          ? { where: { lang: 'en' }, select: { titulo: true, excerpt: true, featuredImage: true, html: true }, take: 1 }
+          : false
       }
     })
     
@@ -41,13 +49,14 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, statusMessage: 'Post não encontrado' })
     }
     
+    const tr = isIntl ? (post.BlogPostTranslation?.[0] || null) : null
     const normalized = {
-      titulo: post.titulo,
+      titulo: tr?.titulo || post.titulo,
       slug: post.slug,
-      featuredImage: post.featuredImage,
-      excerpt: post.excerpt,
+      featuredImage: tr?.featuredImage || post.featuredImage,
+      excerpt: tr?.excerpt || post.excerpt,
       keyword: post.keyword,
-      html: post.html,
+      html: tr?.html || post.html,
       criadoEm: post.criadoEm,
       atualizadoEm: post.atualizadoEm
     }

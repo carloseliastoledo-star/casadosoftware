@@ -7,10 +7,11 @@ export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
   const { storeSlug } = getStoreContext(event)
+  const isIntl = storeSlug === 'international'
 
   try {
     const posts = await (prisma as any).blogPost.findMany({
-      where: { storeSlug },
+      where: { storeSlug: isIntl ? 'casadosoftware' : storeSlug },
       orderBy: { criadoEm: 'desc' },
       select: {
         id: true,
@@ -19,7 +20,10 @@ export default defineEventHandler(async (event) => {
         featuredImage: true,
         publicado: true,
         criadoEm: true,
-        atualizadoEm: true
+        atualizadoEm: true,
+        BlogPostTranslation: isIntl
+          ? { where: { lang: 'en' }, select: { id: true, titulo: true }, take: 1 }
+          : false
       }
     })
 
