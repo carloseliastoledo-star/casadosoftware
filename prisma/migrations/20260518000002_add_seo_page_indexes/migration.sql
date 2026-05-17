@@ -1,5 +1,5 @@
 -- Migration to add indexes to SeoPage.storeSlug (column already exists)
--- Manual cleanup of 20260518000000 failed entry executed on Railway
+-- Manual UPDATE executed on Railway to mark 20260518000000 as applied
 DROP INDEX `SeoPage_locale_slug_key` ON `SeoPage`;
 DROP INDEX `SeoPage_storeSlug_locale_slug_key` ON `SeoPage`;
 DROP INDEX `SeoPage_storeSlug_locale_status_idx` ON `SeoPage`;
