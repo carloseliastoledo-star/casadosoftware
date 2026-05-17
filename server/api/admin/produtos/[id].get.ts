@@ -28,6 +28,9 @@ export default defineEventHandler(async (event) => {
         }
       }
     }
+  }).catch((err) => {
+    console.error('[admin/produtos/[id]] error finding product:', err)
+    return null
   })
 
   console.log('[admin/produtos/[id]] produto=', produto ? 'found' : 'not found')
