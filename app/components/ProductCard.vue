@@ -396,15 +396,14 @@ const isIntlProduct = computed(() => {
   return store === 'international' || (currency !== '' && currency !== 'brl')
 })
 
-function buyNow(event: Event) {
-  event.preventDefault()
-  event.stopPropagation()
-  if (isIntlProduct.value) {
-    navigateTo({ path: '/checkout-intl', query: { product: props.product.slug } })
-  } else {
-    navigateTo({ path: '/checkout', query: { product: props.product.slug } })
-  }
-}
+const checkoutPath = computed(() =>
+  isIntlProduct.value ? '/checkout-intl' : '/checkout'
+)
+
+const checkoutTo = computed(() => ({
+  path: checkoutPath.value,
+  query: { product: props.product.slug }
+}))
 </script>
 
 <template>
@@ -461,13 +460,13 @@ function buyNow(event: Event) {
       </div>
 
       <!-- Botão outline neon — mt-auto fixa na base -->
-      <button
-        type="button"
-        class="mt-auto w-[92%] rounded-full border border-cyan-500/70 bg-transparent hover:bg-cyan-500/15 hover:border-cyan-400 text-white text-[10px] font-black uppercase tracking-[0.18em] py-2 transition-all duration-200"
-        @click="buyNow"
+      <NuxtLink
+        :to="checkoutTo"
+        class="mt-auto w-[92%] rounded-full border border-cyan-500/70 bg-transparent hover:bg-cyan-500/15 hover:border-cyan-400 text-white text-[10px] font-black uppercase tracking-[0.18em] py-2 transition-all duration-200 flex items-center justify-center"
+        @click.stop
       >
         {{ buyNowLabel }}
-      </button>
+      </NuxtLink>
     </div>
   </NuxtLink>
 </template>

@@ -1,4 +1,4 @@
 <script setup lang="ts">
 definePageMeta({ ssr: true })
-await navigateTo('/privacidade', { redirectCode: 301 })
+await navigateTo('/privacidade', { replace: true })
 </script>
