@@ -149,16 +149,15 @@ export function useIntlContext() {
     }
 
     const sub = detectSubdomainLanguage(host.value)
-    if (subdomainMode.value && sub) return sub
+    // Intl domains (gvgmall.co etc) always override cookie — prevents ld_lang=pt from casadosoftware bleeding in
+    if (sub) return sub
 
     const fromPath = detectLanguageFromPath()
     if (fromPath) return fromPath
 
-    // Cookie has priority over domain detection so the user's language selector works
+    // Cookie only applies on non-intl domains
     const cookie = String(langCookie.value || '').trim()
     if (cookie) return normalizeLanguage(cookie)
-
-    if (sub) return sub
 
     if (isEnDomain.value) return 'en'
 

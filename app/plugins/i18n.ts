@@ -50,7 +50,9 @@ export default defineNuxtPlugin((nuxtApp) => {
   const langCookie = useCookie<string | null>('ld_lang', { sameSite: 'lax', path: '/' })
 
   const cookieLang = langCookie.value ? normalizeLang(langCookie.value) : null
-  const initialLang = cookieLang || subdomainLang || 'en'
+  // On intl domains (gvgmall.co etc), subdomain detection ALWAYS wins over the cookie.
+  // This prevents a ld_lang=pt cookie set on casadosoftware.com.br from forcing PT on gvgmall.co.
+  const initialLang = subdomainLang || cookieLang || 'pt'
 
   // Expose detected language to useIntlContext() via Nuxt state.
   // This is the most reliable SSR language source: the plugin runs synchronously
