@@ -54,7 +54,26 @@
         <FieldUrl label="CTA Primário — URL" v-model="form.hero.primaryCtaUrl" />
         <FieldText label="CTA Secundário — Texto" v-model="form.hero.secondaryCtaLabel" :max="200" />
         <FieldUrl label="CTA Secundário — URL" v-model="form.hero.secondaryCtaUrl" />
-        <FieldUrl label="Imagem URL (opcional)" v-model="form.hero.imageUrl" />
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Imagem do Hero (URL ou upload)</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="text"
+              v-model="form.hero.imageUrl"
+              maxlength="500"
+              placeholder="/caminho ou https://..."
+              class="flex-1 border rounded-lg p-2.5 text-sm font-mono"
+            />
+            <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm">
+              <span>{{ heroImageUploading ? 'Enviando...' : '📤 Upload' }}</span>
+              <input ref="heroImageInput" type="file" accept="image/*" class="hidden" @change="uploadHeroImage" :disabled="heroImageUploading" />
+            </label>
+          </div>
+          <div v-if="heroImageUploadError" class="text-xs text-red-500 mt-1">{{ heroImageUploadError }}</div>
+          <div v-if="form.hero.imageUrl" class="mt-2">
+            <img :src="form.hero.imageUrl" alt="Hero preview" class="max-h-40 rounded border object-contain" />
+          </div>
+        </div>
       </div>
 
       <!-- Cores -->
@@ -305,6 +324,28 @@ const saving = ref(false)
 const loadError = ref('')
 const saveError = ref('')
 const saveSuccess = ref(false)
+
+const heroImageInput = ref<HTMLInputElement | null>(null)
+const heroImageUploading = ref(false)
+const heroImageUploadError = ref('')
+
+async function uploadHeroImage(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  heroImageUploading.value = true
+  heroImageUploadError.value = ''
+  try {
+    const fd = new FormData()
+    fd.append('file', file)
+    const res: any = await $fetch('/api/admin/upload', { method: 'POST', body: fd })
+    if (res?.url) form.hero.imageUrl = res.url
+  } catch (err: any) {
+    heroImageUploadError.value = err?.data?.statusMessage || 'Erro ao enviar imagem'
+  } finally {
+    heroImageUploading.value = false
+    if (heroImageInput.value) heroImageInput.value.value = ''
+  }
+}
 
 const tabs = [
   { key: 'hero', label: 'Hero' },

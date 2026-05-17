@@ -8,32 +8,41 @@
         <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500 rounded-full blur-3xl" />
       </div>
       <div class="relative max-w-7xl mx-auto px-6 py-20 md:py-32">
-        <div class="max-w-3xl">
-          <div class="inline-flex items-center gap-2 bg-blue-600/30 border border-blue-500/30 rounded-full px-4 py-1.5 text-sm font-medium text-blue-300 mb-6">
-            <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-            Genuine Software Licenses — Instant Delivery
+        <div class="flex items-center gap-12">
+          <div class="flex-1 max-w-2xl">
+            <div class="inline-flex items-center gap-2 bg-blue-600/30 border border-blue-500/30 rounded-full px-4 py-1.5 text-sm font-medium text-blue-300 mb-6">
+              <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+              Genuine Software Licenses — Instant Delivery
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">
+              {{ ui.heroTitle }}<br />
+              <span class="text-blue-400">{{ ui.heroAccent }}</span>
+            </h1>
+            <p class="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl">
+              {{ ui.heroDesc }}
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a
+                href="#products"
+                class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-xl text-lg shadow-lg transition"
+              >
+                {{ ui.heroCta }}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+              </a>
+              <a
+                href="#how-it-works"
+                class="inline-flex items-center justify-center gap-2 border border-slate-500 hover:border-blue-400 text-slate-300 hover:text-white font-semibold px-8 py-4 rounded-xl text-lg transition"
+              >
+                {{ ui.howItWorks }}
+              </a>
+            </div>
           </div>
-          <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">
-            {{ ui.heroTitle }}<br />
-            <span class="text-blue-400">{{ ui.heroAccent }}</span>
-          </h1>
-          <p class="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl">
-            {{ ui.heroDesc }}
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4">
-            <a
-              href="#products"
-              class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-xl text-lg shadow-lg transition"
-            >
-              {{ ui.heroCta }}
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-            </a>
-            <a
-              href="#how-it-works"
-              class="inline-flex items-center justify-center gap-2 border border-slate-500 hover:border-blue-400 text-slate-300 hover:text-white font-semibold px-8 py-4 rounded-xl text-lg transition"
-            >
-              {{ ui.howItWorks }}
-            </a>
+          <div v-if="heroImageUrl" class="hidden md:flex flex-shrink-0 w-96 items-center justify-center">
+            <img
+              :src="heroImageUrl"
+              alt="Hero"
+              class="w-full max-h-80 object-contain drop-shadow-2xl rounded-2xl"
+            />
           </div>
         </div>
       </div>
@@ -443,6 +452,16 @@ interface IntlProduct {
 function goToProduct(product: IntlProduct) {
   navigateTo(`/product/${product.slug}`)
 }
+
+const { data: homeTheme } = await useFetch<any>('/api/home-theme', {
+  server: true,
+  default: () => null
+})
+
+const heroImageUrl = computed(() => {
+  const url = String(homeTheme.value?.theme?.hero?.imageUrl || '').trim()
+  return url || null
+})
 
 const { data: rawProducts, pending } = await useFetch<any>('/api/intl/products', {
   server: false,
