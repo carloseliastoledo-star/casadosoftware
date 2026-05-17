@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ alias: ['/digital-delivery'] })
 const { supportEmail, siteName } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
