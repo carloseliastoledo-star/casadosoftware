@@ -134,7 +134,7 @@ export default defineEventHandler(async (event) => {
 
     console.log('[intl/category] final products=', produtos.length)
 
-    const categoria = categoriaDb || {
+    const categoria = {
       id: slug,
       nome: mapSlugToName(slug),
       slug
