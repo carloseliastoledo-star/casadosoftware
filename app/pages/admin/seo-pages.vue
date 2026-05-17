@@ -207,8 +207,8 @@ const publicBase = (_locale) =>
       />
       <select v-model="filterLocale" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
         <option value="">Todos os locales</option>
-        <option value="pt">🇧🇷 PT</option>
-        <option value="en">🇺🇸 EN</option>
+        <option value="pt">PT</option>
+        <option value="en">EN</option>
       </select>
       <select v-model="filterStatus" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
         <option value="">Todos os status</option>
@@ -251,8 +251,8 @@ const publicBase = (_locale) =>
             </td>
             <td class="p-3">
               <span class="text-xs font-semibold px-2 py-1 rounded-full"
-                :class="p.locale === 'en' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'">
-                {{ p.locale === 'en' ? '🇺🇸 EN' : '🇧🇷 PT' }}
+                :class="p.locale === 'en' ? 'bg-blue-100 text-blue-700' : p.locale === 'es' ? 'bg-yellow-100 text-yellow-700' : p.locale === 'pt' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'">
+                {{ (p.locale || 'pt').toUpperCase() }}
               </span>
             </td>
             <td class="p-3">
@@ -322,9 +322,11 @@ const publicBase = (_locale) =>
               <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1">Locale *</label>
                 <select v-model="form.locale" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                  <option value="pt">🇧🇷 PT</option>
-                  <option value="en">🇺🇸 EN</option>
-                  <option value="es">🇪🇸 ES</option>
+                  <option value="pt">PT</option>
+                  <option value="en">EN</option>
+                  <option value="es">ES</option>
+                  <option value="it">IT</option>
+                  <option value="fr">FR</option>
                 </select>
               </div>
               <div>
