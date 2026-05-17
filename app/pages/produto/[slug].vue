@@ -318,14 +318,14 @@ const normalizedHost = computed(() => {
   return h4.replace(/\.$/, '')
 })
 
-// Detect intl domain directly from host — avoids circular dependency with isIntl/currencyLower
+// Detect intl domain using the page's own reliable host computed (useRequestURL/useRequestHeaders)
 const isIntlDomain = computed(() => {
-  const h = String(intl.host.value || '').toLowerCase()
+  const h = normalizedHost.value
   if (!h) return false
   if (h.includes('gvgmall') || h.includes('globalsoftware') || h.endsWith('.store')) return true
   if (h.endsWith('.com.br') || h.includes('localhost') || h.includes('127.0.0.1')) return false
   if (h.includes('.vercel.app')) return false
-  return h.length > 0
+  return true
 })
 
 // On international domains, always use EN regardless of SSR language detection
