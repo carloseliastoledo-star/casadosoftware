@@ -951,10 +951,10 @@ function onImageError(e: Event) {
 }
 
 const effectiveCurrencyLower = computed(() => {
+  // Domain takes priority — gvgmall.co always USD regardless of product.currency in DB
+  if (isIntlDomain.value) return 'usd'
   const c = String((safeProduct.value as any)?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
-  // Use direct host detection — avoids circular dependency with isIntl/currencyLower
-  if (isIntlDomain.value) return 'usd'
   return intl.currencyLower.value || 'brl'
 })
 
