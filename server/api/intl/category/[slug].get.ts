@@ -114,7 +114,7 @@ export default defineEventHandler(async (event) => {
       console.log('[intl/category] after JS filter=', produtosRaw.length)
     }
 
-    const produtosComPreco = produtosRaw.map((p: any) => {
+    const produtos = produtosRaw.map((p: any) => {
       const precos: any[] = p.ProdutoPrecoMoeda || []
       const usd = precos.find((x: any) => String(x.currency).toLowerCase() === 'usd')
       const eur = precos.find((x: any) => String(x.currency).toLowerCase() === 'eur')
@@ -139,9 +139,7 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    const produtos = produtosComPreco.filter((p: any) => p.usdPrice != null && p.usdPrice > 0)
-
-    console.log('[intl/category] final products after price filter=', produtos.length)
+    console.log('[intl/category] final products=', produtos.length)
 
     const categoria = categoriaDb || {
       id: slug,
