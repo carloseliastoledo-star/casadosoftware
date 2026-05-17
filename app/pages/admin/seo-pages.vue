@@ -63,7 +63,7 @@ watch(() => form.value.title, (val) => {
 
 const previewUrl = computed(() => {
   if (!form.value.slug) return ''
-  const base = form.value.locale === 'en' ? 'https://casadosoftware.store' : 'https://casadosoftware.com.br'
+  const base = import.meta.client ? window.location.origin : ''
   return `${base}/lp/${form.value.slug}`
 })
 
@@ -176,8 +176,8 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-const publicBase = (locale) =>
-  locale === 'en' ? 'https://casadosoftware.store' : 'https://casadosoftware.com.br'
+const publicBase = (_locale) =>
+  import.meta.client ? window.location.origin : ''
 </script>
 
 <template>
@@ -322,8 +322,9 @@ const publicBase = (locale) =>
               <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1">Locale *</label>
                 <select v-model="form.locale" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                  <option value="pt">🇧🇷 PT — casadosoftware.com.br</option>
-                  <option value="en">🇺🇸 EN — casadosoftware.store</option>
+                  <option value="pt">🇧🇷 PT</option>
+                  <option value="en">🇺🇸 EN</option>
+                  <option value="es">🇪🇸 ES</option>
                 </select>
               </div>
               <div>
