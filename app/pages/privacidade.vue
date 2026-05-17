@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'blank' as any })
+definePageMeta({ layout: 'blank' as any, alias: ['/privacy-policy'] })
 
 const { supportEmail, siteName } = useSiteBranding()
 const intl = useIntlContext()

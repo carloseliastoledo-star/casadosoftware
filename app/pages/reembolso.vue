@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ alias: ['/refund-policy'] })
 const { supportEmail, siteName } = useSiteBranding()
 const intl = useIntlContext()
 const baseUrl = useSiteUrl()
