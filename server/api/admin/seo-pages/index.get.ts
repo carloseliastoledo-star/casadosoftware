@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler, getQuery, createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getStoreContext } from '../../../utils/store'
@@ -7,6 +7,8 @@ export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
   const ctx = getStoreContext(event)
+  console.log('[admin/seo-pages] storeSlug:', ctx.storeSlug)
+
   const q = getQuery(event)
   const locale = q.locale ? String(q.locale) : undefined
   const status = q.status ? String(q.status) : undefined
@@ -18,23 +20,29 @@ export default defineEventHandler(async (event) => {
   if (status) where.status = status
   if (search) where.title = { contains: search }
 
-  const pages = await (prisma as any).seoPage.findMany({
-    where,
-    orderBy: { updatedAt: 'desc' },
-    select: {
-      id: true,
-      locale: true,
-      slug: true,
-      title: true,
-      seoTitle: true,
-      templateKey: true,
-      status: true,
-      noindex: true,
-      publishedAt: true,
-      createdAt: true,
-      updatedAt: true
-    }
-  })
+  try {
+    const pages = await (prisma as any).seoPage.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        storeSlug: true,
+        locale: true,
+        slug: true,
+        title: true,
+        seoTitle: true,
+        templateKey: true,
+        status: true,
+        noindex: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true
+      }
+    })
 
-  return { ok: true, pages }
+    return { ok: true, pages }
+  } catch (err: any) {
+    console.error('[admin/seo-pages] query error:', err?.message, err?.code)
+    throw createError({ statusCode: 500, statusMessage: err?.message || 'Erro ao buscar páginas SEO' })
+  }
 })

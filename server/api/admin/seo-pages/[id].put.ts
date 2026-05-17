@@ -77,7 +77,8 @@ export default defineEventHandler(async (event) => {
         templateKey,
         status,
         noindex,
-        publishedAt: nowPublished && !wasPublished ? new Date() : existing.publishedAt
+        publishedAt: nowPublished && !wasPublished ? new Date() : existing.publishedAt,
+        updatedAt: new Date()
       }
     })
 
