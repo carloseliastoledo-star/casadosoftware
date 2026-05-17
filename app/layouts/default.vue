@@ -806,6 +806,7 @@ const mainMenu = computed(() => {
       { label: 'Autodesk', to: '/category/autodesk' },
       { label: 'Games', to: '/category/games' },
       { label: 'Electronics', to: '/category/electronics' },
+      { label: 'Blog', to: '/blog' },
       { label: 'Support', to: '/support' },
     ]
   }
