@@ -1,4 +1,5 @@
 import { defineEventHandler, readBody, createError } from 'h3'
+import { randomUUID } from 'node:crypto'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
 import { getStoreContext } from '../../../utils/store'
@@ -56,6 +57,7 @@ export default defineEventHandler(async (event) => {
 
     const page = await (prisma as any).seoPage.create({
       data: {
+        id: randomUUID(),
         storeSlug,
         locale,
         slug,
