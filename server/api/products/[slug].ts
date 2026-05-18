@@ -130,10 +130,7 @@ export default defineEventHandler(async (event) => {
         tutorialConteudoFr: true,
         criadoEm: true,
         ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { preco: true, precoAntigo: true } } : { select: { preco: true, precoAntigo: true }, take: 1 },
-        precosMoeda: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { currency: true, amount: true, oldAmount: true }
-        },
+        ProdutoPrecoMoeda: storeSlug ? { where: { storeSlug }, select: { currency: true, amount: true, oldAmount: true } } : { select: { currency: true, amount: true, oldAmount: true }, take: 5 },
       }
     })
 
@@ -187,7 +184,7 @@ export default defineEventHandler(async (event) => {
     baseOldAmount: product.precoAntigo,
     storeAmountOverride: override?.preco,
     storeOldAmountOverride: override?.precoAntigo,
-    currencyRows: (product as any).precosMoeda || []
+    currencyRows: (product as any).ProdutoPrecoMoeda || []
   })
 
   const dbName =

@@ -88,10 +88,7 @@ export default defineEventHandler(async (event) => {
         imagem: true,
         cardItems: true,
         ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { preco: true, precoAntigo: true } } : { select: { preco: true, precoAntigo: true }, take: 1 },
-        precosMoeda: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { currency: true, amount: true, oldAmount: true }
-        },
+        ProdutoPrecoMoeda: storeSlug ? { where: { storeSlug }, select: { currency: true, amount: true, oldAmount: true } } : { select: { currency: true, amount: true, oldAmount: true }, take: 5 },
         produtoCategorias: { select: { categoria: { select: { slug: true } } } },
         tutorialTitulo: true,
         tutorialTituloEn: true,
@@ -119,7 +116,7 @@ export default defineEventHandler(async (event) => {
         baseOldAmount: p.precoAntigo,
         storeAmountOverride: override?.preco,
         storeOldAmountOverride: override?.precoAntigo,
-        currencyRows: (p as any).precosMoeda || []
+        currencyRows: (p as any).ProdutoPrecoMoeda || []
       })
 
       const effectivePrice = effective.amount
