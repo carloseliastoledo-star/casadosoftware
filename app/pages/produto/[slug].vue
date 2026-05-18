@@ -233,7 +233,7 @@
         <IntlLanguageSwitcher
           v-if="!intl.isIntl.value"
           page-type="product"
-          :slug="String((safeProduct as any)?.slug || slug || '')"
+          :slug="String((safeProduct as any)?.slug || slug.value || '')"
           class="mt-8 w-full"
         />
 
@@ -409,7 +409,7 @@ const whyPriceCardClass = computed(() => {
 })
 
 const route = useRoute()
-const slug = route.params.slug as string
+const slug = computed(() => String(route.params.slug || ''))
 
 // Detect intl domain — multi-signal: client window > SSR path > SSR host
 const isIntlDomain = computed(() => {
@@ -431,7 +431,7 @@ const isIntlDomain = computed(() => {
 
 const { hreflangLinks: productHreflang } = useSeoLocale({
   pageType: 'product',
-  slug: computed(() => String((safeProduct.value as any)?.slug || slug || '')),
+  slug: computed(() => String((safeProduct.value as any)?.slug || slug.value || '')),
   slugEn: computed(() => String((safeProduct.value as any)?.slugEn || ''))
 })
 
@@ -440,7 +440,7 @@ const lang = computed(() => effectiveLang.value)
 const isClient = import.meta.client
 
 const isOffice365FiveLicenses = computed(() => {
-  const s = String(slug || '').trim().toLowerCase()
+  const s = String(slug.value || '').trim().toLowerCase()
   return s === 'microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
 })
 
@@ -450,12 +450,12 @@ const pageH1 = computed(() => {
     if (effectiveLang.value === 'es') return 'Licencia original de Office 365 para PC y Mac – Entrega inmediata'
     return 'Licença Office 365 Original para PC e Mac – Entrega Instantânea'
   }
-  return String(safeProduct.value.nome || '')
+  return String((safeProduct as any)?.value?.nome || '')
 })
 const baseUrl = useSiteUrl()
 
 const canonicalUrl = computed(() => {
-  const s = String(slug || '').trim()
+  const s = String(slug.value || '').trim()
   if (!s) return baseUrl ? `${baseUrl}/` : ''
   
   // On international domains, use slugEn for canonical URL if available
@@ -469,7 +469,7 @@ const canonicalUrl = computed(() => {
   return baseUrl ? `${baseUrl}/${segment}/${s}` : ''
 })
 
-const asyncProductKey = computed(() => `product-${String(slug || '')}-${String(lang.value || 'pt')}`)
+const asyncProductKey = computed(() => `product-${slug.value}-${String(lang.value || 'pt')}`)
 
 const fetchBase = (() => {
   if (!import.meta.server) return ''
@@ -486,7 +486,7 @@ const fetchBase = (() => {
 
 const { data: product, pending, error } = await useAsyncData(
   asyncProductKey.value,
-  () => $fetch(`${fetchBase}/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
+  () => $fetch(`${fetchBase}/api/products/${slug.value}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
   {
     server: true,
     lazy: false,
@@ -568,7 +568,7 @@ if (import.meta.client) {
     if (!safeProduct.value?.tutorialTitulo) return
     try {
       const res = await $fetch<{ ok: boolean; allowed: boolean; reason: string | null }>(
-        `/api/customer/tutorial-access/${slug}`
+        `/api/customer/tutorial-access/${slug.value}`
       )
       tutorialAccess.value = { allowed: res.allowed, reason: res.reason ?? null }
     } catch {
@@ -645,7 +645,7 @@ const seoTitle = computed(() => {
   const customSeoTitle = String((safeProduct.value as any)?.seoTitle || '').trim()
   if (customSeoTitle) return customSeoTitle
 
-  const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
+  const slugValue = String((safeProduct.value as any)?.slug || slug.value || '').trim().toLowerCase()
   const lang = effectiveLang.value
   const base = String(siteName || 'Casa do Software')
 
@@ -702,7 +702,7 @@ const seoDescription = computed(() => {
   const customSeoDesc = String((safeProduct.value as any)?.seoDescription || '').trim()
   if (customSeoDesc) return customSeoDesc
 
-  const slugValue = String((safeProduct.value as any)?.slug || slug || '').trim().toLowerCase()
+  const slugValue = String((safeProduct.value as any)?.slug || slug.value || '').trim().toLowerCase()
   const lang = effectiveLang.value
 
   if (isCasaDoSoftware.value) {
