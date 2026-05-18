@@ -281,7 +281,7 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
   return str
 }
 
-definePageMeta({ ssr: false, alias: ['/product/:slug'] })
+definePageMeta({ ssr: true, alias: ['/product/:slug'] })
 
 const intl = useIntlContext()
 
