@@ -492,26 +492,36 @@ const rawProduct = computed(() => {
 
 const safeProduct = computed(() => {
   const p = rawProduct.value
-  if (!p || !p.id) return null
+  if (!p) {
+    console.log('[safeProduct] rawProduct is null')
+    return null
+  }
 
+  console.log('[safeProduct] rawProduct keys:', Object.keys(p))
+  console.log('[safeProduct] rawProduct.nome:', p.nome)
+  console.log('[safeProduct] rawProduct.name:', p.name)
+  console.log('[safeProduct] rawProduct.preco:', p.preco)
+  console.log('[safeProduct] rawProduct.price:', p.price)
+
+  // Normalize Portuguese fields to English
   return {
     id: p.id,
-    name: p.name || p.nome,
-    slug: p.slug,
-    description: p.description || p.descricao,
-    price: p.price ?? p.preco,
-    oldPrice: p.oldPrice ?? p.precoAntigo,
+    name: p.nome || p.name || '',
+    slug: p.slug || '',
+    description: p.descricao || p.description || '',
+    price: p.preco ?? p.price ?? 0,
+    oldPrice: p.precoAntigo ?? p.oldPrice ?? null,
     currency: p.currency || 'BRL',
-    image: p.image || p.imagem,
-    cardItems: p.cardItems,
-    tutorialTitle: p.tutorialTitle || p.tutorialTitulo,
-    tutorialSubtitle: p.tutorialSubtitle || p.tutorialSubtitulo,
-    tutorialContent: p.tutorialContent || p.tutorialConteudo,
-    seoTitle: p.seoTitle,
-    seoDescription: p.seoDescription,
-    seoContent: p.seoContent,
-    createdAt: p.createdAt || p.criadoEm,
-    finalUrl: p.finalUrl
+    image: p.imagem || p.image || '/products/placeholder.svg',
+    cardItems: p.cardItems || null,
+    tutorialTitle: p.tutorialTitulo || p.tutorialTitle || null,
+    tutorialSubtitle: p.tutorialSubtitulo || p.tutorialSubtitle || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
+    tutorialContent: p.tutorialConteudo || p.tutorialContent || null,
+    seoTitle: p.seoTitle || null,
+    seoDescription: p.seoDescription || null,
+    seoContent: p.seoContent || null,
+    createdAt: p.criadoEm || p.createdAt || null,
+    finalUrl: p.finalUrl || null
   }
 })
 
