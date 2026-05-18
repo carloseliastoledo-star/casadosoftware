@@ -1,6 +1,7 @@
 import { defineEventHandler, createError, readMultipartFormData } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { randomUUID } from 'crypto'
+import { getStoreContext } from '#root/server/utils/store'
 
 function parseCSV(content: string): string[][] {
   const lines: string[][] = []
@@ -81,6 +82,10 @@ export default defineEventHandler(async (event) => {
     errors: [] as string[]
   }
 
+  // Get storeSlug from context
+  const storeContext = await getStoreContext(event)
+  const storeSlug = storeContext?.storeSlug || 'casadosoftware'
+
   try {
     // Ler arquivo multipart
     const formData = await readMultipartFormData(event)
@@ -157,6 +162,7 @@ export default defineEventHandler(async (event) => {
         const data = {
           nome: name,
           slug: slug,
+          storeSlug: storeSlug,
           descricao: idx.description >= 0 ? row[idx.description] || null : null,
           preco: idx.price >= 0 ? (parseFloatOrNull(row[idx.price]) || 0) : 0,
           precoAntigo: idx.compareAtPrice >= 0 ? parseFloatOrNull(row[idx.compareAtPrice]) : null,
@@ -173,9 +179,9 @@ export default defineEventHandler(async (event) => {
           tutorialConteudo: idx.tutorialConteudo >= 0 ? row[idx.tutorialConteudo] || null : null
         }
 
-        // Verificar se produto existe
+        // Verificar se produto existe (usando chave composta)
         const existing = await (prisma as any).produto.findUnique({
-          where: { slug },
+          where: { slug_storeSlug: { slug, storeSlug } },
           select: { id: true }
         })
 
@@ -184,7 +190,7 @@ export default defineEventHandler(async (event) => {
         if (existing) {
           // Atualizar
           await (prisma as any).produto.update({
-            where: { slug },
+            where: { slug_storeSlug: { slug, storeSlug } },
             data
           })
           produtoId = existing.id
