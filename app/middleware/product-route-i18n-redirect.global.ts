@@ -1,23 +1,35 @@
 export default defineNuxtRouteMiddleware((to) => {
+  // On client, window.location.host is always authoritative
+  if (import.meta.client) {
+    const clientHost = String(window.location.host || '').toLowerCase()
+    const isIntlClient =
+      !clientHost.endsWith('.com.br') &&
+      !clientHost.includes('localhost') &&
+      !clientHost.includes('127.0.0.1') &&
+      clientHost.length > 0 &&
+      (clientHost.includes('gvgmall') || clientHost.includes('globalsoftware') || clientHost.endsWith('.store'))
+
+    if (!clientHost.startsWith('en.') && !clientHost.startsWith('es.') && !isIntlClient) return
+  }
+
   const host = (() => {
     if (import.meta.server) {
+      try {
+        const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>
+        const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers.host || ''
+        const first = String(raw || '').split(',')[0]?.trim()
+        if (first) return String(first).toLowerCase()
+      } catch {
+        // ignore
+      }
       try {
         const url = useRequestURL()
         if (url?.host) return String(url.host).toLowerCase()
       } catch {
         // ignore
       }
-
-      try {
-        const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>
-        const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers.host || ''
-        const first = String(raw || '').split(',')[0]?.trim()
-        return String(first || '').toLowerCase()
-      } catch {
-        return ''
-      }
+      return ''
     }
-
     return String(window.location.host || '').toLowerCase()
   })()
 
@@ -29,17 +41,19 @@ export default defineNuxtRouteMiddleware((to) => {
   const storeSlugEnv = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
   const isDefinitelyNotIntl = storeSlugEnv === 'casadosoftware' || storeSlugEnv === 'licencasdigitais'
 
-  // Detect international domain (not .com.br, localhost, vercel.app, railway.app, or known PT stores)
-  const isIntlDomain = 
-    !isDefinitelyNotIntl &&
-    !host.endsWith('.com.br') && 
-    !host.includes('.com.br:') && 
-    !host.includes('localhost') && 
-    !host.includes('127.0.0.1') && 
-    !host.includes('.vercel.app') && 
-    !host.includes('.railway.app') && 
-    !host.includes('.railway.internal') && 
-    host.length > 0
+  // On SSR: only treat as intl if explicitly known intl domains
+  const isIntlDomain = import.meta.server
+    ? !isDefinitelyNotIntl && (
+        host.includes('gvgmall.co') ||
+        host.includes('globalsoftware.store') ||
+        host.endsWith('.store')
+      )
+    : !isDefinitelyNotIntl &&
+      !host.endsWith('.com.br') &&
+      !host.includes('localhost') &&
+      !host.includes('127.0.0.1') &&
+      host.length > 0 &&
+      (host.includes('gvgmall') || host.includes('globalsoftware') || host.endsWith('.store'))
 
   if (!isEnHost && !isEsHost && !isIntlDomain) return
 
