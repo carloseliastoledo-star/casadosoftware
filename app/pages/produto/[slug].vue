@@ -508,10 +508,10 @@ if (import.meta.server) {
     (error.value as any)?.data?.statusMessage ||
     'Erro no servidor'
   if (statusCode && statusCode !== 404) {
-    throw createError({ statusCode, statusMessage, fatal: true })
+    throw createError({ statusCode, statusMessage })
   }
   if (!product.value) {
-    throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado', fatal: true })
+    throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
   }
 }
 
