@@ -1,13 +1,10 @@
 export default defineNuxtRouteMiddleware((to) => {
-  // ── Fast exit: resolve host immediately and skip if not an intl/en/es domain ──
-  const quickHost = (() => {
-    if (import.meta.client) return String(window.location.host || '').toLowerCase()
-    try {
-      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
-      const raw = headers?.['x-forwarded-host'] || headers?.host || ''
-      return String(raw.split(',')[0]?.trim() || '').toLowerCase()
-    } catch { return '' }
-  })()
+  // SSR: skip entirely — server-side intl redirects handled by H3 server middleware.
+  // navigateTo in SSR context emits 204 No Content which breaks all product pages.
+  if (import.meta.server) return
+
+  // ── Client only: use window.location.host which is always reliable ──
+  const quickHost = String(window.location.host || '').toLowerCase()
 
   const config = useRuntimeConfig()
   const storeSlugEnv = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
