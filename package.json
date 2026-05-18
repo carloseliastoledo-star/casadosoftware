@@ -6,8 +6,8 @@
     "node": ">=20 <21"
   },
   "scripts": {
-    "build": "prisma generate && prisma migrate deploy && nuxt build && node scripts/fix-vercel-output-routes.cjs || true",
-    "vercel-build": "prisma generate && prisma migrate deploy && nuxt build && node scripts/fix-vercel-output-routes.cjs || true",
+    "build": "prisma generate && prisma migrate deploy && nuxt build",
+    "vercel-build": "prisma generate && prisma migrate deploy && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",
