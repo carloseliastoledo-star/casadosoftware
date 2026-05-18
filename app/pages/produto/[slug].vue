@@ -471,9 +471,13 @@ const canonicalUrl = computed(() => {
 
 const asyncProductKey = computed(() => `product-${String(slug || '')}-${String(lang.value || 'pt')}`)
 
+const fetchBase = import.meta.server
+  ? (useRequestURL().origin || process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000')
+  : ''
+
 const { data: product, pending, error } = await useAsyncData(
   asyncProductKey.value,
-  () => $fetch(`/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),  
+  () => $fetch(`${fetchBase}/api/products/${slug}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
   {
     server: true,
     lazy: false,
