@@ -1,4 +1,3 @@
-// scripts/fix-vercel-output-routes.cjs
 const fs = require('fs')
 const path = require('path')
 
@@ -14,11 +13,14 @@ config.version = 3
 
 config.routes = [
   {
+    handle: 'filesystem'
+  },
+  {
     src: '/(.*)',
-    dest: '/__fallback.func'
+    dest: '/__fallback'
   }
 ]
 
 fs.writeFileSync(configPath, JSON.stringify(config, null, 2))
 
-console.log('Vercel output routes fixed: all requests -> /__fallback.func')
+console.log('Vercel output routes fixed: filesystem first, fallback -> /__fallback')
