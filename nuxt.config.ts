@@ -6,7 +6,7 @@ export default defineNuxtConfig({
   ssr: true,
 
   experimental: {
-    asyncContext: true,
+    asyncContext: false,
   },
 
   sourcemap: {
