@@ -497,6 +497,7 @@ const safeProduct = computed(() => {
     id: p.id,
     name: p.nome || p.name || '',
     slug: p.slug || '',
+    slugEn: p.slugEn || '',
     description: p.descricao || p.description || '',
     price: Number(p.preco ?? p.price ?? 0),
     oldPrice: Number(p.precoAntigo ?? p.oldPrice ?? 0) || null,
