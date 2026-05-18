@@ -12,7 +12,7 @@
       </div>
 
       <!-- Produto -->
-      <div v-else-if="safeProduct.nome">
+      <div v-else-if="safeProduct && safeProduct.name">
 
         <!-- ── HERO ── -->
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
@@ -21,7 +21,7 @@
           <div class="relative rounded-2xl overflow-hidden bg-[#021326] border border-cyan-500/20 flex items-center justify-center p-6 min-h-[320px] lg:min-h-[480px]">
             <img
               :src="safeImage"
-              :alt="safeProduct.nome"
+              :alt="safeProduct.name"
               fetchpriority="high"
               loading="eager"
               decoding="async"
@@ -50,8 +50,8 @@
             </h1>
 
             <!-- Desc curta -->
-            <p v-if="safeProduct.descricaoCurta" class="text-sm text-slate-400 leading-relaxed">
-              {{ safeProduct.descricaoCurta }}
+            <p v-if="safeProduct.description" class="text-sm text-slate-400 leading-relaxed">
+              {{ safeProduct.description }}
             </p>
 
             <!-- Preço -->
@@ -177,14 +177,14 @@
 
         <!-- ── TUTORIAL ── -->
         <div
-          v-if="safeProduct.tutorialTitulo"
+          v-if="safeProduct.tutorialTitle"
           class="mt-10 bg-[#021326] border border-blue-500/30 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div class="flex items-center gap-5">
             <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">📘</div>
             <div>
               <h3 class="text-lg font-bold text-white">{{ t.tutorialCardTitle }}</h3>
-              <p class="text-slate-400 text-sm mt-1">{{ safeProduct.tutorialSubtitulo }}</p>
+              <p class="text-slate-400 text-sm mt-1">{{ safeProduct.tutorialSubtitle }}</p>
               <p v-if="tutorialAccessChecked && !tutorialAccess?.allowed" class="text-amber-400 text-xs mt-2">
                 🔒 {{ t.tutorialLoginRequired }}
               </p>
@@ -445,7 +445,7 @@ const pageH1 = computed(() => {
     if (effectiveLang.value === 'es') return 'Licencia original de Office 365 para PC y Mac – Entrega inmediata'
     return 'Licença Office 365 Original para PC e Mac – Entrega Instantânea'
   }
-  return String((safeProduct as any)?.value?.nome || '')
+  return String((safeProduct as any)?.value?.name || '')
 })
 const baseUrl = useSiteUrl()
 
@@ -490,45 +490,30 @@ const safeProduct = computed(() => {
   const p = product.value
 
   if (!p) {
-    return {
-      nome: '',
-      descricao: '',
-      descricaoCurta: '',
-      preco: 0,
-      imagem: '/products/placeholder.png'
-    }
+    return null
   }
 
-  const nomeRaw = (p as any).nome ?? ''
-  const nameRaw = (p as any).name ?? ''
-  // Always fall back to available name fields, regardless of lang
-  const nome = nomeRaw || nameRaw
-  const descricaoBase = (p as any).descricao ?? (p as any).description ?? ''
-  const preco = Number((p as any).preco ?? (p as any).price ?? 0)
-  const slugValue = (p as any).slug ?? ''
-
-  const descricaoCurtaFromDb =
-    (p as any).descricaoCurta ?? (p as any).shortDescription ?? (p as any).descricao_resumo ?? (p as any).resumo ?? ''
-
-  const descricaoCurtaBase = String(descricaoCurtaFromDb || descricaoBase || '')
-    .replace(/\s+/g, ' ')
-    .trim()
-
-  const descricaoCurta = descricaoCurtaBase.length > 220 ? `${descricaoCurtaBase.slice(0, 220)}...` : descricaoCurtaBase
-  const descricaoLonga = String(descricaoBase || descricaoCurta || '').trim()
-
+  // Normalize both Portuguese and English field formats
   return {
-    ...p,
-    nome,
-    preco,
-    imagem: (p as any).image || (p as any).imagem || '/products/placeholder.svg',
-    slug: slugValue,
-    currency: (p as any).currency || null,
-    precoAntigo: Number((p as any).precoAntigo ?? (p as any).old_price ?? 0) || null,
-    tutorialTitulo: (p as any).tutorialTitle || (p as any).tutorialTitulo || null,
-    tutorialSubtitulo: (p as any).tutorialSubtitle || (p as any).tutorialSubtitulo || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
-    descricaoCurta,
-    descricao: descricaoLonga
+    id: p.id,
+    name: (p as any).name || (p as any).nome || '',
+    slug: (p as any).slug || '',
+    description: (p as any).description || (p as any).descricao || '',
+    price: Number((p as any).price ?? (p as any).preco ?? 0),
+    oldPrice: Number((p as any).old_price ?? (p as any).oldPrice ?? (p as any).precoAntigo ?? 0) || null,
+    currency: (p as any).currency || 'BRL',
+    image: (p as any).image || (p as any).imagem || '/products/placeholder.svg',
+    cardItems: (p as any).cardItems || null,
+    tutorialTitle: (p as any).tutorialTitle || (p as any).tutorialTitulo || null,
+    tutorialSubtitle: (p as any).tutorialSubtitle || (p as any).tutorialSubtitulo || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
+    tutorialContent: (p as any).tutorialContent || (p as any).tutorialConteudo || null,
+    seoTitle: (p as any).seoTitle || null,
+    seoDescription: (p as any).seoDescription || null,
+    seoContent: (p as any).seoContent || null,
+    createdAt: (p as any).createdAt || (p as any).criadoEm || null,
+    finalUrl: (p as any).finalUrl || null,
+    // Keep original fields for backward compatibility
+    ...p
   }
 })
 
@@ -537,7 +522,7 @@ const tutorialAccessChecked = ref(false)
 
 if (import.meta.client) {
   onMounted(async () => {
-    if (!safeProduct.value?.tutorialTitulo) return
+    if (!safeProduct.value?.tutorialTitle) return
     try {
       const res = await $fetch<{ ok: boolean; allowed: boolean; reason: string | null }>(
         `/api/customer/tutorial-access/${slug.value}`
@@ -581,8 +566,8 @@ watch(
       trackViewItem(p)
       ecomViewItem({
         item_id: (p as any).id,
-        item_name: String((p as any).nome || (p as any).name || ''),
-        price: Number((p as any).preco ?? (p as any).price ?? 0),
+        item_name: String((p as any).name || (p as any).name || ''),
+        price: Number((p as any).price ?? (p as any).price ?? 0),
         item_category: primaryCategoryLabel.value || 'Software'
       }, 'BRL')
     } catch {
@@ -593,7 +578,7 @@ watch(
 )
 
 const safeImage = computed(() => {
-  const image = String((safeProduct.value as any)?.imagem || '')
+  const image = String((safeProduct.value as any)?.image || '')
   if (!image) return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
@@ -651,7 +636,7 @@ const seoTitle = computed(() => {
       return `Office 365 Original – Licença Oficial com Entrega Imediata`
     }
   }
-  const name = String((safeProduct.value as any)?.nome || '').trim()
+  const name = String((safeProduct.value as any)?.name || '').trim()
   if (name) {
     // For casadosoftware.com.br, always use Portuguese
     if (isCasaDoSoftware.value) {
@@ -726,7 +711,7 @@ const seoDescription = computed(() => {
     return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
   }
 
-  const rawShort = String((safeProduct.value as any)?.descricaoCurta || '').trim()
+  const rawShort = String((safeProduct.value as any)?.description || '').trim()
   const rawLong = String((safeProduct.value as any)?.descricao || '').trim()
 
   const raw = rawShort || rawLong
@@ -749,7 +734,7 @@ useHead(() => {
   ]
 
   const p = safeProduct.value as any
-  const hasProduct = !pending.value && !error.value && String(p?.nome || '').trim()
+  const hasProduct = !pending.value && !error.value && String(p?.name || '').trim()
 
   if (!hasProduct) {
     return {
@@ -759,13 +744,13 @@ useHead(() => {
     }
   }
 
-  const price = Number(p?.preco || 0)
+  const price = Number(p?.price || 0)
   const priceCurrency = String(p?.currency || intl.currency.value || 'BRL').trim().toUpperCase()
 
   const productJsonLd: any = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: String(p?.nome || '').trim() || undefined,
+    name: String(p?.name || '').trim() || undefined,
     description: String(description || '').trim() || undefined,
     image: absoluteImageUrl.value ? [absoluteImageUrl.value] : undefined,
     sku: String(p?.id || '').trim() || undefined,
@@ -789,7 +774,7 @@ useHead(() => {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: siteName || 'Casa do Software', item: homeUrl },
-      { '@type': 'ListItem', position: 2, name: String(p?.nome || '').trim() || 'Produto', item: selfCanonical || '' }
+      { '@type': 'ListItem', position: 2, name: String(p?.name || '').trim() || 'Produto', item: selfCanonical || '' }
     ]
   }
 
@@ -966,16 +951,16 @@ const isBrl = computed(() => effectiveCurrencyLower.value === 'brl')
 const formattedPrice = computed(() => {
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
-  return Number(safeProduct.value.preco || 0).toLocaleString(locale, {
+  return Number(safeProduct.value.price || 0).toLocaleString(locale, {
     style: 'currency',
     currency
   })
 })
 
 const formattedOldPrice = computed(() => {
-  const oldPrice = (safeProduct.value as any).precoAntigo
+  const oldPrice = (safeProduct.value as any).oldPrice
   if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
-  if (Number(oldPrice) <= Number(safeProduct.value.preco || 0)) return null
+  if (Number(oldPrice) <= Number(safeProduct.value.price || 0)) return null
 
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
@@ -986,8 +971,8 @@ const formattedOldPrice = computed(() => {
 })
 
 const discountPercent = computed(() => {
-  const oldPrice = (safeProduct.value as any).precoAntigo
-  const current = Number(safeProduct.value.preco || 0)
+  const oldPrice = (safeProduct.value as any).oldPrice
+  const current = Number(safeProduct.value.price || 0)
   if (!oldPrice || !current) return null
   const oldN = Number(oldPrice)
   if (!oldN || oldN <= current) return null
@@ -996,7 +981,7 @@ const discountPercent = computed(() => {
 
 const formattedPixPrice = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.value.preco || 0)
+  const price = Number(safeProduct.value.price || 0)
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
   if (pixPrice === price) return null
@@ -1008,7 +993,7 @@ const formattedPixPrice = computed(() => {
 
 const installments12 = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.value.preco || 0)
+  const price = Number(safeProduct.value.price || 0)
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   return value.toLocaleString('pt-BR', {
@@ -1212,11 +1197,11 @@ const includedItems = computed(() => {
 })
 
 const isMicrosoft365 = computed(() => {
-  const nome = String((safeProduct.value as any)?.nome || '').toLowerCase()
+  const name = String((safeProduct.value as any)?.name || '').toLowerCase()
   const slugValue = String((safeProduct.value as any)?.slug || '').toLowerCase()
   return (
-    nome.includes('microsoft 365') ||
-    nome.includes('office 365') ||
+    name.includes('microsoft 365') ||
+    name.includes('office 365') ||
     slugValue.includes('microsoft-365') ||
     slugValue.includes('office-365') ||
     slugValue.includes('365')
@@ -1483,8 +1468,8 @@ function buyNow() {
   try {
     ecomAddToCart({
       item_id: p?.id || '',
-      item_name: String(p?.nome || p?.name || ''),
-      price: Number(p?.preco ?? p?.price ?? 0),
+      item_name: String(p?.name || p?.name || ''),
+      price: Number(p?.price ?? p?.price ?? 0),
       item_category: primaryCategoryLabel.value || 'Software'
     }, 'BRL')
   } catch {
