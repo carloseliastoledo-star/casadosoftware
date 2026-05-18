@@ -471,9 +471,18 @@ const canonicalUrl = computed(() => {
 
 const asyncProductKey = computed(() => `product-${String(slug || '')}-${String(lang.value || 'pt')}`)
 
-const fetchBase = import.meta.server
-  ? (useRequestURL().origin || process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000')
-  : ''
+const fetchBase = (() => {
+  if (!import.meta.server) return ''
+  try {
+    const event = useRequestEvent()
+    const fwdHost = event?.node?.req?.headers?.['x-forwarded-host']
+    const fwdProto = event?.node?.req?.headers?.['x-forwarded-proto'] || 'https'
+    if (fwdHost) return `${fwdProto}://${String(fwdHost).split(',')[0].trim()}`
+  } catch { /* ignore */ }
+  const siteUrl = (useRuntimeConfig().public as any)?.siteUrl || process.env.NUXT_PUBLIC_SITE_URL
+  if (siteUrl) return String(siteUrl).replace(/\/$/, '')
+  return 'http://localhost:3000'
+})()
 
 const { data: product, pending, error } = await useAsyncData(
   asyncProductKey.value,
@@ -486,7 +495,7 @@ const { data: product, pending, error } = await useAsyncData(
   }
 )
 
-if (process.server) {
+if (import.meta.server) {
   const statusCode = Number(
     (error.value as any)?.statusCode ||
     (error.value as any)?.status ||
