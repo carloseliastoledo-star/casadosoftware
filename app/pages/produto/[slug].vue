@@ -482,24 +482,8 @@ const { data: product, pending, error } = await useAsyncData(
   }
 )
 
-if (import.meta.server) {
-  const statusCode = Number(
-    (error.value as any)?.statusCode ||
-    (error.value as any)?.status ||
-    (error.value as any)?.data?.statusCode ||
-    (error.value as any)?.response?.status ||
-    0
-  )
-  const statusMessage =
-    (error.value as any)?.statusMessage ||
-    (error.value as any)?.data?.statusMessage ||
-    'Erro no servidor'
-  if (statusCode && statusCode !== 404) {
-    throw createError({ statusCode, statusMessage })
-  }
-  if (!product.value) {
-    throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
-  }
+if (import.meta.server && product.value === null && !error.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
 }
 
 const safeProduct = computed(() => {
