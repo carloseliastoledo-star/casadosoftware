@@ -291,24 +291,24 @@ export default defineEventHandler(async (event) => {
 
   return {
     id: product.id,
-    name: translatedName,
+    nome: translatedName,
     slug: product.slug,
     finalUrl: normalizeFinalUrl(product.finalUrl),
-    description: translatedDescription,
-    price: effectivePrice,
+    descricao: translatedDescription,
+    preco: effectivePrice,
     precoAntigo: effectiveOldPrice ?? null,
     currency: effective.currency,
-    image: normalizeImageUrl(product.imagem),
+    imagem: normalizeImageUrl(product.imagem),
     cardItems: translatedCardItems,
     categories: [],
-    tutorialTitle: translatedTutorialTitle,
-    tutorialSubtitle: translatedTutorialSubtitle,
-    tutorialContent: translatedTutorialContent,
+    tutorialTitulo: translatedTutorialTitle,
+    tutorialSubtitulo: translatedTutorialSubtitle,
+    tutorialConteudo: translatedTutorialContent,
     tutorialAccessDenied: tutorialAccessDenied ?? false,
     seoTitle: fixCp850((product as any).seoTitle) || null,
     seoDescription: fixCp850((product as any).seoDescription) || null,
     seoContent: fixCp850((product as any).seoContent) || null,
-    createdAt: product.criadoEm
+    criadoEm: product.criadoEm
   }
   } catch (err: any) {
     if (err?.statusCode === 404) throw err
