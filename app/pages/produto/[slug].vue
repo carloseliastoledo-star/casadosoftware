@@ -12,7 +12,7 @@
       </div>
 
       <!-- Produto -->
-      <div v-else-if="safeProduct">
+      <div v-else-if="safeProduct?.id">
 
         <!-- ── HERO ── -->
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
