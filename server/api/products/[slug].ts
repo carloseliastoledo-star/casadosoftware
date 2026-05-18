@@ -140,8 +140,8 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    // Guard: if storeSlug defined, product must belong to this store
-    if (product && storeSlug && !(product.ProdutoPrecoLoja?.length)) {
+    // Guard: only enforce store isolation for 'international'
+    if (product && storeSlug === 'international' && !(product.ProdutoPrecoLoja?.length)) {
       product = null
     }
   } catch (dbError: any) {
