@@ -17,15 +17,15 @@ export default defineEventHandler(async (event) => {
   try {
     // Query simples primeiro
     console.log('[api/blog/slug] Buscando post...')
-    const { storeSlug: _storeSlug } = getStoreContext(event)
-    const storeSlug = _storeSlug || String(process.env.STORE_SLUG || '').trim().toLowerCase() || 'casadosoftware'
+    const { storeSlug } = getStoreContext(event)
     const isIntl = storeSlug === 'international'
+    const effectiveStoreSlug = isIntl ? 'casadosoftware' : storeSlug
 
     const post = await (prisma as any).blogPost.findFirst({
       where: {
         slug,
         publicado: true,
-        storeSlug: isIntl ? 'casadosoftware' : storeSlug
+        ...(effectiveStoreSlug ? { storeSlug: effectiveStoreSlug } : {})
       },
       select: {
         id: true,
