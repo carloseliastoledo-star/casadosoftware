@@ -55,26 +55,21 @@
             </p>
 
             <!-- Preço -->
-            <ClientOnly>
-              <div class="flex flex-col gap-1">
-                <div v-if="formattedOldPrice" class="flex items-center gap-3">
-                  <span class="text-slate-500 line-through text-lg">{{ formattedOldPrice }}</span>
-                  <span v-if="discountPercent" class="text-xs font-black text-red-400 bg-red-400/10 rounded-full px-2 py-0.5">-{{ discountPercent }}%</span>
-                </div>
-                <div class="text-5xl font-black text-[#00e676] drop-shadow-[0_0_20px_rgba(0,230,118,0.5)] leading-none">
-                  {{ formattedPrice }}
-                </div>
-                <div v-if="installments12" class="text-sm text-slate-400 mt-1">
-                  {{ t.installmentsPrefix }} {{ installments12 }} sem juros
-                </div>
-                <div v-if="isBrl && formattedPixPrice" class="text-sm font-semibold text-cyan-400 mt-0.5">
-                  💰 PIX à vista: <span class="text-white">{{ formattedPixPrice }}</span>
-                </div>
+            <div class="flex flex-col gap-1">
+              <div v-if="formattedOldPrice" class="flex items-center gap-3">
+                <span class="text-slate-500 line-through text-lg">{{ formattedOldPrice }}</span>
+                <span v-if="discountPercent" class="text-xs font-black text-red-400 bg-red-400/10 rounded-full px-2 py-0.5">-{{ discountPercent }}%</span>
               </div>
-              <template #fallback>
-                <div class="text-5xl font-black text-[#00e676] animate-pulse">&nbsp;</div>
-              </template>
-            </ClientOnly>
+              <div class="text-5xl font-black text-[#00e676] drop-shadow-[0_0_20px_rgba(0,230,118,0.5)] leading-none">
+                {{ formattedPrice }}
+              </div>
+              <div v-if="installments12" class="text-sm text-slate-400 mt-1">
+                {{ t.installmentsPrefix }} {{ installments12 }} sem juros
+              </div>
+              <div v-if="isBrl && formattedPixPrice" class="text-sm font-semibold text-cyan-400 mt-0.5">
+                💰 PIX à vista: <span class="text-white">{{ formattedPixPrice }}</span>
+              </div>
+            </div>
 
             <!-- CTA principal -->
             <button
