@@ -61,6 +61,8 @@ export default defineEventHandler(async (event) => {
   const rawSlug = event.context.params?.slug
 
   const { storeSlug } = getStoreContext(event)
+  const effectiveStoreSlug = storeSlug || 'casadosoftware'
+
   console.log('[API products/slug] storeSlug:', storeSlug, 'rawSlug:', event.context.params?.slug, 'host:', event.node?.req?.headers?.['x-forwarded-host'] || event.node?.req?.headers?.host)
 
   const intl = getIntlContext(event)
@@ -89,10 +91,8 @@ export default defineEventHandler(async (event) => {
 
   let product: any
   try {
-    // Use composite key slug_storeSlug when storeSlug is defined
-    const whereClause = storeSlug
-      ? { slug_storeSlug: { slug, storeSlug } }
-      : { slug }
+    // Use composite key slug_storeSlug always
+    const whereClause = { slug_storeSlug: { slug, storeSlug: effectiveStoreSlug } }
 
     product = await (prisma as any).produto.findUnique({
       where: whereClause,

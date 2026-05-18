@@ -61,6 +61,8 @@ export default defineEventHandler(async (event) => {
   const rawSlug = event.context.params?.slug
 
   const { storeSlug } = getStoreContext(event)
+  // For default stores like casadosoftware, getStoreContext returns null, but we need explicit storeSlug for composite key
+  const effectiveStoreSlug = storeSlug || 'casadosoftware'
 
   const intl = getIntlContext(event)
 
@@ -116,9 +118,7 @@ export default defineEventHandler(async (event) => {
     // Use composite key slug_storeSlug when searching by slug, slugEn when searching by slugEn
     const whereClause = searchBy === 'slugEn'
       ? { slugEn: slug }
-      : storeSlug
-        ? { slug_storeSlug: { slug, storeSlug } }
-        : { slug }
+      : { slug_storeSlug: { slug, storeSlug: effectiveStoreSlug } }
 
     product = await (prisma as any).produto.findUnique({
       where: whereClause,
