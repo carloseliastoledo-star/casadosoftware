@@ -254,10 +254,10 @@ if (process.server) {
     0
   )
   if (statusCode && statusCode !== 404) {
-    throw createError({ statusCode, statusMessage: (error.value as any)?.statusMessage || 'Erro no servidor', fatal: true })
+    throw createError({ statusCode, statusMessage: (error.value as any)?.statusMessage || 'Erro no servidor' })
   }
   if (!post.value) {
-    throw createError({ statusCode: 404, statusMessage: 'Post não encontrado', fatal: true })
+    throw createError({ statusCode: 404, statusMessage: 'Post não encontrado' })
   }
 }
 

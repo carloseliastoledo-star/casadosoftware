@@ -269,6 +269,7 @@
 </template>
 
 <script setup lang="ts">
+if (import.meta.server) console.log('[PRODUTO SETUP] start')
 import { useIntlContext } from '~/composables/useIntlContext'
 import { trackViewItem } from '~/composables/useTracking'
 import { useEcommerceTracking } from '~/composables/useEcommerceTracking'
