@@ -74,6 +74,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
+    '/produto/**': { ssr: true },
+    '/product/**': { ssr: true },
     '/api/products': {
       headers: {
         'cache-control': 's-maxage=60, stale-while-revalidate=300'
@@ -97,7 +99,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: process.env.NITRO_PRESET || 'node-server',
+    preset: process.env.NITRO_PRESET || 'vercel',
     publicAssets: [
       {
         baseURL: '/',
