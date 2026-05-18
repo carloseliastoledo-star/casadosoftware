@@ -1,5 +1,6 @@
 import { defineEventHandler, createError, readMultipartFormData } from 'h3'
 import prisma from '#root/server/db/prisma'
+import { randomUUID } from 'crypto'
 
 function parseCSV(content: string): string[][] {
   const lines: string[][] = []
@@ -191,7 +192,10 @@ export default defineEventHandler(async (event) => {
         } else {
           // Criar
           const created = await (prisma as any).produto.create({
-            data
+            data: {
+              id: randomUUID(),
+              ...data
+            }
           })
           produtoId = created.id
           result.created++
@@ -222,6 +226,7 @@ export default defineEventHandler(async (event) => {
             if (!categoria) {
               categoria = await (prisma as any).categoria.create({
                 data: {
+                  id: randomUUID(),
                   nome: catNome,
                   slug: catSlug,
                   ativo: true
