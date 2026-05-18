@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
   const startedAt = Date.now()
   setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
   try {
-    const { storeSlug } = getStoreContext()
+    const { storeSlug } = getStoreContext(event)
 
     const intl = getIntlContext(event)
 
@@ -87,10 +87,7 @@ export default defineEventHandler(async (event) => {
         precoAntigo: true,
         imagem: true,
         cardItems: true,
-        precosLoja: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { preco: true, precoAntigo: true }
-        },
+        ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { preco: true, precoAntigo: true } } : { select: { preco: true, precoAntigo: true }, take: 1 },
         precosMoeda: {
           where: { storeSlug: storeSlug || undefined },
           select: { currency: true, amount: true, oldAmount: true }
@@ -114,7 +111,7 @@ export default defineEventHandler(async (event) => {
     })
 
     return products.map((p: any) => {
-      const override = (p as any).precosLoja?.[0] || null
+      const override = (p as any).ProdutoPrecoLoja?.[0] || null
 
       const effective = resolveEffectivePrice({
         requestedCurrency: intl.currency,

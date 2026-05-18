@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
 
   const rawSlug = event.context.params?.slug
 
-  const { storeSlug } = getStoreContext()
+  const { storeSlug } = getStoreContext(event)
 
   const intl = getIntlContext(event)
   const query = getQuery(event)
@@ -128,15 +128,11 @@ export default defineEventHandler(async (event) => {
         tutorialConteudoIt: true,
         tutorialConteudoFr: true,
         criadoEm: true,
-        precosLoja: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { preco: true, precoAntigo: true }
-        },
+        ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { preco: true, precoAntigo: true } } : { select: { preco: true, precoAntigo: true }, take: 1 },
         precosMoeda: {
           where: { storeSlug: storeSlug || undefined },
           select: { currency: true, amount: true, oldAmount: true }
         },
-        ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { storeSlug: true }, take: 1 } : undefined
       }
     })
 
@@ -181,7 +177,7 @@ export default defineEventHandler(async (event) => {
     ? rawDescription
     : getDefaultProductDescription({ nome: product.nome, slug: product.slug })
 
-  const override = (product as any).precosLoja?.[0] || null
+  const override = (product as any).ProdutoPrecoLoja?.[0] || null
 
   const effective = resolveEffectivePrice({
     requestedCurrency: intl.currency,
