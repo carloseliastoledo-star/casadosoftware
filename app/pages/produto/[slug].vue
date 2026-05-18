@@ -269,7 +269,7 @@
 </template>
 
 <script setup lang="ts">
-import { useIntlContext } from '#imports'
+import { useIntlContext } from '~/composables/useIntlContext'
 import { trackViewItem } from '~/composables/useTracking'
 import { useEcommerceTracking } from '~/composables/useEcommerceTracking'
 
