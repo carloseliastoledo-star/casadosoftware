@@ -1,27 +1,20 @@
-import { defineEventHandler, type H3Event } from 'h3'
+import { defineEventHandler, setResponseHeader, type H3Event } from 'h3'
 
 export default defineEventHandler((event: H3Event) => {
   const path = event.node.req.url || ''
   if (path.startsWith('/produto/')) {
-    console.log('[DEBUG-204] Incoming request:', path)
-    let _statusCode = event.node.res.statusCode
-    try {
-      Object.defineProperty(event.node.res, 'statusCode', {
-        get() { return _statusCode },
-        set(val: number) {
-          if (val === 204) {
-            console.log('[DEBUG-204] statusCode=204 SET for:', path, new Error().stack?.split('\n').slice(1, 8).join(' | '))
-          }
-          _statusCode = val
-        },
-        configurable: true
-      })
-    } catch (e) {
-      console.log('[DEBUG-204] defineProperty failed:', e)
-    }
+    const reqHeaders = event.node.req.headers
+    console.log('[DEBUG-204] Incoming request:', path, JSON.stringify({
+      host: reqHeaders['x-forwarded-host'] || reqHeaders['host'],
+      xVercelId: reqHeaders['x-vercel-id'],
+      xVercelCache: reqHeaders['x-vercel-cache'],
+      xRealIp: reqHeaders['x-real-ip'],
+      purpose: reqHeaders['purpose'] || reqHeaders['sec-purpose'],
+    }))
     const origEnd = event.node.res.end.bind(event.node.res)
     event.node.res.end = function (...args: any[]) {
-      console.log('[DEBUG-204] Response statusCode:', _statusCode, 'for path:', path)
+      const sc = event.node.res.statusCode
+      console.log('[DEBUG-204] Response statusCode:', sc, 'for path:', path)
       return origEnd(...args)
     }
   }
