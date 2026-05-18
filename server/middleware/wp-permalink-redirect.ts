@@ -33,9 +33,9 @@ export default defineEventHandler(async (event: H3Event) => {
   if (!requestedSlug) return
 
   try {
-    // If a product with this slug exists, do nothing
+    // If a product with this slug exists, do nothing — pass to next handler
     const direct = await prisma.produto.findUnique({ where: { slug: requestedSlug }, select: { id: true } })
-    if (direct) return
+    if (direct) return undefined
 
     // Try to find product by old WP permalink stored in finalUrl
     const like2 = `/produto/${requestedSlug}`
@@ -49,12 +49,13 @@ export default defineEventHandler(async (event: H3Event) => {
       select: { slug: true }
     })
 
-    if (!byFinalUrl?.slug) return
+    if (!byFinalUrl?.slug) return undefined
 
     const targetPath = `${localePrefix}/produto/${byFinalUrl.slug}`
     const location = query ? `${targetPath}?${query}` : targetPath
     return sendRedirect(event, location, 301)
   } catch (err: any) {
     console.error('[middleware][wp-permalink-redirect] db error', err?.message || err)
+    return undefined
   }
 })
