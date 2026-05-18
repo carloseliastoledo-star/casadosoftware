@@ -471,6 +471,10 @@ const canonicalUrl = computed(() => {
 
 const asyncProductKey = computed(() => `product-${slug.value}-${String(lang.value || 'pt')}`)
 
+if (import.meta.server) {
+  console.log('[SLUG PAGE SSR] slug:', slug.value, 'key:', asyncProductKey.value, 'lang:', lang.value)
+}
+
 const { data: product, pending, error } = await useAsyncData(
   asyncProductKey.value,
   () => $fetch(`/api/products/${slug.value}?lang=${encodeURIComponent(String(lang.value || 'pt'))}`),
