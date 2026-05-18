@@ -486,12 +486,8 @@ if (import.meta.server && product.value === null && !error.value) {
   throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
 }
 
-const rawProduct = computed(() => {
-  return product.value
-})
-
 const safeProduct = computed(() => {
-  const p = rawProduct.value
+  const p = product.value
 
   // If no product, return null
   if (!p) return null
