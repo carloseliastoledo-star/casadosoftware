@@ -367,8 +367,9 @@ model PartnerApplication {
 model Produto {
   id                          String              @id
   nome                        String
-  slug                        String              @unique
-  slugEn                      String?             @unique
+  slug                        String
+  slugEn                      String?
+  storeSlug                   String?
   descricao                   String?             @db.Text
   preco                       Float
   criadoEm                    DateTime            @default(now())
@@ -415,6 +416,8 @@ model Produto {
   ProdutoPrecoLoja            ProdutoPrecoLoja[]
   ProdutoPrecoMoeda           ProdutoPrecoMoeda[]
 
+  @@unique([slug, storeSlug])
+  @@index([storeSlug])
   @@index([vendorId], map: "Produto_vendorId_fkey")
 }
 
