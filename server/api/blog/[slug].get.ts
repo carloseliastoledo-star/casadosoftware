@@ -17,7 +17,8 @@ export default defineEventHandler(async (event) => {
   try {
     // Query simples primeiro
     console.log('[api/blog/slug] Buscando post...')
-    const { storeSlug } = getStoreContext(event)
+    const { storeSlug: _storeSlug } = getStoreContext(event)
+    const storeSlug = _storeSlug || String(process.env.STORE_SLUG || '').trim().toLowerCase() || 'casadosoftware'
     const isIntl = storeSlug === 'international'
 
     const post = await (prisma as any).blogPost.findFirst({
