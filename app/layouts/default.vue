@@ -873,7 +873,11 @@ const footerPolicyLinksParsed = computed<FooterPolicyLinkDto[]>(() => {
   }
 })
 
-const isIntlOrEn = computed(() => isInternational.value || intl.language.value === 'en')
+const isIntlOrEn = computed(() => {
+  // For casadosoftware.com.br, always use Portuguese regardless of other conditions
+  if (normalizedHost.value.includes('casadosoftware.com.br')) return false
+  return isInternational.value || intl.language.value === 'en'
+})
 
 const t = computed(() => {
   if (intl.language.value === 'fr') {

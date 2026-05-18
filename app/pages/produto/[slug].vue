@@ -575,8 +575,8 @@ watch(
 )
 
 const safeImage = computed(() => {
-  const image = String((safeProduct as any)?.image || '')
-  if (!image) return '/products/placeholder.svg'
+  const image = String(safeProduct?.image || '')
+  if (!image || image === '/products/placeholder.svg') return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
     return image.replace(/^http:\/\//, 'https://')
