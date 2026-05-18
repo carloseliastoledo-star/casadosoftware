@@ -29,7 +29,7 @@ function normalizeHost(input: string) {
 function mapHostToStoreSlug(host: string) {
   const h = normalizeHost(host)
   if (!h) return ''
-  if (h.includes('casadosoftware.com.br')) return 'casadosoftware'
+  if (h.includes('casadosoftware.com.br')) return ''
   if (h.includes('licencasdigitais.com.br')) return 'licencasdigitais'
   if (h.includes('gvgmall.co')) return 'international'
   return normalizeSlug(h)
@@ -39,15 +39,19 @@ export function getStoreContext(event?: H3Event): StoreContext {
   const storeSlugEnv = normalizeSlug(process.env.STORE_SLUG || '')
   const includeLegacy = String(process.env.STORE_INCLUDE_LEGACY || '').trim() === 'true'
 
-  if (storeSlugEnv) {
+  const DEFAULT_STORES = ['casadosoftware']
+  if (storeSlugEnv && !DEFAULT_STORES.includes(storeSlugEnv)) {
     return { storeSlug: storeSlugEnv, includeLegacy }
+  }
+  if (storeSlugEnv && DEFAULT_STORES.includes(storeSlugEnv)) {
+    return { storeSlug: null, includeLegacy }
   }
 
   const siteUrl = String(process.env.SITE_URL || '').trim()
   if (siteUrl) {
     const mappedFromUrl = mapHostToStoreSlug(siteUrl)
-    const slug = mappedFromUrl || normalizeSlug(siteUrl)
-    return { storeSlug: slug, includeLegacy }
+    if (mappedFromUrl) return { storeSlug: mappedFromUrl, includeLegacy }
+    return { storeSlug: null, includeLegacy }
   }
 
   if (event) {
