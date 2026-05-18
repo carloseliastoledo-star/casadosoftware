@@ -12,9 +12,10 @@ export default defineEventHandler(async (event) => {
     
     const { storeSlug } = getStoreContext(event)
     const isIntl = storeSlug === 'international'
+    const effectiveStoreSlug = isIntl ? 'casadosoftware' : storeSlug
 
     const posts = await (prisma as any).blogPost.findMany({
-      where: { publicado: true, storeSlug },
+      where: { publicado: true, ...(effectiveStoreSlug ? { storeSlug: effectiveStoreSlug } : {}) },
       orderBy: { criadoEm: 'desc' },
       take: 50,
       select: {
