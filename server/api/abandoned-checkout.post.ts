@@ -52,6 +52,7 @@ export default defineEventHandler(async (event) => {
 
   const created = await (prisma as any).abandonedCheckout.create({
     data: {
+      id: crypto.randomUUID(),
       email,
       phone,
       product,
