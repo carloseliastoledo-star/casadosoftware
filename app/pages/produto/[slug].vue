@@ -46,7 +46,7 @@
 
             <!-- Título -->
             <h1 class="text-2xl md:text-3xl font-extrabold text-white leading-tight">
-              {{ safeProduct.name }}
+              {{ safeProduct?.name || 'Produto digital' }}
             </h1>
 
             <!-- Desc curta -->
