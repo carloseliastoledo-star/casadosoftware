@@ -498,8 +498,8 @@ const safeProduct = computed(() => {
     name: p.nome || p.name || '',
     slug: p.slug || '',
     description: p.descricao || p.description || '',
-    price: p.preco ?? p.price ?? 0,
-    oldPrice: p.precoAntigo ?? p.oldPrice ?? null,
+    price: Number(p.preco ?? p.price ?? 0),
+    oldPrice: Number(p.precoAntigo ?? p.oldPrice ?? 0) || null,
     currency: p.currency || 'BRL',
     image: p.imagem || p.image || '/products/placeholder.svg',
     cardItems: p.cardItems || null,
@@ -575,7 +575,7 @@ watch(
 )
 
 const safeImage = computed(() => {
-  const image = String(safeProduct?.image || '')
+  const image = String(safeProduct?.image || safeProduct?.imagem || '')
   if (!image || image === '/products/placeholder.svg') return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
