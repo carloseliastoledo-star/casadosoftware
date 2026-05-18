@@ -74,8 +74,6 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/produto/**': { ssr: true },
-    '/product/**': { ssr: true },
     '/api/products': {
       headers: {
         'cache-control': 's-maxage=60, stale-while-revalidate=300'
