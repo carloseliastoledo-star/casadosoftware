@@ -61,6 +61,7 @@ export default defineEventHandler(async (event) => {
   const rawSlug = event.context.params?.slug
 
   const { storeSlug } = getStoreContext(event)
+  console.log('[API products/slug] storeSlug:', storeSlug, 'rawSlug:', event.context.params?.slug, 'host:', event.node?.req?.headers?.['x-forwarded-host'] || event.node?.req?.headers?.host)
 
   const intl = getIntlContext(event)
   const query = getQuery(event)
@@ -136,6 +137,7 @@ export default defineEventHandler(async (event) => {
       }
     })
 
+    console.log('[API products/slug] product found:', !!product, 'ativo:', product?.ativo, 'slug:', product?.slug)
     // Guard: only enforce store isolation for 'international'
     if (product && storeSlug === 'international' && !(product.ProdutoPrecoLoja?.length)) {
       product = null
