@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     const isIntl = storeSlug === 'international'
 
     const posts = await (prisma as any).blogPost.findMany({
-      where: { publicado: true, storeSlug: isIntl ? 'casadosoftware' : storeSlug },
+      where: { publicado: true, storeSlug },
       orderBy: { criadoEm: 'desc' },
       take: 50,
       select: {
