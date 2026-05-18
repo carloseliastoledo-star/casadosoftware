@@ -147,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import { useIntlContext } from '#imports'
+import { useIntlContext } from '~/composables/useIntlContext'
 
 const intl = useIntlContext()
 
