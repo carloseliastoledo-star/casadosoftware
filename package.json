@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "prisma generate && prisma migrate deploy && nuxt build",
-    "vercel-build": "prisma generate && prisma migrate deploy && nuxt build --no-fork",
+    "vercel-build": "prisma generate && prisma migrate deploy && node -e \"require('fs').rmSync('.nuxt',{recursive:true,force:true})\" && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",
