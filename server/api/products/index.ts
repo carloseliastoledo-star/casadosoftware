@@ -4,7 +4,7 @@ import { getStoreContext } from '#root/server/utils/store'
 export default defineEventHandler(async (event) => {
   const { storeSlug } = getStoreContext(event)
 
-  const storeFilter = storeSlug
+  const storeFilter = storeSlug === 'international'
     ? { ProdutoPrecoLoja: { some: { storeSlug } } }
     : {}
 

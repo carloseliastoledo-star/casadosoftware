@@ -157,8 +157,9 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    // Guard: if storeSlug defined, product must belong to this store
-    if (product && storeSlug && !(product.ProdutoPrecoLoja?.length)) {
+    // Guard: only enforce store isolation for 'international' — other stores
+    // may have products without ProdutoPrecoLoja entries (pre-multistore data)
+    if (product && storeSlug === 'international' && !(product.ProdutoPrecoLoja?.length)) {
       product = null
     }
     console.log('[api/products/[slug]] Produto encontrado:', product ? 'SIM' : 'NÃO')
