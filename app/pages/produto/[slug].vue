@@ -452,14 +452,19 @@ const baseUrl = useSiteUrl()
 const canonicalUrl = computed(() => {
   const s = String(slug.value || '').trim()
   if (!s) return baseUrl ? `${baseUrl}/` : ''
-  
+
   // On international domains, use slugEn for canonical URL if available
   if (isIntlDomain.value) {
     const slugEn = String((safeProduct.value as any)?.slugEn || '').trim()
     const slugToUse = slugEn || s
     return baseUrl ? `${baseUrl}/product/${slugToUse}` : ''
   }
-  
+
+  // For casadosoftware.com.br, always use /produto/
+  if (isCasaDoSoftware.value) {
+    return baseUrl ? `${baseUrl}/produto/${s}` : ''
+  }
+
   const segment = lang.value === 'en' ? 'product' : 'produto'
   return baseUrl ? `${baseUrl}/${segment}/${s}` : ''
 })
@@ -496,7 +501,8 @@ const safeProduct = computed(() => {
 
   const nomeRaw = (p as any).nome ?? ''
   const nameRaw = (p as any).name ?? ''
-  const nome = effectiveLang.value === 'pt' ? nomeRaw || nameRaw : nameRaw || nomeRaw
+  // Always fall back to available name fields, regardless of lang
+  const nome = nomeRaw || nameRaw
   const descricaoBase = (p as any).descricao ?? (p as any).description ?? ''
   const preco = Number((p as any).preco ?? (p as any).price ?? 0)
   const slugValue = (p as any).slug ?? ''
@@ -644,17 +650,13 @@ const seoTitle = computed(() => {
       if (lang === 'it') return `Acquista Licenza Microsoft Office 365 – Consegna Immediata | ${base}`
       return `Office 365 Original – Licença Oficial com Entrega Imediata`
     }
-    if (slugValue.includes('office') && slugValue.includes('2021')) {
-      if (lang === 'en') return `Microsoft Office 2021 Original – Lifetime Activation Key | ${base}`
-      if (lang === 'es') return `Microsoft Office 2021 Original – Clave de Activación Vitalicia | ${base}`
-      if (lang === 'fr') return `Microsoft Office 2021 Original – Clé d'Activation à Vie | ${base}`
-      if (lang === 'it') return `Microsoft Office 2021 Originale – Chiave Attivazione a Vita | ${base}`
-      return `Office 2021 Original – Chave de Ativação Vitalícia | ${base}`
-    }
   }
-
   const name = String((safeProduct.value as any)?.nome || '').trim()
   if (name) {
+    // For casadosoftware.com.br, always use Portuguese
+    if (isCasaDoSoftware.value) {
+      return `${name} | Licença Digital + Acesso Imediato | ${base}`
+    }
     if (lang === 'en') return `Buy ${name} – Instant Digital Delivery | ${base}`
     if (lang === 'es') return `Comprar ${name} – Entrega Digital Inmediata | ${base}`
     if (lang === 'fr') return `Acheter ${name} – Livraison Numérique Instantanée | ${base}`
@@ -672,41 +674,56 @@ const seoDescription = computed(() => {
   const lang = effectiveLang.value
 
   if (isCasaDoSoftware.value) {
+    // For casadosoftware.com.br, always use Portuguese
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
-      if (lang === 'en') return 'Buy Windows 11 Pro original license with lifetime key and instant delivery. Install and activate in minutes with full support. Secure payment!'
-      if (lang === 'es') return '¡Compra tu licencia original de Windows 11 Pro con clave vitalicia y entrega inmediata. Instala y activa en minutos con soporte completo!'
-      if (lang === 'fr') return 'Achetez votre licence Windows 11 Pro originale avec clé à vie et livraison instantanée. Installation simple avec assistance complète!'
-      if (lang === 'it') return 'Acquista la licenza originale di Windows 11 Pro con chiave a vita e consegna immediata. Attiva in pochi minuti con supporto completo!'
       return 'Windows 11 Pro original com chave vitalícia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
     }
     if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
-      if (lang === 'en') return 'Buy Windows 10 Pro original with instant activation and lifetime guarantee. Digital license for PC or laptop. Support included!'
-      if (lang === 'es') return 'Compra Windows 10 Pro original con activación instantánea y garantía vitalicia. Licencia digital para PC o portátil. ¡Soporte incluido!'
-      if (lang === 'fr') return 'Achetez Windows 10 Pro original avec activation instantanée et garantie à vie. Licence numérique pour PC ou ordinateur portable. Support inclus!'
-      if (lang === 'it') return 'Acquista Windows 10 Pro originale con attivazione immediata e garanzia a vita. Licenza digitale per PC o laptop. Supporto incluso!'
-      return 'Compre Windows 10 Pro original com ativação instantânea e garantia. Licença vitalícia para PC ou notebook. Suporte incluso!'
+      return 'Windows 10 Pro Original – Licença Digital Vitalícia. Ativação imediata, instalação simples e suporte completo. Entrega por e-mail!'
     }
     if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
       if (isOffice365FiveLicenses.value) {
-        if (lang === 'en') return 'Buy original Microsoft 365 license for up to 5 devices. Fast activation, official account, 1TB OneDrive storage. Instant delivery by email!'
-        if (lang === 'es') return 'Compra tu licencia Microsoft 365 original para hasta 5 dispositivos. Activación rápida, cuenta oficial y 1TB de almacenamiento. ¡Entrega inmediata!'
-        if (lang === 'fr') return 'Achetez votre licence Microsoft 365 originale pour jusqu\'à 5 appareils. Activation rapide, compte officiel, 1To OneDrive. Livraison instantanée!'
-        if (lang === 'it') return 'Acquista la tua licenza Microsoft 365 originale per fino a 5 dispositivi. Attivazione rapida, account ufficiale, 1TB OneDrive. Consegna immediata!'
-        return 'Comprar licença do pacote Office permanente nunca foi tão fácil. Original, ativação rápida, conta oficial, suporte completo e envio imediato por email.'
+        return 'Licença Microsoft 365 Original PC e Mac – Entrega imediata. Ative em até 5 dispositivos, 1TB OneDrive, conta oficial e suporte completo.'
       }
-      if (lang === 'en') return 'Original Microsoft Office 365 for PC and Mac. Fast activation, official account and full support. Get it now by email!'
-      if (lang === 'es') return 'Microsoft Office 365 original para PC y Mac. Activación rápida, cuenta oficial y soporte completo. ¡Recíbelo ahora por email!'
-      if (lang === 'fr') return 'Microsoft Office 365 original pour PC et Mac. Activation rapide, compte officiel et support complet. Recevez-le maintenant par email!'
-      if (lang === 'it') return 'Microsoft Office 365 originale per PC e Mac. Attivazione rapida, account ufficiale e supporto completo. Ricevilo ora per email!'
-      return 'Microsoft Office 365 original para PC e Mac. Ativação rápida, conta oficial e suporte completo. Receba agora por e-mail!'
+      return 'Office 365 Original – Licença Oficial com Entrega Imediata. Ative em minutos, conta oficial e suporte completo. Entrega por e-mail!'
     }
-    if (slugValue.includes('office') && slugValue.includes('2021')) {
-      if (lang === 'en') return 'Buy Microsoft Office 2021 original with permanent key and simple installation. Instant delivery and secure payment. Activate in minutes!'
-      if (lang === 'es') return '¡Compra Microsoft Office 2021 original con clave permanente e instalación simple. Entrega inmediata y pago seguro. Actívalo en minutos!'
-      if (lang === 'fr') return 'Achetez Microsoft Office 2021 original avec clé permanente et installation simple. Livraison instantanée et paiement sécurisé. Activez en minutes!'
-      if (lang === 'it') return 'Acquista Microsoft Office 2021 originale con chiave permanente e installazione semplice. Consegna immediata e pagamento sicuro. Attiva in minuti!'
-      return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
+  }
+
+  // For international domains or other stores
+  if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
+    if (lang === 'en') return 'Buy Windows 11 Pro original license with lifetime key and instant delivery. Install and activate in minutes with full support. Secure payment!'
+    if (lang === 'es') return '¡Compra tu licencia original de Windows 11 Pro con clave vitalicia y entrega inmediata. Instala y activa en minutos con soporte completo!'
+    if (lang === 'fr') return 'Achetez votre licence Windows 11 Pro originale avec clé à vie et livraison instantanée. Installation simple avec assistance complète!'
+    if (lang === 'it') return 'Acquista la licenza originale di Windows 11 Pro con chiave a vita e consegna immediata. Attiva in pochi minuti con supporto completo!'
+    return 'Windows 11 Pro original com chave vitalícia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
+  }
+  if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
+    if (lang === 'en') return 'Buy Windows 10 Pro original with instant activation and lifetime guarantee. Digital license for PC or laptop. Support included!'
+    if (lang === 'es') return 'Compra Windows 10 Pro original con activación instantánea y garantía vitalicia. Licencia digital para PC o portátil. ¡Soporte incluido!'
+    if (lang === 'fr') return 'Achetez Windows 10 Pro original avec activation instantanée et garantie à vie. Licence numérique pour PC ou ordinateur portable. Support inclus!'
+    if (lang === 'it') return 'Acquista Windows 10 Pro originale con attivazione immediata e garanzia a vita. Licenza digitale per PC o laptop. Supporto incluso!'
+    return 'Compre Windows 10 Pro original com ativação instantânea e garantia. Licença vitalícia para PC ou notebook. Suporte incluso!'
+  }
+  if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
+    if (isOffice365FiveLicenses.value) {
+      if (lang === 'en') return 'Buy original Microsoft 365 license for up to 5 devices. Fast activation, official account, 1TB OneDrive storage. Instant delivery by email!'
+      if (lang === 'es') return 'Compra tu licencia Microsoft 365 original para hasta 5 dispositivos. Activación rápida, cuenta oficial y 1TB de almacenamiento. ¡Entrega inmediata!'
+      if (lang === 'fr') return 'Achetez votre licence Microsoft 365 originale pour jusqu\'à 5 appareils. Activation rapide, compte officiel, 1To OneDrive. Livraison instantanée!'
+      if (lang === 'it') return 'Acquista la tua licenza Microsoft 365 originale per fino a 5 dispositivi. Attivazione rapida, account ufficiale, 1TB OneDrive. Consegna immediata!'
+      return 'Comprar licença do pacote Office permanente nunca foi tão fácil. Original, ativação rápida, conta oficial, suporte completo e envio imediato por email.'
     }
+    if (lang === 'en') return 'Original Microsoft Office 365 for PC and Mac. Fast activation, official account and full support. Get it now by email!'
+    if (lang === 'es') return 'Microsoft Office 365 original para PC y Mac. Activación rápida, cuenta oficial y soporte completo. ¡Recíbelo ahora por email!'
+    if (lang === 'fr') return 'Microsoft Office 365 original pour PC et Mac. Activation rapide, compte officiel et support complet. Recevez-le maintenant par email!'
+    if (lang === 'it') return 'Microsoft Office 365 originale per PC e Mac. Attivazione rapida, account ufficiale e supporto completo. Ricevilo ora per email!'
+    return 'Microsoft Office 365 original para PC e Mac. Ativação rápida, conta oficial e suporte completo. Receba agora por e-mail!'
+  }
+  if (slugValue.includes('office') && slugValue.includes('2021')) {
+    if (lang === 'en') return 'Buy Microsoft Office 2021 original with permanent key and simple installation. Instant delivery and secure payment. Activate in minutes!'
+    if (lang === 'es') return '¡Compra Microsoft Office 2021 original con clave permanente e instalación simple. Entrega inmediata y pago seguro. Actívalo en minutos!'
+    if (lang === 'fr') return 'Achetez Microsoft Office 2021 original avec clé permanente et installation simple. Livraison instantanée et paiement sécurisé. Activez en minutes!'
+    if (lang === 'it') return 'Acquista Microsoft Office 2021 originale con chiave permanente e installazione semplice. Consegna immediata e pagamento sicuro. Attiva in minuti!'
+    return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
   }
 
   const rawShort = String((safeProduct.value as any)?.descricaoCurta || '').trim()
