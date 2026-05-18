@@ -12,7 +12,7 @@
       </div>
 
       <!-- Produto -->
-      <div v-else-if="safeProduct && safeProduct.name">
+      <div v-else-if="safeProduct">
 
         <!-- ── HERO ── -->
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
@@ -426,8 +426,8 @@ const isIntlDomain = computed(() => {
 
 const { hreflangLinks: productHreflang } = useSeoLocale({
   pageType: 'product',
-  slug: computed(() => String((safeProduct.value as any)?.slug || slug.value || '')),
-  slugEn: computed(() => String((safeProduct.value as any)?.slugEn || ''))
+  slug: computed(() => String((safeProduct as any)?.slug || slug.value || '')),
+  slugEn: computed(() => String((safeProduct as any)?.slugEn || ''))
 })
 
 const lang = computed(() => effectiveLang.value)
@@ -445,7 +445,7 @@ const pageH1 = computed(() => {
     if (effectiveLang.value === 'es') return 'Licencia original de Office 365 para PC y Mac – Entrega inmediata'
     return 'Licença Office 365 Original para PC e Mac – Entrega Instantânea'
   }
-  return String((safeProduct as any)?.value?.name || '')
+  return String((safeProduct as any)?.name || '')
 })
 const baseUrl = useSiteUrl()
 
@@ -455,7 +455,7 @@ const canonicalUrl = computed(() => {
 
   // On international domains, use slugEn for canonical URL if available
   if (isIntlDomain.value) {
-    const slugEn = String((safeProduct.value as any)?.slugEn || '').trim()
+    const slugEn = String((safeProduct as any)?.slugEn || '').trim()
     const slugToUse = slugEn || s
     return baseUrl ? `${baseUrl}/product/${slugToUse}` : ''
   }
@@ -486,34 +486,32 @@ if (import.meta.server && product.value === null && !error.value) {
   throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
 }
 
+const rawProduct = computed(() => {
+  return product.value
+})
+
 const safeProduct = computed(() => {
-  const p = product.value
+  const p = rawProduct.value
+  if (!p || !p.id) return null
 
-  if (!p) {
-    return null
-  }
-
-  // Normalize both Portuguese and English field formats
   return {
     id: p.id,
-    name: (p as any).name || (p as any).nome || '',
-    slug: (p as any).slug || '',
-    description: (p as any).description || (p as any).descricao || '',
-    price: Number((p as any).price ?? (p as any).preco ?? 0),
-    oldPrice: Number((p as any).old_price ?? (p as any).oldPrice ?? (p as any).precoAntigo ?? 0) || null,
-    currency: (p as any).currency || 'BRL',
-    image: (p as any).image || (p as any).imagem || '/products/placeholder.svg',
-    cardItems: (p as any).cardItems || null,
-    tutorialTitle: (p as any).tutorialTitle || (p as any).tutorialTitulo || null,
-    tutorialSubtitle: (p as any).tutorialSubtitle || (p as any).tutorialSubtitulo || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
-    tutorialContent: (p as any).tutorialContent || (p as any).tutorialConteudo || null,
-    seoTitle: (p as any).seoTitle || null,
-    seoDescription: (p as any).seoDescription || null,
-    seoContent: (p as any).seoContent || null,
-    createdAt: (p as any).createdAt || (p as any).criadoEm || null,
-    finalUrl: (p as any).finalUrl || null,
-    // Keep original fields for backward compatibility
-    ...p
+    name: p.name || p.nome,
+    slug: p.slug,
+    description: p.description || p.descricao,
+    price: p.price ?? p.preco,
+    oldPrice: p.oldPrice ?? p.precoAntigo,
+    currency: p.currency || 'BRL',
+    image: p.image || p.imagem,
+    cardItems: p.cardItems,
+    tutorialTitle: p.tutorialTitle || p.tutorialTitulo,
+    tutorialSubtitle: p.tutorialSubtitle || p.tutorialSubtitulo,
+    tutorialContent: p.tutorialContent || p.tutorialConteudo,
+    seoTitle: p.seoTitle,
+    seoDescription: p.seoDescription,
+    seoContent: p.seoContent,
+    createdAt: p.createdAt || p.criadoEm,
+    finalUrl: p.finalUrl
   }
 })
 
@@ -522,7 +520,7 @@ const tutorialAccessChecked = ref(false)
 
 if (import.meta.client) {
   onMounted(async () => {
-    if (!safeProduct.value?.tutorialTitle) return
+    if (!safeProduct?.tutorialTitle) return
     try {
       const res = await $fetch<{ ok: boolean; allowed: boolean; reason: string | null }>(
         `/api/customer/tutorial-access/${slug.value}`
@@ -537,7 +535,7 @@ if (import.meta.client) {
 }
 
 const primaryCategorySlug = computed(() => {
-  const raw = (safeProduct.value as any)?.categories
+  const raw = (safeProduct as any)?.categories
   if (!Array.isArray(raw)) return ''
   const first = String(raw.find((x: any) => String(x || '').trim()) || '').trim()
   return first
@@ -555,7 +553,7 @@ const { trackViewItem: ecomViewItem, trackAddToCart: ecomAddToCart } = useEcomme
 const viewItemTracked = ref(false)
 
 watch(
-  () => safeProduct.value,
+  () => safeProduct,
   (p) => {
     if (!import.meta.client) return
     if (viewItemTracked.value) return
@@ -578,7 +576,7 @@ watch(
 )
 
 const safeImage = computed(() => {
-  const image = String((safeProduct.value as any)?.image || '')
+  const image = String((safeProduct as any)?.image || '')
   if (!image) return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
@@ -599,10 +597,10 @@ const absoluteImageUrl = computed(() => {
 })
 
 const seoTitle = computed(() => {
-  const customSeoTitle = String((safeProduct.value as any)?.seoTitle || '').trim()
+  const customSeoTitle = String((safeProduct as any)?.seoTitle || '').trim()
   if (customSeoTitle) return customSeoTitle
 
-  const slugValue = String((safeProduct.value as any)?.slug || slug.value || '').trim().toLowerCase()
+  const slugValue = String((safeProduct as any)?.slug || slug.value || '').trim().toLowerCase()
   const lang = effectiveLang.value
   const base = String(siteName || 'Casa do Software')
 
@@ -636,7 +634,7 @@ const seoTitle = computed(() => {
       return `Office 365 Original – Licença Oficial com Entrega Imediata`
     }
   }
-  const name = String((safeProduct.value as any)?.name || '').trim()
+  const name = String((safeProduct as any)?.name || '').trim()
   if (name) {
     // For casadosoftware.com.br, always use Portuguese
     if (isCasaDoSoftware.value) {
@@ -652,10 +650,10 @@ const seoTitle = computed(() => {
 })
 
 const seoDescription = computed(() => {
-  const customSeoDesc = String((safeProduct.value as any)?.seoDescription || '').trim()
+  const customSeoDesc = String((safeProduct as any)?.seoDescription || '').trim()
   if (customSeoDesc) return customSeoDesc
 
-  const slugValue = String((safeProduct.value as any)?.slug || slug.value || '').trim().toLowerCase()
+  const slugValue = String((safeProduct as any)?.slug || slug.value || '').trim().toLowerCase()
   const lang = effectiveLang.value
 
   if (isCasaDoSoftware.value) {
@@ -711,8 +709,8 @@ const seoDescription = computed(() => {
     return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
   }
 
-  const rawShort = String((safeProduct.value as any)?.description || '').trim()
-  const rawLong = String((safeProduct.value as any)?.descricao || '').trim()
+  const rawShort = String((safeProduct as any)?.description || '').trim()
+  const rawLong = String((safeProduct as any)?.descricao || '').trim()
 
   const raw = rawShort || rawLong
   if (!raw) return ''
@@ -733,7 +731,7 @@ useHead(() => {
     ...(productHreflang.value as any[])
   ]
 
-  const p = safeProduct.value as any
+  const p = safeProduct as any
   const hasProduct = !pending.value && !error.value && String(p?.name || '').trim()
 
   if (!hasProduct) {
@@ -803,7 +801,7 @@ useSeoMeta({
 })
 
 const safeDescriptionHtml = computed(() => {
-  const raw = String((safeProduct.value as any)?.descricao || '').trim()
+  const raw = String((safeProduct as any)?.descricao || '').trim()
   if (!raw) return ''
 
   const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)
@@ -924,7 +922,7 @@ const safeDescriptionHtml = computed(() => {
 })
 
 const safeSeoContentHtml = computed(() => {
-  const raw = String((safeProduct.value as any)?.seoContent || '').trim()
+  const raw = String((safeProduct as any)?.seoContent || '').trim()
   if (!raw) return ''
   return safeSanitize(raw, {
     USE_PROFILES: { html: true }
@@ -941,7 +939,7 @@ function onImageError(e: Event) {
 const effectiveCurrencyLower = computed(() => {
   // Domain takes priority — gvgmall.co always USD regardless of product.currency in DB
   if (isIntlDomain.value) return 'usd'
-  const c = String((safeProduct.value as any)?.currency || '').trim().toLowerCase()
+  const c = String((safeProduct as any)?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
   return intl.currencyLower.value || 'brl'
 })
@@ -951,16 +949,16 @@ const isBrl = computed(() => effectiveCurrencyLower.value === 'brl')
 const formattedPrice = computed(() => {
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
-  return Number(safeProduct.value.price || 0).toLocaleString(locale, {
+  return Number(safeProduct.price || 0).toLocaleString(locale, {
     style: 'currency',
     currency
   })
 })
 
 const formattedOldPrice = computed(() => {
-  const oldPrice = (safeProduct.value as any).oldPrice
+  const oldPrice = safeProduct.oldPrice
   if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
-  if (Number(oldPrice) <= Number(safeProduct.value.price || 0)) return null
+  if (Number(oldPrice) <= Number(safeProduct.price || 0)) return null
 
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
@@ -971,8 +969,8 @@ const formattedOldPrice = computed(() => {
 })
 
 const discountPercent = computed(() => {
-  const oldPrice = (safeProduct.value as any).oldPrice
-  const current = Number(safeProduct.value.price || 0)
+  const oldPrice = safeProduct.oldPrice
+  const current = Number(safeProduct.price || 0)
   if (!oldPrice || !current) return null
   const oldN = Number(oldPrice)
   if (!oldN || oldN <= current) return null
@@ -981,7 +979,7 @@ const discountPercent = computed(() => {
 
 const formattedPixPrice = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.value.price || 0)
+  const price = Number(safeProduct.price || 0)
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
   if (pixPrice === price) return null
@@ -993,7 +991,7 @@ const formattedPixPrice = computed(() => {
 
 const installments12 = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.value.price || 0)
+  const price = Number(safeProduct.price || 0)
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   return value.toLocaleString('pt-BR', {
@@ -1068,7 +1066,7 @@ const defaultIncludedItems = computed(() => {
 })
 
 const includedItems = computed(() => {
-  const raw = String((safeProduct.value as any)?.cardItems ?? '').trim()
+  const raw = String((safeProduct as any)?.cardItems ?? '').trim()
   if (!raw) return defaultIncludedItems.value
   const items = raw
     .split(/\r?\n/)
@@ -1197,8 +1195,8 @@ const includedItems = computed(() => {
 })
 
 const isMicrosoft365 = computed(() => {
-  const name = String((safeProduct.value as any)?.name || '').toLowerCase()
-  const slugValue = String((safeProduct.value as any)?.slug || '').toLowerCase()
+  const name = String((safeProduct as any)?.name || '').toLowerCase()
+  const slugValue = String((safeProduct as any)?.slug || '').toLowerCase()
   return (
     name.includes('microsoft 365') ||
     name.includes('office 365') ||
@@ -1464,7 +1462,7 @@ const t = computed(() => {
 })
 
 function buyNow() {
-  const p = safeProduct.value as any
+  const p = safeProduct as any
   try {
     ecomAddToCart({
       item_id: p?.id || '',
