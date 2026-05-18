@@ -44,9 +44,9 @@
               {{ t.urgencyBadge }}
             </div>
 
-            <!-- T├¡tulo -->
+            <!-- Título -->
             <h1 class="text-2xl md:text-3xl font-extrabold text-white leading-tight">
-              {{ pageH1 }}
+              {{ safeProduct.name }}
             </h1>
 
             <!-- Desc curta -->
