@@ -575,7 +575,7 @@ watch(
 )
 
 const safeImage = computed(() => {
-  const image = String(safeProduct?.image || safeProduct?.imagem || '')
+  const image = String((safeProduct.value as any)?.image || (safeProduct.value as any)?.imagem || '')
   if (!image || image === '/products/placeholder.svg') return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
@@ -948,16 +948,16 @@ const isBrl = computed(() => effectiveCurrencyLower.value === 'brl')
 const formattedPrice = computed(() => {
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
-  return Number(safeProduct.price || 0).toLocaleString(locale, {
+  return Number((safeProduct.value as any)?.price || 0).toLocaleString(locale, {
     style: 'currency',
     currency
   })
 })
 
 const formattedOldPrice = computed(() => {
-  const oldPrice = safeProduct.oldPrice
+  const oldPrice = (safeProduct.value as any)?.oldPrice
   if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
-  if (Number(oldPrice) <= Number(safeProduct.price || 0)) return null
+  if (Number(oldPrice) <= Number((safeProduct.value as any)?.price || 0)) return null
 
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
@@ -968,8 +968,8 @@ const formattedOldPrice = computed(() => {
 })
 
 const discountPercent = computed(() => {
-  const oldPrice = safeProduct.oldPrice
-  const current = Number(safeProduct.price || 0)
+  const oldPrice = (safeProduct.value as any)?.oldPrice
+  const current = Number((safeProduct.value as any)?.price || 0)
   if (!oldPrice || !current) return null
   const oldN = Number(oldPrice)
   if (!oldN || oldN <= current) return null
@@ -978,7 +978,7 @@ const discountPercent = computed(() => {
 
 const formattedPixPrice = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.price || 0)
+  const price = Number((safeProduct.value as any)?.price || 0)
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
   if (pixPrice === price) return null
@@ -990,7 +990,7 @@ const formattedPixPrice = computed(() => {
 
 const installments12 = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.price || 0)
+  const price = Number((safeProduct.value as any)?.price || 0)
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   return value.toLocaleString('pt-BR', {
