@@ -492,16 +492,9 @@ const rawProduct = computed(() => {
 
 const safeProduct = computed(() => {
   const p = rawProduct.value
-  if (!p) {
-    console.log('[safeProduct] rawProduct is null')
-    return null
-  }
 
-  console.log('[safeProduct] rawProduct keys:', Object.keys(p))
-  console.log('[safeProduct] rawProduct.nome:', p.nome)
-  console.log('[safeProduct] rawProduct.name:', p.name)
-  console.log('[safeProduct] rawProduct.preco:', p.preco)
-  console.log('[safeProduct] rawProduct.price:', p.price)
+  // If no product, return null
+  if (!p) return null
 
   // Normalize Portuguese fields to English
   return {
