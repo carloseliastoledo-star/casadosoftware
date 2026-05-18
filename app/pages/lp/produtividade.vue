@@ -290,7 +290,7 @@ definePageMeta({ layout: 'lp', ssr: true })
 
 useHead({
   link: [
-    { rel: 'preload', as: 'image', href: '/images/hero.webp', fetchpriority: 'high' }
+    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
   ]
 })
 
