@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
 
   const rawSlug = event.context.params?.slug
 
-  const { storeSlug } = getStoreContext()
+  const { storeSlug } = getStoreContext(event)
 
   const intl = getIntlContext(event)
   const query = getQuery(event)
