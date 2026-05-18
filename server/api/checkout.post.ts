@@ -35,7 +35,8 @@ export default defineEventHandler(async (event) => {
     trafficSourceType: body?.gclid || body?.utm_medium
   })
   
-  const { storeSlug } = getStoreContext(event)
+  const { storeSlug: _storeSlug } = getStoreContext(event)
+  const storeSlug = _storeSlug || String(process.env.STORE_SLUG || '').trim().toLowerCase() || null
   const country = detectCountry(event)
 
   const produtoId   = String(body?.produtoId   || '').trim()
