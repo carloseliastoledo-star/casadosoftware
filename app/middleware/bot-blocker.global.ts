@@ -1776,16 +1776,16 @@ const BLOCKED_PATTERNS = [
 ]
 
 export default defineNuxtRouteMiddleware((to) => {
+  if (import.meta.server) return
+
   const path = to.path || ''
   
   // Verifica se o path corresponde a algum pattern bloqueado
   for (const pattern of BLOCKED_PATTERNS) {
     if (pattern.test(path)) {
-      // Aborta a navegação e retorna 404
       throw createError({
         statusCode: 404,
         statusMessage: 'Not Found',
-        fatal: true
       })
     }
   }
