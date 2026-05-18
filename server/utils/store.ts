@@ -45,7 +45,9 @@ export function getStoreContext(event?: H3Event): StoreContext {
 
   const siteUrl = String(process.env.SITE_URL || '').trim()
   if (siteUrl) {
-    return { storeSlug: normalizeSlug(siteUrl), includeLegacy }
+    const mappedFromUrl = mapHostToStoreSlug(siteUrl)
+    const slug = mappedFromUrl || normalizeSlug(siteUrl)
+    return { storeSlug: slug, includeLegacy }
   }
 
   if (event) {
