@@ -1,59 +1,32 @@
 export default defineNuxtRouteMiddleware((to) => {
-  // On client, window.location.host is always authoritative
-  if (import.meta.client) {
-    const clientHost = String(window.location.host || '').toLowerCase()
-    const isIntlClient =
-      !clientHost.endsWith('.com.br') &&
-      !clientHost.includes('localhost') &&
-      !clientHost.includes('127.0.0.1') &&
-      clientHost.length > 0 &&
-      (clientHost.includes('gvgmall') || clientHost.includes('globalsoftware') || clientHost.endsWith('.store'))
-
-    if (!clientHost.startsWith('en.') && !clientHost.startsWith('es.') && !isIntlClient) return
-  }
-
-  const host = (() => {
-    if (import.meta.server) {
-      try {
-        const headers = useRequestHeaders(['x-forwarded-host', 'x-original-host', 'host']) as Record<string, string | undefined>
-        const raw = headers?.['x-forwarded-host'] || headers?.['x-original-host'] || headers.host || ''
-        const first = String(raw || '').split(',')[0]?.trim()
-        if (first) return String(first).toLowerCase()
-      } catch {
-        // ignore
-      }
-      try {
-        const url = useRequestURL()
-        if (url?.host) return String(url.host).toLowerCase()
-      } catch {
-        // ignore
-      }
-      return ''
-    }
-    return String(window.location.host || '').toLowerCase()
+  // ── Fast exit: resolve host immediately and skip if not an intl/en/es domain ──
+  const quickHost = (() => {
+    if (import.meta.client) return String(window.location.host || '').toLowerCase()
+    try {
+      const headers = useRequestHeaders(['x-forwarded-host', 'host']) as Record<string, string | undefined>
+      const raw = headers?.['x-forwarded-host'] || headers?.host || ''
+      return String(raw.split(',')[0]?.trim() || '').toLowerCase()
+    } catch { return '' }
   })()
 
-  const isEnHost = host.startsWith('en.')
-  const isEsHost = host.startsWith('es.')
-
-  // Runtime config storeSlug — set via NUXT_PUBLIC_STORE_SLUG env var
   const config = useRuntimeConfig()
   const storeSlugEnv = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
-  const isDefinitelyNotIntl = storeSlugEnv === 'casadosoftware' || storeSlugEnv === 'licencasdigitais'
 
-  // On SSR: only treat as intl if explicitly known intl domains
-  const isIntlDomain = import.meta.server
-    ? !isDefinitelyNotIntl && (
-        host.includes('gvgmall.co') ||
-        host.includes('globalsoftware.store') ||
-        host.endsWith('.store')
-      )
-    : !isDefinitelyNotIntl &&
-      !host.endsWith('.com.br') &&
-      !host.includes('localhost') &&
-      !host.includes('127.0.0.1') &&
-      host.length > 0 &&
-      (host.includes('gvgmall') || host.includes('globalsoftware') || host.endsWith('.store'))
+  // If storeSlug is explicitly casadosoftware or licencasdigitais, never redirect
+  if (storeSlugEnv === 'casadosoftware' || storeSlugEnv === 'licencasdigitais') return
+
+  // If host is .com.br or localhost, never redirect
+  if (quickHost.endsWith('.com.br') || quickHost.includes('localhost') || quickHost.includes('127.0.0.1')) return
+
+  // Only proceed for known intl domains or en./es. subdomains
+  const isKnownIntl = quickHost.includes('gvgmall') || quickHost.includes('globalsoftware') || quickHost.endsWith('.store')
+  const isEnSub = quickHost.startsWith('en.')
+  const isEsSub = quickHost.startsWith('es.')
+  if (!isKnownIntl && !isEnSub && !isEsSub) return
+
+  const isEnHost = quickHost.startsWith('en.')
+  const isEsHost = quickHost.startsWith('es.')
+  const isIntlDomain = isKnownIntl
 
   if (!isEnHost && !isEsHost && !isIntlDomain) return
 
