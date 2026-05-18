@@ -89,8 +89,13 @@ export default defineEventHandler(async (event) => {
 
   let product: any
   try {
+    // Use composite key slug_storeSlug when storeSlug is defined
+    const whereClause = storeSlug
+      ? { slug_storeSlug: { slug, storeSlug } }
+      : { slug }
+
     product = await (prisma as any).produto.findUnique({
-      where: { slug },
+      where: whereClause,
       select: {
         id: true,
         nome: true,
