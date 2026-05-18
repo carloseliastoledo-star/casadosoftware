@@ -495,13 +495,16 @@ const safeProduct = computed(() => {
 
   if (!p || !p.id) return null
 
+  const price = Number(p.preco ?? p.price ?? 0)
+  const oldPrice = Number(p.precoAntigo ?? p.oldPrice ?? 0)
+
   return {
     id: p.id,
     name: p.name || p.nome || 'Produto digital',
-    slug: p.slug,
+    slug: p.slug || '',
     description: p.description || p.descricao || '',
-    price: Number(p.preco ?? p.price ?? 0),
-    oldPrice: Number(p.precoAntigo ?? p.oldPrice ?? 0),
+    price: Number.isFinite(price) ? price : 0,
+    oldPrice: Number.isFinite(oldPrice) ? oldPrice : 0,
     currency: p.currency || 'BRL',
     image: p.imagem || p.image || '/products/placeholder.svg',
     cardItems: p.cardItems || '',
@@ -578,7 +581,8 @@ watch(
 )
 
 const safeImage = computed(() => {
-  const image = String(safeProduct.value?.image || safeProduct.value?.imagem || '')
+  if (!safeProduct.value) return '/products/placeholder.svg'
+  const image = String(safeProduct.value.image || safeProduct.value.imagem || '')
   if (!image || image === '/products/placeholder.svg') return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
@@ -949,18 +953,20 @@ const effectiveCurrencyLower = computed(() => {
 const isBrl = computed(() => effectiveCurrencyLower.value === 'brl')
 
 const formattedPrice = computed(() => {
+  if (!safeProduct.value) return ''
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
-  return Number(safeProduct.value?.price || 0).toLocaleString(locale, {
+  return Number(safeProduct.value.price || 0).toLocaleString(locale, {
     style: 'currency',
     currency
   })
 })
 
 const formattedOldPrice = computed(() => {
-  const oldPrice = safeProduct.value?.oldPrice
+  if (!safeProduct.value) return null
+  const oldPrice = safeProduct.value.oldPrice
   if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
-  if (Number(oldPrice) <= Number(safeProduct.value?.price || 0)) return null
+  if (Number(oldPrice) <= Number(safeProduct.value.price || 0)) return null
 
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
@@ -971,8 +977,9 @@ const formattedOldPrice = computed(() => {
 })
 
 const discountPercent = computed(() => {
-  const oldPrice = safeProduct.value?.oldPrice
-  const current = Number(safeProduct.value?.price || 0)
+  if (!safeProduct.value) return null
+  const oldPrice = safeProduct.value.oldPrice
+  const current = Number(safeProduct.value.price || 0)
   if (!oldPrice || !current) return null
   const oldN = Number(oldPrice)
   if (!oldN || oldN <= current) return null
@@ -981,7 +988,8 @@ const discountPercent = computed(() => {
 
 const formattedPixPrice = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.value?.price || 0)
+  if (!safeProduct.value) return null
+  const price = Number(safeProduct.value.price || 0)
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
   if (pixPrice === price) return null
@@ -993,7 +1001,8 @@ const formattedPixPrice = computed(() => {
 
 const installments12 = computed(() => {
   if (!isBrl.value) return null
-  const price = Number(safeProduct.value?.price || 0)
+  if (!safeProduct.value) return null
+  const price = Number(safeProduct.value.price || 0)
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   return value.toLocaleString('pt-BR', {
