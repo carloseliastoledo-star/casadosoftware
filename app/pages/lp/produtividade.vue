@@ -10,7 +10,7 @@
           Acesse ferramentas essenciais para criar documentos, planilhas e apresentações com facilidade.
         </p>
         <img
-          src="/images/hero.webp"
+          :src="'/images/hero.webp'"
           alt="Pacote Office para produtividade"
           width="600"
           height="600"

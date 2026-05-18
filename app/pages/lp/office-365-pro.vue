@@ -24,7 +24,7 @@
           Licen?a original ? sem mensalidade, sem renova??o. Funciona em PC, Mac, Android e iOS.
         </p>
         <img
-          src="/images/hero.webp"
+          :src="'/images/hero.webp'"
           alt="Office 365"
           width="600"
           height="600"

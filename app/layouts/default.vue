@@ -376,7 +376,7 @@
     <footer v-if="isLicencasDigitais" class="bg-[#f2f4f3] text-gray-700 mt-20">
       <div class="max-w-7xl mx-auto px-6 py-14 grid md:grid-cols-5 gap-12 text-sm">
         <div class="md:col-span-1">
-          <img src="/licencasdigitais-gvg/logo-footer.svg" :alt="siteName" class="h-9 w-auto" loading="lazy" decoding="async" />
+          <img :src="'/licencasdigitais-gvg/logo-footer.svg'" :alt="siteName" class="h-9 w-auto" loading="lazy" decoding="async" />
           <div class="mt-6 flex items-center gap-4 text-gray-500">
             <a href="#" aria-label="Facebook" class="hover:text-gray-700">f</a>
             <a href="#" aria-label="Instagram" class="hover:text-gray-700">◎</a>
@@ -443,25 +443,25 @@
           <div class="font-extrabold tracking-widest text-xs text-sky-600">WE ACCEPT</div>
           <div class="mt-4 grid grid-cols-4 gap-3">
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
-              <img src="/licencasdigitais-gvg/payments/amex.svg" alt="American Express" class="h-full w-auto" loading="lazy" decoding="async" />
+              <img :src="'/licencasdigitais-gvg/payments/amex.svg'" alt="American Express" class="h-full w-auto" loading="lazy" decoding="async" />
             </div>
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
-              <img src="/licencasdigitais-gvg/payments/diners.svg" alt="Diners Club" class="h-full w-auto" loading="lazy" decoding="async" />
+              <img :src="'/licencasdigitais-gvg/payments/diners.svg'" alt="Diners Club" class="h-full w-auto" loading="lazy" decoding="async" />
             </div>
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
-              <img src="/licencasdigitais-gvg/payments/applepay.svg" alt="Apple Pay" class="h-full w-auto" loading="lazy" decoding="async" />
+              <img :src="'/licencasdigitais-gvg/payments/applepay.svg'" alt="Apple Pay" class="h-full w-auto" loading="lazy" decoding="async" />
             </div>
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
-              <img src="/licencasdigitais-gvg/payments/discover.svg" alt="Discover" class="h-full w-auto" loading="lazy" decoding="async" />
+              <img :src="'/licencasdigitais-gvg/payments/discover.svg'" alt="Discover" class="h-full w-auto" loading="lazy" decoding="async" />
             </div>
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
-              <img src="/licencasdigitais-gvg/payments/googlepay.svg" alt="Google Pay" class="h-full w-auto" loading="lazy" decoding="async" />
+              <img :src="'/licencasdigitais-gvg/payments/googlepay.svg'" alt="Google Pay" class="h-full w-auto" loading="lazy" decoding="async" />
             </div>
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
-              <img src="/licencasdigitais-gvg/payments/mastercard.svg" alt="Mastercard" class="h-full w-auto" loading="lazy" decoding="async" />
+              <img :src="'/licencasdigitais-gvg/payments/mastercard.svg'" alt="Mastercard" class="h-full w-auto" loading="lazy" decoding="async" />
             </div>
             <div class="h-7 rounded bg-white border flex items-center justify-center p-1">
-              <img src="/licencasdigitais-gvg/payments/visa.svg" alt="Visa" class="h-full w-auto" loading="lazy" decoding="async" />
+              <img :src="'/licencasdigitais-gvg/payments/visa.svg'" alt="Visa" class="h-full w-auto" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>

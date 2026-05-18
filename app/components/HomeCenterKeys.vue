@@ -9,7 +9,7 @@
           <div class="grid md:grid-cols-2 gap-0">
             <div class="relative min-h-[240px] md:min-h-[300px] lg:min-h-[340px]">
               <img
-                src="/licencasdigitais-gvg/hero-woman.png"
+                :src="'/licencasdigitais-gvg/hero-woman.png'"
                 alt=""
                 class="absolute inset-0 h-full w-full object-cover"
                 loading="eager"
@@ -67,7 +67,7 @@
 
                   <div class="flex justify-center sm:justify-end">
                     <img
-                      src="/licencasdigitais-gvg/promo.png"
+                      :src="'/licencasdigitais-gvg/promo.png'"
                       alt=""
                       class="w-[220px] md:w-[260px] lg:w-[280px] h-auto"
                       loading="eager"

@@ -68,7 +68,7 @@
               <!-- Imagem do produto -->
               <div class="relative h-72 bg-slate-50 rounded-xl mb-5 flex items-center justify-center overflow-hidden p-4">
                 <img
-                  src="/images/hero.webp"
+                  :src="'/images/hero.webp'"
                   alt="Office 365"
                   loading="eager"
                   decoding="async"
