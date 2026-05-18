@@ -1,4 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to) => {
+  if (import.meta.server) return
+
   const slug = String(to.params?.slug || '').trim()
   if (!slug) return navigateTo('/produtos', { replace: true })
 
