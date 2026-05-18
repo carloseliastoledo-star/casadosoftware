@@ -224,7 +224,10 @@ async function upsertProdutoByWoo(input: {
   } catch (err: any) {
     if (String(err?.code || '') !== 'P2002') throw err
 
-    const existingBySlug = await prisma.produto.findUnique({ where: { slug: baseSlug }, select: { id: true, wcProductId: true } })
+    const existingBySlug = await prisma.produto.findUnique({ 
+      where: { slug_storeSlug: { slug: baseSlug, storeSlug: 'casadosoftware' } }, 
+      select: { id: true, wcProductId: true } 
+    })
     if (existingBySlug) {
       if (!existingBySlug.wcProductId || existingBySlug.wcProductId === input.wcProductId) {
         await prisma.produto.update({
