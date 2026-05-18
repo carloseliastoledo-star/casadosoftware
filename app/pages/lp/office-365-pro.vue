@@ -297,12 +297,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lp', ssr: true })
 
-useHead({
-  link: [
-    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
-  ]
-})
-
 useSeoMeta({
   title: 'Comprar Microsoft 365 ? Ative em 5 Minutos | Licen?a Original | Entrega Imediata',
   description: 'Seu Office parou de funcionar? Obtenha o Microsoft 365 original para at? 5 dispositivos. Word, Excel, PowerPoint e Outlook. Entrega imediata e garantia de 30 dias.',

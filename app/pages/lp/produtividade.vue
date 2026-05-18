@@ -288,13 +288,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lp', ssr: true })
 
-useHead({
-  link: [
-    { rel: 'preload', as: 'image', href: '/images/hero.webp' }
-  ]
-})
-
-
 useSeoMeta({
   title: 'Solução de Produtividade para Trabalho e Estudo',
   description: 'Acesse ferramentas essenciais para criar documentos, planilhas e apresentações com facilidade. Interface simples e compatível com múltiplos dispositivos.'
