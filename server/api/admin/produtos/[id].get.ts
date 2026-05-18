@@ -12,7 +12,22 @@ export default defineEventHandler(async (event) => {
   console.log('[admin/produtos/[id]] id=', id, 'storeSlug=', storeSlug)
 
   const produto = await (prisma as any).produto.findUnique({
-    where: { id }
+    where: { id },
+    include: {
+      ProdutoPrecoLoja: {
+        where: { storeSlug: storeSlug || undefined },
+        select: { preco: true, precoAntigo: true }
+      },
+      ProdutoPrecoMoeda: {
+        where: { storeSlug: storeSlug || undefined },
+        select: { currency: true, amount: true, oldAmount: true }
+      },
+      ProdutoCategoria: {
+        include: {
+          categoria: { select: { id: true, nome: true, slug: true } }
+        }
+      }
+    }
   })
 
   console.log('[admin/produtos/[id]] produto=', produto ? 'found' : 'not found')
@@ -24,11 +39,11 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const categorias = []
-  const override = null
+  const categorias = ((produto as any).ProdutoCategoria || []).map((pc: any) => pc.categoria).filter(Boolean)
+  const override = (produto as any).ProdutoPrecoLoja?.[0] || null
 
   const byCurrency = new Map(
-    ((produto as any).precosMoeda || [])
+    ((produto as any).ProdutoPrecoMoeda || [])
       .map((x: any) => ({
         currency: String(x.currency || '').trim().toLowerCase(),
         amount: x.amount == null ? null : Number(x.amount)
