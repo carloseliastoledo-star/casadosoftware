@@ -228,7 +228,7 @@
         <IntlLanguageSwitcher
           v-if="!intl.isIntl.value"
           page-type="product"
-          :slug="String(safeProduct.value?slug || slug.value || '')"
+          :slug="String(safeProduct.value?.slug || slug.value || '')"
           class="mt-8 w-full"
         />
 
@@ -652,10 +652,10 @@ const seoTitle = computed(() => {
 })
 
 const seoDescription = computed(() => {
-  const customSeoDesc = String(safeProduct.value?seoDescription || '').trim()
+  const customSeoDesc = String(safeProduct.value?.seoDescription || '').trim()
   if (customSeoDesc) return customSeoDesc
 
-  const slugValue = String(safeProduct.value?slug || slug.value || '').trim().toLowerCase()
+  const slugValue = String(safeProduct.value?.slug || slug.value || '').trim().toLowerCase()
   const lang = effectiveLang.value
 
   if (isCasaDoSoftware.value) {
@@ -711,8 +711,8 @@ const seoDescription = computed(() => {
     return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
   }
 
-  const rawShort = String(safeProduct.value?description || '').trim()
-  const rawLong = String(safeProduct.value?descricao || '').trim()
+  const rawShort = String(safeProduct.value?.description || '').trim()
+  const rawLong = String(safeProduct.value?.descricao || '').trim()
 
   const raw = rawShort || rawLong
   if (!raw) return ''
@@ -803,7 +803,7 @@ useSeoMeta({
 })
 
 const safeDescriptionHtml = computed(() => {
-  const raw = String(safeProduct.value?descricao || '').trim()
+  const raw = String(safeProduct.value?.descricao || '').trim()
   if (!raw) return ''
 
   const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)
@@ -924,7 +924,7 @@ const safeDescriptionHtml = computed(() => {
 })
 
 const safeSeoContentHtml = computed(() => {
-  const raw = String(safeProduct.value?seoContent || '').trim()
+  const raw = String(safeProduct.value?.seoContent || '').trim()
   if (!raw) return ''
   return safeSanitize(raw, {
     USE_PROFILES: { html: true }
@@ -941,7 +941,7 @@ function onImageError(e: Event) {
 const effectiveCurrencyLower = computed(() => {
   // Domain takes priority — gvgmall.co always USD regardless of product.currency in DB
   if (isIntlDomain.value) return 'usd'
-  const c = String(safeProduct.value?currency || '').trim().toLowerCase()
+  const c = String(safeProduct.value?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
   return intl.currencyLower.value || 'brl'
 })
@@ -1068,7 +1068,7 @@ const defaultIncludedItems = computed(() => {
 })
 
 const includedItems = computed(() => {
-  const raw = String(safeProduct.value?cardItems ?? '').trim()
+  const raw = String(safeProduct.value?.cardItems ?? '').trim()
   if (!raw) return defaultIncludedItems.value
   const items = raw
     .split(/\r?\n/)
