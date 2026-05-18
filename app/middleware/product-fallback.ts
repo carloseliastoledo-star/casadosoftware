@@ -3,9 +3,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!slug) return navigateTo('/produtos', { replace: true })
 
   try {
-    const product: any = await $fetch(`/api/products/${encodeURIComponent(slug)}`, {
-      method: 'GET'
-    })
+    const requestFetch = useRequestFetch()
+    const product: any = await requestFetch(`/api/products/${encodeURIComponent(slug)}`)
 
     if (!product || !(product?.id || product?.slug)) {
       return navigateTo('/produtos', { replace: true })
