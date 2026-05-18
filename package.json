@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "prisma generate && prisma migrate deploy && nuxt build && node scripts/fix-vercel-output-routes.cjs || true",
+    "vercel-build": "prisma generate && prisma migrate deploy && nuxt build && node scripts/fix-vercel-output-routes.cjs || true",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",
