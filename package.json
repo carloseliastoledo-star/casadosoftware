@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "prisma generate && prisma migrate deploy && nuxt build",
-    "vercel-build": "prisma generate && prisma migrate deploy && node -e \"require('fs').rmSync('.nuxt',{recursive:true,force:true});require('fs').rmSync('.output',{recursive:true,force:true})\" && nuxt build",
+    "vercel-build": "prisma generate && prisma migrate deploy && node -e \"try{require('fs').rmSync('.nuxt',{recursive:true,force:true})}catch(e){}try{require('fs').rmSync('.output',{recursive:true,force:true})}catch(e){}\" && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "start": "prisma migrate deploy && node .output/server/index.mjs",
@@ -45,6 +45,7 @@
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
     "autoprefixer": "^10.4.23",
+    "csv-parse": "^6.2.1",
     "mysql2": "^3.22.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
