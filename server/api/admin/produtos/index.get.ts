@@ -5,15 +5,16 @@ import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   console.log('[admin/produtos] ===== START =====')
-  
+
   try {
     await requireAdminSession(event)
 
     const { storeSlug } = getStoreContext(event)
-    console.log('[admin/produtos] storeSlug:', storeSlug || '(null)')
+    const host = getRequestHeader(event, 'host')
+    console.log('[admin/produtos] storeSlug:', storeSlug || '(null)', 'host:', host)
 
-    // Admin should show all products regardless of storeSlug (for management purposes)
-    // This is different from the public-facing API which filters by store
+    // Filter products by storeSlug to match edit API behavior
+    // Admin should only show products for the current store
     const products = await (prisma as any).produto.findMany({
       select: {
         id: true,
@@ -27,6 +28,7 @@ export default defineEventHandler(async (event) => {
         ativo: true,
         criadoEm: true
       },
+      where: storeSlug ? { storeSlug } : undefined,
       orderBy: { nome: 'asc' }
     })
 
@@ -40,10 +42,10 @@ export default defineEventHandler(async (event) => {
     console.error('[admin/produtos] message:', err?.message)
     console.error('[admin/produtos] code:', err?.code)
     console.error('[admin/produtos] meta:', err?.meta)
-    
-    throw createError({ 
-      statusCode: 503, 
-      statusMessage: `Erro: ${err?.message || 'Erro desconhecido'}` 
+
+    throw createError({
+      statusCode: 503,
+      statusMessage: `Erro: ${err?.message || 'Erro desconhecido'}`
     })
   }
 })

@@ -7,9 +7,15 @@ export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
   const { storeSlug } = getStoreContext(event)
+  const host = getRequestHeader(event, 'host')
 
   const id = event.context.params.id
-  console.log('[admin/produtos/[id]] id=', id, 'storeSlug=', storeSlug)
+  console.log('[ADMIN EDIT PRODUCT]', {
+    id,
+    storeSlug,
+    host,
+    url: getRequestURL(event).href
+  })
 
   const produto = await (prisma as any).produto.findUnique({
     where: { id },
@@ -30,7 +36,7 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  console.log('[admin/produtos/[id]] produto=', produto ? 'found' : 'not found')
+  console.log('[ADMIN EDIT PRODUCT] produto=', produto ? 'found' : 'not found')
 
   if (!produto) {
     throw createError({
