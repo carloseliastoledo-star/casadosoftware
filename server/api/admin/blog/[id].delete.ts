@@ -1,28 +1,12 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
-import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const { storeSlug } = getStoreContext(event)
   const id = String(event.context.params?.id || '')
   if (!id) throw createError({ statusCode: 400, statusMessage: 'id obrigatório' })
-
-  // Verificar se o blog pertence à loja correta
-  const blogPost = await (prisma as any).blogPost.findUnique({
-    where: { id },
-    select: { storeSlug: true }
-  })
-
-  if (!blogPost) {
-    throw createError({ statusCode: 404, statusMessage: 'Blog não encontrado' })
-  }
-
-  if (blogPost.storeSlug !== storeSlug) {
-    throw createError({ statusCode: 403, statusMessage: 'Blog não pertence a esta loja' })
-  }
 
   try {
     await (prisma as any).blogPost.delete({ where: { id } })
