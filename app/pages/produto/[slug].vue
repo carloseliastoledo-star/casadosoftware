@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="bg-[#010d1a] min-h-screen text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
 
@@ -14,7 +14,7 @@
       <!-- Produto -->
       <div v-else-if="safeProduct?.id">
 
-        <!-- ── HERO ── -->
+        <!-- ÔöÇÔöÇ HERO ÔöÇÔöÇ -->
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
           <!-- Imagem -->
@@ -39,12 +39,12 @@
           <!-- Coluna compra -->
           <div class="flex flex-col gap-5">
 
-            <!-- Urgência topo -->
+            <!-- Urg├¬ncia topo -->
             <div class="inline-flex items-center gap-2 bg-orange-500/15 border border-orange-500/40 rounded-full px-4 py-1.5 text-sm font-bold text-orange-400 w-fit">
               {{ t.urgencyBadge }}
             </div>
 
-            <!-- Título -->
+            <!-- T├¡tulo -->
             <h1 class="text-2xl md:text-3xl font-extrabold text-white leading-tight">
               {{ pageH1 }}
             </h1>
@@ -54,7 +54,7 @@
               {{ safeProduct.description }}
             </p>
 
-            <!-- Preço -->
+            <!-- Pre├ºo -->
             <div class="flex flex-col gap-1">
               <div v-if="formattedOldPrice" class="flex items-center gap-3">
                 <span class="text-slate-500 line-through text-lg">{{ formattedOldPrice }}</span>
@@ -67,7 +67,7 @@
                 {{ t.installmentsPrefix }} {{ installments12 }} sem juros
               </div>
               <div v-if="isBrl && formattedPixPrice" class="text-sm font-semibold text-cyan-400 mt-0.5">
-                💰 PIX à vista: <span class="text-white">{{ formattedPixPrice }}</span>
+                ­ƒÆ░ PIX ├á vista: <span class="text-white">{{ formattedPixPrice }}</span>
               </div>
             </div>
 
@@ -82,56 +82,56 @@
 
             <!-- Microcopy -->
             <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-400">
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> {{ t.microInstant }}</span>
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> {{ t.microActivation }}</span>
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✔</span> {{ t.microSecure }}</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">Ô£ö</span> {{ t.microInstant }}</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">Ô£ö</span> {{ t.microActivation }}</span>
+              <span class="flex items-center gap-1"><span class="text-[#00e676]">Ô£ö</span> {{ t.microSecure }}</span>
             </div>
 
-            <!-- Benefícios -->
+            <!-- Benef├¡cios -->
             <div class="grid grid-cols-2 gap-3">
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> {{ t.benefitOriginal }}
+                <span class="text-[#00e676]">Ô£ö</span> {{ t.benefitOriginal }}
               </div>
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> {{ t.benefitAutoDelivery }}
+                <span class="text-[#00e676]">Ô£ö</span> {{ t.benefitAutoDelivery }}
               </div>
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> {{ t.benefitSupport }}
+                <span class="text-[#00e676]">Ô£ö</span> {{ t.benefitSupport }}
               </div>
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
-                <span class="text-[#00e676]">✔</span> {{ t.benefitGuarantee }}
+                <span class="text-[#00e676]">Ô£ö</span> {{ t.benefitGuarantee }}
               </div>
             </div>
 
             <!-- Trust badges -->
             <div class="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
               <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">🔒</span>
+                <span class="text-2xl">­ƒöÆ</span>
                 <span class="text-[10px] font-semibold text-slate-400">{{ t.trustSecure }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">⭐</span>
+                <span class="text-2xl">Ô¡É</span>
                 <span class="text-[10px] font-semibold text-slate-400">{{ t.trustVerified }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">💬</span>
+                <span class="text-2xl">­ƒÆ¼</span>
                 <span class="text-[10px] font-semibold text-slate-400">{{ t.trustClients }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">⚡</span>
+                <span class="text-2xl">ÔÜí</span>
                 <span class="text-[10px] font-semibold text-slate-400">{{ t.trustFastDelivery }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ── BANNER URGÊNCIA ── -->
+        <!-- ÔöÇÔöÇ BANNER URG├èNCIA ÔöÇÔöÇ -->
         <div class="mt-10 flex items-center justify-center gap-3 bg-red-600/10 border border-red-500/30 rounded-2xl px-6 py-4">
-          <span class="text-xl">⚡</span>
+          <span class="text-xl">ÔÜí</span>
           <span class="text-sm font-bold text-red-400">{{ t.urgencyStock }}</span>
         </div>
 
-        <!-- ── O QUE ESTÁ INCLUÍDO ── -->
+        <!-- ÔöÇÔöÇ O QUE EST├ü INCLU├ìDO ÔöÇÔöÇ -->
         <div class="mt-10 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 md:p-8">
           <div class="text-lg font-bold text-white mb-5">{{ t.included }}</div>
           <ul class="grid sm:grid-cols-2 gap-3">
@@ -158,7 +158,7 @@
           </div>
         </div>
 
-        <!-- ── CTA REPETIDO ── -->
+        <!-- ÔöÇÔöÇ CTA REPETIDO ÔöÇÔöÇ -->
         <div class="mt-10 flex flex-col items-center text-center gap-4">
           <p class="text-sm text-slate-500">{{ t.ctaUrgency }}</p>
           <button
@@ -169,24 +169,24 @@
             {{ t.buyNowBtn }}
           </button>
           <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-slate-500">
-            <span>🔒 {{ t.ctaPayment }}</span>
-            <span>📧 {{ t.ctaEmail }}</span>
-            <span>↩️ {{ t.ctaGuarantee }}</span>
+            <span>­ƒöÆ {{ t.ctaPayment }}</span>
+            <span>­ƒôº {{ t.ctaEmail }}</span>
+            <span>Ôå®´©Å {{ t.ctaGuarantee }}</span>
           </div>
         </div>
 
-        <!-- ── TUTORIAL ── -->
+        <!-- ÔöÇÔöÇ TUTORIAL ÔöÇÔöÇ -->
         <div
           v-if="safeProduct.tutorialTitle"
           class="mt-10 bg-[#021326] border border-blue-500/30 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div class="flex items-center gap-5">
-            <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">📘</div>
+            <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">­ƒôÿ</div>
             <div>
               <h3 class="text-lg font-bold text-white">{{ t.tutorialCardTitle }}</h3>
               <p class="text-slate-400 text-sm mt-1">{{ safeProduct.tutorialSubtitle }}</p>
               <p v-if="tutorialAccessChecked && !tutorialAccess?.allowed" class="text-amber-400 text-xs mt-2">
-                🔒 {{ t.tutorialLoginRequired }}
+                ­ƒöÆ {{ t.tutorialLoginRequired }}
               </p>
             </div>
           </div>
@@ -195,24 +195,24 @@
             :to="`/tutoriais/${safeProduct.slug}`"
             class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
-            → {{ t.viewTutorial }}
+            ÔåÆ {{ t.viewTutorial }}
           </NuxtLink>
           <NuxtLink
             v-else
             :to="`/minha-conta/login?returnTo=${encodeURIComponent('/tutoriais/' + safeProduct.slug)}`"
             class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
-            🔑 {{ t.tutorialLoginRequired }}
+            ­ƒöæ {{ t.tutorialLoginRequired }}
           </NuxtLink>
         </div>
 
-        <!-- ── DESCRIÇÃO DETALHADA ── -->
+        <!-- ÔöÇÔöÇ DESCRI├ç├âO DETALHADA ÔöÇÔöÇ -->
         <div class="bg-[#021326] border border-cyan-500/10 rounded-2xl mt-8 p-6 md:p-8">
           <h2 class="text-xl font-bold text-white mb-4">{{ t.detailedDescription }}</h2>
           <div class="prose prose-invert prose-sm max-w-none text-slate-200" v-html="safeDescriptionHtml" />
         </div>
 
-        <!-- ── POR QUE O PREÇO É BOM ── -->
+        <!-- ÔöÇÔöÇ POR QUE O PRE├çO ├ë BOM ÔöÇÔöÇ -->
         <div class="bg-[#021326] border border-cyan-500/10 rounded-2xl mt-6 p-6 md:p-8">
           <h2 class="text-xl font-bold text-white mb-3">{{ t.whyPriceTitle }}</h2>
           <p class="text-slate-400 leading-relaxed text-sm">{{ t.whyPriceP1 }}</p>
@@ -224,11 +224,11 @@
           <section class="prose prose-invert prose-sm max-w-none text-slate-200" v-html="safeSeoContentHtml" />
         </div>
 
-        <!-- Language switcher — hidden on international domains -->
+        <!-- Language switcher ÔÇö hidden on international domains -->
         <IntlLanguageSwitcher
           v-if="!intl.isIntl.value"
           page-type="product"
-          :slug="String(safeProduct.value?.slug || slug.value || '')"
+          :slug="String((safeProduct as any)?.slug || slug.value || '')"
           class="mt-8 w-full"
         />
 
@@ -249,14 +249,14 @@
           </NuxtLink>
         </div>
 
-        <!-- Avaliações de clientes -->
+        <!-- Avalia├º├Áes de clientes -->
         <div class="mt-8">
           <ReviewsSection :product-id="safeProduct.id" :limit="3" />
         </div>
 
       </div>
 
-      <!-- Produto não encontrado -->
+      <!-- Produto n├úo encontrado -->
       <div v-else class="text-center py-32 text-slate-500">{{ t.notFound }}</div>
 
     </div>
@@ -287,7 +287,7 @@ const storeSlug = computed(() => String((config.public as any)?.storeSlug || '')
 
 const affiliateEnabled = computed(() => Boolean((config.public as any)?.affiliateEnabled))
 
-// CRITICAL: read host AND path synchronously in setup — useRequestURL/useRequestHeaders/useRequestEvent
+// CRITICAL: read host AND path synchronously in setup ÔÇö useRequestURL/useRequestHeaders/useRequestEvent
 // only work in synchronous setup context, NOT inside computed (lazy evaluation loses request context)
 const { _ssrHost, _ssrPath } = (() => {
   if (import.meta.server) {
@@ -406,7 +406,7 @@ const whyPriceCardClass = computed(() => {
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 
-// Detect intl domain — multi-signal: client window > SSR path > SSR host
+// Detect intl domain ÔÇö multi-signal: client window > SSR path > SSR host
 const isIntlDomain = computed(() => {
   // 1. After onMounted, window.location.host is authoritative
   if (_clientIsIntl.value !== null) return _clientIsIntl.value
@@ -426,8 +426,8 @@ const isIntlDomain = computed(() => {
 
 const { hreflangLinks: productHreflang } = useSeoLocale({
   pageType: 'product',
-  slug: computed(() => String(safeProduct.value?.slug || slug.value || '')),
-  slugEn: computed(() => String(safeProduct.value?.slugEn || ''))
+  slug: computed(() => String((safeProduct as any)?.slug || slug.value || '')),
+  slugEn: computed(() => String((safeProduct as any)?.slugEn || ''))
 })
 
 const lang = computed(() => effectiveLang.value)
@@ -441,11 +441,11 @@ const isOffice365FiveLicenses = computed(() => {
 
 const pageH1 = computed(() => {
   if (isCasaDoSoftware.value && isOffice365FiveLicenses.value) {
-    if (effectiveLang.value === 'en') return 'Original Office 365 License for PC and Mac – Instant Delivery'
-    if (effectiveLang.value === 'es') return 'Licencia original de Office 365 para PC y Mac – Entrega inmediata'
-    return 'Licença Office 365 Original para PC e Mac – Entrega Instantânea'
+    if (effectiveLang.value === 'en') return 'Original Office 365 License for PC and Mac ÔÇô Instant Delivery'
+    if (effectiveLang.value === 'es') return 'Licencia original de Office 365 para PC y Mac ÔÇô Entrega inmediata'
+    return 'Licen├ºa Office 365 Original para PC e Mac ÔÇô Entrega Instant├ónea'
   }
-  return String(safeProduct.value?.name || '')
+  return String((safeProduct as any)?.name || '')
 })
 const baseUrl = useSiteUrl()
 
@@ -455,7 +455,7 @@ const canonicalUrl = computed(() => {
 
   // On international domains, use slugEn for canonical URL if available
   if (isIntlDomain.value) {
-    const slugEn = String(safeProduct.value?.slugEn || '').trim()
+    const slugEn = String((safeProduct as any)?.slugEn || '').trim()
     const slugToUse = slugEn || s
     return baseUrl ? `${baseUrl}/product/${slugToUse}` : ''
   }
@@ -483,40 +483,34 @@ const { data: product, pending, error } = await useAsyncData(
 )
 
 if (import.meta.server && product.value === null && !error.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
+  throw createError({ statusCode: 404, statusMessage: 'Produto n├úo encontrado' })
 }
 
-const rawProduct = computed(() => {
-  return data.value?.product || data.value?.produto || data.value || product.value || null
-})
-
 const safeProduct = computed(() => {
-  const p = rawProduct.value
+  const p = product.value
 
-  if (!p || !p.id) return null
+  // If no product, return null
+  if (!p) return null
 
-  const price = Number(p.preco ?? p.price ?? 0)
-  const oldPrice = Number(p.precoAntigo ?? p.oldPrice ?? 0)
-
+  // Normalize Portuguese fields to English
   return {
     id: p.id,
-    name: p.name || p.nome || 'Produto digital',
+    name: p.nome || p.name || '',
     slug: p.slug || '',
-    description: p.description || p.descricao || '',
-    price: Number.isFinite(price) ? price : 0,
-    oldPrice: Number.isFinite(oldPrice) ? oldPrice : 0,
+    description: p.descricao || p.description || '',
+    price: Number(p.preco ?? p.price ?? 0),
+    oldPrice: Number(p.precoAntigo ?? p.oldPrice ?? 0) || null,
     currency: p.currency || 'BRL',
     image: p.imagem || p.image || '/products/placeholder.svg',
-    cardItems: p.cardItems || '',
-    categories: p.categories || [],
-    tutorialTitle: p.tutorialTitle || p.tutorialTitulo || 'Tutorial de Ativação',
-    tutorialSubtitle: p.tutorialSubtitle || p.tutorialSubtitulo || '',
-    tutorialContent: p.tutorialContent || p.tutorialConteudo || '',
-    seoTitle: p.seoTitle || p.name || p.nome || 'Produto digital',
-    seoDescription: p.seoDescription || p.description || p.descricao || '',
-    seoContent: p.seoContent || '',
-    finalUrl: p.finalUrl || null,
-    createdAt: p.createdAt || p.criadoEm || null
+    cardItems: p.cardItems || null,
+    tutorialTitle: p.tutorialTitulo || p.tutorialTitle || null,
+    tutorialSubtitle: p.tutorialSubtitulo || p.tutorialSubtitle || 'Aprenda como ativar seu produto passo a passo com nosso guia completo e detalhado.',
+    tutorialContent: p.tutorialConteudo || p.tutorialContent || null,
+    seoTitle: p.seoTitle || null,
+    seoDescription: p.seoDescription || null,
+    seoContent: p.seoContent || null,
+    createdAt: p.criadoEm || p.createdAt || null,
+    finalUrl: p.finalUrl || null
   }
 })
 
@@ -540,7 +534,7 @@ if (import.meta.client) {
 }
 
 const primaryCategorySlug = computed(() => {
-  const raw = safeProduct.value?.categories
+  const raw = (safeProduct as any)?.categories
   if (!Array.isArray(raw)) return ''
   const first = String(raw.find((x: any) => String(x || '').trim()) || '').trim()
   return first
@@ -581,8 +575,7 @@ watch(
 )
 
 const safeImage = computed(() => {
-  if (!safeProduct.value) return '/products/placeholder.svg'
-  const image = String(safeProduct.value.image || safeProduct.value.imagem || '')
+  const image = String((safeProduct.value as any)?.image || (safeProduct.value as any)?.imagem || '')
   if (!image || image === '/products/placeholder.svg') return '/products/placeholder.svg'
 
   if (image.startsWith('http://')) {
@@ -603,120 +596,120 @@ const absoluteImageUrl = computed(() => {
 })
 
 const seoTitle = computed(() => {
-  const customSeoTitle = String(safeProduct.value?.seoTitle || '').trim()
+  const customSeoTitle = String((safeProduct as any)?.seoTitle || '').trim()
   if (customSeoTitle) return customSeoTitle
 
-  const slugValue = String(safeProduct.value?.slug || '').trim().toLowerCase()
+  const slugValue = String((safeProduct as any)?.slug || slug.value || '').trim().toLowerCase()
   const lang = effectiveLang.value
   const base = String(siteName || 'Casa do Software')
 
   if (isCasaDoSoftware.value) {
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
-      if (lang === 'en') return `Windows 11 Pro Original License – Instant Activation | ${base}`
-      if (lang === 'es') return `Licencia Windows 11 Pro Original – Activación Inmediata | ${base}`
-      if (lang === 'fr') return `Licence Windows 11 Pro Originale – Activation Instantanée | ${base}`
-      if (lang === 'it') return `Licenza Windows 11 Pro Originale – Attivazione Immediata | ${base}`
-      return `Licença Windows 11 Pro Original – Ativação Imediata | ${base}`
+      if (lang === 'en') return `Windows 11 Pro Original License ÔÇô Instant Activation | ${base}`
+      if (lang === 'es') return `Licencia Windows 11 Pro Original ÔÇô Activaci├│n Inmediata | ${base}`
+      if (lang === 'fr') return `Licence Windows 11 Pro Originale ÔÇô Activation Instantan├®e | ${base}`
+      if (lang === 'it') return `Licenza Windows 11 Pro Originale ÔÇô Attivazione Immediata | ${base}`
+      return `Licen├ºa Windows 11 Pro Original ÔÇô Ativa├º├úo Imediata | ${base}`
     }
     if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
-      if (lang === 'en') return `Windows 10 Pro Original License – Lifetime Digital Key | ${base}`
-      if (lang === 'es') return `Licencia Windows 10 Pro Original – Clave Digital Vitalicia | ${base}`
-      if (lang === 'fr') return `Licence Windows 10 Pro Originale – Clé Numérique à Vie | ${base}`
-      if (lang === 'it') return `Licenza Windows 10 Pro Originale – Chiave Digitale a Vita | ${base}`
-      return `Windows 10 Pro Original – Licença Digital Vitalícia | ${base}`
+      if (lang === 'en') return `Windows 10 Pro Original License ÔÇô Lifetime Digital Key | ${base}`
+      if (lang === 'es') return `Licencia Windows 10 Pro Original ÔÇô Clave Digital Vitalicia | ${base}`
+      if (lang === 'fr') return `Licence Windows 10 Pro Originale ÔÇô Cl├® Num├®rique ├á Vie | ${base}`
+      if (lang === 'it') return `Licenza Windows 10 Pro Originale ÔÇô Chiave Digitale a Vita | ${base}`
+      return `Windows 10 Pro Original ÔÇô Licen├ºa Digital Vital├¡cia | ${base}`
     }
     if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
       if (isOffice365FiveLicenses.value) {
-        if (lang === 'en') return `Original Microsoft 365 License – 5 Devices, 1TB OneDrive | ${base}`
-        if (lang === 'es') return `Licencia Microsoft 365 Original – 5 Dispositivos, 1TB OneDrive | ${base}`
-        if (lang === 'fr') return `Licence Microsoft 365 Originale – 5 Appareils, 1To OneDrive | ${base}`
-        if (lang === 'it') return `Licenza Microsoft 365 Originale – 5 Dispositivi, 1TB OneDrive | ${base}`
-        return `Licença Microsoft 365 Original PC e Mac | Entrega imediata`
+        if (lang === 'en') return `Original Microsoft 365 License ÔÇô 5 Devices, 1TB OneDrive | ${base}`
+        if (lang === 'es') return `Licencia Microsoft 365 Original ÔÇô 5 Dispositivos, 1TB OneDrive | ${base}`
+        if (lang === 'fr') return `Licence Microsoft 365 Originale ÔÇô 5 Appareils, 1To OneDrive | ${base}`
+        if (lang === 'it') return `Licenza Microsoft 365 Originale ÔÇô 5 Dispositivi, 1TB OneDrive | ${base}`
+        return `Licen├ºa Microsoft 365 Original PC e Mac | Entrega imediata`
       }
-      if (lang === 'en') return `Buy Microsoft Office 365 License – Instant Delivery | ${base}`
-      if (lang === 'es') return `Comprar Licencia Microsoft Office 365 – Entrega Inmediata | ${base}`
-      if (lang === 'fr') return `Acheter Licence Microsoft Office 365 – Livraison Instantanée | ${base}`
-      if (lang === 'it') return `Acquista Licenza Microsoft Office 365 – Consegna Immediata | ${base}`
-      return `Office 365 Original – Licença Oficial com Entrega Imediata`
+      if (lang === 'en') return `Buy Microsoft Office 365 License ÔÇô Instant Delivery | ${base}`
+      if (lang === 'es') return `Comprar Licencia Microsoft Office 365 ÔÇô Entrega Inmediata | ${base}`
+      if (lang === 'fr') return `Acheter Licence Microsoft Office 365 ÔÇô Livraison Instantan├®e | ${base}`
+      if (lang === 'it') return `Acquista Licenza Microsoft Office 365 ÔÇô Consegna Immediata | ${base}`
+      return `Office 365 Original ÔÇô Licen├ºa Oficial com Entrega Imediata`
     }
   }
-  const name = String(safeProduct.value?.name || '').trim()
+  const name = String((safeProduct as any)?.name || '').trim()
   if (name) {
     // For casadosoftware.com.br, always use Portuguese
     if (isCasaDoSoftware.value) {
-      return `${name} | Licença Digital + Acesso Imediato | ${base}`
+      return `${name} | Licen├ºa Digital + Acesso Imediato | ${base}`
     }
-    if (lang === 'en') return `Buy ${name} – Instant Digital Delivery | ${base}`
-    if (lang === 'es') return `Comprar ${name} – Entrega Digital Inmediata | ${base}`
-    if (lang === 'fr') return `Acheter ${name} – Livraison Numérique Instantanée | ${base}`
-    if (lang === 'it') return `Acquista ${name} – Consegna Digitale Immediata | ${base}`
+    if (lang === 'en') return `Buy ${name} ÔÇô Instant Digital Delivery | ${base}`
+    if (lang === 'es') return `Comprar ${name} ÔÇô Entrega Digital Inmediata | ${base}`
+    if (lang === 'fr') return `Acheter ${name} ÔÇô Livraison Num├®rique Instantan├®e | ${base}`
+    if (lang === 'it') return `Acquista ${name} ÔÇô Consegna Digitale Immediata | ${base}`
     return `${name} | ${base}`
   }
   return base
 })
 
 const seoDescription = computed(() => {
-  const customSeoDesc = String(safeProduct.value?.seoDescription || '').trim()
+  const customSeoDesc = String((safeProduct as any)?.seoDescription || '').trim()
   if (customSeoDesc) return customSeoDesc
 
-  const slugValue = String(safeProduct.value?.slug || slug.value || '').trim().toLowerCase()
+  const slugValue = String((safeProduct as any)?.slug || slug.value || '').trim().toLowerCase()
   const lang = effectiveLang.value
 
   if (isCasaDoSoftware.value) {
     // For casadosoftware.com.br, always use Portuguese
     if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
-      return 'Windows 11 Pro original com chave vitalícia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
+      return 'Windows 11 Pro original com chave vital├¡cia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
     }
     if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
-      return 'Windows 10 Pro Original – Licença Digital Vitalícia. Ativação imediata, instalação simples e suporte completo. Entrega por e-mail!'
+      return 'Windows 10 Pro Original ÔÇô Licen├ºa Digital Vital├¡cia. Ativa├º├úo imediata, instala├º├úo simples e suporte completo. Entrega por e-mail!'
     }
     if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
       if (isOffice365FiveLicenses.value) {
-        return 'Licença Microsoft 365 Original PC e Mac – Entrega imediata. Ative em até 5 dispositivos, 1TB OneDrive, conta oficial e suporte completo.'
+        return 'Licen├ºa Microsoft 365 Original PC e Mac ÔÇô Entrega imediata. Ative em at├® 5 dispositivos, 1TB OneDrive, conta oficial e suporte completo.'
       }
-      return 'Office 365 Original – Licença Oficial com Entrega Imediata. Ative em minutos, conta oficial e suporte completo. Entrega por e-mail!'
+      return 'Office 365 Original ÔÇô Licen├ºa Oficial com Entrega Imediata. Ative em minutos, conta oficial e suporte completo. Entrega por e-mail!'
     }
   }
 
   // For international domains or other stores
   if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
     if (lang === 'en') return 'Buy Windows 11 Pro original license with lifetime key and instant delivery. Install and activate in minutes with full support. Secure payment!'
-    if (lang === 'es') return '¡Compra tu licencia original de Windows 11 Pro con clave vitalicia y entrega inmediata. Instala y activa en minutos con soporte completo!'
-    if (lang === 'fr') return 'Achetez votre licence Windows 11 Pro originale avec clé à vie et livraison instantanée. Installation simple avec assistance complète!'
+    if (lang === 'es') return '┬íCompra tu licencia original de Windows 11 Pro con clave vitalicia y entrega inmediata. Instala y activa en minutos con soporte completo!'
+    if (lang === 'fr') return 'Achetez votre licence Windows 11 Pro originale avec cl├® ├á vie et livraison instantan├®e. Installation simple avec assistance compl├¿te!'
     if (lang === 'it') return 'Acquista la licenza originale di Windows 11 Pro con chiave a vita e consegna immediata. Attiva in pochi minuti con supporto completo!'
-    return 'Windows 11 Pro original com chave vitalícia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
+    return 'Windows 11 Pro original com chave vital├¡cia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
   }
   if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
     if (lang === 'en') return 'Buy Windows 10 Pro original with instant activation and lifetime guarantee. Digital license for PC or laptop. Support included!'
-    if (lang === 'es') return 'Compra Windows 10 Pro original con activación instantánea y garantía vitalicia. Licencia digital para PC o portátil. ¡Soporte incluido!'
-    if (lang === 'fr') return 'Achetez Windows 10 Pro original avec activation instantanée et garantie à vie. Licence numérique pour PC ou ordinateur portable. Support inclus!'
+    if (lang === 'es') return 'Compra Windows 10 Pro original con activaci├│n instant├ínea y garant├¡a vitalicia. Licencia digital para PC o port├ítil. ┬íSoporte incluido!'
+    if (lang === 'fr') return 'Achetez Windows 10 Pro original avec activation instantan├®e et garantie ├á vie. Licence num├®rique pour PC ou ordinateur portable. Support inclus!'
     if (lang === 'it') return 'Acquista Windows 10 Pro originale con attivazione immediata e garanzia a vita. Licenza digitale per PC o laptop. Supporto incluso!'
-    return 'Compre Windows 10 Pro original com ativação instantânea e garantia. Licença vitalícia para PC ou notebook. Suporte incluso!'
+    return 'Compre Windows 10 Pro original com ativa├º├úo instant├ónea e garantia. Licen├ºa vital├¡cia para PC ou notebook. Suporte incluso!'
   }
   if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
     if (isOffice365FiveLicenses.value) {
       if (lang === 'en') return 'Buy original Microsoft 365 license for up to 5 devices. Fast activation, official account, 1TB OneDrive storage. Instant delivery by email!'
-      if (lang === 'es') return 'Compra tu licencia Microsoft 365 original para hasta 5 dispositivos. Activación rápida, cuenta oficial y 1TB de almacenamiento. ¡Entrega inmediata!'
-      if (lang === 'fr') return 'Achetez votre licence Microsoft 365 originale pour jusqu\'à 5 appareils. Activation rapide, compte officiel, 1To OneDrive. Livraison instantanée!'
+      if (lang === 'es') return 'Compra tu licencia Microsoft 365 original para hasta 5 dispositivos. Activaci├│n r├ípida, cuenta oficial y 1TB de almacenamiento. ┬íEntrega inmediata!'
+      if (lang === 'fr') return 'Achetez votre licence Microsoft 365 originale pour jusqu\'├á 5 appareils. Activation rapide, compte officiel, 1To OneDrive. Livraison instantan├®e!'
       if (lang === 'it') return 'Acquista la tua licenza Microsoft 365 originale per fino a 5 dispositivi. Attivazione rapida, account ufficiale, 1TB OneDrive. Consegna immediata!'
-      return 'Comprar licença do pacote Office permanente nunca foi tão fácil. Original, ativação rápida, conta oficial, suporte completo e envio imediato por email.'
+      return 'Comprar licen├ºa do pacote Office permanente nunca foi t├úo f├ícil. Original, ativa├º├úo r├ípida, conta oficial, suporte completo e envio imediato por email.'
     }
     if (lang === 'en') return 'Original Microsoft Office 365 for PC and Mac. Fast activation, official account and full support. Get it now by email!'
-    if (lang === 'es') return 'Microsoft Office 365 original para PC y Mac. Activación rápida, cuenta oficial y soporte completo. ¡Recíbelo ahora por email!'
+    if (lang === 'es') return 'Microsoft Office 365 original para PC y Mac. Activaci├│n r├ípida, cuenta oficial y soporte completo. ┬íRec├¡belo ahora por email!'
     if (lang === 'fr') return 'Microsoft Office 365 original pour PC et Mac. Activation rapide, compte officiel et support complet. Recevez-le maintenant par email!'
     if (lang === 'it') return 'Microsoft Office 365 originale per PC e Mac. Attivazione rapida, account ufficiale e supporto completo. Ricevilo ora per email!'
-    return 'Microsoft Office 365 original para PC e Mac. Ativação rápida, conta oficial e suporte completo. Receba agora por e-mail!'
+    return 'Microsoft Office 365 original para PC e Mac. Ativa├º├úo r├ípida, conta oficial e suporte completo. Receba agora por e-mail!'
   }
   if (slugValue.includes('office') && slugValue.includes('2021')) {
     if (lang === 'en') return 'Buy Microsoft Office 2021 original with permanent key and simple installation. Instant delivery and secure payment. Activate in minutes!'
-    if (lang === 'es') return '¡Compra Microsoft Office 2021 original con clave permanente e instalación simple. Entrega inmediata y pago seguro. Actívalo en minutos!'
-    if (lang === 'fr') return 'Achetez Microsoft Office 2021 original avec clé permanente et installation simple. Livraison instantanée et paiement sécurisé. Activez en minutes!'
+    if (lang === 'es') return '┬íCompra Microsoft Office 2021 original con clave permanente e instalaci├│n simple. Entrega inmediata y pago seguro. Act├¡valo en minutos!'
+    if (lang === 'fr') return 'Achetez Microsoft Office 2021 original avec cl├® permanente et installation simple. Livraison instantan├®e et paiement s├®curis├®. Activez en minutes!'
     if (lang === 'it') return 'Acquista Microsoft Office 2021 originale con chiave permanente e installazione semplice. Consegna immediata e pagamento sicuro. Attiva in minuti!'
-    return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
+    return 'Licen├ºa Office 2021 original com chave permanente e instala├º├úo simples. Entrega imediata e pagamento seguro. Ative em minutos!'
   }
 
-  const rawShort = String(safeProduct.value?.description || '').trim()
-  const rawLong = String(safeProduct.value?.descricao || '').trim()
+  const rawShort = String((safeProduct as any)?.description || '').trim()
+  const rawLong = String((safeProduct as any)?.descricao || '').trim()
 
   const raw = rawShort || rawLong
   if (!raw) return ''
@@ -807,7 +800,7 @@ useSeoMeta({
 })
 
 const safeDescriptionHtml = computed(() => {
-  const raw = String(safeProduct.value?.descricao || '').trim()
+  const raw = String((safeProduct as any)?.descricao || '').trim()
   if (!raw) return ''
 
   const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)
@@ -928,7 +921,7 @@ const safeDescriptionHtml = computed(() => {
 })
 
 const safeSeoContentHtml = computed(() => {
-  const raw = String(safeProduct.value?.seoContent || '').trim()
+  const raw = String((safeProduct as any)?.seoContent || '').trim()
   if (!raw) return ''
   return safeSanitize(raw, {
     USE_PROFILES: { html: true }
@@ -943,9 +936,9 @@ function onImageError(e: Event) {
 }
 
 const effectiveCurrencyLower = computed(() => {
-  // Domain takes priority — gvgmall.co always USD regardless of product.currency in DB
+  // Domain takes priority ÔÇö gvgmall.co always USD regardless of product.currency in DB
   if (isIntlDomain.value) return 'usd'
-  const c = String(safeProduct.value?.currency || '').trim().toLowerCase()
+  const c = String((safeProduct as any)?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
   return intl.currencyLower.value || 'brl'
 })
@@ -953,20 +946,18 @@ const effectiveCurrencyLower = computed(() => {
 const isBrl = computed(() => effectiveCurrencyLower.value === 'brl')
 
 const formattedPrice = computed(() => {
-  if (!safeProduct.value) return ''
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
-  return Number(safeProduct.value.price || 0).toLocaleString(locale, {
+  return Number((safeProduct.value as any)?.price || 0).toLocaleString(locale, {
     style: 'currency',
     currency
   })
 })
 
 const formattedOldPrice = computed(() => {
-  if (!safeProduct.value) return null
-  const oldPrice = safeProduct.value.oldPrice
+  const oldPrice = (safeProduct.value as any)?.oldPrice
   if (!oldPrice || Number.isNaN(Number(oldPrice))) return null
-  if (Number(oldPrice) <= Number(safeProduct.value.price || 0)) return null
+  if (Number(oldPrice) <= Number((safeProduct.value as any)?.price || 0)) return null
 
   const currency = effectiveCurrencyLower.value === 'usd' ? 'USD' : effectiveCurrencyLower.value === 'eur' ? 'EUR' : 'BRL'
   const locale = currency === 'BRL' ? 'pt-BR' : 'en-US'
@@ -977,9 +968,8 @@ const formattedOldPrice = computed(() => {
 })
 
 const discountPercent = computed(() => {
-  if (!safeProduct.value) return null
-  const oldPrice = safeProduct.value.oldPrice
-  const current = Number(safeProduct.value.price || 0)
+  const oldPrice = (safeProduct.value as any)?.oldPrice
+  const current = Number((safeProduct.value as any)?.price || 0)
   if (!oldPrice || !current) return null
   const oldN = Number(oldPrice)
   if (!oldN || oldN <= current) return null
@@ -988,8 +978,7 @@ const discountPercent = computed(() => {
 
 const formattedPixPrice = computed(() => {
   if (!isBrl.value) return null
-  if (!safeProduct.value) return null
-  const price = Number(safeProduct.value.price || 0)
+  const price = Number((safeProduct.value as any)?.price || 0)
   if (!price) return null
   const pixPrice = Math.round(price * 0.95 * 100) / 100
   if (pixPrice === price) return null
@@ -1001,8 +990,7 @@ const formattedPixPrice = computed(() => {
 
 const installments12 = computed(() => {
   if (!isBrl.value) return null
-  if (!safeProduct.value) return null
-  const price = Number(safeProduct.value.price || 0)
+  const price = Number((safeProduct.value as any)?.price || 0)
   if (!price) return null
   const value = Math.round((price / 12) * 100) / 100
   return value.toLocaleString('pt-BR', {
@@ -1027,14 +1015,14 @@ const defaultIncludedItems = computed(() => {
 
   if (effectiveLang.value === 'es') {
     return [
-      'Envío rápido tras la confirmación',
+      'Env├¡o r├ípido tras la confirmaci├│n',
       'Licencia digital permanente',
       'Soporte en horario comercial',
       '1 PC',
-      'Versión profesional con funciones avanzadas',
+      'Versi├│n profesional con funciones avanzadas',
       'Compatible con Windows 10 y 11',
-      'Activación permanente',
-      'Sin renovación'
+      'Activaci├│n permanente',
+      'Sin renovaci├│n'
     ]
   }
 
@@ -1044,7 +1032,7 @@ const defaultIncludedItems = computed(() => {
       'Licenza digitale permanente',
       'Supporto negli orari di ufficio',
       '1 PC',
-      'Versione professionale con funzionalità avanzate',
+      'Versione professionale con funzionalit├á avanzate',
       'Compatibile con Windows 10 e 11',
       'Attivazione permanente',
       'Nessun rinnovo necessario'
@@ -1053,11 +1041,11 @@ const defaultIncludedItems = computed(() => {
 
   if (effectiveLang.value === 'fr') {
     return [
-      'Livraison rapide après confirmation',
-      'Licence numérique permanente',
-      'Support pendant les heures ouvrées',
+      'Livraison rapide apr├¿s confirmation',
+      'Licence num├®rique permanente',
+      'Support pendant les heures ouvr├®es',
       '1 PC',
-      'Version professionnelle avec fonctionnalités avancées',
+      'Version professionnelle avec fonctionnalit├®s avanc├®es',
       'Compatible avec Windows 10 et 11',
       'Activation permanente',
       'Aucun renouvellement requis'
@@ -1065,19 +1053,19 @@ const defaultIncludedItems = computed(() => {
   }
 
   return [
-    'Envio imediato após confirmação',
-    'Licença digital permanente',
-    'Suporte em horário comercial',
+    'Envio imediato ap├│s confirma├º├úo',
+    'Licen├ºa digital permanente',
+    'Suporte em hor├írio comercial',
     '1 PC',
-    'Versão profissional com recursos avançados',
-    'Compatível Windows 10 e 11',
-    'Ativação permanente',
-    'Sem renovação necessária'
+    'Vers├úo profissional com recursos avan├ºados',
+    'Compat├¡vel Windows 10 e 11',
+    'Ativa├º├úo permanente',
+    'Sem renova├º├úo necess├íria'
   ]
 })
 
 const includedItems = computed(() => {
-  const raw = String(safeProduct.value?.cardItems ?? '').trim()
+  const raw = String((safeProduct as any)?.cardItems ?? '').trim()
   if (!raw) return defaultIncludedItems.value
   const items = raw
     .split(/\r?\n/)
@@ -1088,116 +1076,116 @@ const includedItems = computed(() => {
   if (effectiveLang.value === 'pt') return items
 
   const dictEn: Record<string, string> = {
-    'Envio imediato após confirmação': 'Fast delivery after confirmation',
-    'Envio rápido após confirmação': 'Fast delivery after confirmation',
-    'Licença digital permanente': 'Permanent digital license',
-    'Licença digital com ativação permanente': 'Digital license with permanent activation',
-    'Licença digital': 'Digital license',
+    'Envio imediato ap├│s confirma├º├úo': 'Fast delivery after confirmation',
+    'Envio r├ípido ap├│s confirma├º├úo': 'Fast delivery after confirmation',
+    'Licen├ºa digital permanente': 'Permanent digital license',
+    'Licen├ºa digital com ativa├º├úo permanente': 'Digital license with permanent activation',
+    'Licen├ºa digital': 'Digital license',
     'Suporte 24/7': '24/7 support',
-    'Suporte em horário comercial': 'Business hours support',
+    'Suporte em hor├írio comercial': 'Business hours support',
     '1 PC': '1 PC',
-    'Compatível Windows 10 e 11': 'Compatible with Windows 10 and 11',
-    'Ativação permanente': 'Permanent activation',
-    'Sem renovação necessária': 'No renewal required',
-    'Sem renovação': 'No renewal required',
-    'Versão profissional com recursos avançados': 'Professional version with advanced features',
+    'Compat├¡vel Windows 10 e 11': 'Compatible with Windows 10 and 11',
+    'Ativa├º├úo permanente': 'Permanent activation',
+    'Sem renova├º├úo necess├íria': 'No renewal required',
+    'Sem renova├º├úo': 'No renewal required',
+    'Vers├úo profissional com recursos avan├ºados': 'Professional version with advanced features',
     'Acesso digital com conta ativa': 'Digital access with active account',
-    'Uso durante o período contratado': 'Use during contracted period',
-    'Uso contínuo sem mensalidade': 'Continuous use, no monthly fee',
+    'Uso durante o per├¡odo contratado': 'Use during contracted period',
+    'Uso cont├¡nuo sem mensalidade': 'Continuous use, no monthly fee',
     '5 PC , MAC , IOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
     '5 PC , MAC , iOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
     '5 PC, MAC , IOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
     '5 PC, MAC , iOS , Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
     '5 PC, MAC, iOS, Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
     '5 PC, MAC, IOS, Tablet e Celular': '5 PCs, Mac, iOS, Tablet and Mobile',
-    'Atualização gratuita': 'Free updates',
-    'Atualizações gratuitas': 'Free updates',
+    'Atualiza├º├úo gratuita': 'Free updates',
+    'Atualiza├º├Áes gratuitas': 'Free updates',
     'Sem mensalidade': 'No monthly fee',
-    'Uso vitalício': 'Lifetime use',
+    'Uso vital├¡cio': 'Lifetime use',
     'Chave ESD': 'ESD Key',
-    'Instalação simples': 'Easy installation'
+    'Instala├º├úo simples': 'Easy installation'
   }
 
   const dictEs: Record<string, string> = {
-    'Envio imediato após confirmação': 'Envío rápido tras la confirmación',
-    'Envio rápido após confirmação': 'Envío rápido tras la confirmación',
-    'Licença digital permanente': 'Licencia digital permanente',
-    'Licença digital com ativação permanente': 'Licencia digital con activación permanente',
-    'Licença digital': 'Licencia digital',
+    'Envio imediato ap├│s confirma├º├úo': 'Env├¡o r├ípido tras la confirmaci├│n',
+    'Envio r├ípido ap├│s confirma├º├úo': 'Env├¡o r├ípido tras la confirmaci├│n',
+    'Licen├ºa digital permanente': 'Licencia digital permanente',
+    'Licen├ºa digital com ativa├º├úo permanente': 'Licencia digital con activaci├│n permanente',
+    'Licen├ºa digital': 'Licencia digital',
     'Suporte 24/7': 'Soporte 24/7',
-    'Suporte em horário comercial': 'Soporte en horario comercial',
+    'Suporte em hor├írio comercial': 'Soporte en horario comercial',
     '1 PC': '1 PC',
-    'Compatível Windows 10 e 11': 'Compatible con Windows 10 y 11',
-    'Ativação permanente': 'Activación permanente',
-    'Sem renovação necessária': 'Sin renovación',
-    'Sem renovação': 'Sin renovación',
-    'Versão profissional com recursos avançados': 'Versión profesional con funciones avanzadas',
+    'Compat├¡vel Windows 10 e 11': 'Compatible con Windows 10 y 11',
+    'Ativa├º├úo permanente': 'Activaci├│n permanente',
+    'Sem renova├º├úo necess├íria': 'Sin renovaci├│n',
+    'Sem renova├º├úo': 'Sin renovaci├│n',
+    'Vers├úo profissional com recursos avan├ºados': 'Versi├│n profesional con funciones avanzadas',
     'Acesso digital com conta ativa': 'Acceso digital con cuenta activa',
-    'Uso durante o período contratado': 'Uso durante el período contratado',
-    'Uso contínuo sem mensalidade': 'Uso continuo sin mensualidad',
-    'Atualização gratuita': 'Actualización gratuita',
-    'Atualizações gratuitas': 'Actualizaciones gratuitas',
+    'Uso durante o per├¡odo contratado': 'Uso durante el per├¡odo contratado',
+    'Uso cont├¡nuo sem mensalidade': 'Uso continuo sin mensualidad',
+    'Atualiza├º├úo gratuita': 'Actualizaci├│n gratuita',
+    'Atualiza├º├Áes gratuitas': 'Actualizaciones gratuitas',
     'Sem mensalidade': 'Sin mensualidad',
-    'Uso vitalício': 'Uso de por vida',
+    'Uso vital├¡cio': 'Uso de por vida',
     'Chave ESD': 'Clave ESD',
-    'Instalação simples': 'Instalación sencilla'
+    'Instala├º├úo simples': 'Instalaci├│n sencilla'
   }
 
   const dictIt: Record<string, string> = {
-    'Envio imediato após confirmação': 'Consegna rapida dopo la conferma',
-    'Envio rápido após confirmação': 'Consegna rapida dopo la conferma',
-    'Licença digital permanente': 'Licenza digitale permanente',
-    'Licença digital com ativação permanente': 'Licenza digitale con attivazione permanente',
-    'Licença digital': 'Licenza digitale',
+    'Envio imediato ap├│s confirma├º├úo': 'Consegna rapida dopo la conferma',
+    'Envio r├ípido ap├│s confirma├º├úo': 'Consegna rapida dopo la conferma',
+    'Licen├ºa digital permanente': 'Licenza digitale permanente',
+    'Licen├ºa digital com ativa├º├úo permanente': 'Licenza digitale con attivazione permanente',
+    'Licen├ºa digital': 'Licenza digitale',
     'Suporte 24/7': 'Supporto 24/7',
-    'Suporte em horário comercial': 'Supporto negli orari di ufficio',
+    'Suporte em hor├írio comercial': 'Supporto negli orari di ufficio',
     '1 PC': '1 PC',
-    'Compatível Windows 10 e 11': 'Compatibile con Windows 10 e 11',
-    'Ativação permanente': 'Attivazione permanente',
-    'Sem renovação necessária': 'Nessun rinnovo necessario',
-    'Sem renovação': 'Nessun rinnovo necessario',
-    'Versão profissional com recursos avançados': 'Versione professionale con funzionalità avanzate',
+    'Compat├¡vel Windows 10 e 11': 'Compatibile con Windows 10 e 11',
+    'Ativa├º├úo permanente': 'Attivazione permanente',
+    'Sem renova├º├úo necess├íria': 'Nessun rinnovo necessario',
+    'Sem renova├º├úo': 'Nessun rinnovo necessario',
+    'Vers├úo profissional com recursos avan├ºados': 'Versione professionale con funzionalit├á avanzate',
     'Acesso digital com conta ativa': 'Accesso digitale con account attivo',
-    'Uso durante o período contratado': 'Utilizzo durante il periodo contrattuale',
-    'Uso contínuo sem mensalidade': 'Uso continuato senza canone mensile',
-    'Atualização gratuita': 'Aggiornamento gratuito',
-    'Atualizações gratuitas': 'Aggiornamenti gratuiti',
+    'Uso durante o per├¡odo contratado': 'Utilizzo durante il periodo contrattuale',
+    'Uso cont├¡nuo sem mensalidade': 'Uso continuato senza canone mensile',
+    'Atualiza├º├úo gratuita': 'Aggiornamento gratuito',
+    'Atualiza├º├Áes gratuitas': 'Aggiornamenti gratuiti',
     'Sem mensalidade': 'Nessun canone mensile',
-    'Uso vitalício': 'Uso a vita',
+    'Uso vital├¡cio': 'Uso a vita',
     'Chave ESD': 'Chiave ESD',
-    'Instalação simples': 'Installazione semplice'
+    'Instala├º├úo simples': 'Installazione semplice'
   }
 
   const dictFr: Record<string, string> = {
-    'Envio imediato após confirmação': 'Livraison rapide après confirmation',
-    'Envio rápido após confirmação': 'Livraison rapide après confirmation',
-    'Licença digital permanente': 'Licence numérique permanente',
-    'Licença digital com ativação permanente': 'Licence numérique avec activation permanente',
-    'Licença digital': 'Licence numérique',
+    'Envio imediato ap├│s confirma├º├úo': 'Livraison rapide apr├¿s confirmation',
+    'Envio r├ípido ap├│s confirma├º├úo': 'Livraison rapide apr├¿s confirmation',
+    'Licen├ºa digital permanente': 'Licence num├®rique permanente',
+    'Licen├ºa digital com ativa├º├úo permanente': 'Licence num├®rique avec activation permanente',
+    'Licen├ºa digital': 'Licence num├®rique',
     'Suporte 24/7': 'Support 24/7',
-    'Suporte em horário comercial': 'Support pendant les heures ouvrées',
+    'Suporte em hor├írio comercial': 'Support pendant les heures ouvr├®es',
     '1 PC': '1 PC',
-    'Compatível Windows 10 e 11': 'Compatible avec Windows 10 et 11',
-    'Ativação permanente': 'Activation permanente',
-    'Sem renovação necessária': 'Aucun renouvellement requis',
-    'Sem renovação': 'Aucun renouvellement requis',
-    'Versão profissional com recursos avançados': 'Version professionnelle avec fonctionnalités avancées',
-    'Acesso digital com conta ativa': 'Accès numérique avec compte actif',
-    'Uso durante o período contratado': "Utilisation pendant la durée du contrat",
-    'Uso contínuo sem mensalidade': 'Utilisation continue sans abonnement mensuel',
-    'Atualização gratuita': 'Mise à jour gratuite',
-    'Atualizações gratuitas': 'Mises à jour gratuites',
+    'Compat├¡vel Windows 10 e 11': 'Compatible avec Windows 10 et 11',
+    'Ativa├º├úo permanente': 'Activation permanente',
+    'Sem renova├º├úo necess├íria': 'Aucun renouvellement requis',
+    'Sem renova├º├úo': 'Aucun renouvellement requis',
+    'Vers├úo profissional com recursos avan├ºados': 'Version professionnelle avec fonctionnalit├®s avanc├®es',
+    'Acesso digital com conta ativa': 'Acc├¿s num├®rique avec compte actif',
+    'Uso durante o per├¡odo contratado': "Utilisation pendant la dur├®e du contrat",
+    'Uso cont├¡nuo sem mensalidade': 'Utilisation continue sans abonnement mensuel',
+    'Atualiza├º├úo gratuita': 'Mise ├á jour gratuite',
+    'Atualiza├º├Áes gratuitas': 'Mises ├á jour gratuites',
     'Sem mensalidade': 'Sans abonnement mensuel',
-    'Uso vitalício': 'Utilisation à vie',
-    'Chave ESD': 'Clé ESD',
-    'Instalação simples': 'Installation simple'
+    'Uso vital├¡cio': 'Utilisation ├á vie',
+    'Chave ESD': 'Cl├® ESD',
+    'Instala├º├úo simples': 'Installation simple'
   }
 
   const lang = effectiveLang.value
   const dict = lang === 'en' ? dictEn : lang === 'es' ? dictEs : lang === 'it' ? dictIt : dictFr
 
   function looksLikePt(s: string): boolean {
-    return /[ãçõ]|após|contratado|vitalí|mensalidade|imediato|horário|comercial|ativação|atualiz|instala|gratuita|simples|contínuo/i.test(s)
+    return /[├ú├º├Á]|ap├│s|contratado|vital├¡|mensalidade|imediato|hor├írio|comercial|ativa├º├úo|atualiz|instala|gratuita|simples|cont├¡nuo/i.test(s)
   }
 
   return items
@@ -1206,8 +1194,8 @@ const includedItems = computed(() => {
 })
 
 const isMicrosoft365 = computed(() => {
-  const customSeoDesc = String(safeProduct.value?.seoDescription || '').trim()
-  const slugValue = String(safeProduct.value?.slug || '').trim().toLowerCase()
+  const name = String((safeProduct as any)?.name || '').toLowerCase()
+  const slugValue = String((safeProduct as any)?.slug || '').toLowerCase()
   return (
     name.includes('microsoft 365') ||
     name.includes('office 365') ||
@@ -1228,7 +1216,7 @@ const t = computed(() => {
       included: "What's included:",
       installmentsPrefix: 'up to 12x of',
       pixLabel: 'PIX upfront payment',
-      digitalDelivery: 'Digital delivery • Available',
+      digitalDelivery: 'Digital delivery ÔÇó Available',
       freeRefund: 'Free refund up to 7 days after purchase',
       guarantee: 'Guaranteed purchase. If you are not satisfied, we refund you',
       emailDelivery: 'Delivered by email after confirmation',
@@ -1239,14 +1227,14 @@ const t = computed(() => {
       whyPriceTitle: 'Why is our price more affordable?',
       whyPriceP1: 'Our prices are more affordable because we work with digital distribution, with no physical media, logistics, or middleman costs.',
       whyPriceP2: 'This allows us to offer competitive prices while keeping support and fast delivery after payment confirmation.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 — how it works',
+      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö how it works',
       ms365Bullet1: '',
       ms365Bullet2: 'Delivery via a provided account (login and password) after payment confirmation.',
       ms365Bullet3: 'Access is via the provided account (it is not activation on an existing personal Microsoft account).',
       ms365HelpPrefix: 'Questions? See',
       ms365HelpLink: 'Digital delivery',
-      urgencyBadge: '🔥 Limited time offer',
-      buyNowBtn: '🛒 BUY NOW',
+      urgencyBadge: '­ƒöÑ Limited time offer',
+      buyNowBtn: '­ƒøÆ BUY NOW',
       microInstant: 'Instant delivery',
       microActivation: 'Activation in minutes',
       microSecure: 'Secure purchase',
@@ -1258,8 +1246,8 @@ const t = computed(() => {
       trustVerified: 'Verified product',
       trustClients: '+1000 clients',
       trustFastDelivery: 'Fast delivery',
-      urgencyStock: '⚡ Limited digital stock — get yours now before it runs out!',
-      ctaUrgency: '🔥 Don’t miss this offer — price may change at any time',
+      urgencyStock: 'ÔÜí Limited digital stock ÔÇö get yours now before it runs out!',
+      ctaUrgency: '­ƒöÑ DonÔÇÖt miss this offer ÔÇö price may change at any time',
       ctaPayment: 'Secure payment',
       ctaEmail: 'Email delivery',
       ctaGuarantee: '7-day guarantee',
@@ -1276,46 +1264,46 @@ const t = computed(() => {
       loading: 'Cargando producto...',
       notFound: 'Producto no encontrado.',
       buy: 'Comprar',
-      included: 'Qué incluye:',
+      included: 'Qu├® incluye:',
       installmentsPrefix: 'hasta 12x de',
       pixLabel: 'Pago al contado con PIX',
-      digitalDelivery: 'Entrega digital • Disponible',
-      freeRefund: 'Devolución gratis hasta 7 días después de la compra',
+      digitalDelivery: 'Entrega digital ÔÇó Disponible',
+      freeRefund: 'Devoluci├│n gratis hasta 7 d├¡as despu├®s de la compra',
       guarantee: 'Compra garantizada. Si no queda satisfecho, le devolvemos su dinero',
-      emailDelivery: 'Envío por e-mail tras la confirmación',
-      tutorialCardTitle: 'Tutorial de activación',
+      emailDelivery: 'Env├¡o por e-mail tras la confirmaci├│n',
+      tutorialCardTitle: 'Tutorial de activaci├│n',
       viewTutorial: 'Ver tutorial',
-      tutorialLoginRequired: 'Inicia sesión para acceder',
-      detailedDescription: 'Descripción detallada',
-      whyPriceTitle: '¿Por qué nuestro precio es más accesible?',
-      whyPriceP1: 'Nuestros precios son más accesibles porque trabajamos con distribución digital, sin costos de medios físicos, logística ni intermediarios.',
-      whyPriceP2: 'Esto nos permite ofrecer valores competitivos, manteniendo soporte y entrega rápida tras la confirmación del pago.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 — cómo funciona',
+      tutorialLoginRequired: 'Inicia sesi├│n para acceder',
+      detailedDescription: 'Descripci├│n detallada',
+      whyPriceTitle: '┬┐Por qu├® nuestro precio es m├ís accesible?',
+      whyPriceP1: 'Nuestros precios son m├ís accesibles porque trabajamos con distribuci├│n digital, sin costos de medios f├¡sicos, log├¡stica ni intermediarios.',
+      whyPriceP2: 'Esto nos permite ofrecer valores competitivos, manteniendo soporte y entrega r├ípida tras la confirmaci├│n del pago.',
+      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö c├│mo funciona',
       ms365Bullet1: '',
-      ms365Bullet2: 'Entrega mediante una cuenta proporcionada (usuario y contraseña) tras la confirmación del pago.',
-      ms365Bullet3: 'El acceso se realiza con la cuenta proporcionada (no es activación en una cuenta Microsoft personal ya existente).',
-      ms365HelpPrefix: '¿Dudas? Consulta',
+      ms365Bullet2: 'Entrega mediante una cuenta proporcionada (usuario y contrase├▒a) tras la confirmaci├│n del pago.',
+      ms365Bullet3: 'El acceso se realiza con la cuenta proporcionada (no es activaci├│n en una cuenta Microsoft personal ya existente).',
+      ms365HelpPrefix: '┬┐Dudas? Consulta',
       ms365HelpLink: 'Entrega digital',
-      urgencyBadge: '🔥 Oferta por tiempo limitado',
-      buyNowBtn: '🛒 COMPRAR AHORA',
+      urgencyBadge: '­ƒöÑ Oferta por tiempo limitado',
+      buyNowBtn: '­ƒøÆ COMPRAR AHORA',
       microInstant: 'Entrega inmediata',
-      microActivation: 'Activación en minutos',
+      microActivation: 'Activaci├│n en minutos',
       microSecure: 'Compra segura',
       benefitOriginal: 'Licencia original',
-      benefitAutoDelivery: 'Entrega automática',
+      benefitAutoDelivery: 'Entrega autom├ítica',
       benefitSupport: 'Soporte incluido',
-      benefitGuarantee: 'Garantía de 7 días',
+      benefitGuarantee: 'Garant├¡a de 7 d├¡as',
       trustSecure: 'Compra segura',
       trustVerified: 'Producto verificado',
       trustClients: '+1000 clientes',
-      trustFastDelivery: 'Envío inmediato',
-      urgencyStock: '⚡ Stock digital limitado — ¡consigue el tuyo antes de que se agote!',
-      ctaUrgency: '🔥 No te pierdas esta oferta — el precio puede cambiar en cualquier momento',
+      trustFastDelivery: 'Env├¡o inmediato',
+      urgencyStock: 'ÔÜí Stock digital limitado ÔÇö ┬íconsigue el tuyo antes de que se agote!',
+      ctaUrgency: '­ƒöÑ No te pierdas esta oferta ÔÇö el precio puede cambiar en cualquier momento',
       ctaPayment: 'Pago seguro',
       ctaEmail: 'Entrega por e-mail',
-      ctaGuarantee: 'Garantía de 7 días',
+      ctaGuarantee: 'Garant├¡a de 7 d├¡as',
       affiliateTitle: 'Gana dinero recomendando este producto.',
-      affiliateSub: 'Conviértete en afiliado.',
+      affiliateSub: 'Convi├®rtete en afiliado.',
       affiliateBtn: 'Quiero registrarme'
     }
   }
@@ -1327,28 +1315,28 @@ const t = computed(() => {
       loading: 'Caricamento prodotto...',
       notFound: 'Prodotto non trovato.',
       buy: 'Acquista',
-      included: "Cosa è incluso:",
+      included: "Cosa ├¿ incluso:",
       installmentsPrefix: 'fino a 12x da',
       pixLabel: 'Pagamento in contanti con PIX',
-      digitalDelivery: 'Consegna digitale • Disponibile',
-      freeRefund: 'Rimborso gratuito fino a 7 giorni dopo l’acquisto',
+      digitalDelivery: 'Consegna digitale ÔÇó Disponibile',
+      freeRefund: 'Rimborso gratuito fino a 7 giorni dopo lÔÇÖacquisto',
       guarantee: 'Acquisto garantito. Se non sei soddisfatto, rimborsiamo',
       emailDelivery: 'Consegnato via email dopo la conferma',
       tutorialCardTitle: 'Tutorial di attivazione',
       viewTutorial: 'Vedi tutorial',
       tutorialLoginRequired: 'Accedi per visualizzare',
       detailedDescription: 'Descrizione dettagliata',
-      whyPriceTitle: 'Perché il nostro prezzo è più conveniente?',
-      whyPriceP1: 'I nostri prezzi sono più convenienti perché lavoriamo con distribuzione digitale, senza costi di supporti fisici, logistica o intermediari.',
+      whyPriceTitle: 'Perch├® il nostro prezzo ├¿ pi├╣ conveniente?',
+      whyPriceP1: 'I nostri prezzi sono pi├╣ convenienti perch├® lavoriamo con distribuzione digitale, senza costi di supporti fisici, logistica o intermediari.',
       whyPriceP2: 'Questo ci permette di offrire prezzi competitivi, mantenendo supporto e consegna rapida dopo la conferma del pagamento.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 — come funziona',
+      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö come funziona',
       ms365Bullet1: '',
       ms365Bullet2: 'Consegna tramite un account fornito (login e password) dopo la conferma del pagamento.',
-      ms365Bullet3: "L'accesso avviene con l'account fornito (non è un’attivazione su un account Microsoft personale già esistente).",
+      ms365Bullet3: "L'accesso avviene con l'account fornito (non ├¿ unÔÇÖattivazione su un account Microsoft personale gi├á esistente).",
       ms365HelpPrefix: 'Dubbi? Vedi',
       ms365HelpLink: 'Consegna digitale',
-      urgencyBadge: '🔥 Offerta a tempo limitato',
-      buyNowBtn: '🛒 ACQUISTA ORA',
+      urgencyBadge: '­ƒöÑ Offerta a tempo limitato',
+      buyNowBtn: '­ƒøÆ ACQUISTA ORA',
       microInstant: 'Consegna immediata',
       microActivation: 'Attivazione in minuti',
       microSecure: 'Acquisto sicuro',
@@ -1360,8 +1348,8 @@ const t = computed(() => {
       trustVerified: 'Prodotto verificato',
       trustClients: '+1000 clienti',
       trustFastDelivery: 'Consegna immediata',
-      urgencyStock: '⚡ Stock digitale limitato — assicurati il tuo prima che finisca!',
-      ctaUrgency: '🔥 Non perdere questa offerta — il prezzo può cambiare in qualsiasi momento',
+      urgencyStock: 'ÔÜí Stock digitale limitato ÔÇö assicurati il tuo prima che finisca!',
+      ctaUrgency: '­ƒöÑ Non perdere questa offerta ÔÇö il prezzo pu├▓ cambiare in qualsiasi momento',
       ctaPayment: 'Pagamento sicuro',
       ctaEmail: 'Consegna via e-mail',
       ctaGuarantee: 'Garanzia 7 giorni',
@@ -1379,90 +1367,90 @@ const t = computed(() => {
       notFound: 'Produit introuvable.',
       buy: 'Acheter',
       included: 'Ce qui est inclus :',
-      installmentsPrefix: "jusqu'à 12x de",
+      installmentsPrefix: "jusqu'├á 12x de",
       pixLabel: 'Paiement comptant avec PIX',
-      digitalDelivery: 'Livraison numérique • Disponible',
-      freeRefund: 'Remboursement gratuit jusqu’à 7 jours après l’achat',
-      guarantee: 'Achat garanti. Si vous n’êtes pas satisfait, nous remboursons',
-      emailDelivery: 'Livré par e-mail après confirmation',
-      tutorialCardTitle: "Tutoriel d’activation",
+      digitalDelivery: 'Livraison num├®rique ÔÇó Disponible',
+      freeRefund: 'Remboursement gratuit jusquÔÇÖ├á 7 jours apr├¿s lÔÇÖachat',
+      guarantee: 'Achat garanti. Si vous nÔÇÖ├¬tes pas satisfait, nous remboursons',
+      emailDelivery: 'Livr├® par e-mail apr├¿s confirmation',
+      tutorialCardTitle: "Tutoriel dÔÇÖactivation",
       viewTutorial: 'Voir le tutoriel',
-      tutorialLoginRequired: 'Connectez-vous pour accéder',
-      detailedDescription: 'Description détaillée',
+      tutorialLoginRequired: 'Connectez-vous pour acc├®der',
+      detailedDescription: 'Description d├®taill├®e',
       whyPriceTitle: 'Pourquoi notre prix est-il plus abordable ?',
-      whyPriceP1: 'Nos prix sont plus abordables car nous travaillons avec une distribution numérique, sans coûts de support physique, de logistique ou d’intermédiaires.',
-      whyPriceP2: 'Cela nous permet de proposer des prix compétitifs tout en maintenant le support et une livraison rapide après confirmation du paiement.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 — comment ça marche',
+      whyPriceP1: 'Nos prix sont plus abordables car nous travaillons avec une distribution num├®rique, sans co├╗ts de support physique, de logistique ou dÔÇÖinterm├®diaires.',
+      whyPriceP2: 'Cela nous permet de proposer des prix comp├®titifs tout en maintenant le support et une livraison rapide apr├¿s confirmation du paiement.',
+      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö comment ├ºa marche',
       ms365Bullet1: '',
-      ms365Bullet2: 'Livraison via un compte fourni (identifiant et mot de passe) après confirmation du paiement.',
-      ms365Bullet3: "L'accès se fait avec le compte fourni (ce n'est pas une activation sur un compte Microsoft personnel existant).",
+      ms365Bullet2: 'Livraison via un compte fourni (identifiant et mot de passe) apr├¿s confirmation du paiement.',
+      ms365Bullet3: "L'acc├¿s se fait avec le compte fourni (ce n'est pas une activation sur un compte Microsoft personnel existant).",
       ms365HelpPrefix: 'Des questions ? Voir',
-      ms365HelpLink: 'Livraison numérique',
-      urgencyBadge: '🔥 Offre à durée limitée',
-      buyNowBtn: '🛒 ACHETER MAINTENANT',
-      microInstant: 'Livraison immédiate',
+      ms365HelpLink: 'Livraison num├®rique',
+      urgencyBadge: '­ƒöÑ Offre ├á dur├®e limit├®e',
+      buyNowBtn: '­ƒøÆ ACHETER MAINTENANT',
+      microInstant: 'Livraison imm├®diate',
       microActivation: 'Activation en minutes',
-      microSecure: 'Achat sécurisé',
+      microSecure: 'Achat s├®curis├®',
       benefitOriginal: 'Licence originale',
       benefitAutoDelivery: 'Livraison automatique',
       benefitSupport: 'Support inclus',
       benefitGuarantee: 'Garantie 7 jours',
-      trustSecure: 'Achat sécurisé',
-      trustVerified: 'Produit vérifié',
+      trustSecure: 'Achat s├®curis├®',
+      trustVerified: 'Produit v├®rifi├®',
       trustClients: '+1000 clients',
-      trustFastDelivery: 'Livraison immédiate',
-      urgencyStock: '⚡ Stock numérique limité — obtenez le vôtre avant épuisement !',
-      ctaUrgency: '🔥 Ne manquez pas cette offre — le prix peut changer à tout moment',
-      ctaPayment: 'Paiement sécurisé',
+      trustFastDelivery: 'Livraison imm├®diate',
+      urgencyStock: 'ÔÜí Stock num├®rique limit├® ÔÇö obtenez le v├┤tre avant ├®puisement !',
+      ctaUrgency: '­ƒöÑ Ne manquez pas cette offre ÔÇö le prix peut changer ├á tout moment',
+      ctaPayment: 'Paiement s├®curis├®',
       ctaEmail: 'Livraison par e-mail',
       ctaGuarantee: 'Garantie 7 jours',
-      affiliateTitle: 'Gagnez de l’argent en recommandant ce produit.',
-      affiliateSub: 'Devenez affilié.',
-      affiliateBtn: 'Je veux m’inscrire'
+      affiliateTitle: 'Gagnez de lÔÇÖargent en recommandant ce produit.',
+      affiliateSub: 'Devenez affili├®.',
+      affiliateBtn: 'Je veux mÔÇÖinscrire'
     }
   }
 
   return {
-    home: 'Início',
+    home: 'In├¡cio',
     products: 'Produtos',
     loading: 'Carregando produto...',
-    notFound: 'Produto não encontrado.',
+    notFound: 'Produto n├úo encontrado.',
     buy: 'Comprar',
-    included: 'O que está incluído:',
-    installmentsPrefix: 'em até 12x de',
-    pixLabel: 'Pagamento à vista no PIX',
-    digitalDelivery: 'Entrega digital • Disponível',
-    freeRefund: 'Devolução grátis. Até 7 dias a partir do recebimento',
+    included: 'O que est├í inclu├¡do:',
+    installmentsPrefix: 'em at├® 12x de',
+    pixLabel: 'Pagamento ├á vista no PIX',
+    digitalDelivery: 'Entrega digital ÔÇó Dispon├¡vel',
+    freeRefund: 'Devolu├º├úo gr├ítis. At├® 7 dias a partir do recebimento',
     guarantee: 'Compra garantida. Saia satisfeito ou devolvemos seu dinheiro',
-    emailDelivery: 'Envio por e-mail após confirmação',
-    tutorialCardTitle: 'Tutorial de Ativação',
+    emailDelivery: 'Envio por e-mail ap├│s confirma├º├úo',
+    tutorialCardTitle: 'Tutorial de Ativa├º├úo',
     viewTutorial: 'Ver Tutorial',
     tutorialLoginRequired: 'Entre para acessar',
-    detailedDescription: 'Descrição Detalhada',
-    whyPriceTitle: 'Por que o preço é tão bom? Entenda.',
-    whyPriceP1: 'Nossos preços são mais acessíveis porque trabalhamos com distribuição digital, sem custos de mídia física, logística ou intermediários.',
-    whyPriceP2: 'Isso nos permite oferecer valores competitivos, mantendo suporte e envio imediato após confirmação.',
-    ms365HowTitle: 'Microsoft 365 / Office 365 — como funciona',
+    detailedDescription: 'Descri├º├úo Detalhada',
+    whyPriceTitle: 'Por que o pre├ºo ├® t├úo bom? Entenda.',
+    whyPriceP1: 'Nossos pre├ºos s├úo mais acess├¡veis porque trabalhamos com distribui├º├úo digital, sem custos de m├¡dia f├¡sica, log├¡stica ou intermedi├írios.',
+    whyPriceP2: 'Isso nos permite oferecer valores competitivos, mantendo suporte e envio imediato ap├│s confirma├º├úo.',
+    ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö como funciona',
     ms365Bullet1: '',
-    ms365Bullet2: 'Entrega por conta fornecida (login e senha) após a confirmação do pagamento.',
-    ms365Bullet3: 'O acesso é feito com a conta fornecida (não é ativação em uma conta Microsoft pessoal já existente).',
-    ms365HelpPrefix: 'Dúvidas? Consulte',
+    ms365Bullet2: 'Entrega por conta fornecida (login e senha) ap├│s a confirma├º├úo do pagamento.',
+    ms365Bullet3: 'O acesso ├® feito com a conta fornecida (n├úo ├® ativa├º├úo em uma conta Microsoft pessoal j├í existente).',
+    ms365HelpPrefix: 'D├║vidas? Consulte',
     ms365HelpLink: 'Entrega digital',
-    urgencyBadge: '🔥 Oferta por tempo limitado',
-    buyNowBtn: '🛒 COMPRAR AGORA',
+    urgencyBadge: '­ƒöÑ Oferta por tempo limitado',
+    buyNowBtn: '­ƒøÆ COMPRAR AGORA',
     microInstant: 'Entrega imediata',
-    microActivation: 'Ativação em minutos',
+    microActivation: 'Ativa├º├úo em minutos',
     microSecure: 'Compra segura',
-    benefitOriginal: 'Licença original',
-    benefitAutoDelivery: 'Entrega automática',
+    benefitOriginal: 'Licen├ºa original',
+    benefitAutoDelivery: 'Entrega autom├ítica',
     benefitSupport: 'Suporte incluso',
     benefitGuarantee: 'Garantia de 7 dias',
     trustSecure: 'Compra segura',
     trustVerified: 'Produto verificado',
     trustClients: '+1000 clientes',
     trustFastDelivery: 'Envio imediato',
-    urgencyStock: '⚡ Estoque digital limitado — garanta o seu agora antes que acabe!',
-    ctaUrgency: '🔥 Não perca esta oferta — preço pode mudar a qualquer momento',
+    urgencyStock: 'ÔÜí Estoque digital limitado ÔÇö garanta o seu agora antes que acabe!',
+    ctaUrgency: '­ƒöÑ N├úo perca esta oferta ÔÇö pre├ºo pode mudar a qualquer momento',
     ctaPayment: 'Pagamento seguro',
     ctaEmail: 'Entrega por e-mail',
     ctaGuarantee: '7 dias de garantia',
@@ -1491,7 +1479,7 @@ function buyNow() {
 </script>
 
 <style scoped>
-/* Forçar fundo transparente em v-html com estilos inline - Tailwind prose-invert cuida das cores */
+/* For├ºar fundo transparente em v-html com estilos inline - Tailwind prose-invert cuida das cores */
 .prose :deep(p),
 .prose :deep(h1),
 .prose :deep(h2),
