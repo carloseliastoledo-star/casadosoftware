@@ -23,14 +23,22 @@ export default defineNuxtRouteMiddleware((to) => {
 
   const isEnHost = host.startsWith('en.')
   const isEsHost = host.startsWith('es.')
-  
-  // Detect international domain (not .com.br, localhost, or vercel.app)
+
+  // Runtime config storeSlug — set via NUXT_PUBLIC_STORE_SLUG env var
+  const config = useRuntimeConfig()
+  const storeSlugEnv = String((config.public as any)?.storeSlug || '').trim().toLowerCase()
+  const isDefinitelyNotIntl = storeSlugEnv === 'casadosoftware' || storeSlugEnv === 'licencasdigitais'
+
+  // Detect international domain (not .com.br, localhost, vercel.app, railway.app, or known PT stores)
   const isIntlDomain = 
+    !isDefinitelyNotIntl &&
     !host.endsWith('.com.br') && 
     !host.includes('.com.br:') && 
     !host.includes('localhost') && 
     !host.includes('127.0.0.1') && 
     !host.includes('.vercel.app') && 
+    !host.includes('.railway.app') && 
+    !host.includes('.railway.internal') && 
     host.length > 0
 
   if (!isEnHost && !isEsHost && !isIntlDomain) return
