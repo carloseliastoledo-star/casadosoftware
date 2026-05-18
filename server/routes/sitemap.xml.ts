@@ -1,5 +1,18 @@
 import { defineEventHandler, setHeader, getRequestHeader } from 'h3'
-import { buildSitemapForLang, LANG_CONFIGS, EN_STORE_CONFIG } from '#root/server/utils/sitemapBuilder'
+import { buildSitemapForLang, LANG_CONFIGS, EN_STORE_CONFIG, type LangConfig } from '#root/server/utils/sitemapBuilder'
+
+/** EN config for gvgmall.co — www canonical, clean /product/ paths */
+const GVGMALL_CONFIG: LangConfig = {
+  lang: 'en',
+  base: 'https://www.gvgmall.co',
+  homePath:        '/',
+  productPath:  (s) => `/product/${s}`,
+  categoryPath: (s) => `/category/${s}`,
+  blogPath:     (s) => `/blog/${s}`,
+  productsPath:    '/products',
+  categoriesPath:  '/categories',
+  blogIndexPath:   '/blog'
+}
 
 export default defineEventHandler(async (event) => {
   setHeader(event, 'Content-Type', 'application/xml; charset=utf-8')
@@ -11,7 +24,13 @@ export default defineEventHandler(async (event) => {
     getRequestHeader(event, 'host') || ''
   ).split(',')[0]?.trim().toLowerCase() || ''
 
+  const isGvgmall = rawHost.includes('gvgmall.co')
   const isEnDomain = rawHost.endsWith('.store')
-  const cfg = isEnDomain ? EN_STORE_CONFIG : LANG_CONFIGS.find(c => c.lang === 'pt')!
+
+  let cfg: LangConfig
+  if (isGvgmall) cfg = GVGMALL_CONFIG
+  else if (isEnDomain) cfg = EN_STORE_CONFIG
+  else cfg = LANG_CONFIGS.find(c => c.lang === 'pt')!
+
   return buildSitemapForLang(cfg)
 })

@@ -248,6 +248,42 @@
 const intl = useIntlContext()
 const lang = computed(() => intl.language.value)
 
+// ── SEO: canonical + hreflang ─────────────────────────────────────────────
+const GVG_BASE = 'https://www.gvgmall.co'
+
+const canonicalHref = computed(() => {
+  const l = lang.value
+  if (l === 'es') return `${GVG_BASE}/es`
+  if (l === 'fr') return `${GVG_BASE}/fr`
+  return `${GVG_BASE}/`
+})
+
+useSeoMeta(computed(() => ({
+  title: lang.value === 'es'
+    ? 'Licencias Windows y Office Originales | GVGMall'
+    : lang.value === 'fr'
+    ? 'Licences Windows et Office Originales | GVGMall'
+    : 'Original Windows & Office Licenses | GVGMall',
+  description: lang.value === 'es'
+    ? 'Compra licencias de software originales con entrega instantánea. Windows, Office y más. Pago seguro con Stripe.'
+    : lang.value === 'fr'
+    ? 'Achetez des licences logicielles originales avec livraison instantanée. Windows, Office et plus. Paiement sécurisé Stripe.'
+    : 'Buy genuine software licenses with instant delivery. Windows, Office, and more. Secure checkout with Stripe.',
+  ogUrl: canonicalHref.value,
+  ogType: 'website',
+  robots: 'index,follow'
+})))
+
+useHead(computed(() => ({
+  link: [
+    { rel: 'canonical', href: canonicalHref.value },
+    { rel: 'alternate', hreflang: 'en', href: `${GVG_BASE}/` },
+    { rel: 'alternate', hreflang: 'es', href: `${GVG_BASE}/es` },
+    { rel: 'alternate', hreflang: 'fr', href: `${GVG_BASE}/fr` },
+    { rel: 'alternate', hreflang: 'x-default', href: `${GVG_BASE}/` },
+  ]
+})))
+
 const openFaq = ref<number | null>(null)
 function toggleFaq(i: number) { openFaq.value = openFaq.value === i ? null : i }
 function formatPrice(n: number) { return Number(n).toFixed(2) }
@@ -466,8 +502,8 @@ const heroImageUrl = computed(() => {
 })
 
 const { data: rawProducts, pending } = await useFetch<any>('/api/intl/products', {
-  server: false,
-  lazy: true,
+  server: true,
+  lazy: false,
   default: () => ({ ok: true, produtos: [] })
 })
 

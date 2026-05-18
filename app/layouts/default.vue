@@ -876,33 +876,33 @@ const footerPolicyLinksParsed = computed<FooterPolicyLinkDto[]>(() => {
 const isIntlOrEn = computed(() => isInternational.value || intl.language.value === 'en')
 
 const t = computed(() => {
-  if (isIntlOrEn.value) {
+  if (intl.language.value === 'fr') {
     return {
-      home: 'Home',
-      openMenu: 'Open menu',
-      closeMenu: 'Close menu',
-      searchPlaceholder: 'What are you looking for?',
-      searchButton: 'Search',
-      myAccount: 'My account',
-      cart: 'Cart',
-      goToCart: 'Go to cart',
-      rightsReserved: 'All rights reserved.',
-      footerDescription: 'Digital Windows and Office licenses with fast delivery after confirmation.',
-      footerLinksTitle: 'Links',
-      footerProducts: 'Products',
-      footerTutorials: 'Tutorials',
+      home: 'Accueil',
+      openMenu: 'Ouvrir le menu',
+      closeMenu: 'Fermer le menu',
+      searchPlaceholder: 'Que recherchez-vous ?',
+      searchButton: 'Rechercher',
+      myAccount: 'Mon compte',
+      cart: 'Panier',
+      goToCart: 'Voir le panier',
+      rightsReserved: 'Tous droits réservés.',
+      footerDescription: 'Licences numériques Windows et Office avec livraison rapide après confirmation.',
+      footerLinksTitle: 'Liens',
+      footerProducts: 'Produits',
+      footerTutorials: 'Tutoriels',
       footerBlog: 'Blog',
-      footerAbout: 'About us',
-      footerDigitalDelivery: 'Digital delivery',
-      footerRefundPolicy: 'Refund policy',
-      footerPrivacy: 'Privacy',
-      footerTerms: 'Terms of use',
+      footerAbout: 'À propos',
+      footerDigitalDelivery: 'Livraison numérique',
+      footerRefundPolicy: 'Politique de remboursement',
+      footerPrivacy: 'Confidentialité',
+      footerTerms: "Conditions d'utilisation",
       footerSupportTitle: 'Support',
-      footerSupportSubtitle: 'Fast and specialized support',
-      footerIntlSupport: 'International support in Portuguese, Spanish and English',
-      whatsappPrefix: 'WhatsApp:',
-      footerDisclaimer1: `${safeSiteName.value} is an independent company, not affiliated with Microsoft.`,
-      footerDisclaimer2: 'We are not affiliated with Microsoft.'
+      footerSupportSubtitle: 'Assistance rapide et spécialisée',
+      footerIntlSupport: 'Support international en Portugais, Espagnol et Anglais',
+      whatsappPrefix: 'WhatsApp :',
+      footerDisclaimer1: `${safeSiteName.value} est une entreprise indépendante.`,
+      footerDisclaimer2: 'Nous ne sommes pas affiliés à Microsoft.'
     }
   }
 
@@ -933,6 +933,36 @@ const t = computed(() => {
       whatsappPrefix: 'WhatsApp:',
       footerDisclaimer1: `${safeSiteName.value} es una empresa independiente.`,
       footerDisclaimer2: 'No estamos afiliados a Microsoft.'
+    }
+  }
+
+  if (isIntlOrEn.value) {
+    return {
+      home: 'Home',
+      openMenu: 'Open menu',
+      closeMenu: 'Close menu',
+      searchPlaceholder: 'What are you looking for?',
+      searchButton: 'Search',
+      myAccount: 'My account',
+      cart: 'Cart',
+      goToCart: 'Go to cart',
+      rightsReserved: 'All rights reserved.',
+      footerDescription: 'Digital Windows and Office licenses with fast delivery after confirmation.',
+      footerLinksTitle: 'Links',
+      footerProducts: 'Products',
+      footerTutorials: 'Tutorials',
+      footerBlog: 'Blog',
+      footerAbout: 'About us',
+      footerDigitalDelivery: 'Digital delivery',
+      footerRefundPolicy: 'Refund policy',
+      footerPrivacy: 'Privacy',
+      footerTerms: 'Terms of use',
+      footerSupportTitle: 'Support',
+      footerSupportSubtitle: 'Fast and specialized support',
+      footerIntlSupport: 'International support in Portuguese, Spanish and English',
+      whatsappPrefix: 'WhatsApp:',
+      footerDisclaimer1: `${safeSiteName.value} is an independent company, not affiliated with Microsoft.`,
+      footerDisclaimer2: 'We are not affiliated with Microsoft.'
     }
   }
 
