@@ -1474,7 +1474,7 @@ function buyNow() {
   } catch {
     // ignore
   }
-  const slugValue = String(p?.slug || slug || '')
+  const slugValue = String(p?.slug || slug.value || '')
   console.log('[buyNow] slugValue:', slugValue, 'checkoutPath:', intl.currencyLower.value !== 'brl' ? '/checkout-intl' : '/checkout')
   const checkoutPath = intl.currencyLower.value !== 'brl' ? '/checkout-intl' : '/checkout'
   navigateTo({ path: checkoutPath, query: { product: slugValue } })
