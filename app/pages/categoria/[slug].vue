@@ -162,7 +162,7 @@
           </div>
 
           <!-- Grid vazio (categoria existe mas sem produtos) -->
-          <div v-else-if="produtos.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+          <div v-if="produtos.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
             <div class="text-4xl mb-4" aria-hidden="true">📦</div>
             <h2 class="text-lg font-bold text-gray-800 mb-1">Nenhum produto encontrado</h2>
             <p class="text-sm text-gray-500">Esta categoria ainda não tem produtos cadastrados.</p>
@@ -260,13 +260,11 @@ const { data, pending, error } = await useFetch(() => apiUrl.value, {
 const categoria = computed(() => (data.value as any)?.categoria || null)
 const apiError = computed(() => error.value || (data.value as any)?._error || null)
 
-const produtos = computed(() => {
-  const produtosData = Array.isArray((data.value as any)?.produtos)
+const produtos = computed(() =>
+  Array.isArray((data.value as any)?.produtos)
     ? (data.value as any).produtos
     : []
-  console.log('[categoria/[slug]] produtos computed:', produtosData.length)
-  return produtosData
-})
+)
 
 const sort = ref<'featured' | 'newest' | 'price_asc' | 'price_desc'>('featured')
 
