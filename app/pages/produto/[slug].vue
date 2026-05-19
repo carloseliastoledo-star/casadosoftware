@@ -249,6 +249,33 @@
           <ReviewsSection :product-id="safeProduct.id" :limit="3" />
         </div>
 
+        <!-- Produtos relacionados -->
+        <div v-if="relatedProducts.length" class="mt-10 bg-white border border-gray-200 rounded-2xl p-6 md:p-10 max-w-4xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">{{ t.relatedProductsTitle || 'Produtos Relacionados' }}</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <article
+              v-for="p in relatedProducts"
+              :key="p.slug"
+              class="border border-gray-100 rounded-2xl overflow-hidden hover:border-blue-200 hover:shadow-sm transition bg-white"
+            >
+              <NuxtLink :to="`/produto/${p.slug}`" class="block">
+                <div class="bg-gray-100">
+                  <img
+                    :src="p.image || '/products/placeholder.svg'"
+                    :alt="p.name"
+                    class="w-full h-36 object-contain p-4"
+                    loading="lazy"
+                  />
+                </div>
+                <div class="p-5">
+                  <div class="text-base font-extrabold text-gray-900 leading-snug line-clamp-2">{{ p.name }}</div>
+                  <div v-if="p.price" class="text-lg font-bold text-blue-600 mt-2">{{ formatProductPrice(p.price, p.currency) }}</div>
+                </div>
+              </NuxtLink>
+            </article>
+          </div>
+        </div>
+
       </div>
 
       <!-- Produto não encontrado -->
@@ -477,6 +504,11 @@ const { data: product, pending, error } = await useAsyncData(
   }
 )
 
+const { data: productsData } = await useFetch<any[]>('/api/products', {
+  server: true,
+  default: () => null
+})
+
 if (import.meta.server && product.value === null && !error.value) {
   throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
 }
@@ -541,6 +573,51 @@ const primaryCategoryLabel = computed(() => {
   if (!s) return ''
   const pretty = s.replace(/[-_]+/g, ' ').trim()
   return pretty ? (pretty.charAt(0).toUpperCase() + pretty.slice(1)) : s
+})
+
+function normalizeTokens(input: unknown): string[] {
+  return String(input || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/g)
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 3)
+    .slice(0, 12)
+}
+
+function formatProductPrice(price: number, currency: string) {
+  try {
+    const currencyCode = currency === 'BRL' ? 'BRL' : currency === 'USD' ? 'USD' : currency === 'EUR' ? 'EUR' : 'BRL'
+    const locale = currencyCode === 'BRL' ? 'pt-BR' : 'en-US'
+    return Number(price || 0).toLocaleString(locale, {
+      style: 'currency',
+      currency: currencyCode
+    })
+  } catch {
+    return String(price || 0)
+  }
+}
+
+const relatedProducts = computed(() => {
+  const all = productsData.value || []
+  const currentSlug = String(safeProduct.value?.slug || '')
+  const baseTokens = normalizeTokens(safeProduct.value?.name || safeProduct.value?.description || '')
+  if (!baseTokens.length) return all.filter((p) => p.slug !== currentSlug).slice(0, 4)
+
+  const scored = all
+    .filter((p) => p.slug !== currentSlug)
+    .map((p) => {
+      const candidate = String(p?.name || '') || String(p?.description || '')
+      const tokens = normalizeTokens(candidate)
+      const score = tokens.reduce((acc, t) => (baseTokens.includes(t) ? acc + 1 : acc), 0)
+      return { p, score }
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map((x) => x.p)
+
+  return scored.length ? scored : all.filter((p) => p.slug !== currentSlug).slice(0, 4)
 })
 
 const { trackViewItem: ecomViewItem, trackAddToCart: ecomAddToCart } = useEcommerceTracking()
@@ -1211,22 +1288,22 @@ const t = computed(() => {
       buy: 'Buy',
       included: "What's included:",
       installmentsPrefix: 'up to 12x of',
-      pixLabel: 'PIX upfront payment',
-      digitalDelivery: 'Digital delivery ÔÇó Available',
+      pixLabel: 'Cash payment with PIX',
+      digitalDelivery: 'Digital delivery — Available',
       freeRefund: 'Free refund up to 7 days after purchase',
-      guarantee: 'Guaranteed purchase. If you are not satisfied, we refund you',
-      emailDelivery: 'Delivered by email after confirmation',
-      tutorialCardTitle: 'Activation tutorial',
-      viewTutorial: 'View tutorial',
-      tutorialLoginRequired: 'Sign in to access',
-      detailedDescription: 'Detailed description',
-      whyPriceTitle: 'Why is our price more affordable?',
-      whyPriceP1: 'Our prices are more affordable because we work with digital distribution, with no physical media, logistics, or middleman costs.',
-      whyPriceP2: 'This allows us to offer competitive prices while keeping support and fast delivery after payment confirmation.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö how it works',
+      guarantee: 'Guaranteed purchase. If you\'re not satisfied, we\'ll refund',
+      emailDelivery: 'Sent by email after confirmation',
+      tutorialCardTitle: 'Activation Tutorial',
+      viewTutorial: 'View Tutorial',
+      tutorialLoginRequired: 'Login to access',
+      detailedDescription: 'Detailed Description',
+      whyPriceTitle: 'Why is the price so good? Understand.',
+      whyPriceP1: 'Our prices are more affordable because we work with digital distribution, without physical media, logistics or intermediary costs.',
+      whyPriceP2: 'This allows us to offer competitive prices while maintaining support and immediate delivery after confirmation.',
+      ms365HowTitle: 'Microsoft 365 / Office 365 — how it works',
       ms365Bullet1: '',
-      ms365Bullet2: 'Delivery via a provided account (login and password) after payment confirmation.',
-      ms365Bullet3: 'Access is via the provided account (it is not activation on an existing personal Microsoft account).',
+      ms365Bullet2: 'Delivery via provided account (login and password) after payment confirmation.',
+      ms365Bullet3: 'Access is made with the provided account (it is not activation on an existing personal Microsoft account).',
       ms365HelpPrefix: 'Questions? See',
       ms365HelpLink: 'Digital delivery',
       urgencyBadge: '🔥 Limited time offer',
@@ -1237,11 +1314,14 @@ const t = computed(() => {
       benefitOriginal: 'Original license',
       benefitAutoDelivery: 'Automatic delivery',
       benefitSupport: 'Support included',
+      relatedProductsTitle: 'Related Products',
       benefitGuarantee: '7-day guarantee',
       trustSecure: 'Secure purchase',
       trustVerified: 'Verified product',
       trustClients: '+1000 clients',
       trustFastDelivery: 'Fast delivery',
+      urgencyStock: ' Limited digital stock — get yours now before it runs out!',
+      ctaUrgency: '🔥 Don’t miss this offer — price may change at any time',
       urgencyStock: ' Limited digital stock ÔÇö get yours now before it runs out!',
       ctaUrgency: '🔥 DonÔÇÖt miss this offer ÔÇö price may change at any time',
       ctaPayment: 'Secure payment',
@@ -1288,6 +1368,7 @@ const t = computed(() => {
       benefitOriginal: 'Licencia original',
       benefitAutoDelivery: 'Entrega automática',
       benefitSupport: 'Soporte incluido',
+      relatedProductsTitle: 'Productos Relacionados',
       benefitGuarantee: 'Garantía de 7 días',
       trustSecure: 'Compra segura',
       trustVerified: 'Producto verificado',
@@ -1339,6 +1420,7 @@ const t = computed(() => {
       benefitOriginal: 'Licenza originale',
       benefitAutoDelivery: 'Consegna automatica',
       benefitSupport: 'Supporto incluso',
+      relatedProductsTitle: 'Prodotti Correlati',
       benefitGuarantee: 'Garanzia 7 giorni',
       trustSecure: 'Acquisto sicuro',
       trustVerified: 'Prodotto verificato',
@@ -1390,6 +1472,7 @@ const t = computed(() => {
       benefitOriginal: 'Licence originale',
       benefitAutoDelivery: 'Livraison automatique',
       benefitSupport: 'Support inclus',
+      relatedProductsTitle: 'Produits Connexes',
       benefitGuarantee: 'Garantie 7 jours',
       trustSecure: 'Achat sécurisé',
       trustVerified: 'Produit vérifié',
@@ -1440,6 +1523,7 @@ const t = computed(() => {
     benefitOriginal: 'Licença original',
     benefitAutoDelivery: 'Entrega automática',
     benefitSupport: 'Suporte incluso',
+    relatedProductsTitle: 'Produtos Relacionados',
     benefitGuarantee: 'Garantia de 7 dias',
     trustSecure: 'Compra segura',
     trustVerified: 'Produto verificado',
