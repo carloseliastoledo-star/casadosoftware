@@ -22,22 +22,39 @@
           <li>{{ t.section2Item1 }}</li>
           <li>{{ t.section2Item2 }}</li>
           <li>{{ t.section2Item3 }}</li>
+          <li>{{ t.section2Item4 }}</li>
         </ul>
       </div>
 
       <div class="rounded-xl border bg-white p-5 space-y-3">
         <h2 class="text-xl font-bold text-gray-900">{{ t.section3Title }}</h2>
-        <p class="text-sm">
-          {{ t.section3Prefix }}
-          <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
-          {{ t.section3Suffix }}
-        </p>
+        <ul class="text-sm list-disc pl-5 space-y-2">
+          <li>{{ t.section3Item1 }}</li>
+          <li>{{ t.section3Item2 }}</li>
+          <li>{{ t.section3Item3 }}</li>
+        </ul>
       </div>
 
       <div class="rounded-xl border bg-white p-5 space-y-3">
         <h2 class="text-xl font-bold text-gray-900">{{ t.section4Title }}</h2>
         <p class="text-sm">
-          {{ t.section4Body }}
+          {{ t.section4Prefix }}
+          <a class="text-blue-600 hover:underline" :href="mailtoSupport">{{ supportEmail }}</a>
+          {{ t.section4Suffix }}
+        </p>
+      </div>
+
+      <div class="rounded-xl border bg-white p-5 space-y-3">
+        <h2 class="text-xl font-bold text-gray-900">{{ t.section5Title }}</h2>
+        <p class="text-sm">
+          {{ t.section5Body }}
+        </p>
+      </div>
+
+      <div class="rounded-xl border bg-white p-5 space-y-3">
+        <h2 class="text-xl font-bold text-gray-900">{{ t.section6Title }}</h2>
+        <p class="text-sm">
+          {{ t.section6Body }}
         </p>
       </div>
 
@@ -71,11 +88,18 @@ const t = computed(() => {
       section2Item1: 'Delivery failure after support and attempted resolution.',
       section2Item2: 'Proven incompatibility with requirements stated on the product page.',
       section2Item3: 'Duplicate charge or operational error.',
-      section3Title: '3. How to request',
-      section3Prefix: 'Contact us by email ',
-      section3Suffix: ' informing your order number and the reason.',
-      section4Title: '4. Timeframe',
-      section4Body: 'We will respond within up to 2 business days, and refund processing time depends on the payment method.'
+      section2Item4: 'Product activation failure after support provided.',
+      section3Title: '3. When refund is not available',
+      section3Item1: 'Product already activated or used.',
+      section3Item2: 'Change of mind after delivery.',
+      section3Item3: 'Incompatibility not reported before activation.',
+      section4Title: '4. How to request',
+      section4Prefix: 'Contact us by email ',
+      section4Suffix: ' informing your order number, product name and reason for the request.',
+      section5Title: '5. Response time',
+      section5Body: 'We will respond within up to 2 business days. If approved, refund processing time depends on the payment method.',
+      section6Title: '6. After activation',
+      section6Body: 'Once the license is activated, refund is only available in case of proven technical failure that cannot be resolved by our support team.'
     }
   }
 
@@ -89,11 +113,18 @@ const t = computed(() => {
       section2Item1: 'Fallo de entrega tras soporte e intento de solución.',
       section2Item2: 'Incompatibilidad comprobada con los requisitos informados en la página del producto.',
       section2Item3: 'Cobro duplicado o error operativo.',
-      section3Title: '3. Cómo solicitar',
-      section3Prefix: 'Ponte en contacto por e-mail ',
-      section3Suffix: ' indicando el número del pedido y el motivo.',
-      section4Title: '4. Plazo',
-      section4Body: 'Responderemos tu solicitud en hasta 2 días hábiles, y el plazo de procesamiento del reembolso depende del medio de pago.'
+      section2Item4: 'Fallo de activación tras soporte proporcionado.',
+      section3Title: '3. Cuándo no hay reembolso',
+      section3Item1: 'Producto ya activado o utilizado.',
+      section3Item2: 'Cambio de opinión después de la entrega.',
+      section3Item3: 'Incompatibilidad no reportada antes de la activación.',
+      section4Title: '4. Cómo solicitar',
+      section4Prefix: 'Ponte en contacto por e-mail ',
+      section4Suffix: ' indicando el número del pedido, nombre del producto y motivo de la solicitud.',
+      section5Title: '5. Plazo',
+      section5Body: 'Responderemos tu solicitud en hasta 2 días hábiles. Si es aprobado, el plazo de procesamiento del reembolso depende del medio de pago.',
+      section6Title: '6. Después de la activación',
+      section6Body: 'Una vez activada la licencia, el reembolso solo está disponible en caso de fallo técnico comprobado que no pueda ser resuelto por nuestro equipo de soporte.'
     }
   }
 
@@ -107,11 +138,18 @@ const t = computed(() => {
       section2Item1: 'Echec de livraison après support et tentative de résolution.',
       section2Item2: 'Incompatibilité prouvée avec les prérequis indiqués sur la page du produit.',
       section2Item3: 'Double facturation ou erreur opérationnelle.',
-      section3Title: '3. Comment faire une demande',
-      section3Prefix: 'Contactez-nous par e-mail ',
-      section3Suffix: ' en indiquant votre numéro de commande et le motif.',
-      section4Title: '4. Délai',
-      section4Body: 'Nous répondrons dans un délai de 2 jours ouvrables et le délai de traitement du remboursement dépend du moyen de paiement.'
+      section2Item4: 'Echec d\'activation après support fourni.',
+      section3Title: '3. Quand le remboursement n\'est pas disponible',
+      section3Item1: 'Produit déjà activé ou utilisé.',
+      section3Item2: 'Changement d\'avis après livraison.',
+      section3Item3: 'Incompatibilité non signalée avant l\'activation.',
+      section4Title: '4. Comment faire une demande',
+      section4Prefix: 'Contactez-nous par e-mail ',
+      section4Suffix: ' en indiquant votre numéro de commande, le nom du produit et le motif de la demande.',
+      section5Title: '5. Délai',
+      section5Body: 'Nous répondrons dans un délai de 2 jours ouvrables. Si approuvé, le délai de traitement du remboursement dépend du moyen de paiement.',
+      section6Title: '6. Après activation',
+      section6Body: 'Une fois la licence activée, le remboursement n\'est disponible qu\'en cas de panne technique prouvée qui ne peut être résolue par notre équipe de support.'
     }
   }
 
@@ -124,11 +162,18 @@ const t = computed(() => {
     section2Item1: 'Falha de entrega após suporte e tentativa de solução.',
     section2Item2: 'Incompatibilidade comprovada com requisitos informados na página do produto.',
     section2Item3: 'Cobrança duplicada ou erro operacional.',
-    section3Title: '3. Como solicitar',
-    section3Prefix: 'Entre em contato pelo e-mail ',
-    section3Suffix: ' informando o número do pedido e o motivo.',
-    section4Title: '4. Prazo',
-    section4Body: 'Responderemos sua solicitação em até 2 dias úteis, e o prazo de processamento do reembolso depende do meio de pagamento.'
+    section2Item4: 'Falha de ativação após suporte fornecido.',
+    section3Title: '3. Quando não há reembolso',
+    section3Item1: 'Produto já ativado ou utilizado.',
+    section3Item2: 'Mudança de ideia após a entrega.',
+    section3Item3: 'Incompatibilidade não informada antes da ativação.',
+    section4Title: '4. Como solicitar',
+    section4Prefix: 'Entre em contato pelo e-mail ',
+    section4Suffix: ' informando o número do pedido, nome do produto e motivo da solicitação.',
+    section5Title: '5. Prazo de resposta',
+    section5Body: 'Responderemos sua solicitação em até 2 dias úteis. Se aprovado, o prazo de processamento do reembolso depende do meio de pagamento.',
+    section6Title: '6. Após ativação',
+    section6Body: 'Uma vez ativada a licença, o reembolso só está disponível em caso de falha técnica comprovada que não possa ser resolvida pela nossa equipe de suporte.'
   }
 })
 
