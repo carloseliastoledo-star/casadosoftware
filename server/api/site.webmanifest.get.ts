@@ -17,7 +17,7 @@ export default defineEventHandler((event) => {
   const envIcon = String(process.env.SITE_LOGO_PATH || '').trim()
   const iconPath = envIcon && envIcon !== '/logo.png'
     ? envIcon
-    : (isCasaDoSoftware ? '/logo-casa-do-software.png' : '/logo-mercadosoftwares.png')
+    : (isCasaDoSoftware ? 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png' : '/logo-mercadosoftwares.png')
 
   return JSON.stringify(
     {
