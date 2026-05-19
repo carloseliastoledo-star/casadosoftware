@@ -49,11 +49,6 @@
               {{ safeProduct?.name || 'Produto digital' }}
             </h1>
 
-            <!-- Desc curta -->
-            <p v-if="safeProduct.description" class="text-sm text-slate-400 leading-relaxed">
-              {{ safeProduct.description }}
-            </p>
-
             <!-- Preço -->
             <div class="flex flex-col gap-1">
               <div v-if="formattedOldPrice" class="flex items-center gap-3">
