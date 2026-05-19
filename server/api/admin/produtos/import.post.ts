@@ -83,8 +83,8 @@ export default defineEventHandler(async (event) => {
   }
 
   // Get storeSlug from context
-  const storeContext = await getStoreContext(event)
-  const storeSlug = storeContext?.storeSlug || 'casadosoftware'
+  const storeContext = getStoreContext(event)
+  const storeSlug = storeContext?.storeSlug ?? null
 
   try {
     // Ler arquivo multipart
