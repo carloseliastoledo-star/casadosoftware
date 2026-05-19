@@ -245,7 +245,23 @@ const products = computed(() =>
   Array.isArray(data.value) ? data.value : []
 )
 
-const categorias = computed(() => categoriasData.value?.categorias || [])
+// Categorias permitidas para Casa do Software
+const allowedCategories = [
+  'windows',
+  'windows-server',
+  'office',
+  'autodesk',
+  'jogos',
+  'corel',
+  'antivirus',
+  'project',
+  'visio'
+]
+
+const categorias = computed(() => {
+  const allCategorias = categoriasData.value?.categorias || []
+  return allCategorias.filter(cat => allowedCategories.includes(cat.slug))
+})
 
 const hasError = computed(() => Boolean(error.value))
 
