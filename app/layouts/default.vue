@@ -49,7 +49,7 @@
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
               <picture v-if="effectiveLogoPath">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'max-height: 160px; width: auto; object-fit: contain;' : 'max-height: 48px; max-width: 200px; object-fit: contain;'" />
+                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'height: 160px; max-height: 160px; width: auto; max-width: 400px; object-fit: contain; display: block;' : 'height: 58px; max-height: 58px; width: auto; max-width: 180px; object-fit: contain; display: block;'" />
               </picture>
             </NuxtLink>
           </div>
@@ -166,7 +166,7 @@
           <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
             <picture>
               <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-              <img :src="effectiveLogoPath" :alt="siteName" style="max-height: 48px; max-width: 200px; object-fit: contain;" />
+              <img :src="effectiveLogoPath" :alt="siteName" class="h-14 md:h-[58px] w-auto max-w-[140px] md:max-w-[180px] object-contain" />
             </picture>
           </NuxtLink>
 
@@ -261,7 +261,7 @@
           <div class="flex items-center gap-3">
             <picture>
               <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-              <img :src="effectiveLogoPath" :alt="siteName" style="max-height: 48px; max-width: 200px; object-fit: contain;" />
+              <img :src="effectiveLogoPath" :alt="siteName" style="height: 42px; max-height: 42px; width: auto; max-width: 140px; object-fit: contain; display: block;" />
             </picture>
           </div>
           <button
