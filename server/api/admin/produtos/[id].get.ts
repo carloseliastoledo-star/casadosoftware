@@ -32,23 +32,46 @@ export default defineEventHandler(async (event) => {
         },
         ProdutoCategoria: {
           include: {
-            categoria: { select: { id: true, nome: true, slug: true } }
+            Categoria: { select: { id: true, nome: true, slug: true } }
           }
         }
       }
     })
-  } catch (includeErr: any) {
-    console.warn('[ADMIN EDIT PRODUCT] include failed, retrying without ProdutoPrecoLoja/ProdutoPrecoMoeda:', includeErr?.message)
-    produto = await (prisma as any).produto.findUnique({
-      where: { id },
-      include: {
-        ProdutoCategoria: {
-          include: {
-            categoria: { select: { id: true, nome: true, slug: true } }
+  } catch (err1: any) {
+    console.warn('[ADMIN EDIT PRODUCT] first query failed, retrying with lowercase categoria:', err1?.message)
+    try {
+      produto = await (prisma as any).produto.findUnique({
+        where: { id },
+        include: {
+          ProdutoPrecoLoja: {
+            where: { storeSlug: storeSlug || undefined },
+            select: { preco: true, precoAntigo: true }
+          },
+          ProdutoPrecoMoeda: {
+            where: { storeSlug: storeSlug || undefined },
+            select: { currency: true, amount: true, oldAmount: true }
+          },
+          ProdutoCategoria: {
+            include: {
+              categoria: { select: { id: true, nome: true, slug: true } }
+            }
           }
         }
-      }
-    })
+      })
+    } catch (err2: any) {
+      console.warn('[ADMIN EDIT PRODUCT] second query failed, retrying without ProdutoCategoria include:', err2?.message)
+      produto = await (prisma as any).produto.findUnique({
+        where: { id }
+      })
+    }
+  }
+
+  // Normalize categoria field name (Categoria vs categoria)
+  if (produto?.ProdutoCategoria) {
+    produto.ProdutoCategoria = produto.ProdutoCategoria.map((pc: any) => ({
+      ...pc,
+      categoria: pc.Categoria || pc.categoria || null
+    }))
   }
 
   console.log('[ADMIN EDIT PRODUCT] produto=', produto ? 'found' : 'not found')
