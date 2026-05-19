@@ -90,8 +90,9 @@ const filteredProducts = computed(() => {
   if (!term) return products.value
 
   const filtered = (products.value as any[]).filter((p) => {
-    const name = String(p?.nome ?? p?.name ?? '').toLowerCase()
+    const name = String(p?.name ?? '').toLowerCase()
     const slug = String(p?.slug ?? '').toLowerCase()
+    console.log('[produtos] filtering product:', name, 'slug:', slug, 'includes term:', name.includes(term) || slug.includes(term))
     return name.includes(term) || slug.includes(term)
   })
   console.log('[produtos] filtered.length:', filtered.length)
