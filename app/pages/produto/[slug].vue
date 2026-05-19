@@ -131,9 +131,9 @@
           <span class="text-sm font-bold text-red-400">{{ t.urgencyStock }}</span>
         </div>
 
-        <!-- ÔöÇÔöÇ O QUE EST├ü INCLU├ìDO ÔöÇÔöÇ -->
-        <div class="mt-10 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 md:p-8">
-          <div class="text-lg font-bold text-white mb-5">{{ t.included }}</div>
+        <!-- O QUE ESTÁ INCLUÍDO -->
+        <div class="mt-10 bg-white border border-gray-200 rounded-2xl p-6 md:p-10 max-w-4xl mx-auto">
+          <div class="text-xl font-extrabold text-gray-900 mb-5">{{ t.included }}</div>
           <ul class="grid sm:grid-cols-2 gap-3">
             <li v-for="item in includedItems" :key="item" class="flex items-start gap-3">
               <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#00e676]/20">
@@ -141,20 +141,20 @@
                   <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.415l-7.25 7.25a1 1 0 01-1.415 0L3.296 9.21a1 1 0 011.415-1.415l3.018 3.018 6.543-6.543a1 1 0 011.432.02z" clip-rule="evenodd" />
                 </svg>
               </span>
-              <span class="text-sm text-slate-300">{{ item }}</span>
+              <span class="text-gray-700">{{ item }}</span>
             </li>
           </ul>
         </div>
 
         <!-- Microsoft 365 info -->
-        <div v-if="isMicrosoft365" class="mt-6 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 text-sm text-slate-300">
-          <div class="font-bold text-white mb-3">{{ t.ms365HowTitle }}</div>
-          <ul class="list-disc pl-5 space-y-1">
+        <div v-if="isMicrosoft365" class="mt-6 bg-white border border-gray-200 rounded-2xl p-6 md:p-10 max-w-4xl mx-auto">
+          <div class="font-extrabold text-gray-900 mb-3">{{ t.ms365HowTitle }}</div>
+          <ul class="list-disc pl-5 space-y-2 text-gray-700">
             <li>{{ t.ms365Bullet2 }}</li>
             <li>{{ t.ms365Bullet3 }}</li>
           </ul>
-          <div class="mt-3 text-slate-400">
-            {{ t.ms365HelpPrefix }} <NuxtLink class="text-cyan-400 hover:underline" :to="digitalDeliveryPath">{{ t.ms365HelpLink }}</NuxtLink>.
+          <div class="mt-4 text-gray-600">
+            {{ t.ms365HelpPrefix }} <NuxtLink class="text-[#00e676] hover:underline font-semibold" :to="digitalDeliveryPath">{{ t.ms365HelpLink }}</NuxtLink>.
           </div>
         </div>
 
@@ -175,18 +175,18 @@
           </div>
         </div>
 
-        <!-- ÔöÇÔöÇ TUTORIAL ÔöÇÔöÇ -->
+        <!-- TUTORIAL -->
         <div
           v-if="safeProduct.tutorialTitle"
-          class="mt-10 bg-[#021326] border border-blue-500/30 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+          class="mt-10 bg-white border border-gray-200 rounded-2xl p-6 md:p-10 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div class="flex items-center gap-5">
-            <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">🛒ôÿ</div>
+            <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">�</div>
             <div>
-              <h3 class="text-lg font-bold text-white">{{ t.tutorialCardTitle }}</h3>
-              <p class="text-slate-400 text-sm mt-1">{{ safeProduct.tutorialSubtitle }}</p>
-              <p v-if="tutorialAccessChecked && !tutorialAccess?.allowed" class="text-amber-400 text-xs mt-2">
-                🛒ö {{ t.tutorialLoginRequired }}
+              <h3 class="text-lg font-extrabold text-gray-900">{{ t.tutorialCardTitle }}</h3>
+              <p class="text-gray-600 text-sm mt-1">{{ safeProduct.tutorialSubtitle }}</p>
+              <p v-if="tutorialAccessChecked && !tutorialAccess?.allowed" class="text-amber-600 text-xs mt-2">
+                � {{ t.tutorialLoginRequired }}
               </p>
             </div>
           </div>
@@ -202,21 +202,21 @@
             :to="`/minha-conta/login?returnTo=${encodeURIComponent('/tutoriais/' + safeProduct.slug)}`"
             class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
-            🛒öæ {{ t.tutorialLoginRequired }}
+            � {{ t.tutorialLoginRequired }}
           </NuxtLink>
         </div>
 
-        <!-- ÔöÇÔöÇ DESCRIÇòO DETALHADA ÔöÇÔöÇ -->
-        <div class="bg-[#021326] border border-cyan-500/10 rounded-2xl mt-8 p-6 md:p-8">
-          <h2 class="text-xl font-bold text-white mb-4">{{ t.detailedDescription }}</h2>
-          <div class="prose prose-invert prose-sm max-w-none text-slate-200" v-html="safeDescriptionHtml" />
+        <!-- DESCRIÇÃO DO PRODUTO -->
+        <div class="bg-white border border-gray-200 rounded-2xl mt-10 p-6 md:p-10 max-w-4xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Descrição do Produto</h2>
+          <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed" v-html="safeDescriptionHtml" />
         </div>
 
-        <!-- ÔöÇÔöÇ POR QUE O PREÇO É BOM ÔöÇÔöÇ -->
-        <div class="bg-[#021326] border border-cyan-500/10 rounded-2xl mt-6 p-6 md:p-8">
-          <h2 class="text-xl font-bold text-white mb-3">{{ t.whyPriceTitle }}</h2>
-          <p class="text-slate-400 leading-relaxed text-sm">{{ t.whyPriceP1 }}</p>
-          <p class="text-slate-400 leading-relaxed text-sm mt-3">{{ t.whyPriceP2 }}</p>
+        <!-- POR QUE O PREÇO É BOM -->
+        <div class="bg-white border border-gray-200 rounded-2xl mt-6 p-6 md:p-10 max-w-4xl mx-auto">
+          <h2 class="text-2xl font-extrabold text-gray-900 mb-4">{{ t.whyPriceTitle }}</h2>
+          <p class="text-gray-700 leading-relaxed">{{ t.whyPriceP1 }}</p>
+          <p class="text-gray-700 leading-relaxed mt-4">{{ t.whyPriceP2 }}</p>
         </div>
 
         <!-- SEO content -->
@@ -235,11 +235,11 @@
         <!-- Afiliados -->
         <div
           v-if="affiliateEnabled"
-          class="mt-8 bg-[#021326] border border-cyan-500/20 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+          class="mt-8 bg-white border border-gray-200 rounded-2xl p-6 md:p-10 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div>
-            <div class="text-xl font-extrabold text-white">{{ t.affiliateTitle }}</div>
-            <div class="mt-1 text-slate-400 text-sm">{{ t.affiliateSub }}</div>
+            <div class="text-xl font-extrabold text-gray-900">{{ t.affiliateTitle }}</div>
+            <div class="mt-1 text-gray-600 text-sm">{{ t.affiliateSub }}</div>
           </div>
           <NuxtLink
             to="/partner-apply"
