@@ -28,7 +28,7 @@
       <div v-else class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <ProductCard
           v-for="product in filteredProducts"
-          :key="String(product.id) + String(product.imagem || product.image || '')"
+          :key="String(product.id)"
           :product="product"
         />
       </div>
@@ -77,12 +77,9 @@ useHead(() => ({
   link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}${productsIndexPath.value}` }] : []
 }))
 
-const pending = ref(false)
-const error = ref(null)
+const { data: productsData, pending, error } = await useFetch('/api/products')
 
-const productsData = await $fetch('/api/products')
-
-const products = computed(() => productsData || [])
+const products = computed(() => productsData.value || [])
 
 const filteredProducts = computed(() => {
   const term = q.value.toLowerCase()
