@@ -86,12 +86,15 @@ const products = computed(() => data.value || [])
 
 const filteredProducts = computed(() => {
   const term = q.value.toLowerCase()
+  console.log('[produtos] q:', q.value, 'term:', term, 'products.length:', products.value.length)
   if (!term) return products.value
 
-  return (products.value as any[]).filter((p) => {
+  const filtered = (products.value as any[]).filter((p) => {
     const name = String(p?.nome ?? p?.name ?? '').toLowerCase()
     const slug = String(p?.slug ?? '').toLowerCase()
     return name.includes(term) || slug.includes(term)
   })
+  console.log('[produtos] filtered.length:', filtered.length)
+  return filtered
 })
 </script>
