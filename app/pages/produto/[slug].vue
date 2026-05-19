@@ -796,7 +796,7 @@ useSeoMeta({
 })
 
 const safeDescriptionHtml = computed(() => {
-  const raw = String((safeProduct as any)?.descricao || '').trim()
+  const raw = String((safeProduct as any)?.description || '').trim()
   if (!raw) return ''
 
   const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)
