@@ -16,33 +16,37 @@
       </div>
       <div v-else-if="hasError || products.length === 0" class="py-8">
         <div class="rounded-2xl border border-blue-100 bg-blue-50 p-6 text-center">
-          <h3 class="text-xl font-black text-gray-900">Ofertas disponíveis</h3>
+          <h3 class="text-xl font-black text-gray-900">Oferta principal disponível</h3>
           <p class="mt-2 text-sm text-gray-600">Compra segura com entrega digital imediata, mesmo em instabilidade momentânea.</p>
+          <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <NuxtLink to="/checkout" class="inline-flex rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700 transition">
+              Comprar agora
+            </NuxtLink>
+            <a href="https://wa.me/5511910512647" target="_blank" rel="noopener" class="inline-flex rounded-xl border border-green-600 px-5 py-3 text-sm font-bold text-green-700 hover:bg-green-100 transition">
+              WhatsApp
+            </a>
+          </div>
         </div>
         <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <article
-            v-for="product in emergencyProducts"
-            :key="product.id"
+            v-for="product in safeProducts.slice(0, 8)"
+            :key="String(product?.id || product?.slug || 'fallback-product')"
             class="rounded-2xl border border-gray-200 bg-white p-4"
           >
             <img
-              :src="product.image"
-              :alt="product.name"
+              :src="String(product?.image || '/images/fallback-product.png')"
+              :alt="String(product?.name || 'Produto')"
               loading="lazy"
               width="400"
               height="300"
               class="h-40 w-full rounded-lg object-cover"
+              @error="handleFallbackImageError"
             />
-            <h4 class="mt-3 text-base font-bold text-gray-900">{{ product.name }}</h4>
-            <p class="mt-1 text-sm text-gray-600">{{ product.price }}</p>
-            <a
-              :href="product.whatsappLink"
-              target="_blank"
-              rel="noopener"
-              class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition"
-            >
-              Comprar pelo WhatsApp
-            </a>
+            <h4 class="mt-3 text-base font-bold text-gray-900">{{ product?.name || 'Produto' }}</h4>
+            <p class="mt-1 text-sm text-gray-600">R$ {{ Number(product?.price || 0).toFixed(2) }}</p>
+            <NuxtLink :to="String(product?.checkoutUrl || '/checkout')" class="mt-3 inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
+              Comprar agora
+            </NuxtLink>
           </article>
         </div>
       </div>
@@ -240,38 +244,6 @@ const { data: categoriasData } = await useFetch('/api/categorias', {
 const products = computed(() =>
   Array.isArray(data.value) ? data.value : []
 )
-
-// Produtos de emergência quando banco está instável (Railway outage)
-const emergencyProducts = [
-  {
-    id: 'emergency-1',
-    name: 'Office 365',
-    price: 'R$ 99.00',
-    image: 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png',
-    whatsappLink: 'https://wa.me/5511910512647?text=Olá, gostaria de comprar o Office 365 por R$ 99.00'
-  },
-  {
-    id: 'emergency-2',
-    name: 'Windows 11 Pro',
-    price: 'R$ 69.00',
-    image: 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png',
-    whatsappLink: 'https://wa.me/5511910512647?text=Olá, gostaria de comprar o Windows 11 Pro por R$ 69.00'
-  },
-  {
-    id: 'emergency-3',
-    name: 'Windows 10 Pro',
-    price: 'R$ 59.00',
-    image: 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png',
-    whatsappLink: 'https://wa.me/5511910512647?text=Olá, gostaria de comprar o Windows 10 Pro por R$ 59.00'
-  },
-  {
-    id: 'emergency-4',
-    name: 'Office 2021',
-    price: 'R$ 129.00',
-    image: 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png',
-    whatsappLink: 'https://wa.me/5511910512647?text=Olá, gostaria de comprar o Office 2021 por R$ 129.00'
-  }
-]
 
 // Categorias permitidas para Casa do Software (usar apenas slugs principais)
 const allowedCategories = [
