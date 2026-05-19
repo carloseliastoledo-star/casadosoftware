@@ -261,9 +261,8 @@
           <div class="flex items-center gap-3">
             <picture>
               <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-              <img :src="effectiveLogoPath" :alt="siteName" class="h-14 w-auto" />
+              <img :src="effectiveLogoPath" :alt="siteName" class="h-21 w-auto" />
             </picture>
-            <div class="font-extrabold text-gray-900">{{ siteName }}</div>
           </div>
           <button
             type="button"
