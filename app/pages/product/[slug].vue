@@ -97,7 +97,7 @@
         <!-- Description -->
         <div v-if="product.descricao" class="bg-white rounded-2xl border border-slate-200 p-8 mb-8">
           <h2 class="text-lg font-extrabold text-slate-900 mb-3">About this license</h2>
-          <p class="text-slate-600 text-sm leading-relaxed">{{ product.descricao }}</p>
+          <div class="text-slate-600 text-sm leading-relaxed" v-html="product.descricao"></div>
         </div>
 
         <!-- FAQ -->
@@ -185,7 +185,6 @@ async function loadProduct() {
     }
 
     const rawDesc = String(found.descricao || found.description || '')
-      .replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
 
     product.value = {
       id: String(found.id || ''),
