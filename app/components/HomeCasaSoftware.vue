@@ -260,7 +260,12 @@ const allowedCategories = [
 
 const categorias = computed(() => {
   const allCategorias = categoriasData.value?.categorias || []
-  return allCategorias.filter(cat => allowedCategories.includes(cat.slug))
+  const filtered = allCategorias.filter(cat => allowedCategories.includes(cat.slug))
+  // Remover duplicatas baseadas no slug
+  const unique = filtered.filter((cat, index, self) =>
+    index === self.findIndex(c => c.slug === cat.slug)
+  )
+  return unique
 })
 
 const hasError = computed(() => Boolean(error.value))
