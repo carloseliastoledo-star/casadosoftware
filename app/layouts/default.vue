@@ -64,12 +64,10 @@
                 type="search"
                 :placeholder="t.searchPlaceholder"
                 class="w-full h-11 rounded-l-xl border border-gray-200 bg-gray-50 px-4 text-sm outline-none focus:ring-2 focus:ring-blue-600/30 focus:border-blue-600"
-                @input="(e) => console.log('[search input] value:', (e.target as HTMLInputElement).value)"
               />
               <button
                 type="submit"
                 class="h-11 px-5 rounded-r-xl bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm"
-                @click="(e) => console.log('[search button click]')"
               >
                 {{ t.searchButton }}
               </button>
@@ -1023,7 +1021,6 @@ const footerInstitutionalLinks = computed(() => {
 
 function submitSearch() {
   const q = String(search.value || '').trim()
-  console.log('[submitSearch] search.value:', search.value, 'q:', q, 'productsIndexPath:', productsIndexPath.value)
   if (!q) {
     navigateTo(productsIndexPath.value)
     return
