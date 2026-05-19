@@ -597,13 +597,19 @@ const logoWebpPath = computed(() => {
 
 const NATIONAL_LOGOS = ['/logo.png', '/logo-mercadosoftwares.png', '']
 
+const casaSoftwareLogo = 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png'
+const isCasaDoSoftware = computed(() => {
+  if (normalizedHost.value.includes('casadosoftware.com.br')) return true
+  return storeSlug.value === 'casadosoftware'
+})
+
 const effectiveLogoPath = computed(() => {
   if (isLicencasDigitais.value) return '/licencasdigitais-gvg/logo.png'
   if (isInternational.value) {
     const lp = String(logoPath || '').trim()
     return NATIONAL_LOGOS.includes(lp) ? '/logo-gvg.png' : lp
   }
-  return String(logoPath || '').trim() || '/logo-mercadosoftwares.png'
+  return String(logoPath || '').trim() || (isCasaDoSoftware.value ? casaSoftwareLogo : '/logo-mercadosoftwares.png')
 })
 
 const isNationalLogoInIntl = computed(() =>
