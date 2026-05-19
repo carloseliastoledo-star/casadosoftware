@@ -67,7 +67,7 @@
                 {{ t.installmentsPrefix }} {{ installments12 }} sem juros
               </div>
               <div v-if="isBrl && formattedPixPrice" class="text-sm font-semibold text-cyan-400 mt-0.5">
-                ­ƒ░ PIX à vista: <span class="text-white">{{ formattedPixPrice }}</span>
+                🛒░ PIX à vista: <span class="text-white">{{ formattedPixPrice }}</span>
               </div>
             </div>
 
@@ -106,7 +106,7 @@
             <!-- Trust badges -->
             <div class="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
               <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">­ƒö</span>
+                <span class="text-2xl">🛒ö</span>
                 <span class="text-[10px] font-semibold text-slate-400">{{ t.trustSecure }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
@@ -114,7 +114,7 @@
                 <span class="text-[10px] font-semibold text-slate-400">{{ t.trustVerified }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">­ƒ¼</span>
+                <span class="text-2xl">🛒¼</span>
                 <span class="text-[10px] font-semibold text-slate-400">{{ t.trustClients }}</span>
               </div>
               <div class="flex flex-col items-center text-center gap-1">
@@ -169,9 +169,9 @@
             {{ t.buyNowBtn }}
           </button>
           <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-slate-500">
-            <span>­ƒö {{ t.ctaPayment }}</span>
-            <span>­ƒôº {{ t.ctaEmail }}</span>
-            <span>Ôå®´©Å {{ t.ctaGuarantee }}</span>
+            <span>🛒ö {{ t.ctaPayment }}</span>
+            <span>🛒ôº {{ t.ctaEmail }}</span>
+            <span>✅ {{ t.ctaGuarantee }}</span>
           </div>
         </div>
 
@@ -181,12 +181,12 @@
           class="mt-10 bg-[#021326] border border-blue-500/30 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div class="flex items-center gap-5">
-            <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">­ƒôÿ</div>
+            <div class="bg-blue-600 text-white p-4 rounded-xl text-xl shrink-0">🛒ôÿ</div>
             <div>
               <h3 class="text-lg font-bold text-white">{{ t.tutorialCardTitle }}</h3>
               <p class="text-slate-400 text-sm mt-1">{{ safeProduct.tutorialSubtitle }}</p>
               <p v-if="tutorialAccessChecked && !tutorialAccess?.allowed" class="text-amber-400 text-xs mt-2">
-                ­ƒö {{ t.tutorialLoginRequired }}
+                🛒ö {{ t.tutorialLoginRequired }}
               </p>
             </div>
           </div>
@@ -202,7 +202,7 @@
             :to="`/minha-conta/login?returnTo=${encodeURIComponent('/tutoriais/' + safeProduct.slug)}`"
             class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
-            ­ƒöæ {{ t.tutorialLoginRequired }}
+            🛒öæ {{ t.tutorialLoginRequired }}
           </NuxtLink>
         </div>
 
@@ -1234,8 +1234,8 @@ const t = computed(() => {
       ms365Bullet3: 'Access is via the provided account (it is not activation on an existing personal Microsoft account).',
       ms365HelpPrefix: 'Questions? See',
       ms365HelpLink: 'Digital delivery',
-      urgencyBadge: '­🔥 Limited time offer',
-      buyNowBtn: '­ƒ BUY NOW',
+      urgencyBadge: '🔥 Limited time offer',
+      buyNowBtn: '🛒 BUY NOW',
       microInstant: 'Instant delivery',
       microActivation: 'Activation in minutes',
       microSecure: 'Secure purchase',
@@ -1248,7 +1248,7 @@ const t = computed(() => {
       trustClients: '+1000 clients',
       trustFastDelivery: 'Fast delivery',
       urgencyStock: ' Limited digital stock ÔÇö get yours now before it runs out!',
-      ctaUrgency: '­🔥 DonÔÇÖt miss this offer ÔÇö price may change at any time',
+      ctaUrgency: '🔥 DonÔÇÖt miss this offer ÔÇö price may change at any time',
       ctaPayment: 'Secure payment',
       ctaEmail: 'Email delivery',
       ctaGuarantee: '7-day guarantee',
@@ -1285,8 +1285,8 @@ const t = computed(() => {
       ms365Bullet3: 'El acceso se realiza con la cuenta proporcionada (no es activación en una cuenta Microsoft personal ya existente).',
       ms365HelpPrefix: '┬┐Dudas? Consulta',
       ms365HelpLink: 'Entrega digital',
-      urgencyBadge: '­🔥 Oferta por tiempo limitado',
-      buyNowBtn: '­ƒ COMPRAR AHORA',
+      urgencyBadge: '🔥 Oferta por tiempo limitado',
+      buyNowBtn: '🛒 COMPRAR AHORA',
       microInstant: 'Entrega inmediata',
       microActivation: 'Activación en minutos',
       microSecure: 'Compra segura',
@@ -1299,7 +1299,7 @@ const t = computed(() => {
       trustClients: '+1000 clientes',
       trustFastDelivery: 'Envío inmediato',
       urgencyStock: ' Stock digital limitado ÔÇö ┬íconsigue el tuyo antes de que se agote!',
-      ctaUrgency: '­🔥 No te pierdas esta oferta ÔÇö el precio puede cambiar en cualquier momento',
+      ctaUrgency: '🔥 No te pierdas esta oferta ÔÇö el precio puede cambiar en cualquier momento',
       ctaPayment: 'Pago seguro',
       ctaEmail: 'Entrega por e-mail',
       ctaGuarantee: 'Garantía de 7 días',
@@ -1336,8 +1336,8 @@ const t = computed(() => {
       ms365Bullet3: "L'accesso avviene con l'account fornito (non ├¿ unÔÇÖattivazione su un account Microsoft personale già esistente).",
       ms365HelpPrefix: 'Dubbi? Vedi',
       ms365HelpLink: 'Consegna digitale',
-      urgencyBadge: '­🔥 Offerta a tempo limitato',
-      buyNowBtn: '­ƒ ACQUISTA ORA',
+      urgencyBadge: '🔥 Offerta a tempo limitato',
+      buyNowBtn: '🛒 ACQUISTA ORA',
       microInstant: 'Consegna immediata',
       microActivation: 'Attivazione in minuti',
       microSecure: 'Acquisto sicuro',
@@ -1350,7 +1350,7 @@ const t = computed(() => {
       trustClients: '+1000 clienti',
       trustFastDelivery: 'Consegna immediata',
       urgencyStock: ' Stock digitale limitato ÔÇö assicurati il tuo prima che finisca!',
-      ctaUrgency: '­🔥 Non perdere questa offerta ÔÇö il prezzo pu├▓ cambiare in qualsiasi momento',
+      ctaUrgency: '🔥 Non perdere questa offerta ÔÇö il prezzo pu├▓ cambiare in qualsiasi momento',
       ctaPayment: 'Pagamento sicuro',
       ctaEmail: 'Consegna via e-mail',
       ctaGuarantee: 'Garanzia 7 giorni',
@@ -1387,8 +1387,8 @@ const t = computed(() => {
       ms365Bullet3: "L'acc├¿s se fait avec le compte fourni (ce n'est pas une activation sur un compte Microsoft personnel existant).",
       ms365HelpPrefix: 'Des questions ? Voir',
       ms365HelpLink: 'Livraison numérique',
-      urgencyBadge: '­🔥 Offre à durée limitée',
-      buyNowBtn: '­ƒ ACHETER MAINTENANT',
+      urgencyBadge: '🔥 Offre à durée limitée',
+      buyNowBtn: '🛒 ACHETER MAINTENANT',
       microInstant: 'Livraison immédiate',
       microActivation: 'Activation en minutes',
       microSecure: 'Achat sécurisé',
@@ -1401,7 +1401,7 @@ const t = computed(() => {
       trustClients: '+1000 clients',
       trustFastDelivery: 'Livraison immédiate',
       urgencyStock: ' Stock numérique limité ÔÇö obtenez le vôtre avant épuisement !',
-      ctaUrgency: '­🔥 Ne manquez pas cette offre ÔÇö le prix peut changer à tout moment',
+      ctaUrgency: '🔥 Ne manquez pas cette offre ÔÇö le prix peut changer à tout moment',
       ctaPayment: 'Paiement sécurisé',
       ctaEmail: 'Livraison par e-mail',
       ctaGuarantee: 'Garantie 7 jours',
@@ -1437,8 +1437,8 @@ const t = computed(() => {
     ms365Bullet3: 'O acesso é feito com a conta fornecida (não é ativação em uma conta Microsoft pessoal já existente).',
     ms365HelpPrefix: 'Dúvidas? Consulte',
     ms365HelpLink: 'Entrega digital',
-    urgencyBadge: '­🔥 Oferta por tempo limitado',
-    buyNowBtn: '­ƒ COMPRAR AGORA',
+    urgencyBadge: '🔥 Oferta por tempo limitado',
+    buyNowBtn: '🛒 COMPRAR AGORA',
     microInstant: 'Entrega imediata',
     microActivation: 'Ativação em minutos',
     microSecure: 'Compra segura',
@@ -1451,7 +1451,7 @@ const t = computed(() => {
     trustClients: '+1000 clientes',
     trustFastDelivery: 'Envio imediato',
     urgencyStock: ' Estoque digital limitado ÔÇö garanta o seu agora antes que acabe!',
-    ctaUrgency: '­🔥 Não perca esta oferta ÔÇö preço pode mudar a qualquer momento',
+    ctaUrgency: '🔥 Não perca esta oferta ÔÇö preço pode mudar a qualquer momento',
     ctaPayment: 'Pagamento seguro',
     ctaEmail: 'Entrega por e-mail',
     ctaGuarantee: '7 dias de garantia',

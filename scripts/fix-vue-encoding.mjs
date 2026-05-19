@@ -7,7 +7,7 @@ let content = readFileSync(filePath, 'utf8')
 
 // Fix broken characters using the same patterns from fix-nome-encoding.mjs
 const replacements = [
-  // Emojis
+  // Emojis - more patterns
   ['Ô£ö', '✅'],
   ['Ô£à', ''],
   ['ÔÜí', ''],
@@ -15,6 +15,13 @@ const replacements = [
   ['ƒöÑ', '🔥'],
   ['Æ', ''],
   ['ø', ''],
+  ['­ƒ', '🛒'],
+  ['­ƒö', '🔒'],
+  ['­ƒ¼', '👥'],
+  ['­ƒôº', '📧'],
+  ['­ƒ░', '💳'],
+  ['­🔥', '🔥'],
+  ['Ôå®´©Å', '✅'],
   
   // Em dash
   ['ÔÇô', '–'],
@@ -46,6 +53,9 @@ const replacements = [
   ['├ç', 'Ç'],
   ['├ô', 'Ó'],
   ['┬║', 'º'],
+  
+  // Additional patterns from user feedback
+  ['­', ''],
 ]
 
 for (const [broken, fixed] of replacements) {
