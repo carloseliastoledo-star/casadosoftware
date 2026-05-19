@@ -82,6 +82,8 @@ const { data, pending, error } = await useFetch('/api/products', {
   default: () => null
 })
 
+console.log('[produtos] data:', data.value, 'pending:', pending.value, 'error:', error.value)
+
 const products = computed(() => data.value || [])
 
 const filteredProducts = computed(() => {
