@@ -1463,6 +1463,7 @@ const t = computed(() => {
 
 function buyNow() {
   const p = safeProduct as any
+  console.log('[buyNow] safeProduct:', p, 'slug:', slug, 'p.slug:', p?.slug)
   try {
     ecomAddToCart({
       item_id: p?.id || '',
@@ -1474,6 +1475,7 @@ function buyNow() {
     // ignore
   }
   const slugValue = String(p?.slug || slug || '')
+  console.log('[buyNow] slugValue:', slugValue, 'checkoutPath:', intl.currencyLower.value !== 'brl' ? '/checkout-intl' : '/checkout')
   const checkoutPath = intl.currencyLower.value !== 'brl' ? '/checkout-intl' : '/checkout'
   navigateTo({ path: checkoutPath, query: { product: slugValue } })
 }
