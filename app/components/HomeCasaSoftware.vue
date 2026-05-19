@@ -245,11 +245,11 @@ const products = computed(() =>
   Array.isArray(data.value) ? data.value : []
 )
 
-// Categorias permitidas para Casa do Software
+// Categorias permitidas para Casa do Software (usar apenas slugs principais)
 const allowedCategories = [
-  'windows',
+  'windows',           // Remove 'licenças-windows' se existir
   'windows-server',
-  'office',
+  'office',            // Remove 'microsoft-office' se existir
   'autodesk',
   'jogos',
   'corel',
@@ -265,7 +265,13 @@ const categorias = computed(() => {
   const unique = filtered.filter((cat, index, self) =>
     index === self.findIndex(c => c.slug === cat.slug)
   )
-  return unique
+  // Ordenar por ordem da lista de permitidos
+  const ordered = unique.sort((a, b) => {
+    const indexA = allowedCategories.indexOf(a.slug)
+    const indexB = allowedCategories.indexOf(b.slug)
+    return indexA - indexB
+  })
+  return ordered
 })
 
 const hasError = computed(() => Boolean(error.value))
