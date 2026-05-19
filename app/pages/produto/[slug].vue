@@ -219,11 +219,11 @@
           <section class="prose prose-invert prose-sm max-w-none text-slate-200" v-html="safeSeoContentHtml" />
         </div>
 
-        <!-- Language switcher ÔÇö hidden on international domains -->
+        <!-- Language switcher – hidden on international domains -->
         <IntlLanguageSwitcher
           v-if="!intl.isIntl.value"
           page-type="product"
-          :slug="String((safeProduct as any)?.slug || slug.value || '')"
+          :slug="String((safeProduct as any)?.slug || slug || '')"
           class="mt-8 w-full"
         />
 
@@ -506,7 +506,7 @@ const { data: product, pending, error } = await useAsyncData(
 
 const { data: productsData } = await useFetch<any[]>('/api/products', {
   server: true,
-  default: () => null
+  default: () => []
 })
 
 if (import.meta.server && product.value === null && !error.value) {
@@ -547,7 +547,7 @@ const tutorialAccessChecked = ref(false)
 
 if (import.meta.client) {
   onMounted(async () => {
-    if (!safeProduct?.tutorialTitle) return
+    if (!(safeProduct.value as any)?.tutorialTitle) return
     try {
       const res = await $fetch<{ ok: boolean; allowed: boolean; reason: string | null }>(
         `/api/customer/tutorial-access/${slug.value}`
@@ -599,25 +599,25 @@ function formatProductPrice(price: number, currency: string) {
 }
 
 const relatedProducts = computed(() => {
-  const all = productsData.value || []
+  const all: any[] = productsData.value || []
   const currentSlug = String(safeProduct.value?.slug || '')
   const baseTokens = normalizeTokens(safeProduct.value?.name || safeProduct.value?.description || '')
-  if (!baseTokens.length) return all.filter((p) => p.slug !== currentSlug).slice(0, 4)
+  if (!baseTokens.length) return all.filter((p: any) => p.slug !== currentSlug).slice(0, 4)
 
   const scored = all
-    .filter((p) => p.slug !== currentSlug)
-    .map((p) => {
+    .filter((p: any) => p.slug !== currentSlug)
+    .map((p: any) => {
       const candidate = String(p?.name || '') || String(p?.description || '')
       const tokens = normalizeTokens(candidate)
-      const score = tokens.reduce((acc, t) => (baseTokens.includes(t) ? acc + 1 : acc), 0)
+      const score = tokens.reduce((acc: number, t: string) => (baseTokens.includes(t) ? acc + 1 : acc), 0)
       return { p, score }
     })
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score)
+    .filter((x: any) => x.score > 0)
+    .sort((a: any, b: any) => b.score - a.score)
     .slice(0, 4)
-    .map((x) => x.p)
+    .map((x: any) => x.p)
 
-  return scored.length ? scored : all.filter((p) => p.slug !== currentSlug).slice(0, 4)
+  return scored.length ? scored : all.filter((p: any) => p.slug !== currentSlug).slice(0, 4)
 })
 
 const { trackViewItem: ecomViewItem, trackAddToCart: ecomAddToCart } = useEcommerceTracking()
@@ -1279,216 +1279,6 @@ const isMicrosoft365 = computed(() => {
 })
 
 const t = computed(() => {
-  if (effectiveLang.value === 'en') {
-    return {
-      home: 'Home',
-      products: 'Products',
-      loading: 'Loading product...',
-      notFound: 'Product not found.',
-      buy: 'Buy',
-      included: "What's included:",
-      installmentsPrefix: 'up to 12x of',
-      pixLabel: 'Cash payment with PIX',
-      digitalDelivery: 'Digital delivery — Available',
-      freeRefund: 'Free refund up to 7 days after purchase',
-      guarantee: 'Guaranteed purchase. If you\'re not satisfied, we\'ll refund',
-      emailDelivery: 'Sent by email after confirmation',
-      tutorialCardTitle: 'Activation Tutorial',
-      viewTutorial: 'View Tutorial',
-      tutorialLoginRequired: 'Login to access',
-      detailedDescription: 'Detailed Description',
-      whyPriceTitle: 'Why is the price so good? Understand.',
-      whyPriceP1: 'Our prices are more affordable because we work with digital distribution, without physical media, logistics or intermediary costs.',
-      whyPriceP2: 'This allows us to offer competitive prices while maintaining support and immediate delivery after confirmation.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 — how it works',
-      ms365Bullet1: '',
-      ms365Bullet2: 'Delivery via provided account (login and password) after payment confirmation.',
-      ms365Bullet3: 'Access is made with the provided account (it is not activation on an existing personal Microsoft account).',
-      ms365HelpPrefix: 'Questions? See',
-      ms365HelpLink: 'Digital delivery',
-      urgencyBadge: '🔥 Limited time offer',
-      buyNowBtn: '🛒 BUY NOW',
-      microInstant: 'Instant delivery',
-      microActivation: 'Activation in minutes',
-      microSecure: 'Secure purchase',
-      benefitOriginal: 'Original license',
-      benefitAutoDelivery: 'Automatic delivery',
-      benefitSupport: 'Support included',
-      relatedProductsTitle: 'Related Products',
-      benefitGuarantee: '7-day guarantee',
-      trustSecure: 'Secure purchase',
-      trustVerified: 'Verified product',
-      trustClients: '+1000 clients',
-      trustFastDelivery: 'Fast delivery',
-      urgencyStock: ' Limited digital stock — get yours now before it runs out!',
-      ctaUrgency: '🔥 Don’t miss this offer — price may change at any time',
-      urgencyStock: ' Limited digital stock ÔÇö get yours now before it runs out!',
-      ctaUrgency: '🔥 DonÔÇÖt miss this offer ÔÇö price may change at any time',
-      ctaPayment: 'Secure payment',
-      ctaEmail: 'Email delivery',
-      ctaGuarantee: '7-day guarantee',
-      affiliateTitle: 'Earn money recommending this product.',
-      affiliateSub: 'Become an affiliate.',
-      affiliateBtn: 'I want to sign up'
-    }
-  }
-
-  if (effectiveLang.value === 'es') {
-    return {
-      home: 'Inicio',
-      products: 'Productos',
-      loading: 'Cargando producto...',
-      notFound: 'Producto no encontrado.',
-      buy: 'Comprar',
-      included: 'Qué incluye:',
-      installmentsPrefix: 'hasta 12x de',
-      pixLabel: 'Pago al contado con PIX',
-      digitalDelivery: 'Entrega digital ÔÇó Disponible',
-      freeRefund: 'Devolución gratis hasta 7 días después de la compra',
-      guarantee: 'Compra garantizada. Si no queda satisfecho, le devolvemos su dinero',
-      emailDelivery: 'Envío por e-mail tras la confirmación',
-      tutorialCardTitle: 'Tutorial de activación',
-      viewTutorial: 'Ver tutorial',
-      tutorialLoginRequired: 'Inicia sesión para acceder',
-      detailedDescription: 'Descripción detallada',
-      whyPriceTitle: '┬┐Por qué nuestro precio es más accesible?',
-      whyPriceP1: 'Nuestros precios son más accesibles porque trabajamos con distribución digital, sin costos de medios físicos, logística ni intermediarios.',
-      whyPriceP2: 'Esto nos permite ofrecer valores competitivos, manteniendo soporte y entrega rápida tras la confirmación del pago.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö cómo funciona',
-      ms365Bullet1: '',
-      ms365Bullet2: 'Entrega mediante una cuenta proporcionada (usuario y contrase├▒a) tras la confirmación del pago.',
-      ms365Bullet3: 'El acceso se realiza con la cuenta proporcionada (no es activación en una cuenta Microsoft personal ya existente).',
-      ms365HelpPrefix: '┬┐Dudas? Consulta',
-      ms365HelpLink: 'Entrega digital',
-      urgencyBadge: '🔥 Oferta por tiempo limitado',
-      buyNowBtn: '🛒 COMPRAR AHORA',
-      microInstant: 'Entrega inmediata',
-      microActivation: 'Activación en minutos',
-      microSecure: 'Compra segura',
-      benefitOriginal: 'Licencia original',
-      benefitAutoDelivery: 'Entrega automática',
-      benefitSupport: 'Soporte incluido',
-      relatedProductsTitle: 'Productos Relacionados',
-      benefitGuarantee: 'Garantía de 7 días',
-      trustSecure: 'Compra segura',
-      trustVerified: 'Producto verificado',
-      trustClients: '+1000 clientes',
-      trustFastDelivery: 'Envío inmediato',
-      urgencyStock: ' Stock digital limitado ÔÇö ┬íconsigue el tuyo antes de que se agote!',
-      ctaUrgency: '🔥 No te pierdas esta oferta ÔÇö el precio puede cambiar en cualquier momento',
-      ctaPayment: 'Pago seguro',
-      ctaEmail: 'Entrega por e-mail',
-      ctaGuarantee: 'Garantía de 7 días',
-      affiliateTitle: 'Gana dinero recomendando este producto.',
-      affiliateSub: 'Conviértete en afiliado.',
-      affiliateBtn: 'Quiero registrarme'
-    }
-  }
-
-  if (effectiveLang.value === 'it') {
-    return {
-      home: 'Home',
-      products: 'Prodotti',
-      loading: 'Caricamento prodotto...',
-      notFound: 'Prodotto non trovato.',
-      buy: 'Acquista',
-      included: "Cosa ├¿ incluso:",
-      installmentsPrefix: 'fino a 12x da',
-      pixLabel: 'Pagamento in contanti con PIX',
-      digitalDelivery: 'Consegna digitale ÔÇó Disponibile',
-      freeRefund: 'Rimborso gratuito fino a 7 giorni dopo lÔÇÖacquisto',
-      guarantee: 'Acquisto garantito. Se non sei soddisfatto, rimborsiamo',
-      emailDelivery: 'Consegnato via email dopo la conferma',
-      tutorialCardTitle: 'Tutorial di attivazione',
-      viewTutorial: 'Vedi tutorial',
-      tutorialLoginRequired: 'Accedi per visualizzare',
-      detailedDescription: 'Descrizione dettagliata',
-      whyPriceTitle: 'Perché il nostro prezzo ├¿ pi├╣ conveniente?',
-      whyPriceP1: 'I nostri prezzi sono pi├╣ convenienti perché lavoriamo con distribuzione digitale, senza costi di supporti fisici, logistica o intermediari.',
-      whyPriceP2: 'Questo ci permette di offrire prezzi competitivi, mantenendo supporto e consegna rapida dopo la conferma del pagamento.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö come funziona',
-      ms365Bullet1: '',
-      ms365Bullet2: 'Consegna tramite un account fornito (login e password) dopo la conferma del pagamento.',
-      ms365Bullet3: "L'accesso avviene con l'account fornito (non ├¿ unÔÇÖattivazione su un account Microsoft personale già esistente).",
-      ms365HelpPrefix: 'Dubbi? Vedi',
-      ms365HelpLink: 'Consegna digitale',
-      urgencyBadge: '🔥 Offerta a tempo limitato',
-      buyNowBtn: '🛒 ACQUISTA ORA',
-      microInstant: 'Consegna immediata',
-      microActivation: 'Attivazione in minuti',
-      microSecure: 'Acquisto sicuro',
-      benefitOriginal: 'Licenza originale',
-      benefitAutoDelivery: 'Consegna automatica',
-      benefitSupport: 'Supporto incluso',
-      relatedProductsTitle: 'Prodotti Correlati',
-      benefitGuarantee: 'Garanzia 7 giorni',
-      trustSecure: 'Acquisto sicuro',
-      trustVerified: 'Prodotto verificato',
-      trustClients: '+1000 clienti',
-      trustFastDelivery: 'Consegna immediata',
-      urgencyStock: ' Stock digitale limitato ÔÇö assicurati il tuo prima che finisca!',
-      ctaUrgency: '🔥 Non perdere questa offerta ÔÇö il prezzo pu├▓ cambiare in qualsiasi momento',
-      ctaPayment: 'Pagamento sicuro',
-      ctaEmail: 'Consegna via e-mail',
-      ctaGuarantee: 'Garanzia 7 giorni',
-      affiliateTitle: 'Guadagna consigliando questo prodotto.',
-      affiliateSub: 'Diventa affiliato.',
-      affiliateBtn: 'Voglio iscrivermi'
-    }
-  }
-
-  if (effectiveLang.value === 'fr') {
-    return {
-      home: 'Accueil',
-      products: 'Produits',
-      loading: 'Chargement du produit...',
-      notFound: 'Produit introuvable.',
-      buy: 'Acheter',
-      included: 'Ce qui est inclus :',
-      installmentsPrefix: "jusqu'à 12x de",
-      pixLabel: 'Paiement comptant avec PIX',
-      digitalDelivery: 'Livraison numérique ÔÇó Disponible',
-      freeRefund: 'Remboursement gratuit jusquÔÇÖà 7 jours apr├¿s lÔÇÖachat',
-      guarantee: 'Achat garanti. Si vous nÔÇÖêtes pas satisfait, nous remboursons',
-      emailDelivery: 'Livré par e-mail apr├¿s confirmation',
-      tutorialCardTitle: "Tutoriel dÔÇÖactivation",
-      viewTutorial: 'Voir le tutoriel',
-      tutorialLoginRequired: 'Connectez-vous pour accéder',
-      detailedDescription: 'Description détaillée',
-      whyPriceTitle: 'Pourquoi notre prix est-il plus abordable ?',
-      whyPriceP1: 'Nos prix sont plus abordables car nous travaillons avec une distribution numérique, sans co├╗ts de support physique, de logistique ou dÔÇÖintermédiaires.',
-      whyPriceP2: 'Cela nous permet de proposer des prix compétitifs tout en maintenant le support et une livraison rapide apr├¿s confirmation du paiement.',
-      ms365HowTitle: 'Microsoft 365 / Office 365 ÔÇö comment ça marche',
-      ms365Bullet1: '',
-      ms365Bullet2: 'Livraison via un compte fourni (identifiant et mot de passe) apr├¿s confirmation du paiement.',
-      ms365Bullet3: "L'acc├¿s se fait avec le compte fourni (ce n'est pas une activation sur un compte Microsoft personnel existant).",
-      ms365HelpPrefix: 'Des questions ? Voir',
-      ms365HelpLink: 'Livraison numérique',
-      urgencyBadge: '🔥 Offre à durée limitée',
-      buyNowBtn: '🛒 ACHETER MAINTENANT',
-      microInstant: 'Livraison immédiate',
-      microActivation: 'Activation en minutes',
-      microSecure: 'Achat sécurisé',
-      benefitOriginal: 'Licence originale',
-      benefitAutoDelivery: 'Livraison automatique',
-      benefitSupport: 'Support inclus',
-      relatedProductsTitle: 'Produits Connexes',
-      benefitGuarantee: 'Garantie 7 jours',
-      trustSecure: 'Achat sécurisé',
-      trustVerified: 'Produit vérifié',
-      trustClients: '+1000 clients',
-      trustFastDelivery: 'Livraison immédiate',
-      urgencyStock: ' Stock numérique limité ÔÇö obtenez le vôtre avant épuisement !',
-      ctaUrgency: '🔥 Ne manquez pas cette offre ÔÇö le prix peut changer à tout moment',
-      ctaPayment: 'Paiement sécurisé',
-      ctaEmail: 'Livraison par e-mail',
-      ctaGuarantee: 'Garantie 7 jours',
-      affiliateTitle: 'Gagnez de lÔÇÖargent en recommandant ce produit.',
-      affiliateSub: 'Devenez affilié.',
-      affiliateBtn: 'Je veux mÔÇÖinscrire'
-    }
-  }
-
   return {
     home: 'Início',
     products: 'Produtos',
@@ -1498,7 +1288,7 @@ const t = computed(() => {
     included: 'O que está incluído:',
     installmentsPrefix: 'em até 12x de',
     pixLabel: 'Pagamento à vista no PIX',
-    digitalDelivery: 'Entrega digital ÔÇó Disponível',
+    digitalDelivery: 'Entrega digital — Disponível',
     freeRefund: 'Devolução grátis. Até 7 dias a partir do recebimento',
     guarantee: 'Compra garantida. Saia satisfeito ou devolvemos seu dinheiro',
     emailDelivery: 'Envio por e-mail após confirmação',
@@ -1534,9 +1324,9 @@ const t = computed(() => {
     ctaPayment: 'Pagamento seguro',
     ctaEmail: 'Entrega por e-mail',
     ctaGuarantee: '7 dias de garantia',
-    affiliateTitle: 'Ganhe dinheiro indicando este produto.',
-    affiliateSub: 'Torne-se afiliado.',
-    affiliateBtn: 'Quero me inscrever'
+    affiliateTitle: 'Ganhe dinheiro recomendando este produto.',
+    affiliateSub: 'Torne-se um afiliado.',
+    affiliateBtn: 'Quero me cadastrar'
   }
 })
 
