@@ -260,11 +260,13 @@ const { data, pending, error } = await useFetch(() => apiUrl.value, {
 const categoria = computed(() => (data.value as any)?.categoria || null)
 const apiError = computed(() => error.value || (data.value as any)?._error || null)
 
-const produtos = computed(() =>
-  Array.isArray((data.value as any)?.produtos)
+const produtos = computed(() => {
+  const produtosData = Array.isArray((data.value as any)?.produtos)
     ? (data.value as any).produtos
     : []
-)
+  console.log('[categoria/[slug]] produtos computed:', produtosData.length)
+  return produtosData
+})
 
 const sort = ref<'featured' | 'newest' | 'price_asc' | 'price_desc'>('featured')
 
