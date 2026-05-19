@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'nome e slug são obrigatórios' })
   }
 
-  const created = await prisma.categoria.create({
+  const created = await (prisma as any).Categoria.create({
     data: { nome, slug },
     select: { id: true, nome: true, slug: true, ativo: true }
   })

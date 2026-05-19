@@ -5,7 +5,7 @@ import { requireAdminSession } from '../../../utils/adminSession'
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const categorias = await prisma.categoria.findMany({
+  const categorias = await (prisma as any).Categoria.findMany({
     orderBy: { nome: 'asc' },
     select: {
       id: true,

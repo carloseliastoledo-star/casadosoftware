@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Nada para atualizar' })
   }
 
-  const updated = await prisma.categoria.update({
+  const updated = await (prisma as any).Categoria.update({
     where: { id },
     data,
     select: { id: true, nome: true, slug: true, ativo: true }
