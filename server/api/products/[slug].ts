@@ -139,11 +139,7 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    console.log('[API products/slug] product found:', !!product, 'ativo:', product?.ativo, 'slug:', product?.slug)
-    // Guard: only enforce store isolation for 'international'
-    if (product && storeSlug === 'international' && !(product.ProdutoPrecoLoja?.length)) {
-      product = null
-    }
+    console.log('[API products/slug] product found:', !!product, 'ativo:', product?.ativo, 'slug:', product?.slug, 'storeSlug:', storeSlug)
   } catch (dbError: any) {
     console.error('[API PRODUCTS SLUG ERROR]', dbError)
     return {
