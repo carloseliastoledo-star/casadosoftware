@@ -352,7 +352,9 @@ definePageMeta({ layout: 'lp' })
 
 // Guard: redirect to intl checkout on international domains
 const _checkoutIntl = useIntlContext()
+console.log('[checkout] currencyLower:', _checkoutIntl.currencyLower.value, 'host:', import.meta.client ? window.location.host : 'server')
 if (_checkoutIntl.currencyLower.value !== 'brl') {
+  console.log('[checkout] redirecting to checkout-intl because currency is not BRL')
   const route_ = useRoute()
   await navigateTo({ path: '/checkout-intl', query: route_.query }, { redirectCode: 302 })
 }
@@ -580,14 +582,17 @@ onMounted(async () => {
 
   if (productSlug.value && productSlug.value !== FUNNEL_SLUG) {
     productLoading.value = true
+    console.log('[checkout] loading product:', productSlug.value)
     try {
       const res: any = await $fetch(`/api/products/${productSlug.value}`)
       const p = res?.product || res
+      console.log('[checkout] product loaded:', !!p, 'id:', p?.id)
       productName.value = String(p?.nome || p?.name || productName.value)
       const price = Number(p?.preco ?? p?.price ?? p?.effectivePrice ?? 49)
       basePrice.value = price
       produtoId.value = String(p?.id || '')
-    } catch {
+    } catch (err) {
+      console.error('[checkout] product load error:', err)
       await navigateTo('/')
     } finally {
       productLoading.value = false
