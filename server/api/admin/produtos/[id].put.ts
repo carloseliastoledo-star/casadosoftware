@@ -86,7 +86,17 @@ export default defineEventHandler(async (event) => {
   const rawPrecoEur = body.precoEur === null || body.precoEur === undefined ? '' : String(body.precoEur).trim()
   const precoEur = rawPrecoEur === '' ? null : Number(rawPrecoEur)
 
-  const imagem = normalizeImageUrl(body.imagem)
+    const imagem = normalizeImageUrl(body.imagem)
+
+  // Fetch category IDs by slug if categories are provided
+  let categoriaIds: string[] = []
+  if (categoriasProvided && categorias.length > 0) {
+    const categories = await (prisma as any).Categoria.findMany({
+      where: { slug: { in: categorias } },
+      select: { id: true }
+    })
+    categoriaIds = categories.map((c: any) => c.id)
+  }
 
   try {
     const updated = await (prisma as any).produto.update({
@@ -111,8 +121,8 @@ export default defineEventHandler(async (event) => {
           ? {
               ProdutoCategoria: {
                 deleteMany: {},
-                create: categorias.map((slug: string) => ({
-                  categoria: { connect: { slug } }
+                create: categoriaIds.map((categoriaId: string) => ({
+                  categoriaId
                 }))
               }
             }
