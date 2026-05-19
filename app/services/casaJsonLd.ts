@@ -205,7 +205,7 @@ export function getCasaHomeJsonLdBundle(params?: { host?: string; origin?: strin
           lang === 'de' ? '/produkte' :
             '/produtos'
 
-  const logo = `${baseUrl}/logo-casa-do-software.png`
+  const logo = 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png'
 
   const org = {
     '@context': 'https://schema.org',
