@@ -68,6 +68,36 @@
               </div>
             </div>
 
+            <div v-if="relatedProducts.length" class="mt-10 border-t pt-8">
+              <div class="flex items-center justify-between gap-4">
+                <h2 class="text-lg md:text-xl font-bold text-gray-900">{{ isEn ? 'Related Products' : 'Produtos Relacionados' }}</h2>
+                <NuxtLink :to="`${langPrefix}/produtos`" class="text-sm text-blue-700 font-semibold hover:text-blue-800 transition">{{ isEn ? 'View all' : 'Ver todos' }}</NuxtLink>
+              </div>
+
+              <div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <article
+                  v-for="p in relatedProducts"
+                  :key="p.slug"
+                  class="border border-gray-100 rounded-2xl overflow-hidden hover:border-blue-200 hover:shadow-sm transition bg-white"
+                >
+                  <NuxtLink :to="`${langPrefix}/produto/${p.slug}`" class="block">
+                    <div class="bg-gray-100">
+                      <img
+                        :src="p.image || '/products/placeholder.svg'"
+                        :alt="p.name"
+                        class="w-full h-36 object-contain p-4"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div class="p-5">
+                      <div class="text-base font-extrabold text-gray-900 leading-snug line-clamp-2">{{ p.name }}</div>
+                      <div v-if="p.price" class="text-lg font-bold text-blue-600 mt-2">{{ formatPrice(p.price, p.currency) }}</div>
+                    </div>
+                  </NuxtLink>
+                </article>
+              </div>
+            </div>
+
             <IntlLanguageSwitcher
               page-type="blog-post"
               :slug="String(slug)"
@@ -154,6 +184,21 @@ const ui = computed(() => {
     recent:    isEn ? 'Recent posts'      : 'Posts recentes',
   }
 })
+
+const isEn = computed(() => intl.language.value === 'en')
+
+function formatPrice(price: number, currency: string) {
+  try {
+    const currencyCode = currency === 'BRL' ? 'BRL' : currency === 'USD' ? 'USD' : currency === 'EUR' ? 'EUR' : 'BRL'
+    const locale = currencyCode === 'BRL' ? 'pt-BR' : 'en-US'
+    return Number(price || 0).toLocaleString(locale, {
+      style: 'currency',
+      currency: currencyCode
+    })
+  } catch {
+    return String(price || 0)
+  }
+}
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
@@ -393,10 +438,36 @@ const { data: recentData } = await useFetch<{ ok: true; posts: BlogPostListDto[]
   default: () => null
 })
 
+const { data: productsData } = await useFetch<any[]>('/api/products', {
+  server: true,
+  default: () => null
+})
+
 const recentPosts = computed(() => {
   const all = recentData.value?.posts || []
   const current = String(post.value?.slug || '')
   return all.filter((p) => String(p?.slug || '') && String(p.slug) !== current).slice(0, 5)
+})
+
+const relatedProducts = computed(() => {
+  const all = productsData.value || []
+  const kw = String((post.value as any)?.keyword || '').trim()
+  const baseTokens = kw ? normalizeTokens(kw) : normalizeTokens(post.value?.titulo)
+  if (!baseTokens.length) return all.slice(0, 4)
+
+  const scored = all
+    .map((p) => {
+      const candidate = String(p?.name || '') || String(p?.description || '')
+      const tokens = normalizeTokens(candidate)
+      const score = tokens.reduce((acc, t) => (baseTokens.includes(t) ? acc + 1 : acc), 0)
+      return { p, score }
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map((x) => x.p)
+
+  return scored.length ? scored : all.slice(0, 4)
 })
 
 function normalizeTokens(input: unknown): string[] {
