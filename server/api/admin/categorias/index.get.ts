@@ -1,26 +1,32 @@
 import { defineEventHandler } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
-import { getStoreContext } from '../../../utils/store'
+import { getStoreContext, whereForStore } from '../../../utils/store'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
 
-  const { storeSlug } = getStoreContext(event)
+  const ctx = getStoreContext(event)
 
   // Get categories that are used by products of the current store
-  const categorias = await (prisma as any).Categoria.findMany({
-    where: storeSlug
-      ? {
-          ProdutoCategoria: {
-            some: {
-              Produto: {
-                storeSlug: storeSlug
-              }
-            }
+  const whereClause = ctx.storeSlug
+    ? {
+        ProdutoCategoria: {
+          some: {
+            Produto: whereForStore({ ativo: true }, ctx)
           }
         }
-      : undefined,
+      }
+    : {
+        ProdutoCategoria: {
+          some: {
+            Produto: { ativo: true }
+          }
+        }
+      }
+
+  const categorias = await (prisma as any).Categoria.findMany({
+    where: whereClause,
     orderBy: { nome: 'asc' },
     select: {
       id: true,
