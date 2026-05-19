@@ -6,7 +6,10 @@
     <!-- 2. Por que escolher -->
     <HomeBenefitsNew />
 
-    <!-- 3. Melhores produtos -->
+    <!-- 3. Escolha por categoria -->
+    <HomeCategoryCards v-if="categorias.length > 0" :categories="categorias" />
+
+    <!-- 4. Melhores produtos -->
     <HomeCategoriesNew :products-index-path="productsIndexPath">
       <div v-if="pending" class="text-center py-16 text-gray-500">
         {{ $t('home.loading_products') }}
@@ -233,9 +236,16 @@ const { data, pending, error } = await useFetch('/api/products/best-sellers', {
   transform: (raw: any) => Array.isArray(raw) ? raw : []
 })
 
+const { data: categoriasData } = await useFetch('/api/categorias', {
+  server: true,
+  default: () => null
+})
+
 const products = computed(() =>
   Array.isArray(data.value) ? data.value : []
 )
+
+const categorias = computed(() => categoriasData.value?.categorias || [])
 
 const hasError = computed(() => Boolean(error.value))
 
