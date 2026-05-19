@@ -9,7 +9,7 @@ export function useSiteBranding() {
 
   const rawLogo = String(config.public.logoPath || '').trim()
   const logoPath = rawLogo && rawLogo !== '/logo.png' ? rawLogo : defaultLogoPath
-  const supportEmail = String(config.public.supportEmail || '').trim() || ''
+  const supportEmail = String(config.public.supportEmail || '').trim() || 'comercial@casadosoftware.com.br'
   const topbarText = String(config.public.topbarText || '').trim() || ''
   const topbarLink = String(config.public.topbarLink || '').trim() || ''
   const whatsappNumber = String(config.public.whatsappNumber || '').trim() || ''
