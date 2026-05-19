@@ -40,7 +40,7 @@ export default defineNuxtConfig({
       storeSlug: process.env.STORE_SLUG || '',
       siteUrl: process.env.SITE_URL || '',
       siteName: process.env.SITE_NAME || 'Site',
-      logoPath: process.env.SITE_LOGO_PATH || '/logo.png',
+      logoPath: process.env.SITE_LOGO_PATH || 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png',
       supportEmail: process.env.SUPPORT_EMAIL || '',
       whatsappNumber: process.env.WHATSAPP_NUMBER || '',
       companyLegalName: process.env.COMPANY_LEGAL_NAME || '',
