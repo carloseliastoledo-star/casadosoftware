@@ -62,23 +62,23 @@ function buildDatabaseUrl(raw: string): string {
   try {
     const url = new URL(raw)
     if (!url.searchParams.has('connection_limit')) {
-      url.searchParams.set('connection_limit', '10')
+      url.searchParams.set('connection_limit', '1')
     }
     if (!url.searchParams.has('pool_timeout')) {
-      url.searchParams.set('pool_timeout', '60')
+      url.searchParams.set('pool_timeout', '20')
     }
     if (!url.searchParams.has('connect_timeout')) {
-      url.searchParams.set('connect_timeout', '30')
+      url.searchParams.set('connect_timeout', '5')
     }
     return url.toString()
   } catch {
     const sep = raw.includes('?') ? '&' : '?'
     let result = raw
     if (!raw.includes('connection_limit')) {
-      result += `${sep}connection_limit=10&pool_timeout=60`
+      result += `${sep}connection_limit=1&pool_timeout=20`
     }
     if (!result.includes('connect_timeout')) {
-      result += '&connect_timeout=30'
+      result += '&connect_timeout=5'
     }
     return result
   }
