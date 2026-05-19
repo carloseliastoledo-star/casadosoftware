@@ -170,7 +170,7 @@
           </button>
           <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-slate-500">
             <span>🛒ö {{ t.ctaPayment }}</span>
-            <span>🛒ôº {{ t.ctaEmail }}</span>
+            <span>📧 {{ t.ctaEmail }}</span>
             <span>✅ {{ t.ctaGuarantee }}</span>
           </div>
         </div>
@@ -195,7 +195,7 @@
             :to="`/tutoriais/${safeProduct.slug}`"
             class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition"
           >
-            Ôå {{ t.viewTutorial }}
+            → {{ t.viewTutorial }}
           </NuxtLink>
           <NuxtLink
             v-else
