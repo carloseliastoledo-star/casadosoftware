@@ -150,6 +150,17 @@
             </NuxtLink>
           </div>
 
+          <!-- Descrição específica para Autodesk -->
+          <div v-if="categoria?.slug?.includes('autodesk')" class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+            <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre as licenças Autodesk</h3>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              Os produtos Autodesk utilizam o modelo de licença por assinatura anual, que garante acesso às versões mais recentes dos softwares, atualizações e suporte técnico. A licença é vinculada a uma conta Autodesk e pode ser usada em um dispositivo por usuário. Após o período de assinatura, é necessário renovar para continuar utilizando o software.
+            </p>
+            <p class="text-sm text-gray-700 leading-relaxed mt-3">
+              Somos uma loja independente e não somos afiliados ou representantes oficiais da Autodesk. Todas as marcas mencionadas pertencem aos seus respectivos proprietários.
+            </p>
+          </div>
+
           <!-- Grid vazio (categoria existe mas sem produtos) -->
           <div v-else-if="produtos.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
             <div class="text-4xl mb-4" aria-hidden="true">📦</div>
