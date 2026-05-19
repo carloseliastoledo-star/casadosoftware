@@ -62,7 +62,7 @@ function buildDatabaseUrl(raw: string): string {
   try {
     const url = new URL(raw)
     if (!url.searchParams.has('connection_limit')) {
-      url.searchParams.set('connection_limit', '1')
+      url.searchParams.set('connection_limit', '3')
     }
     if (!url.searchParams.has('pool_timeout')) {
       url.searchParams.set('pool_timeout', '20')
@@ -75,7 +75,7 @@ function buildDatabaseUrl(raw: string): string {
     const sep = raw.includes('?') ? '&' : '?'
     let result = raw
     if (!raw.includes('connection_limit')) {
-      result += `${sep}connection_limit=1&pool_timeout=20`
+      result += `${sep}connection_limit=3&pool_timeout=20`
     }
     if (!result.includes('connect_timeout')) {
       result += '&connect_timeout=5'
