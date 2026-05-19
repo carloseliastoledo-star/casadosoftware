@@ -49,7 +49,7 @@
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
               <picture v-if="effectiveLogoPath">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-                <img :src="effectiveLogoPath" :alt="siteName" :class="isInternational ? 'h-36 md:h-40 w-auto' : 'h-18 md:h-21 w-auto'" />
+                <img :src="effectiveLogoPath" :alt="siteName" :class="isInternational ? 'h-36 md:h-40 w-auto' : 'h-16 md:h-18 w-auto'" />
               </picture>
             </NuxtLink>
           </div>
@@ -166,7 +166,7 @@
           <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
             <picture>
               <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-              <img :src="effectiveLogoPath" :alt="siteName" class="h-18 md:h-21 w-auto" />
+              <img :src="effectiveLogoPath" :alt="siteName" class="h-16 md:h-18 w-auto" />
             </picture>
           </NuxtLink>
 
@@ -261,7 +261,7 @@
           <div class="flex items-center gap-3">
             <picture>
               <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-              <img :src="effectiveLogoPath" :alt="siteName" class="h-21 w-auto" />
+              <img :src="effectiveLogoPath" :alt="siteName" class="h-16 w-auto" />
             </picture>
           </div>
           <button
