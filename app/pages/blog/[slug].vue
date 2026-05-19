@@ -325,9 +325,8 @@ const articleEl = ref<HTMLElement | null>(null)
 const toc = ref<TocItem[]>([])
 
 const safePostHtml = computed(() => {
-  let raw = postHtml.value
+  const raw = postHtml.value
   if (!raw) return ''
-  raw = raw.replace(/<\/?template\b[^>]*>/gi, '')
   return sanitizeRichHtml(raw, { allowIframes: true })
 })
 
