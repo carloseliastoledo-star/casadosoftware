@@ -17,24 +17,39 @@ export default defineEventHandler(async (event) => {
     url: getRequestURL(event).href
   })
 
-  const produto = await (prisma as any).produto.findUnique({
-    where: { id },
-    include: {
-      ProdutoPrecoLoja: {
-        where: { storeSlug: storeSlug || undefined },
-        select: { preco: true, precoAntigo: true }
-      },
-      ProdutoPrecoMoeda: {
-        where: { storeSlug: storeSlug || undefined },
-        select: { currency: true, amount: true, oldAmount: true }
-      },
-      ProdutoCategoria: {
-        include: {
-          categoria: { select: { id: true, nome: true, slug: true } }
+  let produto: any = null
+  try {
+    produto = await (prisma as any).produto.findUnique({
+      where: { id },
+      include: {
+        ProdutoPrecoLoja: {
+          where: { storeSlug: storeSlug || undefined },
+          select: { preco: true, precoAntigo: true }
+        },
+        ProdutoPrecoMoeda: {
+          where: { storeSlug: storeSlug || undefined },
+          select: { currency: true, amount: true, oldAmount: true }
+        },
+        ProdutoCategoria: {
+          include: {
+            categoria: { select: { id: true, nome: true, slug: true } }
+          }
         }
       }
-    }
-  })
+    })
+  } catch (includeErr: any) {
+    console.warn('[ADMIN EDIT PRODUCT] include failed, retrying without ProdutoPrecoLoja/ProdutoPrecoMoeda:', includeErr?.message)
+    produto = await (prisma as any).produto.findUnique({
+      where: { id },
+      include: {
+        ProdutoCategoria: {
+          include: {
+            categoria: { select: { id: true, nome: true, slug: true } }
+          }
+        }
+      }
+    })
+  }
 
   console.log('[ADMIN EDIT PRODUCT] produto=', produto ? 'found' : 'not found')
 
@@ -66,8 +81,8 @@ export default defineEventHandler(async (event) => {
     categorias,
     preco: override?.preco ?? (produto as any).preco,
     precoAntigo: override?.precoAntigo ?? (produto as any).precoAntigo,
-    precoUsd: usd?.amount ?? null,
-    precoEur: eur?.amount ?? null,
+    precoUsd: (usd as any)?.amount ?? null,
+    precoEur: (eur as any)?.amount ?? null,
     precosLoja: undefined
   }
 })
