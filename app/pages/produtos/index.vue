@@ -77,14 +77,11 @@ useHead(() => ({
   link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}${productsIndexPath.value}` }] : []
 }))
 
-const { data, pending, error } = await useFetch('/api/products', {
-  server: true,
-  default: () => null
-})
+const productsData = await $fetch('/api/products')
 
-console.log('[produtos] data:', data.value, 'pending:', pending.value, 'error:', error.value)
+console.log('[produtos] productsData:', productsData)
 
-const products = computed(() => data.value || [])
+const products = computed(() => productsData || [])
 
 const filteredProducts = computed(() => {
   const term = q.value.toLowerCase()
