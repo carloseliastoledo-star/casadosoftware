@@ -29,6 +29,7 @@ function normalizeHost(input: string) {
 function mapHostToStoreSlug(host: string) {
   const h = normalizeHost(host)
   if (!h) return ''
+  if (h.includes('localhost') || h.includes('127.0.0.1')) return ''
   if (h.includes('casadosoftware.com.br')) return ''
   if (h.includes('licencasdigitais.com.br')) return 'licencasdigitais'
   if (h.includes('gvgmall.co')) return 'international'

@@ -51,8 +51,6 @@ export default defineEventHandler(async (event) => {
   try {
     const { storeSlug } = getStoreContext(event)
 
-    console.log('[api/products] storeSlug:', storeSlug)
-
     const intl = getIntlContext(event)
 
     const url = event.node?.req?.url || ''
@@ -91,7 +89,7 @@ export default defineEventHandler(async (event) => {
         cardItems: true,
         ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { preco: true, precoAntigo: true } } : { select: { preco: true, precoAntigo: true }, take: 1 },
         ProdutoPrecoMoeda: storeSlug ? { where: { storeSlug }, select: { currency: true, amount: true, oldAmount: true } } : { select: { currency: true, amount: true, oldAmount: true }, take: 5 },
-        produtoCategorias: { select: { categoria: { select: { slug: true } } } },
+        ProdutoCategoria: { select: { Categoria: { select: { slug: true } } } },
         tutorialTitulo: true,
         tutorialTituloEn: true,
         tutorialTituloEs: true,
@@ -108,8 +106,6 @@ export default defineEventHandler(async (event) => {
         criadoEm: 'desc'
       }
     })
-
-    console.log('[api/products] returning products:', products.length, 'first product name:', products[0]?.nome, 'first product nameEn:', products[0]?.nomeEn)
 
     return products.map((p: any) => {
       const override = (p as any).ProdutoPrecoLoja?.[0] || null
@@ -212,7 +208,7 @@ export default defineEventHandler(async (event) => {
         currency: effective.currency,
         image: normalizeImageUrl(p.imagem),
         cardItems: translatedCardItems,
-        categories: (p.produtoCategorias || []).map((pc: any) => pc.categoria?.slug).filter(Boolean),
+        categories: (p.ProdutoCategoria || []).map((pc: any) => pc.Categoria?.slug).filter(Boolean),
         tutorialTitle: translatedTutorialTitle,
         tutorialSubtitle: translatedTutorialSubtitle,
         createdAt: p.criadoEm

@@ -77,24 +77,21 @@ useHead(() => ({
   link: baseUrl ? [{ rel: 'canonical', href: `${baseUrl}${productsIndexPath.value}` }] : []
 }))
 
-const productsData = await $fetch('/api/products')
+const pending = ref(false)
+const error = ref(null)
 
-console.log('[produtos] productsData:', productsData)
+const productsData = await $fetch('/api/products')
 
 const products = computed(() => productsData || [])
 
 const filteredProducts = computed(() => {
   const term = q.value.toLowerCase()
-  console.log('[produtos] q:', q.value, 'term:', term, 'products.length:', products.value.length)
   if (!term) return products.value
 
-  const filtered = (products.value as any[]).filter((p) => {
+  return (products.value as any[]).filter((p) => {
     const name = String(p?.name ?? '').toLowerCase()
     const slug = String(p?.slug ?? '').toLowerCase()
-    console.log('[produtos] filtering product:', name, 'slug:', slug, 'includes term:', name.includes(term) || slug.includes(term))
     return name.includes(term) || slug.includes(term)
   })
-  console.log('[produtos] filtered.length:', filtered.length)
-  return filtered
 })
 </script>
