@@ -503,6 +503,7 @@
             <li><NuxtLink :to="refundPolicyPath" class="hover:text-white transition">{{ t.footerRefundPolicy }}</NuxtLink></li>
             <li><NuxtLink :to="privacyPolicyPath" class="hover:text-white transition">{{ t.footerPrivacy }}</NuxtLink></li>
             <li><NuxtLink :to="termsOfUsePath" class="hover:text-white transition">{{ t.footerTerms }}</NuxtLink></li>
+            <li><NuxtLink to="/aviso-legal" class="hover:text-white transition">Aviso Legal</NuxtLink></li>
             <li v-for="p in paginas" :key="p.slug">
               <NuxtLink :to="`/paginas/${p.slug}`" class="hover:text-white transition">{{ p.titulo }}</NuxtLink>
             </li>
