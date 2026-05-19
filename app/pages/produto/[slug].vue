@@ -796,6 +796,8 @@ useSeoMeta({
 })
 
 const safeDescriptionHtml = computed(() => {
+  const descDirect = (safeProduct.value as any)?.description
+  console.log('[produto] safeProduct.value.description:', descDirect)
   const raw = String((safeProduct as any)?.description || '').trim()
   console.log('[produto] safeDescriptionHtml raw length:', raw?.length, 'raw:', raw)
   if (!raw) {
