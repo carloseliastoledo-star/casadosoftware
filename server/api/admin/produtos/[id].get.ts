@@ -17,62 +17,24 @@ export default defineEventHandler(async (event) => {
     url: getRequestURL(event).href
   })
 
-  let produto: any = null
-  try {
-    produto = await (prisma as any).produto.findUnique({
-      where: { id },
-      include: {
-        ProdutoPrecoLoja: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { preco: true, precoAntigo: true }
-        },
-        ProdutoPrecoMoeda: {
-          where: { storeSlug: storeSlug || undefined },
-          select: { currency: true, amount: true, oldAmount: true }
-        },
-        ProdutoCategoria: {
-          include: {
-            Categoria: { select: { id: true, nome: true, slug: true } }
-          }
+  const produto = await (prisma as any).produto.findUnique({
+    where: { id },
+    include: {
+      ProdutoPrecoLoja: {
+        where: storeSlug ? { storeSlug } : undefined,
+        select: { preco: true, precoAntigo: true }
+      },
+      ProdutoPrecoMoeda: {
+        where: storeSlug ? { storeSlug } : undefined,
+        select: { currency: true, amount: true, oldAmount: true }
+      },
+      ProdutoCategoria: {
+        include: {
+          Categoria: { select: { id: true, nome: true, slug: true } }
         }
       }
-    })
-  } catch (err1: any) {
-    console.warn('[ADMIN EDIT PRODUCT] first query failed, retrying with lowercase categoria:', err1?.message)
-    try {
-      produto = await (prisma as any).produto.findUnique({
-        where: { id },
-        include: {
-          ProdutoPrecoLoja: {
-            where: { storeSlug: storeSlug || undefined },
-            select: { preco: true, precoAntigo: true }
-          },
-          ProdutoPrecoMoeda: {
-            where: { storeSlug: storeSlug || undefined },
-            select: { currency: true, amount: true, oldAmount: true }
-          },
-          ProdutoCategoria: {
-            include: {
-              categoria: { select: { id: true, nome: true, slug: true } }
-            }
-          }
-        }
-      })
-    } catch (err2: any) {
-      console.warn('[ADMIN EDIT PRODUCT] second query failed, retrying without ProdutoCategoria include:', err2?.message)
-      produto = await (prisma as any).produto.findUnique({
-        where: { id }
-      })
     }
-  }
-
-  // Normalize categoria field name (Categoria vs categoria)
-  if (produto?.ProdutoCategoria) {
-    produto.ProdutoCategoria = produto.ProdutoCategoria.map((pc: any) => ({
-      ...pc,
-      categoria: pc.Categoria || pc.categoria || null
-    }))
-  }
+  })
 
   console.log('[ADMIN EDIT PRODUCT] produto=', produto ? 'found' : 'not found')
 
@@ -83,7 +45,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const categorias = ((produto as any).ProdutoCategoria || []).map((pc: any) => pc.categoria).filter(Boolean)
+  const categorias = ((produto as any).ProdutoCategoria || []).map((pc: any) => pc.Categoria || pc.categoria).filter(Boolean)
   const override = (produto as any).ProdutoPrecoLoja?.[0] || null
 
   const byCurrency = new Map(
