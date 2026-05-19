@@ -797,7 +797,11 @@ useSeoMeta({
 
 const safeDescriptionHtml = computed(() => {
   const raw = String((safeProduct as any)?.description || '').trim()
-  if (!raw) return ''
+  console.log('[produto] safeDescriptionHtml raw:', raw?.substring(0, 100))
+  if (!raw) {
+    console.log('[produto] safeDescriptionHtml is empty, safeProduct:', safeProduct.value)
+    return ''
+  }
 
   const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)
   const escapeHtml = (s: string) =>
