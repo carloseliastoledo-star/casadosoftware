@@ -15,12 +15,11 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Cache-Control', 'no-store')
 
   try {
-    // 1. Buscar produtos que têm ProdutoPrecoLoja para a loja internacional
-    //    (não filtra por storeSlug no Produto pois o campo pode não existir no banco)
+    // 1. Buscar produtos com storeSlug = 'international'
     const produtos = await (prisma as any).produto.findMany({
       where: {
         ativo: true,
-        ProdutoPrecoLoja: { some: { storeSlug: STORE_SLUG } }
+        storeSlug: STORE_SLUG
       },
       select: {
         id: true,
@@ -32,6 +31,7 @@ export default defineEventHandler(async (event) => {
         cardItems: true,
         preco: true,
         precoAntigo: true,
+        descricao: true,
         ProdutoPrecoLoja: {
           where: { storeSlug: STORE_SLUG },
           select: { preco: true, precoAntigo: true },
@@ -70,6 +70,7 @@ export default defineEventHandler(async (event) => {
         name: p.nomeEn || p.nome,
         slug: p.slug,
         slugEn: p.slugEn,
+        descricao: p.descricao,
         usdPrice,
         oldUsdPrice,
         currency: 'usd',
