@@ -1,7 +1,7 @@
 import { createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
-import { getStoreContext } from '#root/server/utils/store'
+import { getStoreContext, whereForStore } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   console.log('[admin/produtos] ===== START =====')
@@ -9,12 +9,11 @@ export default defineEventHandler(async (event) => {
   try {
     await requireAdminSession(event)
 
-    const { storeSlug } = getStoreContext(event)
+    const ctx = getStoreContext(event)
     const host = getRequestHeader(event, 'host')
-    console.log('[admin/produtos] storeSlug:', storeSlug || '(null)', 'host:', host)
+    console.log('[admin/produtos] storeSlug:', ctx.storeSlug || '(null)', 'host:', host)
 
-    // Filter products by storeSlug to match edit API behavior
-    // Admin should only show products for the current store
+    // Filter products by storeSlug using whereForStore to handle casadosoftware (null/empty) correctly
     const products = await (prisma as any).produto.findMany({
       select: {
         id: true,
@@ -28,7 +27,7 @@ export default defineEventHandler(async (event) => {
         ativo: true,
         criadoEm: true
       },
-      where: storeSlug ? { storeSlug } : undefined,
+      where: whereForStore({}, ctx),
       orderBy: { nome: 'asc' }
     })
 
