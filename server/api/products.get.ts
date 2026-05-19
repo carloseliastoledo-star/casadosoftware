@@ -51,6 +51,8 @@ export default defineEventHandler(async (event) => {
   try {
     const { storeSlug } = getStoreContext(event)
 
+    console.log('[api/products] storeSlug:', storeSlug)
+
     const intl = getIntlContext(event)
 
     const url = event.node?.req?.url || ''
@@ -106,6 +108,8 @@ export default defineEventHandler(async (event) => {
         criadoEm: 'desc'
       }
     })
+
+    console.log('[api/products] returning products:', products.length, 'first product name:', products[0]?.nome, 'first product nameEn:', products[0]?.nomeEn)
 
     return products.map((p: any) => {
       const override = (p as any).ProdutoPrecoLoja?.[0] || null
