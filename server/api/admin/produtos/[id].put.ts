@@ -109,7 +109,7 @@ export default defineEventHandler(async (event) => {
         ...(cardItemsProvided ? { cardItems } : {}),
         ...(categoriasProvided
           ? {
-              produtoCategorias: {
+              ProdutoCategoria: {
                 deleteMany: {},
                 create: categorias.map((slug: string) => ({
                   categoria: { connect: { slug } }
