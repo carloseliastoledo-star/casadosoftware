@@ -1,6 +1,6 @@
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
-import { createError } from 'h3'
+import { createError, getRequestHeader, getRequestURL } from 'h3'
 import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   const { storeSlug } = getStoreContext(event)
   const host = getRequestHeader(event, 'host')
 
-  const id = event.context.params.id
+  const id = String(event.context.params?.id || '')
   console.log('[ADMIN EDIT PRODUCT]', {
     id,
     storeSlug,
