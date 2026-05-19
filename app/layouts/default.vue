@@ -522,6 +522,14 @@
         </div>
 
       </div>
+      
+      <!-- Aviso de loja independente -->
+      <div v-if="!isEnDomain && !isInternational" class="border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-6 py-4 text-xs text-gray-500 leading-relaxed">
+          {{ siteName }} é uma loja independente especializada em licenças digitais e soluções de software. Não somos afiliados, representantes oficiais ou propriedade da Microsoft, Autodesk ou outras marcas mencionadas. Todas as marcas pertencem aos seus respectivos proprietários.
+        </div>
+      </div>
+      
       <div class="border-t border-gray-800">
         <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
           <span>© {{ new Date().getFullYear() }} {{ siteName }} — {{ t.rightsReserved }}</span>

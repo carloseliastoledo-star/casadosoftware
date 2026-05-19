@@ -326,7 +326,7 @@ const includedItems = computed(() => {
     'Atualização gratuita': 'Free updates',
     'Atualizações gratuitas': 'Free updates',
     'Sem mensalidade': 'No monthly fee',
-    'Uso vitalício': 'Lifetime use',
+    'Licença Digital': 'Digital License',
     'Chave ESD': 'ESD Key',
     'Instalação simples': 'Easy installation'
   }
@@ -437,7 +437,7 @@ const checkoutTo = computed(() => ({
       <!-- gradiente apenas no bottom: centro e topo da imagem ficam limpos -->
       <div class="absolute bottom-0 left-0 right-0 h-[45%] bg-gradient-to-t from-[#021326]/85 via-[#021326]/20 to-transparent pointer-events-none" />
       <!-- badge topo direito -->
-      <div v-if="discountPercent" class="absolute top-2.5 right-2.5 z-10">
+      <div v-if="discountPercent" class="absolute top-2.5 right-2.5 z-10 hidden">
         <span class="inline-flex items-center rounded-full bg-red-600/90 px-2.5 py-0.5 text-[10px] font-black text-white tracking-widest">
           {{ discountPercent }}% OFF
         </span>
