@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
+import { randomUUID } from 'crypto'
 
 export default defineEventHandler(async (event) => {
   requireAdminSession(event)
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const created = await (prisma as any).Categoria.create({
-    data: { nome, slug },
+    data: { id: randomUUID(), nome, slug },
     select: { id: true, nome: true, slug: true, ativo: true }
   })
 
