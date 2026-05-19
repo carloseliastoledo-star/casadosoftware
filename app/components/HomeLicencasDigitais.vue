@@ -446,7 +446,7 @@
           <div class="flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="text-center md:text-left">
               <p class="text-muted-foreground text-sm">
-                <span class="text-foreground font-medium">Endereço:</span> AV PAULISTA, 1471 - Conj. 1110, Sala - Bela Vista, São Paulo - SP, CEP: 01311-927
+                <span class="text-foreground font-medium">Endereço:</span> AV ENG LUIZ CARLOS BERRINI, 1748 - Cidade Monções, São Paulo - SP
               </p>
             </div>
             <button
