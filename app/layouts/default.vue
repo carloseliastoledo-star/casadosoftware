@@ -33,31 +33,31 @@
     </ClientOnly>
 
     <!-- Barra superior -->
-    <div v-if="!isLicencasDigitais && !isInternational" class="bg-[#0f172a] text-gray-300 text-xs py-2 px-6">
-      <div class="max-w-7xl mx-auto flex items-center justify-center gap-4 flex-wrap text-center">
+    <div v-if="!isLicencasDigitais && !isInternational" class="bg-[#0f172a] text-gray-300 text-[13px] h-[34px] px-6">
+      <div class="max-w-7xl mx-auto h-full flex items-center justify-center gap-4 flex-wrap">
         <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
           </svg>
           Entrega digital imediata
         </span>
-        <span class="hidden sm:inline">|</span>
+        <span class="hidden sm:inline text-gray-500">|</span>
         <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>
           </svg>
           Suporte via WhatsApp
         </span>
-        <span class="hidden sm:inline">|</span>
+        <span class="hidden sm:inline text-gray-500">|</span>
         <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.745 3.745 0 011.043 3.296c.63.677 1.593 1.8 1.593 3.068z"/>
           </svg>
           Pagamento seguro
         </span>
-        <span class="hidden sm:inline">|</span>
+        <span class="hidden sm:inline text-gray-500">|</span>
         <span class="flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
           </svg>
           Mais de 20 mil clientes atendidos
@@ -82,22 +82,22 @@
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
               <picture v-if="effectiveLogoPath">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'height: 160px; max-height: 160px; width: auto; max-width: 400px; object-fit: contain; display: block;' : 'height: 64px; max-height: 64px; width: auto; max-width: 200px; object-fit: contain; display: block;'" />
+                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'height: 160px; max-height: 160px; width: auto; max-width: 400px; object-fit: contain; display: block;' : 'height: 60px; max-height: 68px; width: auto; max-width: 200px; object-fit: contain; display: block;'" />
               </picture>
             </NuxtLink>
           </div>
 
-          <form class="hidden md:flex flex-1 max-w-lg" @submit.prevent="submitSearch">
-            <div class="flex w-full rounded-lg overflow-hidden border border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 shadow-sm transition">
+          <form class="hidden md:flex flex-1 max-w-2xl" @submit.prevent="submitSearch">
+            <div class="flex w-full rounded-xl overflow-hidden border border-[#dbe3ef] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 shadow-sm transition">
               <input
                 v-model="search"
                 type="search"
                 :placeholder="t.searchPlaceholder"
-                class="w-full h-9 bg-white px-4 text-sm outline-none placeholder-gray-400"
+                class="w-full h-12 bg-white px-4 text-sm outline-none placeholder-gray-400"
               />
               <button
                 type="submit"
-                class="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition flex-shrink-0 flex items-center gap-1.5"
+                class="h-12 px-5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition flex-shrink-0 flex items-center gap-2"
               >
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
@@ -183,8 +183,8 @@
           </div>
         </div>
 
-        <nav class="hidden md:flex items-center gap-1 h-9 border-t">
-          <NuxtLink to="/" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition">
+        <nav class="hidden md:flex items-center gap-1 h-10 border-t">
+          <NuxtLink to="/" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-semibold text-gray-600 hover:text-[#2563eb] hover:bg-[#eff6ff] transition">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
             </svg>
@@ -194,7 +194,7 @@
             v-for="it in mainMenu.filter(i => !i.label.includes('Programa de Afiliados'))"
             :key="it.label"
             :to="it.to"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-semibold text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-semibold text-gray-600 hover:text-[#2563eb] hover:bg-[#eff6ff] transition"
           >
             {{ it.label }}
           </NuxtLink>
@@ -202,7 +202,7 @@
             v-for="it in mainMenu.filter(i => i.label.includes('Programa de Afiliados'))"
             :key="it.label"
             :to="it.to"
-            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold text-blue-600 border border-blue-600 hover:bg-blue-50 transition"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-[#2563eb] bg-[#eff6ff] border border-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
           >
             {{ it.label }}
           </NuxtLink>
@@ -211,15 +211,15 @@
     </header>
 
     <!-- Faixa promocional -->
-    <div v-if="!isLicencasDigitais && !isInternational" class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100 py-2 px-6">
-      <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <div v-if="!isLicencasDigitais && !isInternational" class="border-b border-gray-200" style="background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 50%, #fff7ed 100%);">
+      <div class="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4" style="min-height: 52px;">
         <div class="flex items-center gap-2 text-sm">
-          <span class="font-semibold text-blue-900">Oferta do dia:</span>
-          <span class="text-gray-700">Office 365 com entrega imediata no e-mail — ativação em minutos</span>
+          <span class="font-semibold text-gray-900">Oferta do dia:</span>
+          <span class="text-gray-700">Office 365 por R$ 99 com entrega imediata no e-mail</span>
         </div>
         <NuxtLink
           to="/produtos/microsoft-office-365-vitalicio"
-          class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition"
+          class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shadow-sm"
         >
           Ver oferta
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
