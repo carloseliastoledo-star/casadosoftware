@@ -210,25 +210,6 @@
       </div>
     </header>
 
-    <!-- Faixa promocional -->
-    <div v-if="!isLicencasDigitais && !isInternational" class="border-b border-gray-200" style="background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 50%, #fff7ed 100%);">
-      <div class="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2 text-sm">
-          <span class="font-semibold text-gray-900">Oferta do dia:</span>
-          <span class="text-gray-700">Office 365 por R$ 99 — receba no e-mail em até 2 minutos</span>
-        </div>
-        <NuxtLink
-          to="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
-          class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shadow-sm"
-        >
-          Ver oferta
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
-          </svg>
-        </NuxtLink>
-      </div>
-    </div>
-
     <header v-else class="bg-white border-b sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-6">
         <div class="h-20 flex items-center justify-between gap-6">
