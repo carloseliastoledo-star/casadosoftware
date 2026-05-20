@@ -16,7 +16,7 @@ function normalizeImageUrl(input: unknown): string | null {
 
 export default defineEventHandler(async (event) => {
   const startedAt = Date.now()
-  setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+  setHeader(event, 'Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120')
 
   const slug = String(getRouterParam(event, 'slug') || '').trim().toLowerCase()
   if (!slug) {
