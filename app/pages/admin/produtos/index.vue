@@ -4,6 +4,7 @@ definePageMeta({ layout: 'admin' })
 const { data, refresh } = await useFetch('/api/admin/produtos')
 
 const deletingId = ref('')
+const categoriaFiltro = ref('')
 
 async function excluirProduto(id: string) {
   const ok = confirm('Tem certeza que deseja excluir este produto?')
@@ -29,6 +30,44 @@ async function excluirProduto(id: string) {
 
 // blindagem SSR
 const produtos = computed(() => data.value || [])
+
+// Extrair categorias únicas dos produtos
+const categorias = computed(() => {
+  const cats = new Set<string>()
+  produtos.value.forEach((p: any) => {
+    if (p.ProdutoCategoria && p.ProdutoCategoria.length > 0) {
+      p.ProdutoCategoria.forEach((pc: any) => {
+        if (pc.categoria) {
+          cats.add(pc.categoria.nome)
+        }
+      })
+    }
+  })
+  return Array.from(cats).sort()
+})
+
+// Filtrar produtos por categoria
+const produtosFiltrados = computed(() => {
+  if (!categoriaFiltro.value) return produtos.value
+  
+  return produtos.value.filter((p: any) => {
+    if (!p.ProdutoCategoria || p.ProdutoCategoria.length === 0) return false
+    
+    return p.ProdutoCategoria.some((pc: any) => {
+      return pc.categoria && pc.categoria.nome === categoriaFiltro.value
+    })
+  })
+})
+
+// Obter categorias de um produto
+const getCategorias = (p: any) => {
+  if (!p.ProdutoCategoria || p.ProdutoCategoria.length === 0) return '-'
+  
+  return p.ProdutoCategoria
+    .map((pc: any) => pc.categoria?.nome || '')
+    .filter((n: string) => n)
+    .join(', ')
+}
 </script>
 
 <template>
@@ -37,6 +76,15 @@ const produtos = computed(() => data.value || [])
       <h1 class="text-2xl font-bold">Produtos</h1>
 
       <div class="flex items-center gap-2">
+        <select
+          v-model="categoriaFiltro"
+          class="bg-white border border-gray-300 rounded px-3 py-2 text-sm"
+        >
+          <option value="">Todas as categorias</option>
+          <option v-for="cat in categorias" :key="cat" :value="cat">
+            {{ cat }}
+          </option>
+        </select>
         <NuxtLink
           to="/admin/produtos/exportar"
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm"
@@ -58,8 +106,8 @@ const produtos = computed(() => data.value || [])
       </div>
     </div>
 
-    <div v-if="produtos.length === 0" class="text-gray-500">
-      Nenhum produto cadastrado
+    <div v-if="produtosFiltrados.length === 0" class="text-gray-500">
+      Nenhum produto encontrado
     </div>
 
     <table
@@ -69,6 +117,7 @@ const produtos = computed(() => data.value || [])
       <thead class="bg-gray-100">
         <tr>
           <th class="p-3 text-left">Nome</th>
+          <th class="p-3 text-left">Categorias</th>
           <th class="p-3 text-left">Preço</th>
           <th class="p-3 text-left">Slug</th>
           <th class="p-3 text-left">Status</th>
@@ -78,11 +127,12 @@ const produtos = computed(() => data.value || [])
 
       <tbody>
         <tr
-          v-for="p in produtos"
+          v-for="p in produtosFiltrados"
           :key="p.id"
           class="border-t"
         >
           <td class="p-3 font-medium">{{ p.nome }}</td>
+          <td class="p-3 text-gray-600">{{ getCategorias(p) }}</td>
           <td class="p-3">
             <span v-if="p.precoAntigo" class="text-gray-400 line-through mr-2">R$ {{ p.precoAntigo }}</span>
             <span>R$ {{ p.preco }}</span>

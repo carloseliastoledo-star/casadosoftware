@@ -25,7 +25,18 @@ export default defineEventHandler(async (event) => {
         imagem: true,
         cardItems: true,
         ativo: true,
-        criadoEm: true
+        criadoEm: true,
+        ProdutoCategoria: {
+          select: {
+            categoria: {
+              select: {
+                id: true,
+                nome: true,
+                slug: true
+              }
+            }
+          }
+        }
       },
       where: whereForStore({}, ctx),
       orderBy: { nome: 'asc' }
