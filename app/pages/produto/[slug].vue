@@ -91,25 +91,6 @@
               </div>
             </div>
 
-            <!-- Trust badges -->
-            <div class="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
-              <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">🛒ö</span>
-                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustSecure }}</span>
-              </div>
-              <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl"></span>
-                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustVerified }}</span>
-              </div>
-              <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl">🛒¼</span>
-                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustClients }}</span>
-              </div>
-              <div class="flex flex-col items-center text-center gap-1">
-                <span class="text-2xl"></span>
-                <span class="text-[10px] font-semibold text-slate-400">{{ t.trustFastDelivery }}</span>
-              </div>
-            </div>
           </div>
         </div>
 
