@@ -251,11 +251,8 @@ const allowedCategories = [
   'windows-server',
   'office',            // Remove 'microsoft-office' se existir
   'autodesk',
-  'jogos',
   'corel',
-  'antivirus',
-  'project',
-  'visio'
+  'antivirus'
 ]
 
 const categorias = computed(() => {
