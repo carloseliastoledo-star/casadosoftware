@@ -218,7 +218,7 @@
           <span class="text-gray-700">Office 365 por R$ 99 — receba no e-mail em até 2 minutos</span>
         </div>
         <NuxtLink
-          to="/produtos/microsoft-office-365-vitalicio"
+          to="/produtos/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
           class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shadow-sm"
         >
           Ver oferta
