@@ -418,17 +418,17 @@ const checkoutTo = computed(() => ({
     :to="productPath"
     class="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-[#021326] border border-cyan-500/30 transition-all duration-300 hover:-translate-y-2 hover:border-cyan-400/90 hover:shadow-[0_0_36px_rgba(6,182,212,0.4)]"
   >
-    <!-- Bloco de imagem: proporção fixa, overlay unificador -->
+    <!-- Bloco de imagem: proporção quadrada, overlay unificador -->
     <div
       class="relative w-full shrink-0 overflow-hidden"
-      :style="`height:300px; background-color:${categoryBg}`"
+      :style="`aspect-ratio: 1/1; background-color:${categoryBg}`"
     >
       <img
         :src="productImage"
         :alt="productName"
         loading="lazy"
         decoding="async"
-        class="absolute inset-0 h-full w-full object-cover brightness-110 contrast-115 saturate-120 transition-transform duration-500 group-hover:scale-105"
+        class="absolute inset-0 h-full w-full object-cover object-center brightness-110 contrast-115 saturate-120 transition-transform duration-500 group-hover:scale-105"
         referrerpolicy="no-referrer"
         @error="onImageError"
       />
