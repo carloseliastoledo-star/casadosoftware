@@ -137,11 +137,6 @@
           >
             {{ t.buyNowBtn }}
           </button>
-          <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-slate-500">
-            <span>🛒ö {{ t.ctaPayment }}</span>
-            <span>📧 {{ t.ctaEmail }}</span>
-            <span>✅ {{ t.ctaGuarantee }}</span>
-          </div>
         </div>
 
         <!-- TUTORIAL -->
