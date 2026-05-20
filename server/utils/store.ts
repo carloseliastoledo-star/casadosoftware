@@ -38,7 +38,10 @@ function mapHostToStoreSlug(host: string) {
 
 export function getStoreContext(event?: H3Event): StoreContext {
   const storeSlugEnv = normalizeSlug(process.env.STORE_SLUG || '')
-  const includeLegacy = String(process.env.STORE_INCLUDE_LEGACY || '').trim() === 'true'
+  const includeLegacyEnv = String(process.env.STORE_INCLUDE_LEGACY || '').trim() === 'true'
+
+  // Habilitar includeLegacy para casadosoftware para incluir registros antigos com storeSlug null
+  const includeLegacy = includeLegacyEnv || storeSlugEnv === 'casadosoftware'
 
   if (storeSlugEnv) {
     return { storeSlug: storeSlugEnv, includeLegacy }
@@ -47,7 +50,11 @@ export function getStoreContext(event?: H3Event): StoreContext {
   const siteUrl = String(process.env.SITE_URL || '').trim()
   if (siteUrl) {
     const mappedFromUrl = mapHostToStoreSlug(siteUrl)
-    if (mappedFromUrl) return { storeSlug: mappedFromUrl, includeLegacy }
+    if (mappedFromUrl) {
+      // Habilitar includeLegacy para casadosoftware
+      const mappedIncludeLegacy = mappedFromUrl === 'casadosoftware' ? true : includeLegacy
+      return { storeSlug: mappedFromUrl, includeLegacy: mappedIncludeLegacy }
+    }
   }
 
   if (event) {
@@ -57,7 +64,11 @@ export function getStoreContext(event?: H3Event): StoreContext {
       getRequestHeader(event, 'host') ||
       ''
     const inferred = mapHostToStoreSlug(host)
-    if (inferred) return { storeSlug: inferred, includeLegacy }
+    if (inferred) {
+      // Habilitar includeLegacy para casadosoftware
+      const inferredIncludeLegacy = inferred === 'casadosoftware' ? true : includeLegacy
+      return { storeSlug: inferred, includeLegacy: inferredIncludeLegacy }
+    }
   }
 
   return { storeSlug: null, includeLegacy }
