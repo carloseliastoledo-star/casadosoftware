@@ -17,7 +17,14 @@ export default defineEventHandler(async (event) => {
     const whatsapp = body?.whatsapp ? String(body.whatsapp).trim() : null
     const cpf = body?.cpf ? String(body.cpf).trim() : null
 
-    console.warn('[customer-register] request', { storeSlug })
+    // Debug logs
+    const host = event.headers.get('host') || event.headers.get('x-forwarded-host') || 'unknown'
+    console.log('[customer-register] DEBUG', { 
+      host, 
+      storeSlug, 
+      storeSlugEnv: process.env.STORE_SLUG,
+      siteUrl: process.env.SITE_URL
+    })
 
     if (!email || !email.includes('@')) {
       throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
@@ -28,6 +35,11 @@ export default defineEventHandler(async (event) => {
     }
 
     if (!storeSlug) {
+      console.error('[customer-register] ERROR: storeSlug is null', { 
+        host, 
+        storeSlugEnv: process.env.STORE_SLUG,
+        siteUrl: process.env.SITE_URL
+      })
       throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
     }
 
