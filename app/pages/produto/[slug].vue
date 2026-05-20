@@ -75,13 +75,6 @@
               {{ t.buyNowBtn }}
             </button>
 
-            <!-- Microcopy -->
-            <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-400">
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✅</span> {{ t.microInstant }}</span>
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✅</span> {{ t.microActivation }}</span>
-              <span class="flex items-center gap-1"><span class="text-[#00e676]">✅</span> {{ t.microSecure }}</span>
-            </div>
-
             <!-- Benefícios -->
             <div class="grid grid-cols-2 gap-3">
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
