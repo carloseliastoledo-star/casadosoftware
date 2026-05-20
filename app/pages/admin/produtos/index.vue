@@ -34,6 +34,9 @@ const produtos = computed(() => data.value || [])
 // Extrair categorias únicas dos produtos
 const categorias = computed(() => {
   const cats = new Set<string>()
+  console.log('[categorias debug] produtos.length:', produtos.value.length)
+  console.log('[categorias debug] primeiro produto:', produtos.value[0]?.nome || 'N/A')
+  console.log('[categorias debug] ProdutoCategoria do primeiro produto:', produtos.value[0]?.ProdutoCategoria || 'N/A')
   produtos.value.forEach((p: any) => {
     if (p.ProdutoCategoria && p.ProdutoCategoria.length > 0) {
       p.ProdutoCategoria.forEach((pc: any) => {
@@ -43,7 +46,9 @@ const categorias = computed(() => {
       })
     }
   })
-  return Array.from(cats).sort()
+  const result = Array.from(cats).sort()
+  console.log('[categorias debug] categorias encontradas:', result)
+  return result
 })
 
 // Filtrar produtos por categoria
