@@ -37,8 +37,8 @@ const categorias = computed(() => {
   produtos.value.forEach((p: any) => {
     if (p.ProdutoCategoria && p.ProdutoCategoria.length > 0) {
       p.ProdutoCategoria.forEach((pc: any) => {
-        if (pc.categoria) {
-          cats.add(pc.categoria.nome)
+        if (pc.Categoria) {
+          cats.add(pc.Categoria.nome)
         }
       })
     }
@@ -54,7 +54,7 @@ const produtosFiltrados = computed(() => {
     if (!p.ProdutoCategoria || p.ProdutoCategoria.length === 0) return false
     
     return p.ProdutoCategoria.some((pc: any) => {
-      return pc.categoria && pc.categoria.nome === categoriaFiltro.value
+      return pc.Categoria && pc.Categoria.nome === categoriaFiltro.value
     })
   })
 })
@@ -64,7 +64,7 @@ const getCategorias = (p: any) => {
   if (!p.ProdutoCategoria || p.ProdutoCategoria.length === 0) return '-'
   
   return p.ProdutoCategoria
-    .map((pc: any) => pc.categoria?.nome || '')
+    .map((pc: any) => pc.Categoria?.nome || '')
     .filter((n: string) => n)
     .join(', ')
 }

@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
         criadoEm: true,
         ProdutoCategoria: {
           select: {
-            categoria: {
+            Categoria: {
               select: {
                 id: true,
                 nome: true,
