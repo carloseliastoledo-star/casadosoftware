@@ -101,13 +101,6 @@
           :product="p"
         />
       </div>
-
-      <IntlLanguageSwitcher
-        v-if="categoria"
-        page-type="category"
-        :slug="String(categoria?.slug || '')"
-        class="mt-6"
-      />
     </div>
   </section>
 
@@ -178,14 +171,6 @@
           </CategoryGridPremium>
         </div>
       </div>
-
-      <!-- Language Switcher -->
-      <IntlLanguageSwitcher
-        v-if="categoria"
-        page-type="category"
-        :slug="String(categoria?.slug || '')"
-        class="mt-10"
-      />
     </div>
   </section>
 </template>
