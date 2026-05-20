@@ -67,8 +67,8 @@
 
     <!-- HEADER -->
     <header v-if="!isLicencasDigitais" class="border-b bg-white shadow-sm sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-6 py-3">
-        <div class="min-h-[78px] flex items-center justify-between gap-4">
+      <div class="max-w-7xl mx-auto px-6 py-2">
+        <div class="min-h-[70px] flex items-center justify-between gap-4">
           <div class="flex items-center gap-4 min-w-0">
             <button
               type="button"
@@ -82,7 +82,7 @@
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
               <picture v-if="effectiveLogoPath">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'height: 160px; max-height: 160px; width: auto; max-width: 400px; object-fit: contain; display: block;' : 'height: 64px; max-height: 64px; width: auto; max-width: 200px; object-fit: contain; display: block;'" />
+                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'height: 160px; max-height: 160px; width: auto; max-width: 400px; object-fit: contain; display: block;' : 'height: 58px; max-height: 60px; width: auto; max-width: 200px; object-fit: contain; display: block;'" />
               </picture>
             </NuxtLink>
           </div>
@@ -183,8 +183,8 @@
           </div>
         </div>
 
-        <nav class="hidden md:flex items-center gap-1 h-10 border-t">
-          <NuxtLink to="/" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-semibold text-gray-600 hover:text-[#2563eb] hover:bg-[#eff6ff] transition">
+        <nav class="hidden md:flex items-center gap-1 h-9 border-t">
+          <NuxtLink to="/" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-sm font-semibold text-gray-600 hover:text-[#2563eb] hover:bg-[#eff6ff] transition">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
             </svg>
@@ -194,7 +194,7 @@
             v-for="it in mainMenu.filter(i => !i.label.includes('Programa de Afiliados'))"
             :key="it.label"
             :to="it.to"
-            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-semibold text-gray-600 hover:text-[#2563eb] hover:bg-[#eff6ff] transition"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-sm font-semibold text-gray-600 hover:text-[#2563eb] hover:bg-[#eff6ff] transition"
           >
             {{ it.label }}
           </NuxtLink>
@@ -202,7 +202,7 @@
             v-for="it in mainMenu.filter(i => i.label.includes('Programa de Afiliados'))"
             :key="it.label"
             :to="it.to"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold text-[#2563eb] bg-[#eff6ff] border border-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
+            class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-bold text-[#2563eb] bg-[#eff6ff] border border-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
           >
             {{ it.label }}
           </NuxtLink>
@@ -212,10 +212,10 @@
 
     <!-- Faixa promocional -->
     <div v-if="!isLicencasDigitais && !isInternational" class="border-b border-gray-200" style="background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 50%, #fff7ed 100%);">
-      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+      <div class="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-between gap-4">
         <div class="flex items-center gap-2 text-sm">
           <span class="font-semibold text-gray-900">Oferta do dia:</span>
-          <span class="text-gray-700">Office 365 por R$ 99 com entrega imediata no e-mail</span>
+          <span class="text-gray-700">Office 365 por R$ 99 — receba no e-mail em até 2 minutos</span>
         </div>
         <NuxtLink
           to="/produtos/microsoft-office-365-vitalicio"
