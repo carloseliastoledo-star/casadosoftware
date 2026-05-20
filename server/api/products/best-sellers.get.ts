@@ -19,28 +19,47 @@ function normalizeImageUrl(input: unknown): string | null {
 export default defineEventHandler(async (event) => {
   const startedAt = Date.now()
   setHeader(event, 'Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
-  
+
   console.log('[api/products/best-sellers] ===== START =====')
   console.log('[api/products/best-sellers] DATABASE_URL defined:', !!process.env.DATABASE_URL)
-  
+
   try {
     const { storeSlug } = getStoreContext(event)
     const intl = getIntlContext(event)
     const lang = intl.language === 'en' ? 'en' : intl.language === 'es' ? 'es' : 'pt'
 
-    // Slugs dos produtos mais vendidos
-    const bestSellerSlugs = [
-      "microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive",
-      "office-365",
-      "microsoft-windows-11-pro-chave-esd-32-64-bits",
-      "microsoft-windows-10-pro-chave-esd-32-64-bits",
-      "microsoft-office-365-pcs-mac-ios-e-android",
-      "microsoft-windows-10-pro-1-licenca",
-      "office-2021-pro-plus-windows-11-pro",
-      "microsoft-office-365-vitalicio-microsoft-windows-11-pro-1-licenca",
-      "office-ltsc-pro-plus-2024",
-      "winserver2025"
-    ]
+    // Buscar configurações do site para obter slugs configurados
+    const siteSettings = await (prisma as any).siteSettings.findFirst({
+      where: storeSlug ? { storeSlug } : { storeSlug: null },
+      select: { homeBestSellerSlugs: true }
+    })
+
+    // Slugs dos produtos mais vendidos - ler do banco ou usar fallback
+    let bestSellerSlugs: string[] = []
+
+    if (siteSettings?.homeBestSellerSlugs) {
+      // Parsear slugs do banco (suporta um por linha ou separados por vírgula)
+      bestSellerSlugs = siteSettings.homeBestSellerSlugs
+        .split(/[\n,]+/)
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0)
+      console.log('[api/products/best-sellers] Slugs do banco:', bestSellerSlugs.length)
+    } else {
+      // Fallback: lista hardcoded se não houver configuração
+      bestSellerSlugs = [
+        "microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive",
+        "office-365",
+        "microsoft-windows-11-pro-chave-esd-32-64-bits",
+        "microsoft-windows-10-pro-chave-esd-32-64-bits",
+        "microsoft-office-365-pcs-mac-ios-e-android",
+        "microsoft-windows-10-pro-1-licenca",
+        "office-2021-pro-plus-windows-11-pro",
+        "microsoft-office-365-vitalicio-microsoft-windows-11-pro-1-licenca",
+        "office-ltsc-pro-plus-2024",
+        "winserver2025"
+      ]
+      console.log('[api/products/best-sellers] Usando slugs fallback')
+    }
 
     console.log('[api/products/best-sellers] Buscando produtos...')
     
