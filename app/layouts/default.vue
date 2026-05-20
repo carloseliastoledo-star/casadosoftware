@@ -33,8 +33,8 @@
     </ClientOnly>
 
     <!-- Barra superior -->
-    <div v-if="!isLicencasDigitais && !isInternational" class="bg-[#0f172a] text-gray-300 text-[13px] h-[34px] px-6">
-      <div class="max-w-7xl mx-auto h-full flex items-center justify-center gap-4 flex-wrap">
+    <div v-if="!isLicencasDigitais && !isInternational" class="bg-[#0f172a] text-gray-300 text-[13px] min-h-[36px] h-[36px] px-6">
+      <div class="max-w-7xl mx-auto h-full flex items-center justify-center gap-4 flex-wrap overflow-visible">
         <span class="flex items-center gap-1.5">
           <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
@@ -67,8 +67,8 @@
 
     <!-- HEADER -->
     <header v-if="!isLicencasDigitais" class="border-b bg-white shadow-sm sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="h-12 md:h-14 flex items-center justify-between gap-4">
+      <div class="max-w-7xl mx-auto px-6 py-3">
+        <div class="min-h-[78px] flex items-center justify-between gap-4">
           <div class="flex items-center gap-4 min-w-0">
             <button
               type="button"
@@ -82,7 +82,7 @@
             <NuxtLink to="/" class="flex items-center gap-3 min-w-0">
               <picture v-if="effectiveLogoPath">
                 <source v-if="effectiveLogoWebpPath" :srcset="effectiveLogoWebpPath" type="image/webp" />
-                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'height: 160px; max-height: 160px; width: auto; max-width: 400px; object-fit: contain; display: block;' : 'height: 60px; max-height: 68px; width: auto; max-width: 200px; object-fit: contain; display: block;'" />
+                <img :src="effectiveLogoPath" :alt="siteName" :style="isInternational ? 'height: 160px; max-height: 160px; width: auto; max-width: 400px; object-fit: contain; display: block;' : 'height: 64px; max-height: 64px; width: auto; max-width: 200px; object-fit: contain; display: block;'" />
               </picture>
             </NuxtLink>
           </div>
@@ -212,7 +212,7 @@
 
     <!-- Faixa promocional -->
     <div v-if="!isLicencasDigitais && !isInternational" class="border-b border-gray-200" style="background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 50%, #fff7ed 100%);">
-      <div class="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4" style="min-height: 52px;">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
         <div class="flex items-center gap-2 text-sm">
           <span class="font-semibold text-gray-900">Oferta do dia:</span>
           <span class="text-gray-700">Office 365 por R$ 99 com entrega imediata no e-mail</span>
