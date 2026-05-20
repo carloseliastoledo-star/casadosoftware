@@ -68,7 +68,7 @@
               <!-- Imagem do produto -->
               <div class="relative h-72 bg-slate-50 rounded-xl mb-5 flex items-center justify-center overflow-hidden p-4">
                 <img
-                  :src="'/images/hero.webp?v=' + Date.now()"
+                  :src="'/images/hero.webp?v2'"
                   alt="Office 365"
                   loading="eager"
                   decoding="async"
@@ -132,7 +132,7 @@ import type { HomeTheme } from '~/types/homeTheme'
 
 useHead({
   link: [
-    { rel: 'preload', as: 'image', href: '/images/hero.webp?v=' + Date.now(), fetchpriority: 'high' }
+    { rel: 'preload', as: 'image', href: '/images/hero.webp?v2', fetchpriority: 'high' }
   ]
 })
 
