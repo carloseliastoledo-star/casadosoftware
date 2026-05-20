@@ -219,14 +219,6 @@
           <section class="prose prose-invert prose-sm max-w-none text-slate-200" v-html="safeSeoContentHtml" />
         </div>
 
-        <!-- Language switcher – hidden on international domains -->
-        <IntlLanguageSwitcher
-          v-if="!intl.isIntl.value"
-          page-type="product"
-          :slug="String((safeProduct as any)?.slug || slug || '')"
-          class="mt-8 w-full"
-        />
-
         <!-- Afiliados -->
         <div
           v-if="affiliateEnabled"
