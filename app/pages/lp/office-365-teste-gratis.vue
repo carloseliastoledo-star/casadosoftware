@@ -207,57 +207,114 @@ const buyNowUrl = '/checkout?product=microsoft-office-365-vitalicio-5-licencas-p
     </section>
 
     <!-- Benefícios Microsoft 365 -->
-    <section class="py-16 px-4 bg-gray-50">
-      <div class="max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Explore ainda mais os benefícios do Microsoft 365</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <section class="py-20 md:py-24 px-4 bg-[#f5f5f5]">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-16">Explore ainda mais os benefícios do Microsoft 365</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-14">
           <!-- Segurança online -->
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div class="text-3xl mb-3">🔒</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Simplifique sua segurança online</h3>
-            <p class="text-gray-600">Mantenha seus dispositivos mais protegidos com recursos de segurança, alertas e boas práticas para uso seguro no dia a dia.</p>
+          <div class="flex items-start gap-6">
+            <div class="w-20 h-20 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" class="w-full h-full">
+                <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" fill="#0078D4"/>
+                <path d="M12 6L5 9.5V14.5L12 18L19 14.5V9.5L12 6Z" fill="white" fill-opacity="0.3"/>
+                <path d="M12 10L8 12.5V15L12 17L16 14.5V12.5L12 10Z" fill="white"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 leading-tight mb-3">Simplifique sua segurança online</h3>
+              <p class="text-gray-700 text-base leading-relaxed">Mantenha seus dispositivos mais protegidos com recursos de segurança, alertas e boas práticas para uso seguro no dia a dia.</p>
+            </div>
           </div>
 
           <!-- Aplicativos de produtividade -->
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div class="text-3xl mb-3">📊</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Aplicativos de produtividade poderosos</h3>
-            <p class="text-gray-600">Use Word, Excel, PowerPoint, Outlook e outros aplicativos essenciais para trabalhar, estudar e organizar sua rotina.</p>
+          <div class="flex items-start gap-6">
+            <div class="w-20 h-20 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" class="w-full h-full">
+                <rect x="2" y="3" width="20" height="18" rx="2" fill="#0078D4"/>
+                <path d="M7 8H17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <path d="M7 12H17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <path d="M7 16H13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 leading-tight mb-3">Aplicativos de produtividade poderosos</h3>
+              <p class="text-gray-700 text-base leading-relaxed">Use Word, Excel, PowerPoint, Outlook e outros aplicativos essenciais para trabalhar, estudar e organizar sua rotina.</p>
+            </div>
           </div>
 
           <!-- Armazenamento em nuvem -->
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div class="text-3xl mb-3">☁️</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Armazenamento para seus arquivos</h3>
-            <p class="text-gray-600">Salve, compartilhe e acesse documentos importantes com mais praticidade. Recomendamos manter backup periódico dos arquivos.</p>
+          <div class="flex items-start gap-6">
+            <div class="w-20 h-20 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" class="w-full h-full">
+                <path d="M12 2C7.58 2 4 5.58 4 10C4 14.42 7.58 18 12 18C16.42 18 20 14.42 20 10C20 5.58 16.42 2 12 2Z" fill="#0078D4" fill-opacity="0.2"/>
+                <path d="M12 4C8.69 4 6 6.69 6 10C6 13.31 8.69 16 12 16C15.31 16 18 13.31 18 10C18 6.69 15.31 4 12 4Z" fill="#0078D4"/>
+                <path d="M12 6C9.79 6 8 7.79 8 10C8 12.21 9.79 14 12 14C14.21 14 16 12.21 16 10C16 7.79 14.21 6 12 6Z" fill="white"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 leading-tight mb-3">Armazenamento para seus arquivos</h3>
+              <p class="text-gray-700 text-base leading-relaxed">Salve, compartilhe e acesse documentos importantes com mais praticidade. Recomendamos manter backup periódico dos arquivos.</p>
+            </div>
           </div>
 
           <!-- Outlook -->
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div class="text-3xl mb-3">📧</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Aproveite melhor seu dia com o Outlook</h3>
-            <p class="text-gray-600">Organize e-mails, compromissos e tarefas em uma experiência integrada para ganhar produtividade.</p>
+          <div class="flex items-start gap-6">
+            <div class="w-20 h-20 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" class="w-full h-full">
+                <rect x="3" y="5" width="18" height="14" rx="2" fill="#0078D4"/>
+                <rect x="3" y="5" width="18" height="4" fill="#005A9E"/>
+                <circle cx="9" cy="12" r="1.5" fill="white"/>
+                <circle cx="15" cy="12" r="1.5" fill="white"/>
+                <path d="M7 16H17" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 leading-tight mb-3">Aproveite melhor seu dia com o Outlook</h3>
+              <p class="text-gray-700 text-base leading-relaxed">Organize e-mails, compromissos e tarefas em uma experiência integrada para ganhar produtividade.</p>
+            </div>
           </div>
 
           <!-- OneNote -->
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div class="text-3xl mb-3">📝</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Todas as suas ideias em um único lugar</h3>
-            <p class="text-gray-600">Crie anotações, organize ideias, listas, projetos e informações importantes em um só lugar.</p>
+          <div class="flex items-start gap-6">
+            <div class="w-20 h-20 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" class="w-full h-full">
+                <rect x="4" y="3" width="16" height="18" rx="2" fill="#7719AA"/>
+                <rect x="6" y="5" width="12" height="2" fill="white" fill-opacity="0.5"/>
+                <rect x="6" y="8" width="8" height="1" fill="white" fill-opacity="0.3"/>
+                <rect x="6" y="10" width="10" height="1" fill="white" fill-opacity="0.3"/>
+                <rect x="6" y="12" width="7" height="1" fill="white" fill-opacity="0.3"/>
+                <rect x="6" y="14" width="9" height="1" fill="white" fill-opacity="0.3"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 leading-tight mb-3">Todas as suas ideias em um único lugar</h3>
+              <p class="text-gray-700 text-base leading-relaxed">Crie anotações, organize ideias, listas, projetos e informações importantes em um só lugar.</p>
+            </div>
           </div>
 
           <!-- Criação de conteúdo -->
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            <div class="text-3xl mb-3">🎨</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Conte sua história do seu jeito</h3>
-            <p class="text-gray-600">Crie apresentações, documentos e conteúdos visuais com ferramentas práticas para o dia a dia.</p>
+          <div class="flex items-start gap-6">
+            <div class="w-20 h-20 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" class="w-full h-full">
+                <rect x="4" y="3" width="16" height="18" rx="2" fill="#C43E1C"/>
+                <rect x="7" y="6" width="10" height="8" fill="white" fill-opacity="0.3"/>
+                <circle cx="9" cy="8" r="1" fill="white"/>
+                <circle cx="15" cy="8" r="1" fill="white"/>
+                <circle cx="9" cy="12" r="1" fill="white"/>
+                <circle cx="15" cy="12" r="1" fill="white"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 leading-tight mb-3">Conte sua história do seu jeito</h3>
+              <p class="text-gray-700 text-base leading-relaxed">Crie apresentações, documentos e conteúdos visuais com ferramentas práticas para o dia a dia.</p>
+            </div>
           </div>
         </div>
 
         <!-- CTA -->
-        <div class="mt-12 text-center">
-          <p class="text-xl text-gray-600 mb-8">
-            Teste agora por 7 dias ou compre seu acesso imediatamente.
+        <div class="mt-20 text-center">
+          <p class="text-lg text-gray-600 mb-6">
+            Teste por 7 dias ou compre seu acesso imediatamente.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="#solicitar" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition">
