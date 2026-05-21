@@ -124,6 +124,22 @@ async function sendEmail(type: string, lead: any) {
     sendingEmail.value = false
   }
 }
+
+async function generateCheckout(lead: any) {
+  if (!confirm(`Gerar link de checkout para ${lead.email}?`)) {
+    return
+  }
+
+  try {
+    const result = await $fetch(`/api/admin/office365-trials/${lead.id}/generate-checkout`, {
+      method: 'POST'
+    })
+    alert(`Link de checkout gerado: ${result.checkoutUrl}`)
+    await refresh()
+  } catch (error: any) {
+    alert(error?.data?.statusMessage || 'Erro ao gerar checkout')
+  }
+}
 </script>
 
 <template>
@@ -222,12 +238,20 @@ async function sendEmail(type: string, lead: any) {
 
           <div>
             <label class="block font-medium mb-2">Link de checkout</label>
-            <input
-              v-model="editForm.checkoutUrl"
-              type="text"
-              class="w-full border rounded px-3 py-2"
-              placeholder="https://..."
-            />
+            <div class="flex gap-2">
+              <input
+                v-model="editForm.checkoutUrl"
+                type="text"
+                class="w-full border rounded px-3 py-2"
+                placeholder="https://..."
+              />
+              <button
+                @click="generateCheckout(data?.leads?.find((l: any) => l.id === editingId))"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm whitespace-nowrap"
+              >
+                Gerar
+              </button>
+            </div>
           </div>
 
           <div>
