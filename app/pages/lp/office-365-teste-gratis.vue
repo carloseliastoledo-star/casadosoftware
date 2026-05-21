@@ -171,40 +171,6 @@ const buyNowUrl = '/produto/office-365'
       </div>
     </section>
 
-    <!-- Benefícios -->
-    <section class="py-16 px-4 bg-blue-50">
-      <div class="max-w-4xl mx-auto">
-        <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Benefícios</h2>
-        <div class="grid md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="text-3xl mb-3">📝</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Word, Excel, PowerPoint e Outlook</h3>
-            <p class="text-gray-600">Todos os aplicativos essenciais do Office</p>
-          </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="text-3xl mb-3">💻</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Windows ou Mac</h3>
-            <p class="text-gray-600">Compatível com ambos os sistemas</p>
-          </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="text-3xl mb-3">🛠️</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Suporte para instalação</h3>
-            <p class="text-gray-600">Auxiliamos em todo o processo</p>
-          </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm">
-            <div class="text-3xl mb-3">🎯</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Ideal para trabalho, estudos e empresas</h3>
-            <p class="text-gray-600">Perfeito para qualquer necessidade</p>
-          </div>
-          <div class="bg-white p-6 rounded-xl shadow-sm md:col-span-2">
-            <div class="text-3xl mb-3">💰</div>
-            <h3 class="font-semibold text-gray-900 mb-2">Sem pagamento antecipado</h3>
-            <p class="text-gray-600">Teste primeiro, pague somente se gostar</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Benefícios Microsoft 365 -->
     <section class="py-16 px-4 bg-gray-50">
       <div class="max-w-6xl mx-auto">
