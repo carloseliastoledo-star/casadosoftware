@@ -94,82 +94,96 @@ const buyNowUrl = '/checkout?product=microsoft-office-365-vitalicio-5-licencas-p
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
     <!-- Header -->
     <header class="bg-white border-b border-gray-200">
-      <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-3">
-          <img :src="logoPath" :alt="siteName" class="h-10 w-auto" />
-          <span class="text-xl font-bold text-blue-600 hidden sm:block">{{ siteName }}</span>
+      <div class="max-w-7xl mx-auto px-4 py-5 flex items-center justify-between">
+        <a href="/" class="flex items-center">
+          <img :src="logoPath" :alt="siteName" class="h-14 w-auto" />
         </a>
-        <a href="/" class="text-gray-600 hover:text-blue-600">Voltar ao site</a>
+        <a href="/" class="text-gray-600 hover:text-blue-600 font-medium">Voltar ao site</a>
       </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="py-16 md:py-20 px-4">
-      <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
+    <section class="py-20 md:py-24 px-4">
+      <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
         <div>
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <!-- Badge -->
+          <div class="inline-flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+            <span class="mr-2">✓</span>
+            Teste grátis por 7 dias
+          </div>
+
+          <h1 class="text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
             Teste o Office 365 por 7 dias antes de pagar
           </h1>
-          <p class="text-xl text-gray-600 mb-8">
-            Receba um acesso provisório, instale Word, Excel, PowerPoint e Outlook, e continue somente se gostar.
+          <p class="text-xl text-gray-600 mb-8 max-w-xl">
+            Receba acesso provisório, instale Word, Excel, PowerPoint e Outlook, e continue somente se gostar.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <a href="#solicitar" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition">
+          <div class="flex flex-col sm:flex-row gap-4 justify-start">
+            <a href="#solicitar" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition text-center">
               Quero testar grátis por 7 dias
             </a>
-            <a :href="buyNowUrl" class="inline-block bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 font-semibold px-8 py-4 rounded-xl text-lg transition">
+            <a :href="buyNowUrl" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition text-center">
               Comprar agora
             </a>
           </div>
 
           <!-- Selos de confiança -->
-          <div class="flex flex-wrap justify-center lg:justify-start gap-6 mt-12">
-            <div class="flex items-center gap-2 text-gray-600">
-              <span class="text-2xl">🚀</span>
-              <span>Entrega rápida</span>
+          <div class="flex flex-wrap gap-6 mt-12">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-blue-600">
+                  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <span class="text-gray-700 font-medium">Entrega rápida</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-600">
-              <span class="text-2xl">💬</span>
-              <span>Suporte para instalação</span>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-green-600">
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <span class="text-gray-700 font-medium">Suporte para instalação</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-600">
-              <span class="text-2xl">📅</span>
-              <span>Teste por 7 dias</span>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-purple-600">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M3 10H21" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <span class="text-gray-700 font-medium">Teste por 7 dias</span>
             </div>
-            <div class="flex items-center gap-2 text-gray-600">
-              <span class="text-2xl">💳</span>
-              <span>Pagamento após aprovação</span>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" class="w-5 h-5 text-orange-600">
+                  <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M7 15H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M7 10H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="text-gray-700 font-medium">Pagamento após aprovação</span>
             </div>
           </div>
         </div>
         <div class="hidden lg:block">
-          <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-            <div class="text-6xl mb-4">📊</div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Microsoft 365</h3>
-            <div class="space-y-3 text-gray-600">
-              <div class="flex items-center gap-2">
-                <span class="text-blue-600">✓</span>
-                <span>Word</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-blue-600">✓</span>
-                <span>Excel</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-blue-600">✓</span>
-                <span>PowerPoint</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-blue-600">✓</span>
-                <span>Outlook</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="text-blue-600">✓</span>
-                <span>OneDrive</span>
-              </div>
+          <div class="relative">
+            <!-- Blur de fundo -->
+            <div class="absolute -inset-8 bg-blue-200/40 rounded-full blur-3xl"></div>
+            
+            <!-- Imagem do produto -->
+            <div class="relative">
+              <img 
+                src="https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/1779226072333-office-365-premium.webp" 
+                alt="Microsoft Office 365 com Word, Excel, PowerPoint e Outlook"
+                class="w-full h-auto rounded-3xl shadow-2xl border border-blue-100"
+              />
             </div>
           </div>
         </div>
