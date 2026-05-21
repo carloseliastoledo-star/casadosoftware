@@ -134,10 +134,11 @@ async function generateCheckout(lead: any) {
     const result = await $fetch(`/api/admin/office365-trials/${lead.id}/generate-checkout`, {
       method: 'POST'
     })
-    alert(`Link de checkout gerado: ${result.checkoutUrl}`)
+    alert(`Link de checkout gerado: ${result.checkoutUrl}\n\nProduto: ${result.produto.nome}\nSlug: ${result.produto.slug}`)
     await refresh()
   } catch (error: any) {
-    alert(error?.data?.statusMessage || 'Erro ao gerar checkout')
+    const errorMessage = error?.data?.statusMessage || error?.message || 'Erro ao gerar checkout'
+    alert(`Erro: ${errorMessage}`)
   }
 }
 </script>
