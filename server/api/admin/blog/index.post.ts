@@ -41,7 +41,8 @@ export default defineEventHandler(async (event) => {
         storeSlug,
         featuredImage,
         html,
-        publicado
+        publicado,
+        atualizadoEm: new Date()
       },
       select: {
         id: true,

@@ -158,7 +158,8 @@ async function generateOne(params: { keyword: string; published: boolean; model:
       excerpt: excerpt || null,
       keyword: params.keyword,
       autoSeo: true,
-      publicado: params.published
+      publicado: params.published,
+      atualizadoEm: new Date()
     },
     select: {
       id: true,

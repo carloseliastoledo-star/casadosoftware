@@ -171,7 +171,8 @@ export default defineEventHandler(async (event) => {
       excerpt: excerpt || null,
       keyword,
       autoSeo: true,
-      publicado: publish
+      publicado: publish,
+      atualizadoEm: new Date()
     },
     select: {
       id: true,
