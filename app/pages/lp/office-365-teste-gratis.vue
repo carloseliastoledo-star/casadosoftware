@@ -88,7 +88,7 @@ function toggleFaq(index: number) {
   openFaq.value = openFaq.value === index ? null : index
 }
 
-const buyNowUrl = '/produto/office-365'
+const buyNowUrl = '/checkout?product=microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
 </script>
 
 <template>
