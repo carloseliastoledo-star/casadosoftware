@@ -11,6 +11,7 @@ const editForm = ref({
   checkoutUrl: '',
   notes: ''
 })
+const sendingEmail = ref(false)
 
 const statusOptions = ['PENDING', 'ACCESS_SENT', 'ACTIVE', 'PAYMENT_SENT', 'PAID', 'EXPIRED', 'BLOCKED', 'REACTIVATED']
 
@@ -102,6 +103,26 @@ function openWhatsApp(lead: any, message: string) {
   const phone = lead.whatsapp.replace(/\D/g, '')
   const encodedMessage = encodeURIComponent(message)
   window.open(`https://wa.me/55${phone}?text=${encodedMessage}`, '_blank')
+}
+
+async function sendEmail(type: string, lead: any) {
+  if (!confirm(`Confirmar envio do e-mail para ${lead.email}?`)) {
+    return
+  }
+
+  sendingEmail.value = true
+  try {
+    await $fetch(`/api/admin/office365-trials/${lead.id}/send-email`, {
+      method: 'POST',
+      body: { type }
+    })
+    alert('E-mail enviado com sucesso.')
+    await refresh()
+  } catch (error: any) {
+    alert(error?.data?.statusMessage || 'Erro ao enviar e-mail')
+  } finally {
+    sendingEmail.value = false
+  }
 }
 </script>
 
@@ -233,6 +254,53 @@ function openWhatsApp(lead: any, message: string) {
           >
             Cancelar
           </button>
+        </div>
+
+        <!-- Botões de e-mail -->
+        <div class="mt-6 pt-6 border-t">
+          <h3 class="font-semibold mb-3">Enviar e-mails</h3>
+          <div class="space-y-2">
+            <button
+              @click="sendEmail('delivery', data?.leads?.find((l: any) => l.id === editingId))"
+              :disabled="sendingEmail || !editForm.microsoftLogin || !editForm.temporaryPassword"
+              class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-4 py-2 rounded text-sm"
+            >
+              {{ sendingEmail ? 'Enviando...' : 'Enviar e-mail de acesso' }}
+            </button>
+            <p v-if="!editForm.microsoftLogin || !editForm.temporaryPassword" class="text-xs text-gray-500">
+              Preencha login Microsoft e senha provisória antes de enviar o e-mail de entrega.
+            </p>
+
+            <div class="pt-2">
+              <p class="text-xs text-gray-500 mb-2">E-mails de cobrança:</p>
+              <div class="space-y-2">
+                <button
+                  @click="sendEmail('day5', data?.leads?.find((l: any) => l.id === editingId))"
+                  :disabled="sendingEmail || !editForm.checkoutUrl"
+                  class="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white px-4 py-2 rounded text-sm"
+                >
+                  {{ sendingEmail ? 'Enviando...' : 'Enviar e-mail dia 5' }}
+                </button>
+                <button
+                  @click="sendEmail('day7', data?.leads?.find((l: any) => l.id === editingId))"
+                  :disabled="sendingEmail || !editForm.checkoutUrl"
+                  class="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 text-white px-4 py-2 rounded text-sm"
+                >
+                  {{ sendingEmail ? 'Enviando...' : 'Enviar e-mail vencimento hoje' }}
+                </button>
+                <button
+                  @click="sendEmail('expired', data?.leads?.find((l: any) => l.id === editingId))"
+                  :disabled="sendingEmail || !editForm.checkoutUrl"
+                  class="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 text-white px-4 py-2 rounded text-sm"
+                >
+                  {{ sendingEmail ? 'Enviando...' : 'Enviar e-mail pós-expiração' }}
+                </button>
+              </div>
+              <p v-if="!editForm.checkoutUrl" class="text-xs text-gray-500 mt-2">
+                Preencha o link de checkout antes de enviar cobrança.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
