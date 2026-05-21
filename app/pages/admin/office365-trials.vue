@@ -134,10 +134,60 @@ async function generateCheckout(lead: any) {
     const result = await $fetch(`/api/admin/office365-trials/${lead.id}/generate-checkout`, {
       method: 'POST'
     })
-    alert(`Link de checkout gerado: ${result.checkoutUrl}\n\nProduto: ${result.produto.nome}\nSlug: ${result.produto.slug}`)
+    
+    // Atualizar o campo checkoutUrl no formulário
+    editForm.value.checkoutUrl = result.checkoutUrl
+    
+    // Atualizar o lead na lista
     await refresh()
+    
+    alert(`Checkout gerado com sucesso.`)
+    
+    // Perguntar se deseja enviar por e-mail agora
+    if (confirm(`Link de checkout gerado com sucesso. Deseja enviar este link por e-mail para ${lead.email} agora?`)) {
+      await sendCheckoutEmail(lead, false)
+    }
   } catch (error: any) {
     const errorMessage = error?.data?.statusMessage || error?.message || 'Erro ao gerar checkout'
+    alert(`Erro: ${errorMessage}`)
+  }
+}
+
+async function copyCheckoutUrl() {
+  if (!editForm.value.checkoutUrl) return
+  try {
+    await navigator.clipboard.writeText(editForm.value.checkoutUrl)
+    alert('Link copiado para a área de transferência')
+  } catch (error) {
+    alert('Erro ao copiar link')
+  }
+}
+
+function openCheckoutUrl() {
+  if (!editForm.value.checkoutUrl) return
+  window.open(editForm.value.checkoutUrl, '_blank')
+}
+
+async function sendCheckoutEmail(lead: any, confirmFirst = true) {
+  if (!lead) return
+  
+  if (!lead.checkoutUrl) {
+    alert('Gere o link de checkout antes de enviar o e-mail')
+    return
+  }
+
+  if (confirmFirst && !confirm(`Enviar link de pagamento para ${lead.email}?`)) {
+    return
+  }
+
+  try {
+    const result = await $fetch(`/api/admin/office365-trials/${lead.id}/send-checkout-email`, {
+      method: 'POST'
+    })
+    alert(result.message || 'E-mail enviado com sucesso')
+    await refresh()
+  } catch (error: any) {
+    const errorMessage = error?.data?.statusMessage || error?.message || 'Erro ao enviar e-mail'
     alert(`Erro: ${errorMessage}`)
   }
 }
@@ -239,11 +289,11 @@ async function generateCheckout(lead: any) {
 
           <div>
             <label class="block font-medium mb-2">Link de checkout</label>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-wrap">
               <input
                 v-model="editForm.checkoutUrl"
                 type="text"
-                class="w-full border rounded px-3 py-2"
+                class="flex-1 min-w-[200px] border rounded px-3 py-2"
                 placeholder="https://..."
               />
               <button
@@ -251,6 +301,27 @@ async function generateCheckout(lead: any) {
                 class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm whitespace-nowrap"
               >
                 Gerar
+              </button>
+              <button
+                @click="copyCheckoutUrl"
+                :disabled="!editForm.checkoutUrl"
+                class="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-300 text-white px-4 py-2 rounded text-sm whitespace-nowrap"
+              >
+                Copiar
+              </button>
+              <button
+                @click="openCheckoutUrl"
+                :disabled="!editForm.checkoutUrl"
+                class="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 text-white px-4 py-2 rounded text-sm whitespace-nowrap"
+              >
+                Abrir
+              </button>
+              <button
+                @click="sendCheckoutEmail(data?.leads?.find((l: any) => l.id === editingId))"
+                :disabled="!editForm.checkoutUrl"
+                class="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white px-4 py-2 rounded text-sm whitespace-nowrap"
+              >
+                Enviar e-mail
               </button>
             </div>
           </div>

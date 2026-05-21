@@ -3,6 +3,8 @@ definePageMeta({
   layout: false
 })
 
+const { logoPath, siteName } = useSiteBranding()
+
 useHead({
   title: 'Teste Office 365 grátis por 7 dias | Casa do Software',
   meta: [
@@ -96,46 +98,79 @@ const buyNowUrl = '/checkout?product=microsoft-office-365-vitalicio-5-licencas-p
     <!-- Header -->
     <header class="bg-white border-b border-gray-200">
       <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div class="text-2xl font-bold text-blue-600">Casa do Software</div>
+        <a href="/" class="flex items-center gap-3">
+          <img :src="logoPath" :alt="siteName" class="h-10 w-auto" />
+          <span class="text-xl font-bold text-blue-600 hidden sm:block">{{ siteName }}</span>
+        </a>
         <a href="/" class="text-gray-600 hover:text-blue-600">Voltar ao site</a>
       </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="py-20 px-4">
-      <div class="max-w-4xl mx-auto text-center">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Teste o Office 365 por 7 dias antes de pagar
-        </h1>
-        <p class="text-xl text-gray-600 mb-8">
-          Receba um acesso provisório, instale Word, Excel, PowerPoint e Outlook, e continue somente se gostar.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="#solicitar" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition">
-            Quero testar grátis por 7 dias
-          </a>
-          <a :href="buyNowUrl" class="inline-block bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 font-semibold px-8 py-4 rounded-xl text-lg transition">
-            Comprar agora
-          </a>
-        </div>
+    <section class="py-16 md:py-20 px-4">
+      <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
+        <div>
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Teste o Office 365 por 7 dias antes de pagar
+          </h1>
+          <p class="text-xl text-gray-600 mb-8">
+            Receba um acesso provisório, instale Word, Excel, PowerPoint e Outlook, e continue somente se gostar.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <a href="#solicitar" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl text-lg transition">
+              Quero testar grátis por 7 dias
+            </a>
+            <a :href="buyNowUrl" class="inline-block bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-600 font-semibold px-8 py-4 rounded-xl text-lg transition">
+              Comprar agora
+            </a>
+          </div>
 
-        <!-- Selos de confiança -->
-        <div class="flex flex-wrap justify-center gap-6 mt-12">
-          <div class="flex items-center gap-2 text-gray-600">
-            <span class="text-2xl">🚀</span>
-            <span>Entrega rápida</span>
+          <!-- Selos de confiança -->
+          <div class="flex flex-wrap justify-center lg:justify-start gap-6 mt-12">
+            <div class="flex items-center gap-2 text-gray-600">
+              <span class="text-2xl">🚀</span>
+              <span>Entrega rápida</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-600">
+              <span class="text-2xl">💬</span>
+              <span>Suporte para instalação</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-600">
+              <span class="text-2xl">📅</span>
+              <span>Teste por 7 dias</span>
+            </div>
+            <div class="flex items-center gap-2 text-gray-600">
+              <span class="text-2xl">💳</span>
+              <span>Pagamento após aprovação</span>
+            </div>
           </div>
-          <div class="flex items-center gap-2 text-gray-600">
-            <span class="text-2xl">💬</span>
-            <span>Suporte para instalação</span>
-          </div>
-          <div class="flex items-center gap-2 text-gray-600">
-            <span class="text-2xl">📅</span>
-            <span>Teste por 7 dias</span>
-          </div>
-          <div class="flex items-center gap-2 text-gray-600">
-            <span class="text-2xl">💳</span>
-            <span>Pagamento após aprovação</span>
+        </div>
+        <div class="hidden lg:block">
+          <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+            <div class="text-6xl mb-4">📊</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Microsoft 365</h3>
+            <div class="space-y-3 text-gray-600">
+              <div class="flex items-center gap-2">
+                <span class="text-blue-600">✓</span>
+                <span>Word</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-blue-600">✓</span>
+                <span>Excel</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-blue-600">✓</span>
+                <span>PowerPoint</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-blue-600">✓</span>
+                <span>Outlook</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-blue-600">✓</span>
+                <span>OneDrive</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
