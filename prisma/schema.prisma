@@ -593,3 +593,26 @@ enum ChatConversation_status {
   HUMAN
   CLOSED
 }
+
+model Office365TrialLead {
+  id               String   @id @default(cuid())
+  name             String
+  email            String
+  whatsapp         String
+  usageType        String
+  systemType       String
+  status           String   @default("PENDING")
+  trialStartAt     DateTime @default(now()) @db.DateTime(0)
+  trialExpiresAt   DateTime @db.DateTime(0)
+  checkoutUrl      String?
+  microsoftLogin   String?
+  temporaryPassword String?
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now()) @db.DateTime(0)
+  updatedAt        DateTime @updatedAt @db.DateTime(0)
+
+  @@index([email])
+  @@index([status])
+  @@index([trialExpiresAt])
+  @@index([createdAt])
+}
