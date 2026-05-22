@@ -1304,13 +1304,13 @@ const t = computed(() => {
 const { addToCart } = useCart()
 
 function buyNow() {
-  const p = safeProduct as any
+  const p = safeProduct.value
   console.log('[buyNow] safeProduct:', p, 'slug:', slug, 'p.slug:', p?.slug)
   try {
     ecomAddToCart({
       item_id: p?.id || '',
       item_name: String(p?.name || p?.name || ''),
-      price: Number(p?.price ?? p?.price ?? 0),
+      price: Number(p?.price ?? 0),
       item_category: primaryCategoryLabel.value || 'Software'
     }, 'BRL')
   } catch {
@@ -1322,8 +1322,8 @@ function buyNow() {
     id: p?.id || '',
     name: String(p?.name || ''),
     slug: String(p?.slug || slug.value || ''),
-    price: Number(p?.price ?? p?.price ?? 0),
-    image: String(p?.image || p?.imagem || '')
+    price: Number(p?.price ?? 0),
+    image: String(p?.image || '')
   })
   
   const slugValue = String(p?.slug || slug.value || '')
@@ -1333,20 +1333,20 @@ function buyNow() {
 }
 
 function addToCartOnly() {
-  const p = safeProduct as any
+  const p = safeProduct.value
   addToCart({
     id: p?.id || '',
     name: String(p?.name || ''),
     slug: String(p?.slug || slug.value || ''),
-    price: Number(p?.price ?? p?.price ?? 0),
-    image: String(p?.image || p?.imagem || '')
+    price: Number(p?.price ?? 0),
+    image: String(p?.image || '')
   })
   
   try {
     ecomAddToCart({
       item_id: p?.id || '',
       item_name: String(p?.name || ''),
-      price: Number(p?.price ?? p?.price ?? 0),
+      price: Number(p?.price ?? 0),
       item_category: primaryCategoryLabel.value || 'Software'
     }, 'BRL')
   } catch {
