@@ -12,7 +12,7 @@ import { routePayment } from '#root/server/services/paymentRouter'
 function round2(n: number) { return Math.round(n * 100) / 100 }
 
 export default defineEventHandler(async (event) => {
-  console.log('[checkout] ===== START =====')
+  console.log('[checkout] ===== START =====', new Date().toISOString())
   
   const body = await readBody(event)
   console.log('[checkout] body keys:', Object.keys(body || {}))
