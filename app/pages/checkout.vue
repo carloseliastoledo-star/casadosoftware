@@ -223,8 +223,8 @@
             <h2 class="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest">Resumo do pedido</h2>
 
             <!-- Produto principal -->
-            <div class="flex items-start gap-3 pb-3 border-b border-gray-100">
-              <div v-if="productImage" class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+            <div class="flex items-start gap-4 pb-3 border-b border-gray-100">
+              <div v-if="productImage" class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
                 <img :src="productImage" :alt="productName" class="w-full h-full object-cover" />
               </div>
               <div v-else class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">{{ productName.charAt(0) }}</div>
