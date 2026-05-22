@@ -224,7 +224,10 @@
 
             <!-- Produto principal -->
             <div class="flex items-start gap-3 pb-3 border-b border-gray-100">
-              <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">{{ productName.charAt(0) }}</div>
+              <div v-if="productImage" class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                <img :src="productImage" :alt="productName" class="w-full h-full object-cover" />
+              </div>
+              <div v-else class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">{{ productName.charAt(0) }}</div>
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-semibold text-gray-900">{{ productName }}</div>
                 <div class="text-xs text-gray-500 mt-0.5">Licença digital • Word, Excel, PowerPoint, Outlook e Teams</div>
@@ -428,6 +431,8 @@ const selectedBumps = computed(() => bumpConfigs.value.filter((bump) => selected
 const bumpTotal = computed(() => selectedBumps.value.reduce((sum, bump) => sum + Number(bump.price || 0), 0))
 const hasSelectedBumps = computed(() => showOrderBump.value && selectedBumps.value.length > 0)
 
+const productImage = ref('')
+
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
 const totalPrice = computed(() => {
   const subtotal = basePrice.value + (showOrderBump.value ? bumpTotal.value : 0)
@@ -591,6 +596,7 @@ onMounted(async () => {
       const price = Number(p?.preco ?? p?.price ?? p?.effectivePrice ?? 49)
       basePrice.value = price
       produtoId.value = String(p?.id || '')
+      productImage.value = String(p?.imagem || p?.image || '')
     } catch (err) {
       console.error('[checkout] product load error:', err)
       await navigateTo('/')
@@ -606,13 +612,16 @@ onMounted(async () => {
         produtoId.value = String(p.id)
         productName.value = String(p?.nome || p?.name || 'Office 365 Pro')
         basePrice.value = Number(p?.preco ?? p?.price ?? p?.effectivePrice ?? 49)
+        productImage.value = String(p?.imagem || p?.image || '')
       } else {
         productName.value = 'Office 365 Pro'
         basePrice.value = 49
+        productImage.value = ''
       }
     } catch {
       productName.value = 'Office 365 Pro'
       basePrice.value = 49
+      productImage.value = ''
     } finally {
       productLoading.value = false
     }
