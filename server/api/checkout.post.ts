@@ -37,6 +37,7 @@ export default defineEventHandler(async (event) => {
   
   const { storeSlug: _storeSlug } = getStoreContext(event)
   const storeSlug = _storeSlug || String(process.env.STORE_SLUG || '').trim().toLowerCase() || null
+  console.log('[checkout] storeSlug:', storeSlug, '_storeSlug:', _storeSlug, 'STORE_SLUG env:', process.env.STORE_SLUG)
   const country = detectCountry(event)
 
   const produtoId   = String(body?.produtoId   || '').trim()
@@ -56,6 +57,8 @@ export default defineEventHandler(async (event) => {
   const couponCode    = String(body?.couponCode    || '').trim().toUpperCase()
   const couponPercent = Number(body?.couponPercent || 0)
   const cartItems     = Array.isArray(body?.cartItems) ? body.cartItems : []
+
+  console.log('[checkout] parsed values:', { produtoId, email, method, currency, cartItemsLength: cartItems.length })
 
   const utmSource   = body?.utm_source   ? String(body.utm_source).trim()   : null
   const utmMedium   = body?.utm_medium   ? String(body.utm_medium).trim()   : null
@@ -81,8 +84,11 @@ export default defineEventHandler(async (event) => {
   }
   const trafficSourceType = inferTrafficSourceType()
 
+  console.log('[checkout] validating email and storeSlug')
   if (!email || !email.includes('@')) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
   if (!storeSlug) throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
+
+  console.log('[checkout] validation passed, processing cart')
 
   // Se carrinho foi enviado, processa múltiplos itens
   let validatedItems: any[] = []
