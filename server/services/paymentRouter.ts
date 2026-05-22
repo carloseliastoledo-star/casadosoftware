@@ -125,43 +125,27 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
 
   if (input.method === 'pix') {
     console.log('[paymentRouter] PIX payment - pixGateway:', pixGw, 'amountBrl:', input.amountBrl)
-    // ── MercadoPago PIX ──────────────────────────────────────────────────────
-    if (pixGw === 'mercadopago') {
-      try {
-        console.log('[paymentRouter] Trying MercadoPago PIX')
-        const res = await createMercadoPagoPix({
-          orderId: input.orderId,
-          amountBrl: input.amountBrl,
-          description: input.product,
-          customer: {
-            name: input.customer.name,
-            email: input.customer.email,
-            document: input.customer.document || '00000000000',
-          },
-          items: input.items
-        })
-        console.log('[paymentRouter] MercadoPago PIX success:', { paymentId: res.payment_id })
-        const qrCodeUrl = res.qr_code_base64
-          ? `data:image/png;base64,${res.qr_code_base64}`
-          : ''
-        return { gateway: 'mercadopago', method: 'pix', paymentId: res.payment_id, qrCode: res.qr_code, qrCodeUrl, expiresAt: res.expires_at }
-      } catch (err) {
-        console.error('[paymentRouter] PIX MercadoPago falhou, tentando Pagar.me:', err)
-      }
-    }
-    // ── Pagar.me PIX (padrão ou fallback) ───────────────────────────────────
+    // ── MercadoPago PIX (único gateway configurado) ──────────────────────────────
     try {
-      console.log('[paymentRouter] Trying Pagar.me PIX')
-      const res = await createPagarmePix({
+      console.log('[paymentRouter] Trying MercadoPago PIX')
+      const res = await createMercadoPagoPix({
         orderId: input.orderId,
         amountBrl: input.amountBrl,
-        customer: buildPagarmeCustomer(input.customer),
-        split,
+        description: input.product,
+        customer: {
+          name: input.customer.name,
+          email: input.customer.email,
+          document: input.customer.document || '00000000000',
+        },
+        items: input.items
       })
-      console.log('[paymentRouter] Pagar.me PIX success:', { chargeId: res.charge_id })
-      return { gateway: 'pagarme', method: 'pix', chargeId: res.charge_id, qrCode: res.qr_code, qrCodeUrl: res.qr_code_url, expiresAt: res.expires_at }
+      console.log('[paymentRouter] MercadoPago PIX success:', { paymentId: res.payment_id })
+      const qrCodeUrl = res.qr_code_base64
+        ? `data:image/png;base64,${res.qr_code_base64}`
+        : ''
+      return { gateway: 'mercadopago', method: 'pix', paymentId: res.payment_id, qrCode: res.qr_code, qrCodeUrl, expiresAt: res.expires_at }
     } catch (err) {
-      console.error('[paymentRouter] PIX Pagar.me também falhou:', err)
+      console.error('[paymentRouter] MercadoPago PIX failed:', err)
       throw err
     }
   }
