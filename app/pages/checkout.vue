@@ -289,10 +289,15 @@
             </div>
 
             <!-- QR Code PIX -->
-            <div v-if="pixQrCode" class="mb-4 text-center">
+            <div v-if="hasPixQrCode" class="mb-4 text-center">
               <p class="text-xs font-semibold text-green-700 mb-2">✅ PIX gerado! Escaneie para pagar:</p>
-              <img :src="pixQrUrl" alt="QR Code PIX" class="w-44 h-44 mx-auto rounded-xl border border-gray-200" />
-              <div class="mt-2 flex gap-1">
+              <img v-if="qrCodeImageSrc" :src="qrCodeImageSrc" alt="QR Code PIX" class="w-56 h-56 mx-auto rounded-xl border border-gray-200" />
+              <div v-if="pixTicketUrl && !qrCodeImageSrc" class="mb-2">
+                <a :href="pixTicketUrl" target="_blank" rel="noopener" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-sm transition inline-block">
+                  Abrir Pix em nova aba
+                </a>
+              </div>
+              <div v-if="pixQrCode" class="mt-2 flex gap-1">
                 <input :value="pixQrCode" readonly class="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-gray-50 text-gray-600 truncate" />
                 <button @click="copiarPix" class="shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
                   {{ pixCopiado ? '✔' : 'Copiar' }}
@@ -309,7 +314,7 @@
             </div>
 
             <!-- CTA principal -->
-            <div v-if="!pixQrCode" class="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-center">
+            <div v-if="!hasPixQrCode" class="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-center">
               <p class="text-red-600 text-sm font-bold">
                 🔥 Últimas licenças com esse preço
               </p>
@@ -319,7 +324,7 @@
             </div>
 
             <button
-              v-if="!pixQrCode"
+              v-if="!hasPixQrCode"
               :disabled="loading"
               @click="handleGeneratePix"
               class="w-full bg-green-500 hover:bg-green-400 text-white font-black py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2"
@@ -336,7 +341,7 @@
               </template>
             </button>
 
-            <div v-if="!pixQrCode" class="mt-4 rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
+            <div v-if="!hasPixQrCode" class="mt-4 rounded-2xl bg-gray-50 border border-gray-100 px-4 py-3">
               <div class="grid grid-cols-1 gap-2 text-xs font-semibold text-gray-700">
                 <div class="flex items-center gap-2">
                   <span class="text-green-600">🔒</span>
@@ -427,6 +432,7 @@ const cardCvv = ref('')
 const cardToken = ref('')
 const pixQrCode = ref('')
 const pixQrUrl = ref('')
+const pixTicketUrl = ref('')
 const pixCopiado = ref(false)
 const paymentError = ref('')
 const funnelOrderId = ref('')
@@ -434,6 +440,17 @@ const pollingActive = ref(false)
 const pollingTimer = ref<any>(null)
 const timerText = ref('09:59')
 const abandonedCheckoutTimer = ref<any>(null)
+
+// Computed property para tratar QR Code base64 com/sem prefixo
+const qrCodeImageSrc = computed(() => {
+  const base64 = pixQrUrl.value
+  if (!base64) return ''
+  if (base64.startsWith('data:image')) return base64
+  return `data:image/png;base64,${base64}`
+})
+
+// Computed property para verificar se tem QR Code ou fallback para ticket_url
+const hasPixQrCode = computed(() => !!qrCodeImageSrc.value || !!pixTicketUrl.value)
 
 // Cupom
 const couponCode = ref('')
@@ -481,6 +498,7 @@ function savePIXSession() {
     sessionStorage.setItem(PIX_SESSION_KEY, JSON.stringify({
       pixQrCode: pixQrCode.value,
       pixQrUrl: pixQrUrl.value,
+      pixTicketUrl: pixTicketUrl.value,
       funnelOrderId: funnelOrderId.value
     }))
   } catch {}
@@ -497,9 +515,10 @@ function restorePIXSession() {
     const raw = sessionStorage.getItem(PIX_SESSION_KEY)
     if (!raw) return
     const saved = JSON.parse(raw)
-    if (saved?.pixQrCode || saved?.pixQrUrl) {
+    if (saved?.pixQrCode || saved?.pixQrUrl || saved?.pixTicketUrl) {
       pixQrCode.value = saved.pixQrCode || ''
       pixQrUrl.value = saved.pixQrUrl || ''
+      pixTicketUrl.value = saved.pixTicketUrl || ''
       funnelOrderId.value = saved.funnelOrderId || ''
     }
   } catch {}
@@ -592,7 +611,7 @@ onMounted(async () => {
   window.addEventListener('beforeunload', trackCheckoutAbandon)
 
   restorePIXSession()
-  if (pixQrCode.value || pixQrUrl.value) return
+  if (hasPixQrCode.value) return
 
   // Se carrinho estiver vazio e não houver produtoSlug, redirecionar para carrinho
   if (cart.value.length === 0 && !productSlug.value) {
@@ -952,6 +971,7 @@ async function handleGeneratePix() {
       // Pix gerado com sucesso - mostrar QR Code na página de checkout
       pixQrCode.value = result?.qr_code || result?.qrCode || ''
       pixQrUrl.value = result?.qr_code_base64 || result?.qrCodeUrl || ''
+      pixTicketUrl.value = result?.ticket_url || ''
       savePIXSession()
       startPaymentPolling()
     } else {
