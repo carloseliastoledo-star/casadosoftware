@@ -166,7 +166,7 @@
             </NuxtLink>
 
             <NuxtLink
-              to="/checkout"
+              to="/carrinho"
               class="relative inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-sm font-semibold transition shadow-sm"
             >
               <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -289,7 +289,7 @@
               </button>
             </form>
 
-            <NuxtLink to="/checkout" class="relative inline-flex items-center justify-center w-10 h-10 rounded-md border border-gray-200 hover:bg-gray-50">
+            <NuxtLink to="/carrinho" class="relative inline-flex items-center justify-center w-10 h-10 rounded-md border border-gray-200 hover:bg-gray-50">
               <span aria-hidden="true">🛒</span>
               <span
                 v-if="cartCount > 0"
@@ -391,7 +391,7 @@
 
         <div class="p-3 border-t">
           <NuxtLink
-            to="/checkout"
+            to="/carrinho"
             class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 transition"
             @click="mobileMenuOpen = false"
           >

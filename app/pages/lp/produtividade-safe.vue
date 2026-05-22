@@ -26,7 +26,7 @@
         </div>
 
         <NuxtLink
-          to="/checkout"
+          to="/carrinho"
           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
         >
           Continuar para acesso
@@ -147,7 +147,7 @@
           Acesso sem cobrança recorrente • Acesso imediato
         </p>
         <NuxtLink
-          to="/checkout"
+          to="/carrinho"
           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
         >
           Continuar para acesso
@@ -236,7 +236,7 @@
           Acesse ferramentas essenciais para sua produtividade.
         </p>
         <NuxtLink
-          to="/checkout"
+          to="/carrinho"
           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-colors text-lg"
         >
           Continuar para acesso

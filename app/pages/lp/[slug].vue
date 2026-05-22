@@ -85,7 +85,7 @@ useHead({
           <li>Suporte por WhatsApp</li>
         </ul>
         <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <NuxtLink to="/checkout" class="inline-flex rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700 transition">
+          <NuxtLink to="/carrinho" class="inline-flex rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700 transition">
             Comprar agora
           </NuxtLink>
           <a href="https://wa.me/5511910512647" target="_blank" rel="noopener" class="inline-flex rounded-xl border border-green-600 px-5 py-3 text-sm font-bold text-green-700 hover:bg-green-100 transition">

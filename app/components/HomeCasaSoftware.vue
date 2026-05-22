@@ -19,7 +19,7 @@
           <h3 class="text-xl font-black text-gray-900">Oferta principal disponível</h3>
           <p class="mt-2 text-sm text-gray-600">Compra segura com entrega digital imediata, mesmo em instabilidade momentânea.</p>
           <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
-            <NuxtLink to="/checkout" class="inline-flex rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700 transition">
+            <NuxtLink to="/carrinho" class="inline-flex rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white hover:bg-green-700 transition">
               Comprar agora
             </NuxtLink>
             <a href="https://wa.me/5511910512647" target="_blank" rel="noopener" class="inline-flex rounded-xl border border-green-600 px-5 py-3 text-sm font-bold text-green-700 hover:bg-green-100 transition">

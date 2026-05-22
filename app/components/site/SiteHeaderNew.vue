@@ -311,7 +311,7 @@
           <!-- CTA no rodapé do menu -->
           <div class="p-3 border-t">
             <NuxtLink
-              to="/checkout"
+              to="/carrinho"
               class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 transition"
               @click="emit('update:mobileOpen', false)"
             >

@@ -12,7 +12,7 @@
       </ul>
 
       <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-        <NuxtLink to="/checkout" class="inline-flex w-full justify-center rounded-xl bg-green-600 px-6 py-3 text-sm font-bold text-white hover:bg-green-700 sm:w-auto">
+        <NuxtLink to="/carrinho" class="inline-flex w-full justify-center rounded-xl bg-green-600 px-6 py-3 text-sm font-bold text-white hover:bg-green-700 sm:w-auto">
           Comprar agora
         </NuxtLink>
         <a href="https://wa.me/5511910512647" target="_blank" rel="noopener" class="inline-flex w-full justify-center rounded-xl border border-green-600 px-6 py-3 text-sm font-bold text-green-700 hover:bg-green-50 sm:w-auto">
