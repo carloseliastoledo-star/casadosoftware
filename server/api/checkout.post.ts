@@ -288,6 +288,7 @@ export default defineEventHandler(async (event) => {
     data: {
       id: randomUUID(),
       status: 'PENDING',
+      deletedAt: null,
       storeSlug,
       customerId: customer.id,
       produtoId: produto.id,
