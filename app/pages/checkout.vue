@@ -223,17 +223,18 @@
             <h2 class="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest">Resumo do pedido</h2>
 
             <!-- Produto principal -->
-            <div class="flex items-start gap-4 pb-3 border-b border-gray-100">
-              <div v-if="productImage" class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
-                <img :src="productImage" :alt="productName" class="w-full h-full object-cover" />
+            <div class="pb-3 border-b border-gray-100">
+              <div v-if="productImage" class="mb-4">
+                <img :src="productImage" :alt="productName" class="w-full h-auto rounded-xl" />
               </div>
-              <div v-else class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-sm flex-shrink-0">{{ productName.charAt(0) }}</div>
-              <div class="flex-1 min-w-0">
-                <div class="text-sm font-semibold text-gray-900">{{ productName }}</div>
-                <div class="text-xs text-gray-500 mt-0.5">Licença digital • Word, Excel, PowerPoint, Outlook e Teams</div>
-                <div class="text-xs text-green-700 font-semibold mt-1">Ativação rápida com suporte incluso</div>
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-semibold text-gray-900">{{ productName }}</div>
+                  <div class="text-xs text-gray-500 mt-1">Licença digital • Word, Excel, PowerPoint, Outlook e Teams</div>
+                  <div class="text-xs text-green-700 font-semibold mt-1">Ativação rápida com suporte incluso</div>
+                </div>
+                <div class="text-base font-black text-green-700 whitespace-nowrap">R$ {{ basePrice.toFixed(2).replace('.', ',') }}</div>
               </div>
-              <div class="text-base font-black text-green-700 whitespace-nowrap">R$ {{ basePrice.toFixed(2).replace('.', ',') }}</div>
             </div>
 
             <!-- Order bump (linha condicional) -->
