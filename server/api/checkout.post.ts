@@ -128,6 +128,11 @@ export default defineEventHandler(async (event) => {
     }
     
     console.log('[checkout] Itens validados:', validatedItems.length, 'Total:', amountBrl)
+    
+    // Garante que produto está definido para compatibilidade
+    if (!produto) {
+      throw createError({ statusCode: 400, statusMessage: 'Erro interno: produto não definido após validar carrinho' })
+    }
   } else {
     // Lógica original para produto único
     console.log('[checkout] Buscando produto:', produtoId)
