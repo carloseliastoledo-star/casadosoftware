@@ -594,6 +594,12 @@ onMounted(async () => {
   restorePIXSession()
   if (pixQrCode.value || pixQrUrl.value) return
 
+  // Se carrinho estiver vazio e não houver produtoSlug, redirecionar para carrinho
+  if (cart.value.length === 0 && !productSlug.value) {
+    await navigateTo('/carrinho')
+    return
+  }
+
   try {
     const cfg: any = await $fetch('/api/checkout-config')
     if (Array.isArray(cfg?.orderBumps) && cfg.orderBumps.length) {
@@ -907,12 +913,11 @@ async function handleGeneratePix() {
     const apiUrl = paymentMethod.value === 'credit_card' ? '/api/checkout' : '/api/create-pix'
 
     // Preparar itens do carrinho para enviar para a API
+    // Enviar apenas productId e quantity - backend valida preço no banco
     const cartItems = cart.value.length > 0 
       ? cart.value.map(item => ({
           productId: item.id,
-          title: item.name,
-          quantity: item.quantity,
-          unit_price: item.price
+          quantity: item.quantity
         }))
       : []
 
