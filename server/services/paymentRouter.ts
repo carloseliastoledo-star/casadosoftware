@@ -36,6 +36,7 @@ export interface RouterInput {
   installments?: number
   affiliateRecipientId?: string
   affiliatePercentage?: number
+  items?: Array<{ title: string; quantity: number; unit_price: number }>
 }
 
 export type RouterResult =
@@ -135,6 +136,7 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
             email: input.customer.email,
             document: input.customer.document || '00000000000',
           },
+          items: input.items
         })
         const qrCodeUrl = res.qr_code_base64
           ? `data:image/png;base64,${res.qr_code_base64}`
@@ -171,6 +173,7 @@ export async function routePayment(input: RouterInput): Promise<RouterResult> {
           installments: input.installments ?? 1,
           customer: { name: input.customer.name, email: input.customer.email, document: input.customer.document || '' },
           token: input.card.token,
+          items: input.items
         })
         return { gateway: 'mercadopago', method: 'credit_card', paymentId: res.payment_id, status: res.status }
       } catch (err) {

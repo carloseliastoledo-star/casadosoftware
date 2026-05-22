@@ -55,6 +55,7 @@ export default defineEventHandler(async (event) => {
   const card          = body?.card ?? null
   const couponCode    = String(body?.couponCode    || '').trim().toUpperCase()
   const couponPercent = Number(body?.couponPercent || 0)
+  const cartItems     = Array.isArray(body?.cartItems) ? body.cartItems : []
 
   const utmSource   = body?.utm_source   ? String(body.utm_source).trim()   : null
   const utmMedium   = body?.utm_medium   ? String(body.utm_medium).trim()   : null
@@ -80,26 +81,71 @@ export default defineEventHandler(async (event) => {
   }
   const trafficSourceType = inferTrafficSourceType()
 
-  if (!produtoId) throw createError({ statusCode: 400, statusMessage: 'produtoId obrigatório' })
   if (!email || !email.includes('@')) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
   if (!storeSlug) throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado' })
 
-  console.log('[checkout] Buscando produto:', produtoId)
-  
-  const produto = await (prisma as any).produto.findFirst({
-    where: { id: produtoId, ativo: true },
-    select: {
-      id: true, nome: true, preco: true, precoAntigo: true
-    },
-  })
-  
-  console.log('[checkout] Produto encontrado:', produto ? 'SIM' : 'NÃO')
-  
-  if (!produto) throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
+  // Se carrinho foi enviado, processa múltiplos itens
+  let validatedItems: any[] = []
+  let amountBrl = 0
+  let produto: any = null
 
-  // Preço base do produto (sem overrides inexistentes)
-  const baseBrl = round2(produto.preco || 0)
-  const amountBrl = baseBrl
+  if (cartItems.length > 0) {
+    console.log('[checkout] Processando carrinho com', cartItems.length, 'itens')
+    
+    for (const item of cartItems) {
+      const productId = String(item.productId || '').trim()
+      const quantity = Number(item.quantity || 1)
+      
+      if (!productId) continue
+      
+      const p = await (prisma as any).produto.findFirst({
+        where: { id: productId, ativo: true },
+        select: { id: true, nome: true, preco: true },
+      })
+      
+      if (!p) {
+        console.warn('[checkout] Produto não encontrado:', productId)
+        continue
+      }
+      
+      const unitPrice = round2(p.preco || 0)
+      const itemTotal = round2(unitPrice * quantity)
+      amountBrl = round2(amountBrl + itemTotal)
+      
+      validatedItems.push({
+        productId: p.id,
+        title: p.nome,
+        quantity,
+        unit_price: unitPrice
+      })
+      
+      // Usa o primeiro produto como produto principal para compatibilidade
+      if (!produto) produto = p
+    }
+    
+    if (validatedItems.length === 0) {
+      throw createError({ statusCode: 400, statusMessage: 'Nenhum produto válido no carrinho' })
+    }
+    
+    console.log('[checkout] Itens validados:', validatedItems.length, 'Total:', amountBrl)
+  } else {
+    // Lógica original para produto único
+    console.log('[checkout] Buscando produto:', produtoId)
+    
+    produto = await (prisma as any).produto.findFirst({
+      where: { id: produtoId, ativo: true },
+      select: {
+        id: true, nome: true, preco: true, precoAntigo: true
+      },
+    })
+    
+    console.log('[checkout] Produto encontrado:', produto ? 'SIM' : 'NÃO')
+    
+    if (!produto) throw createError({ statusCode: 404, statusMessage: 'Produto não encontrado' })
+
+    // Preço base do produto (sem overrides inexistentes)
+    amountBrl = round2(produto.preco || 0)
+  }
   const amountForeign = null
   
   console.log('[checkout] Preço base:', amountBrl)
@@ -319,6 +365,7 @@ export default defineEventHandler(async (event) => {
       installments,
       affiliateRecipientId,
       affiliatePercentage,
+      items: validatedItems.length > 0 ? validatedItems : undefined
     })
   } catch (e: any) {
     console.error('[checkout/payment] ===== ERROR =====')

@@ -41,6 +41,7 @@ export async function createMercadoPagoPix(opts: {
   amountBrl: number
   description?: string
   customer: { name: string; email: string; document: string }
+  items?: Array<{ title: string; quantity: number; unit_price: number }>
 }): Promise<MercadoPagoPixResult> {
   const nameParts = opts.customer.name.trim().split(/\s+/)
   const firstName = nameParts[0] || 'Cliente'
@@ -63,6 +64,16 @@ export async function createMercadoPagoPix(opts: {
         number: opts.customer.document.replace(/\D/g, ''),
       },
     },
+  }
+
+  // Se itens foram fornecidos, adiciona ao body
+  if (opts.items && opts.items.length > 0) {
+    body.items = opts.items.map(item => ({
+      title: item.title,
+      quantity: item.quantity,
+      currency_id: 'BRL',
+      unit_price: item.unit_price
+    }))
   }
 
   if (siteUrl) {
@@ -98,6 +109,7 @@ export async function createMercadoPagoCard(opts: {
   installments?: number
   customer: { name: string; email: string; document: string }
   token: string    // token gerado pelo SDK MP no frontend
+  items?: Array<{ title: string; quantity: number; unit_price: number }>
 }): Promise<MercadoPagoCardResult> {
   const nameParts = opts.customer.name.trim().split(/\s+/)
   const firstName = nameParts[0] || 'Cliente'
@@ -119,6 +131,16 @@ export async function createMercadoPagoCard(opts: {
         number: opts.customer.document.replace(/\D/g, ''),
       },
     },
+  }
+
+  // Se itens foram fornecidos, adiciona ao body
+  if (opts.items && opts.items.length > 0) {
+    body.items = opts.items.map(item => ({
+      title: item.title,
+      quantity: item.quantity,
+      currency_id: 'BRL',
+      unit_price: item.unit_price
+    }))
   }
 
   if (siteUrl) {

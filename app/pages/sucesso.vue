@@ -1,7 +1,13 @@
 <script setup lang="ts">
+import { useCart } from '~/composables/useCart'
+
 const route = useRoute()
+const { clearCart } = useCart()
 
 onMounted(() => {
+  // Limpar o carrinho após pagamento bem-sucedido
+  clearCart()
+  
   navigateTo({
     path: '/obrigado',
     query: route.query

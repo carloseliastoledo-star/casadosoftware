@@ -75,6 +75,15 @@
               {{ t.buyNowBtn }}
             </button>
 
+            <!-- Adicionar ao carrinho -->
+            <button
+              type="button"
+              class="w-full bg-white/10 hover:bg-white/20 active:scale-[0.98] text-white text-lg font-bold uppercase tracking-widest py-4 rounded-xl transition-all duration-200 border border-white/20"
+              @click="addToCartOnly"
+            >
+              🛒 Adicionar ao carrinho
+            </button>
+
             <!-- Benefícios -->
             <div class="grid grid-cols-2 gap-3">
               <div class="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 text-sm text-slate-300 font-medium">
@@ -250,6 +259,7 @@
 import { useIntlContext } from '~/composables/useIntlContext'
 import { trackViewItem } from '~/composables/useTracking'
 import { useEcommerceTracking } from '~/composables/useEcommerceTracking'
+import { useCart } from '~/composables/useCart'
 
 function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[]; USE_PROFILES?: any }): string {
   const str = String(html || '')
@@ -1291,6 +1301,8 @@ const t = computed(() => {
   }
 })
 
+const { addToCart } = useCart()
+
 function buyNow() {
   const p = safeProduct as any
   console.log('[buyNow] safeProduct:', p, 'slug:', slug, 'p.slug:', p?.slug)
@@ -1304,10 +1316,44 @@ function buyNow() {
   } catch {
     // ignore
   }
+  
+  // Adicionar ao carrinho
+  addToCart({
+    id: p?.id || '',
+    name: String(p?.name || ''),
+    slug: String(p?.slug || slug.value || ''),
+    price: Number(p?.price ?? p?.price ?? 0),
+    image: String(p?.image || p?.imagem || '')
+  })
+  
   const slugValue = String(p?.slug || slug.value || '')
   console.log('[buyNow] slugValue:', slugValue, 'checkoutPath:', intl.currencyLower.value !== 'brl' ? '/checkout-intl' : '/checkout')
   const checkoutPath = intl.currencyLower.value !== 'brl' ? '/checkout-intl' : '/checkout'
   navigateTo({ path: checkoutPath, query: { product: slugValue } })
+}
+
+function addToCartOnly() {
+  const p = safeProduct as any
+  addToCart({
+    id: p?.id || '',
+    name: String(p?.name || ''),
+    slug: String(p?.slug || slug.value || ''),
+    price: Number(p?.price ?? p?.price ?? 0),
+    image: String(p?.image || p?.imagem || '')
+  })
+  
+  try {
+    ecomAddToCart({
+      item_id: p?.id || '',
+      item_name: String(p?.name || ''),
+      price: Number(p?.price ?? p?.price ?? 0),
+      item_category: primaryCategoryLabel.value || 'Software'
+    }, 'BRL')
+  } catch {
+    // ignore
+  }
+  
+  navigateTo('/carrinho')
 }
 </script>
 

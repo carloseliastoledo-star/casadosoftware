@@ -222,8 +222,25 @@
 
             <h2 class="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest">Resumo do pedido</h2>
 
-            <!-- Produto principal -->
-            <div class="pb-3 border-b border-gray-100">
+            <!-- Itens do carrinho -->
+            <div v-if="cart.length > 0" class="space-y-4 pb-3 border-b border-gray-100">
+              <div v-for="item in cart" :key="item.id" class="pb-3 border-b border-gray-100 last:border-0">
+                <div v-if="item.image" class="mb-3">
+                  <img :src="item.image" :alt="item.name" class="w-full h-auto rounded-xl" />
+                </div>
+                <div class="flex items-start justify-between gap-4">
+                  <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold text-gray-900">{{ item.name }}</div>
+                    <div class="text-xs text-gray-500 mt-1">Quantidade: {{ item.quantity }}</div>
+                    <div class="text-xs text-green-700 font-semibold mt-1">Ativação rápida com suporte incluso</div>
+                  </div>
+                  <div class="text-base font-black text-green-700 whitespace-nowrap">R$ {{ (item.price * item.quantity).toFixed(2).replace('.', ',') }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Produto único (compatibilidade) -->
+            <div v-else class="pb-3 border-b border-gray-100">
               <div v-if="productImage" class="mb-4">
                 <img :src="productImage" :alt="productName" class="w-full h-auto rounded-xl" />
               </div>
@@ -434,8 +451,15 @@ const hasSelectedBumps = computed(() => showOrderBump.value && selectedBumps.val
 
 const productImage = ref('')
 
+const { cart, cartTotal, clearCart } = useCart()
+
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
 const totalPrice = computed(() => {
+  // Se o carrinho tem itens, usa o total do carrinho
+  if (cart.value.length > 0) {
+    return cartTotal.value
+  }
+  // Caso contrário, usa a lógica antiga (compatibilidade)
   const subtotal = basePrice.value + (showOrderBump.value ? bumpTotal.value : 0)
   if (appliedCoupon.value && appliedCoupon.value.percent) {
     const discount = subtotal * (appliedCoupon.value.percent / 100)
@@ -882,12 +906,23 @@ async function handleGeneratePix() {
 
     const apiUrl = paymentMethod.value === 'credit_card' ? '/api/checkout' : '/api/create-pix'
 
+    // Preparar itens do carrinho para enviar para a API
+    const cartItems = cart.value.length > 0 
+      ? cart.value.map(item => ({
+          productId: item.id,
+          title: item.name,
+          quantity: item.quantity,
+          unit_price: item.price
+        }))
+      : []
+
     const result: any = await $fetch(apiUrl, {
       method: 'POST',
       body: {
         ...body,
         name: name.value,
-        phone: phone.value
+        phone: phone.value,
+        cartItems: cartItems.length > 0 ? cartItems : undefined
       }
     })
     funnelOrderId.value = String(result?.orderId || 'cs-' + Date.now())
