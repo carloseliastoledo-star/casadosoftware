@@ -17,8 +17,12 @@ export default defineEventHandler(async (event) => {
     const q = getQuery(event)
     console.log('[admin/orders] query params:', JSON.stringify(q))
     
+    // Verificar se deve mostrar pedidos excluídos
+    const showDeleted = String((q as any)?.showDeleted || '').trim() === '1'
+    
     // Query com includes de Customer, Produto e Licenca
-    const where: any = { deletedAt: null }
+    const where: any = {}
+    if (!showDeleted) where.deletedAt = null
     if (ctx.storeSlug) where.storeSlug = ctx.storeSlug
     
     // Filtro por data
