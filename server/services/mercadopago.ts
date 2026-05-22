@@ -48,11 +48,16 @@ export async function createMercadoPagoPix(opts: {
   customer: { name: string; email: string; document: string }
   items?: Array<{ title: string; quantity: number; unit_price: number }>
 }): Promise<MercadoPagoPixResult> {
+  console.log('[mercadoPagoPix] ===== START =====', new Date().toISOString())
+  console.log('[mercadoPagoPix] orderId:', opts.orderId, 'amountBrl:', opts.amountBrl)
+  console.log('[mercadoPagoPix] customer:', opts.customer)
+  
   const nameParts = opts.customer.name.trim().split(/\s+/)
   const firstName = nameParts[0] || 'Cliente'
   const lastName  = nameParts.slice(1).join(' ') || firstName
 
   const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+  console.log('[mercadoPagoPix] siteUrl:', siteUrl)
 
   const body: any = {
     transaction_amount: opts.amountBrl,
@@ -85,11 +90,14 @@ export async function createMercadoPagoPix(opts: {
     body.notification_url = `${siteUrl}/api/mercadopago/webhook`
   }
 
+  console.log('[mercadoPagoPix] calling Mercado Pago API...')
   const data = await mpFetch('/v1/payments', {
     method: 'POST',
     headers: { 'X-Idempotency-Key': `pix-${opts.orderId}` },
     body: JSON.stringify(body),
   })
+
+  console.log('[mercadoPagoPix] Mercado Pago response:', JSON.stringify(data, null, 2))
 
   const txData = data?.point_of_interaction?.transaction_data
 
