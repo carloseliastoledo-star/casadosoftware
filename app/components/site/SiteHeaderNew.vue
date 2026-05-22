@@ -131,7 +131,7 @@
 
           <!-- Carrinho -->
           <NuxtLink
-            to="/checkout"
+            to="/carrinho"
             class="relative inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-sm font-semibold transition shadow-sm"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
