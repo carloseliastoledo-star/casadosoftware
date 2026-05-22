@@ -147,15 +147,8 @@ export async function createMercadoPagoCard(opts: {
     },
   }
 
-  // Se itens foram fornecidos, adiciona ao body
-  if (opts.items && opts.items.length > 0) {
-    body.items = opts.items.map(item => ({
-      title: item.title,
-      quantity: item.quantity,
-      currency_id: 'BRL',
-      unit_price: item.unit_price
-    }))
-  }
+  // Nota: Mercado Pago não aceita o parâmetro items para pagamentos com cartão
+  // Apenas PIX aceita items. Para cartão, usar apenas transaction_amount
 
   if (siteUrl) {
     body.notification_url = `${siteUrl}/api/mercadopago/webhook`
