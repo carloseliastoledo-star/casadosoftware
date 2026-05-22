@@ -938,16 +938,22 @@ async function handleGeneratePix() {
     }
 
     if (paymentMethod.value === 'pix') {
-      pixQrCode.value = result?.qrCode || ''
-      pixQrUrl.value = result?.qrCodeUrl || ''
-      if (!pixQrCode.value && !pixQrUrl.value) {
-        saveFunnelOrder(funnelOrderId.value)
-        clearPIXSession()
-        await handleAposPix()
-      } else {
-        savePIXSession()
-        startPaymentPolling()
+      // Validar que o Pix foi gerado com sucesso antes de continuar
+      const hasQrCode = result?.qr_code || result?.qrCode || result?.qr_code_base64 || result?.qrCodeUrl || result?.qrCode
+      const hasPaymentId = result?.payment_id
+      
+      if (!hasQrCode || !hasPaymentId) {
+        // Pix não foi gerado corretamente - mostrar erro, não redirecionar
+        paymentError.value = result?.data?.message || result?.message || 'Não foi possível gerar o Pix. Tente novamente ou escolha cartão.'
+        console.error('[checkout] Pix generation failed:', result)
+        return
       }
+      
+      // Pix gerado com sucesso - mostrar QR Code na página de checkout
+      pixQrCode.value = result?.qr_code || result?.qrCode || ''
+      pixQrUrl.value = result?.qr_code_base64 || result?.qrCodeUrl || ''
+      savePIXSession()
+      startPaymentPolling()
     } else {
       const status = String(result?.status || '').toLowerCase()
       if (status === 'paid' || status === 'approved') {
@@ -962,10 +968,9 @@ async function handleGeneratePix() {
       }
     }
   } catch (e: any) {
-    paymentError.value = e?.data?.statusMessage || e?.message || 'Erro ao gerar pagamento'
-    if (import.meta.client) {
-      alert('Erro ao gerar pagamento')
-    }
+    console.error('[checkout] Payment error:', e)
+    paymentError.value = e?.data?.statusMessage || e?.data?.message || e?.message || 'Não foi possível gerar o pagamento. Tente novamente ou escolha outro método.'
+    // NUNCA redirecionar em caso de erro
   } finally {
     loading.value = false
   }
