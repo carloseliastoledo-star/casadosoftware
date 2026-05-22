@@ -11,6 +11,7 @@ function getAccessToken(): string {
 const BASE = 'https://api.mercadopago.com'
 
 async function mpFetch(path: string, opts: RequestInit = {}): Promise<any> {
+  console.log('[mpFetch] Request:', path, JSON.stringify(opts.body || {}, null, 2))
   const res = await fetch(`${BASE}${path}`, {
     ...opts,
     headers: {
@@ -20,8 +21,12 @@ async function mpFetch(path: string, opts: RequestInit = {}): Promise<any> {
     },
   })
   const data = await res.json()
+  console.log('[mpFetch] Response status:', res.status)
+  console.log('[mpFetch] Response data:', data)
   if (!res.ok) {
-    const msg = data?.message || data?.error || String(res.status)
+    const msg = data?.message || data?.error || data?.cause?.[0]?.description || String(res.status)
+    console.error('[mpFetch] Mercado Pago error:', msg)
+    console.error('[mpFetch] Full error response:', JSON.stringify(data, null, 2))
     throw new Error(`MercadoPago [${res.status}]: ${msg}`)
   }
   return data
