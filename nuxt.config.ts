@@ -74,24 +74,125 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
+    // APIs de produtos e categorias (não sensíveis)
     '/api/products': {
       headers: {
-        'cache-control': 's-maxage=60, stale-while-revalidate=300'
+        'cache-control': 's-maxage=300, stale-while-revalidate=600'
       }
     },
     '/api/products/**': {
       headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=600'
+      }
+    },
+    '/api/categories': {
+      headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=600'
+      }
+    },
+    '/api/categories/**': {
+      headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=600'
+      }
+    },
+    '/api/checkout-config': {
+      headers: {
         'cache-control': 's-maxage=60, stale-while-revalidate=300'
       }
     },
+    
+    // Páginas estáticas (landing pages)
     '/lp/produtividade': {
       headers: {
-        'cache-control': 's-maxage=300, stale-while-revalidate=3600'
+        'cache-control': 's-maxage=600, stale-while-revalidate=3600'
       }
     },
     '/lp/office-365-pro': {
       headers: {
-        'cache-control': 's-maxage=300, stale-while-revalidate=3600'
+        'cache-control': 's-maxage=600, stale-while-revalidate=3600'
+      }
+    },
+    '/lp/**': {
+      headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=1800'
+      }
+    },
+    
+    // Páginas de conteúdo estático
+    '/quem-somos': {
+      headers: {
+        'cache-control': 's-maxage=600, stale-while-revalidate=3600'
+      }
+    },
+    '/entrega-digital': {
+      headers: {
+        'cache-control': 's-maxage=600, stale-while-revalidate=3600'
+      }
+    },
+    '/reembolso': {
+      headers: {
+        'cache-control': 's-maxage=600, stale-while-revalidate=3600'
+      }
+    },
+    '/privacidade': {
+      headers: {
+        'cache-control': 's-maxage=600, stale-while-revalidate=3600'
+      }
+    },
+    '/termos': {
+      headers: {
+        'cache-control': 's-maxage=600, stale-while-revalidate=3600'
+      }
+    },
+    
+    // Home page (página inicial)
+    '/': {
+      headers: {
+        'cache-control': 's-maxage=60, stale-while-revalidate=300'
+      }
+    },
+    
+    // Blog (não sensível)
+    '/blog': {
+      headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=1800'
+      }
+    },
+    '/blog/**': {
+      headers: {
+        'cache-control': 's-maxage=300, stale-while-revalidate=1800'
+      }
+    },
+    
+    // Não cachear APIs sensíveis
+    '/api/checkout': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
+    },
+    '/api/create-pix': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
+    },
+    '/api/mercadopago/**': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
+    },
+    '/api/affiliate/**': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
+    },
+    '/api/admin/**': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
+    },
+    '/checkout': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
       }
     }
   },
