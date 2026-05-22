@@ -155,7 +155,7 @@ export default defineEventHandler(async (event) => {
         ...(typeof body.tutorialConteudoEs === 'string' ? { tutorialConteudoEs: body.tutorialConteudoEs } : {}),
         ...(typeof body.tutorialConteudoIt === 'string' ? { tutorialConteudoIt: body.tutorialConteudoIt } : {}),
         ...(typeof body.tutorialConteudoFr === 'string' ? { tutorialConteudoFr: body.tutorialConteudoFr } : {}),
-        ...(storeSlug ? {} : { preco: Number(body.preco) }),
+        preco: Number(body.preco),
         ...(storeSlug || !precoAntigoProvided
           ? {}
           : { precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo })
