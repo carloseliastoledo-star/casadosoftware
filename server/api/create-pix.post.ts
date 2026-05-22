@@ -1,4 +1,7 @@
-import { defineEventHandler, readBody, getRequestURL, createError } from 'h3'
+import { defineEventHandler, readBody, createError } from 'h3'
+import prisma from '#root/server/db/prisma'
+
+function round2(n: number) { return Math.round(n * 100) / 100 }
 
 export default defineEventHandler(async (event) => {
   console.log('[create-pix] ===== START =====', new Date().toISOString())
@@ -69,52 +72,150 @@ export default defineEventHandler(async (event) => {
     })
   }
   
-  const origin = getRequestURL(event).origin
-  console.log('[create-pix] origin:', origin)
+  // Calcular amount a partir dos produtos no banco
+  let amountBrl = 0
+  try {
+    console.log('[create-pix] calculating amount from products')
+    
+    if (cartItems.length > 0) {
+      for (const item of cartItems) {
+        const productId = String(item.productId || '').trim()
+        const quantity = Number(item.quantity || 1)
+        
+        if (!productId) continue
+        
+        const produto = await prisma.produto.findFirst({
+          where: { id: productId, ativo: true },
+          select: { id: true, nome: true, preco: true },
+        })
+        
+        if (!produto) {
+          console.warn('[create-pix] Produto não encontrado:', productId)
+          continue
+        }
+        
+        const unitPrice = round2(produto.preco || 0)
+        const itemTotal = round2(unitPrice * quantity)
+        amountBrl = round2(amountBrl + itemTotal)
+        
+        console.log('[create-pix] item:', productId, 'price:', unitPrice, 'quantity:', quantity, 'total:', itemTotal)
+      }
+    } else {
+      // Se não tem cartItems, buscar pelo produtoId direto
+      const produto = await prisma.produto.findFirst({
+        where: { id: produtoId, ativo: true },
+        select: { id: true, nome: true, preco: true },
+      })
+      
+      if (!produto) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: 'Produto não encontrado',
+          data: { code: 'PRODUCT_NOT_FOUND', message: 'Produto não encontrado' }
+        })
+      }
+      
+      amountBrl = round2(produto.preco || 0)
+      console.log('[create-pix] single product amount:', amountBrl)
+    }
+    
+    console.log('[create-pix] total amount:', amountBrl)
+    
+    if (amountBrl <= 0) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Valor inválido',
+        data: { code: 'INVALID_AMOUNT', message: 'Valor deve ser maior que zero' }
+      })
+    }
+  } catch (err: any) {
+    console.error('[create-pix] error calculating amount:', err)
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Erro ao calcular valor',
+      data: { code: 'AMOUNT_ERROR', message: 'Erro ao calcular valor do pedido' }
+    })
+  }
+  
+  // Preparar payload para Mercado Pago PIX (SEM items)
+  const nameParts = nome.trim().split(/\s+/)
+  const firstName = nameParts[0] || 'Cliente'
+  const lastName = nameParts.slice(1).join(' ') || firstName
+  
+  const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+  const orderId = `pix-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
+  
+  const mpBody: any = {
+    transaction_amount: amountBrl,
+    description: 'Pedido PIX',
+    payment_method_id: 'pix',
+    external_reference: orderId,
+    date_of_expiration: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    payer: {
+      email: email,
+      first_name: firstName,
+      last_name: lastName,
+      identification: {
+        type: 'CPF',
+        number: cleanDocument,
+      },
+    },
+  }
+  
+  if (siteUrl) {
+    mpBody.notification_url = `${siteUrl}/api/mercadopago/webhook`
+  }
+  
+  console.log('[create-pix] calling Mercado Pago API directly (without items)')
+  console.log('[create-pix] amount:', amountBrl)
+  console.log('[create-pix] payment_method_id:', mpBody.payment_method_id)
   
   try {
-    console.log('[create-pix] calling /api/checkout with method=pix')
-    const result: any = await $fetch('/api/checkout', {
-      baseURL: origin,
+    const mpResponse = await fetch('https://api.mercadopago.com/v1/payments', {
       method: 'POST',
-      body: {
-        produtoId,
-        email,
-        nome,
-        document: cleanDocument,
-        phone: phone.replace(/\D/g, ''),
-        method: 'pix',
-        currency,
-        orderBump: body?.orderBump || false,
-        orderBumpIds: body?.orderBumpIds || [],
-        couponCode: body?.couponCode,
-        couponPercent: body?.couponPercent,
-        cartItems,
-        landingPage: body?.landingPage,
-        tracking: body?.tracking
-      }
+      headers: {
+        'Authorization': `Bearer ${mpToken}`,
+        'Content-Type': 'application/json',
+        'X-Idempotency-Key': `pix-${orderId}`,
+      },
+      body: JSON.stringify(mpBody),
     })
     
-    console.log('[create-pix] checkout success')
-    console.log('[create-pix] has qrCode:', !!result?.qrCode, 'has qrCodeUrl:', !!result?.qrCodeUrl)
-
+    console.log('[create-pix] Mercado Pago status:', mpResponse.status)
+    
+    const mpData = await mpResponse.json()
+    
+    if (!mpResponse.ok) {
+      console.error('[create-pix] Mercado Pago error:', JSON.stringify(mpData, null, 2))
+      throw createError({
+        statusCode: mpResponse.status,
+        statusMessage: mpData.message || 'Erro no Mercado Pago',
+        data: {
+          code: 'MERCADO_PAGO_ERROR',
+          message: mpData.message || mpData.error || 'Erro ao processar pagamento PIX',
+          details: mpData
+        }
+      })
+    }
+    
+    console.log('[create-pix] Mercado Pago success:', { payment_id: mpData.id })
+    
+    const txData = mpData?.point_of_interaction?.transaction_data
+    
     return {
-      ...result,
-      checkoutUrl: result?.checkoutUrl || result?.paymentUrl || result?.pixUrl || null
+      payment_id: String(mpData.id),
+      status: mpData.status,
+      qr_code: txData?.qr_code || '',
+      qr_code_base64: txData?.qr_code_base64 || '',
+      ticket_url: txData?.ticket_url || '',
+      external_reference: mpData.external_reference,
+      date_of_expiration: mpData.date_of_expiration
     }
   } catch (err: any) {
     console.error('[create-pix] ===== ERROR =====')
     console.error('[create-pix] error message:', err?.message)
     console.error('[create-pix] error statusCode:', err?.statusCode)
-    console.error('[create-pix] error statusMessage:', err?.statusMessage)
     console.error('[create-pix] error data:', err?.data)
-    console.error('[create-pix] error response:', err?.response?.data || err?.response)
-    
-    // Tentar capturar status e body de erro do Mercado Pago
-    const mpStatus = err?.response?.status || err?.statusCode
-    const mpErrorBody = err?.response?.data || err?.data
-    console.error('[create-pix] Mercado Pago status:', mpStatus)
-    console.error('[create-pix] Mercado Pago error body:', JSON.stringify(mpErrorBody, null, 2))
     
     // Retornar erro claro para o frontend
     const statusCode = err?.statusCode || err?.status || 500
@@ -126,9 +227,7 @@ export default defineEventHandler(async (event) => {
       data: {
         code: err?.data?.code || 'PIX_ERROR',
         message: statusMessage,
-        details: err?.data?.message || err?.data || null,
-        mpStatus,
-        mpErrorBody
+        details: err?.data?.message || err?.data || null
       }
     })
   }
