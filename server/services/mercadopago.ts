@@ -111,11 +111,20 @@ export async function createMercadoPagoCard(opts: {
   token: string    // token gerado pelo SDK MP no frontend
   items?: Array<{ title: string; quantity: number; unit_price: number }>
 }): Promise<MercadoPagoCardResult> {
+  console.log('[mercadoPagoCard] ===== START =====')
+  console.log('[mercadoPagoCard] orderId:', opts.orderId)
+  console.log('[mercadoPagoCard] amountBrl:', opts.amountBrl)
+  console.log('[mercadoPagoCard] installments:', opts.installments)
+  console.log('[mercadoPagoCard] token:', opts.token ? 'present' : 'missing')
+  console.log('[mercadoPagoCard] customer:', opts.customer)
+  console.log('[mercadoPagoCard] items:', opts.items)
+  
   const nameParts = opts.customer.name.trim().split(/\s+/)
   const firstName = nameParts[0] || 'Cliente'
   const lastName  = nameParts.slice(1).join(' ') || firstName
 
   const siteUrl = String(process.env.SITE_URL || '').replace(/\/$/, '')
+  console.log('[mercadoPagoCard] siteUrl:', siteUrl)
 
   const body: any = {
     transaction_amount: opts.amountBrl,
@@ -147,14 +156,29 @@ export async function createMercadoPagoCard(opts: {
     body.notification_url = `${siteUrl}/api/mercadopago/webhook`
   }
 
-  const data = await mpFetch('/v1/payments', {
-    method: 'POST',
-    headers: { 'X-Idempotency-Key': `card-${opts.orderId}` },
-    body: JSON.stringify(body),
-  })
+  console.log('[mercadoPagoCard] body enviado:', JSON.stringify(body, null, 2))
+  console.log('[mercadoPagoCard] acessstoken configured:', !!process.env.MERCADOPAGO_ACCESS_TOKEN)
 
-  return {
-    payment_id: String(data.id),
-    status: String(data.status || 'pending'),
+  try {
+    const data = await mpFetch('/v1/payments', {
+      method: 'POST',
+      headers: { 'X-Idempotency-Key': `card-${opts.orderId}` },
+      body: JSON.stringify(body),
+    })
+
+    console.log('[mercadoPagoCard] response:', data)
+    console.log('[mercadoPagoCard] payment_id:', data.id)
+    console.log('[mercadoPagoCard] status:', data.status)
+
+    return {
+      payment_id: String(data.id),
+      status: String(data.status || 'pending'),
+    }
+  } catch (error: any) {
+    console.error('[mercadoPagoCard] ===== ERROR =====')
+    console.error('[mercadoPagoCard] error:', error)
+    console.error('[mercadoPagoCard] message:', error?.message)
+    console.error('[mercadoPagoCard] stack:', error?.stack)
+    throw error
   }
 }
