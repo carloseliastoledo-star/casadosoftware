@@ -17,9 +17,13 @@ async function submit() {
 
     // Confirma se a sessão realmente ficou ativa (cookie persistido)
     try {
-      await $fetch('/api/admin/auth/me')
-    } catch {
-      error.value = 'Sessão não foi salva no navegador (cookie bloqueado). Tente novamente fora da aba anônima ou verifique configurações de cookies.'
+      const meResponse = await $fetch('/api/admin/auth/me')
+      console.log('[login] Sessão verificada:', meResponse)
+    } catch (meErr: any) {
+      console.error('[login] Erro ao verificar sessão:', meErr)
+      const statusCode = meErr?.data?.statusCode || meErr?.statusCode
+      const statusMessage = meErr?.data?.statusMessage || meErr?.statusMessage
+      error.value = `Sessão não foi salva (cookie bloqueado ou ADMIN_SESSION_SECRET não configurado). Erro: ${statusCode || ''} ${statusMessage || ''}. Tente novamente fora da aba anônima ou verifique configurações de cookies.`
       return
     }
 
