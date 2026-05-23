@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
       mercadoPagoPaymentId: true,
       totalAmount: true,
       criadoEm: true,
-      customer: {
+      Customer: {
         select: {
           email: true
         }

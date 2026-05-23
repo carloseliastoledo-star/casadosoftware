@@ -23,9 +23,9 @@ export default defineEventHandler(async (event) => {
       storeSlug: true,
       fulfillmentStatus: true,
       fulfillmentError: true,
-      licencas: { select: { id: true, chave: true } },
-      customer: { select: { email: true } },
-      produto: { select: { nome: true } }
+      Licenca: { select: { id: true, chave: true } },
+      Customer: { select: { email: true } },
+      Produto: { select: { nome: true } }
     },
     orderBy: { criadoEm: 'desc' },
     take: 50

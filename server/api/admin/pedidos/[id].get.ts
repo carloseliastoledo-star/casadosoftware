@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
       mercadoPagoPaymentMethodId: true,
       criadoEm: true,
       pagoEm: true,
-      customer: {
+      Customer: {
         select: {
           email: true,
           nome: true,
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
           cpf: true
         }
       },
-      produto: {
+      Produto: {
         select: {
           nome: true,
           slug: true
