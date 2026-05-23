@@ -42,6 +42,8 @@ export function useIsInternational(): Ref<boolean> {
   return computed<boolean>(() => {
     if (storeSlug.value === 'international') return true
     const h = host.value
+    // Explicitamente excluir casadosoftware.com.br de ser considerado internacional
+    if (h.includes('casadosoftware.com.br')) return false
     if (h.includes('globalsoftware.store')) return true
     if (h.includes('gvgmall.co')) return true
     if (h.includes('globalsoftware-prev') && h.includes('vercel.app')) return true
