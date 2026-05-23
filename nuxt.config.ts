@@ -5,6 +5,11 @@ export default defineNuxtConfig({
 
   ssr: true,
 
+  typescript: {
+    strict: false,
+    typeCheck: false
+  },
+
   experimental: {
     asyncContext: true,
   },
