@@ -136,7 +136,8 @@ export function useIntlContext() {
       !h.includes('.com.br:') &&
       !h.includes('localhost') &&
       !h.includes('127.0.0.1') &&
-      !h.includes('.vercel.app')
+      !h.includes('.vercel.app') &&
+      !h.includes('casadosoftware.com.br')
     )
   })
 
