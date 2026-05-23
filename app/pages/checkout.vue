@@ -910,8 +910,8 @@ async function handleGeneratePix() {
       produtoId: produtoId.value,
       email: email.value.trim(),
       nome: nome.value.trim(),
-      cpf: cpf.value.replace(/\D/g, ''),
-      whatsapp: telefone.value.replace(/\D/g, ''),
+      document: cpf.value.replace(/\D/g, ''),
+      phone: telefone.value.replace(/\D/g, ''),
       method: paymentMethod.value,
       orderBump: hasSelectedBumps.value,
       orderBumpIds: hasSelectedBumps.value ? selectedBumpIds.value : [],
@@ -929,7 +929,7 @@ async function handleGeneratePix() {
       }
     }
 
-    const apiUrl = paymentMethod.value === 'credit_card' ? '/api/checkout' : '/api/mercadopago/pix'
+    const apiUrl = paymentMethod.value === 'credit_card' ? '/api/checkout' : '/api/create-pix'
 
     // Preparar itens do carrinho para enviar para a API
     // Enviar apenas productId e quantity - backend valida preço no banco
