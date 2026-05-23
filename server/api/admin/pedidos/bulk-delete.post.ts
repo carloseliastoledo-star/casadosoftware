@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
 
   console.log('[bulk-delete] Found orders to delete', {
     count: orders.length,
-    orders: orders.map(o => ({ id: o.id, numero: o.numero, status: o.status, totalAmount: o.totalAmount, criadoEm: o.criadoEm }))
+    orders: orders.map((o: any) => ({ id: o.id, numero: o.numero, status: o.status, totalAmount: o.totalAmount, criadoEm: o.criadoEm }))
   })
 
   const deletableIds = orders.map((o: any) => o.id)

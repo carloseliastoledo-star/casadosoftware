@@ -41,8 +41,8 @@ export default defineEventHandler(async (event) => {
       adminId: session.id,
       adminEmail: session.email || 'unknown',
       details: JSON.stringify({
-        orderNumero: order.numero,
-        orderStatus: order.status
+        orderNumero: (order as any).numero,
+        orderStatus: (order as any).status
       }),
       ip,
       userAgent,
