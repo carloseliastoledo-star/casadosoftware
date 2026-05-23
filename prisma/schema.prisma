@@ -396,7 +396,7 @@ model Produto {
   descricao                   String?             @db.Text
   preco                       Float
   criadoEm                    DateTime            @default(now())
-  imagem                      String?
+  imagem                      String?             @db.Text
   tutorialConteudo            String?             @db.Text
   tutorialSubtitulo           String?
   tutorialTitulo              String?
