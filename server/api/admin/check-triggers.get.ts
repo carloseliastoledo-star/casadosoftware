@@ -1,5 +1,5 @@
 import { defineEventHandler } from 'h3'
-import prisma from '../../../db/prisma'
+import prisma from '../../db/prisma'
 
 export default defineEventHandler(async () => {
   try {

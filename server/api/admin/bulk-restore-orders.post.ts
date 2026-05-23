@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, createError, getHeader } from 'h3'
-import prisma from '../../../db/prisma'
-import { requireAdminSession, getAdminSession } from '../../../utils/adminSession'
-import { createAuditLog } from '../../../utils/auditLog'
+import prisma from '../../db/prisma'
+import { requireAdminSession, getAdminSession } from '../../utils/adminSession'
+import { createAuditLog } from '../../utils/auditLog'
 
 export default defineEventHandler(async (event) => {
   const session = getAdminSession(event)
