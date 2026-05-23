@@ -166,6 +166,7 @@ export function getIntlContext(event?: H3Event): IntlContext {
   const country = cookieCountry || headerCountry || (cookieCurrency ? '' : inferredHostCountry)
 
   const isEnDomain =
+    !host.includes('casadosoftware.com.br') &&
     !host.endsWith('.com.br') &&
     !host.includes('.com.br:') &&
     !host.includes('localhost') &&

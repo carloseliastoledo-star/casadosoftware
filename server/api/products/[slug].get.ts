@@ -107,7 +107,8 @@ export default defineEventHandler(async (event) => {
   
   // Detect if on international domain - search by slugEn instead of slug
   const host = String(event.node?.req?.headers?.host || '').toLowerCase()
-  const isIntlDomain = !host.endsWith('.com.br') && !host.includes('.com.br:') && !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('.vercel.app') && host.length > 0
+  // Explicitamente excluir casadosoftware.com.br de ser detectado como internacional
+  const isIntlDomain = !host.includes('casadosoftware.com.br') && !host.endsWith('.com.br') && !host.includes('.com.br:') && !host.includes('localhost') && !host.includes('127.0.0.1') && !host.includes('.vercel.app') && host.length > 0
   const searchBy = isIntlDomain ? 'slugEn' : 'slug'
   
   console.log('[api/products/[slug]] Domínio internacional:', isIntlDomain, '- Buscando por:', searchBy)
