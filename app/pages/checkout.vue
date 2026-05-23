@@ -929,7 +929,7 @@ async function handleGeneratePix() {
       }
     }
 
-    const apiUrl = paymentMethod.value === 'credit_card' ? '/api/checkout' : '/api/create-pix'
+    const apiUrl = paymentMethod.value === 'credit_card' ? '/api/checkout' : '/api/mercadopago/pix'
 
     // Preparar itens do carrinho para enviar para a API
     // Enviar apenas productId e quantity - backend valida preço no banco
