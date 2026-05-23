@@ -1,7 +1,6 @@
 import { defineEventHandler, getQuery, createError } from 'h3'
 import prisma from '../../../db/prisma.js'
 import { requireAdminSession } from '../../../utils/adminSession.js'
-import { getStoreContext } from '../../../utils/store'
 
 export default defineEventHandler(async (event) => {
   console.log('[admin/orders] ===== START =====')
