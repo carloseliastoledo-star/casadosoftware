@@ -2,6 +2,7 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import { setAdminSession } from '../../../utils/adminSession.js'
 import prisma from '../../../db/prisma'
 import { hashPassword, verifyPassword } from '../../../utils/password.js'
+import { randomUUID } from 'crypto'
 
 export default defineEventHandler(async (event) => {
   console.log('[admin/auth/login] ===== INÍCIO =====')
@@ -75,7 +76,7 @@ export default defineEventHandler(async (event) => {
     const upserted = await prisma.adminUser.upsert({
       where: { email: normalizedEmail },
       create: {
-        id: require('crypto').randomUUID(),
+        id: randomUUID(),
         email: normalizedEmail,
         passwordHash: hashPassword(adminPassword),
         role: 'admin'
