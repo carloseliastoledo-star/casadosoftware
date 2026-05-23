@@ -36,18 +36,18 @@ export default defineEventHandler(async (event) => {
   for (const order of pendingOrders) {
     const entry: any = {
       orderId: order.id,
-      customerEmail: order.customer?.email,
-      produtoNome: order.produto?.nome,
+      customerEmail: order.Customer?.email,
+      produtoNome: order.Produto?.nome,
       previousStatus: order.fulfillmentStatus,
       previousError: order.fulfillmentError
     }
 
     try {
       // Se já tem licença vinculada, só enviar email
-      if (order.licencas.length > 0) {
-        const licenca = order.licencas[0]
+      if (order.Licenca.length > 0) {
+        const licenca = order.Licenca[0]
 
-        if (!order.customer?.email || !order.produto?.nome) {
+        if (!order.Customer?.email || !order.Produto?.nome) {
           entry.result = 'SKIP'
           entry.reason = 'Dados insuficientes (cliente/produto)'
           results.push(entry)
@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
         }
 
         const html = renderLicenseEmail({
-          produtoNome: order.produto.nome,
+          produtoNome: order.Produto.nome,
           licenseKey: licenca.chave,
           orderId: order.id
         })
@@ -63,9 +63,9 @@ export default defineEventHandler(async (event) => {
         const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
 
         await sendMail({
-          to: order.customer.email,
+          to: order.Customer.email,
           bcc,
-          subject: `Sua licença: ${order.produto.nome}`,
+          subject: `Sua licença: ${order.Produto.nome}`,
           html
         })
 
@@ -138,7 +138,7 @@ export default defineEventHandler(async (event) => {
         select: { id: true, chave: true }
       })
 
-      if (!order.customer?.email || !order.produto?.nome) {
+      if (!order.Customer?.email || !order.Produto?.nome) {
         entry.result = 'LINKED_NO_EMAIL'
         entry.reason = 'Licença vinculada mas dados insuficientes para email'
         results.push(entry)
@@ -147,7 +147,7 @@ export default defineEventHandler(async (event) => {
 
       // Enviar email
       const html = renderLicenseEmail({
-        produtoNome: order.produto.nome,
+        produtoNome: order.Produto.nome,
         licenseKey: licenca.chave,
         orderId: order.id
       })
@@ -155,9 +155,9 @@ export default defineEventHandler(async (event) => {
       const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
 
       await sendMail({
-        to: order.customer.email,
+        to: order.Customer.email,
         bcc,
-        subject: `Sua licença: ${order.produto.nome}`,
+        subject: `Sua licença: ${order.Produto.nome}`,
         html
       })
 

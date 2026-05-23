@@ -76,9 +76,9 @@ export default defineEventHandler(async (event) => {
         }
 
         // Se ainda não encontrou, tentar por email do cliente
-        if (!paymentId && order.customer?.email) {
+        if (!paymentId && order.Customer?.email) {
           searchResp = await fetch(
-            `https://api.mercadopago.com/v1/payments/search?payer.email=${encodeURIComponent(order.customer.email)}`,
+            `https://api.mercadopago.com/v1/payments/search?payer.email=${encodeURIComponent(order.Customer.email)}`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`
