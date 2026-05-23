@@ -711,18 +711,18 @@ function applyQuickPeriod(key: string) {
   }
 }
 
-watch([dateFrom, dateTo, showDeleted], () => {
-  activeQuick.value = ''
-  // Limpar seleção ao trocar filtros para evitar exclusão acidental
-  selectedOrderIds.value = []
-})
-
 type SummaryDto = {
   countPaid: number
   totalPaid: number
 }
 
 const showDeleted = ref(false)
+
+watch([dateFrom, dateTo, showDeleted], () => {
+  activeQuick.value = ''
+  // Limpar seleção ao trocar filtros para evitar exclusão acidental
+  selectedOrderIds.value = []
+})
 
 const { data, pending, error, refresh } = await useFetch<{ ok: true; orders: OrderDto[]; summary: SummaryDto }>(
   '/api/admin/pedidos',
