@@ -62,8 +62,10 @@ export default defineEventHandler(async (event) => {
         select: {
           id: true,
           nome: true,
+          nomeEn: true,
           slug: true,
           descricao: true,
+          descricaoEn: true,
           preco: true,
           precoAntigo: true,
           imagem: true,

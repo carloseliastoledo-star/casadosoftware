@@ -114,12 +114,17 @@ export default defineEventHandler(async (event) => {
   
   let product: any
   try {
-    // Use composite key slug_storeSlug when searching by slug, slugEn when searching by slugEn
-    const whereClause = searchBy === 'slugEn'
-      ? { slugEn: slug }
-      : { slug_storeSlug: { slug, storeSlug: effectiveStoreSlug } }
+    // Para casadosoftware.com.br (storeSlug null), buscar apenas por slug
+    // Para lojas com storeSlug, usar composite key
+    const whereClause = effectiveStoreSlug === 'casadosoftware' && !storeSlug
+      ? { slug }
+      : searchBy === 'slugEn'
+        ? { slugEn: slug }
+        : { slug_storeSlug: { slug, storeSlug: effectiveStoreSlug } }
 
-    product = await (prisma as any).produto.findUnique({
+    console.log('[api/products/[slug]] whereClause:', JSON.stringify(whereClause))
+
+    product = await (prisma as any).produto.findFirst({
       where: whereClause,
       select: {
         id: true,
