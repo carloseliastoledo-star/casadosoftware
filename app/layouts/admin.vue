@@ -29,6 +29,10 @@
           📦 Pedidos
         </NuxtLink>
 
+        <NuxtLink to="/admin/sync-mp-today" class="menu">
+          🔄 Sincronizar Mercado Pago
+        </NuxtLink>
+
         <NuxtLink to="/admin/clientes" class="menu">
           👤 Clientes
         </NuxtLink>
