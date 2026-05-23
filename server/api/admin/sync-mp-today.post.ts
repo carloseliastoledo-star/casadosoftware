@@ -208,4 +208,4 @@ async function syncTodayPayments() {
     console.error('[admin sync-mp-today] Erro ao sincronizar:', err)
     throw createError({ statusCode: 500, statusMessage: err?.message || 'Erro ao sincronizar' })
   }
-})
+}
