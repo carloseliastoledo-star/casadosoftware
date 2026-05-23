@@ -9,10 +9,13 @@ export default defineEventHandler(async (event) => {
   try {
     await requireAdminSession(event)
     
-    console.log('[admin/orders] DATABASE_URL defined:', !!process.env.DATABASE_URL)
+    // Mascarar DATABASE_URL para não expor senha
+    const dbUrl = process.env.DATABASE_URL || ''
+    const maskedDbUrl = dbUrl.replace(/:[^:@]+@/, ':****@')
+    console.log('[admin/orders] DATABASE_URL:', maskedDbUrl.substring(0, 50) + '...')
     
     const ctx = getStoreContext(event)
-    console.log('[admin/orders] storeSlug:', ctx.storeSlug || '(null)')
+    console.log('[admin/orders] storeSlug recebido:', ctx.storeSlug || '(null)')
     
     const q = getQuery(event)
     console.log('[admin/orders] query params:', JSON.stringify(q))
@@ -48,6 +51,11 @@ export default defineEventHandler(async (event) => {
     }
     
     console.log('[admin/orders] where clause:', JSON.stringify(where))
+    console.log('[admin/orders] Filtros aplicados:', {
+      showDeleted,
+      hasDateFilter: !!dateFrom && !!dateTo,
+      hasStoreSlugFilter: !!ctx.storeSlug
+    })
     console.log('[admin/orders] Buscando pedidos com Customer, Produto e Licencas...')
     
     const orders = await (prisma as any).order.findMany({
@@ -62,6 +70,7 @@ export default defineEventHandler(async (event) => {
     })
     
     console.log('[admin/orders] Pedidos encontrados:', orders?.length || 0)
+    console.log('[admin/orders] Total de pedidos retornado:', orders?.length || 0)
     
     // Log de sample de tracking
     if (orders?.length > 0) {

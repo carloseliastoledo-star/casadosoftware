@@ -14,6 +14,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const { storeSlug } = getStoreContext(event)
+  console.log('[mp pix] ===== INÍCIO DO CHECKOUT PIX =====')
+  console.log('[mp pix] storeSlug:', storeSlug)
+  
+  if (!storeSlug) {
+    console.error('[mp pix] ERRO CRÍTICO: storeSlug não configurado')
+    throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado. Contate o suporte.' })
+  }
+  
   const body = await readBody(event)
 
   const affiliateRef = String(getCookie(event, 'affiliate_ref') || '').trim()
@@ -24,6 +32,16 @@ export default defineEventHandler(async (event) => {
   const whatsapp = body?.whatsapp ? String(body.whatsapp).trim() : undefined
   const cpf = body?.cpf ? String(body.cpf).trim() : undefined
   const couponCode = body?.couponCode ? String(body.couponCode).trim() : ''
+
+  console.log('[mp pix] Dados do checkout:', {
+    produtoId,
+    email,
+    nome,
+    whatsapp,
+    cpf,
+    couponCode,
+    storeSlug
+  })
 
   const utmSource = body?.utm_source ? String(body.utm_source).trim() : undefined
   const utmMedium = body?.utm_medium ? String(body.utm_medium).trim() : undefined
@@ -366,6 +384,15 @@ export default defineEventHandler(async (event) => {
         couponDiscountAmount: coupon ? couponDiscountAmount : null,
         totalAmount
       }
+    })
+
+    console.log('[mp pix] Pedido criado:', {
+      orderId: order.id,
+      numero: order.numero,
+      storeSlug: order.storeSlug,
+      status: order.status,
+      totalAmount: order.totalAmount,
+      email: email
     })
 
     return {

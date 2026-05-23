@@ -40,6 +40,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const { storeSlug } = getStoreContext(event)
+  console.log('[mp card] ===== INÍCIO DO CHECKOUT CARD =====')
+  console.log('[mp card] storeSlug:', storeSlug)
+  
+  if (!storeSlug) {
+    console.error('[mp card] ERRO CRÍTICO: storeSlug não configurado')
+    throw createError({ statusCode: 500, statusMessage: 'STORE_SLUG não configurado. Contate o suporte.' })
+  }
+  
   const body = await readBody(event)
 
   const affiliateRef = String(getCookie(event, 'affiliate_ref') || '').trim()
@@ -239,6 +247,15 @@ export default defineEventHandler(async (event) => {
           couponDiscountAmount: couponLocal ? couponDiscountAmount : null,
           totalAmount
         }
+      })
+
+      console.log('[mp card] Pedido criado:', {
+        orderId: orderLocal.id,
+        numero: orderLocal.numero,
+        storeSlug: orderLocal.storeSlug,
+        status: orderLocal.status,
+        totalAmount: orderLocal.totalAmount,
+        email: email
       })
 
       return { order: orderLocal, coupon: couponLocal, reused: false }
