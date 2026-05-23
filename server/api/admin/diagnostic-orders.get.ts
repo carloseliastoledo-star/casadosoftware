@@ -19,7 +19,8 @@ export default defineEventHandler(async (event) => {
       storeSlug: true,
       criadoEm: true,
       totalAmount: true,
-      mercadoPagoPaymentId: true
+      mercadoPagoPaymentId: true,
+      deletedAt: true
     },
     orderBy: { criadoEm: 'desc' },
     take: 100
@@ -37,7 +38,8 @@ export default defineEventHandler(async (event) => {
       storeSlug: true,
       criadoEm: true,
       totalAmount: true,
-      mercadoPagoPaymentId: true
+      mercadoPagoPaymentId: true,
+      deletedAt: true
     },
     orderBy: { criadoEm: 'desc' },
     take: 50
@@ -64,7 +66,8 @@ export default defineEventHandler(async (event) => {
         storeSlug: order.storeSlug || '(null)',
         criadoEm: order.criadoEm.toISOString(),
         totalAmount: order.totalAmount,
-        mercadoPagoPaymentId: order.mercadoPagoPaymentId || null
+        mercadoPagoPaymentId: order.mercadoPagoPaymentId || null,
+        deletedAt: order.deletedAt ? order.deletedAt.toISOString() : null
       }))
     },
     today: {
@@ -77,7 +80,8 @@ export default defineEventHandler(async (event) => {
         storeSlug: order.storeSlug || '(null)',
         criadoEm: order.criadoEm.toISOString(),
         totalAmount: order.totalAmount,
-        mercadoPagoPaymentId: order.mercadoPagoPaymentId || null
+        mercadoPagoPaymentId: order.mercadoPagoPaymentId || null,
+        deletedAt: order.deletedAt ? order.deletedAt.toISOString() : null
       }))
     }
   }
