@@ -1,13 +1,11 @@
 import { defineEventHandler } from 'h3'
+import { getMpPayment } from '../../utils/mercadopago.js'
 
 export default defineEventHandler(async (event) => {
   console.log('[mp-payments-today] ===== BUSCANDO PAGAMENTOS DE HOJE =====')
   
-  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN
-  if (!accessToken) {
-    return { ok: false, error: 'MERCADOPAGO_ACCESS_TOKEN não configurado' }
-  }
-
+  const payment = getMpPayment()
+  
   // Data de hoje em UTC
   const today = new Date()
   const startOfDay = new Date(today)
@@ -16,32 +14,26 @@ export default defineEventHandler(async (event) => {
   const endOfDay = new Date(today)
   endOfDay.setHours(23, 59, 59, 999)
 
+  const dateFrom = startOfDay.toISOString().split('T')[0]
+  const dateTo = endOfDay.toISOString().split('T')[0]
+
   console.log('[mp-payments-today] Período:', {
-    start: startOfDay.toISOString(),
-    end: endOfDay.toISOString(),
+    dateFrom,
+    dateTo,
     timezone: 'UTC'
   })
 
   try {
-    // Buscar pagamentos do Mercado Pago
-    const response = await fetch(
-      `https://api.mercadopago.com/v1/payments?date_created_from=${startOfDay.toISOString()}&date_created_to=${endOfDay.toISOString()}&limit=100`,
-      {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
+    // Buscar pagamentos do Mercado Pago usando SDK
+    const result = await payment.search({
+      qs: {
+        date_created_from: dateFrom,
+        date_created_to: dateTo,
+        limit: 100
       }
-    )
+    })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('[mp-payments-today] Erro Mercado Pago:', response.status, errorText)
-      return { ok: false, error: `Erro Mercado Pago: ${response.status} - ${errorText}` }
-    }
-
-    const data = await response.json()
-    const payments = data.results || []
-
+    const payments = Array.isArray(result?.results) ? result.results : []
     console.log('[mp-payments-today] Pagamentos encontrados:', payments.length)
 
     // Filtrar apenas pagamentos approved
@@ -70,8 +62,8 @@ export default defineEventHandler(async (event) => {
     return {
       ok: true,
       period: {
-        start: startOfDay.toISOString(),
-        end: endOfDay.toISOString(),
+        dateFrom,
+        dateTo,
         timezone: 'UTC'
       },
       totalPayments: payments.length,
