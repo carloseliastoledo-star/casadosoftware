@@ -44,7 +44,8 @@ export default defineEventHandler(async (event) => {
           ...(product ? { product } : {}),
           ...(checkoutUrl ? { checkoutUrl } : {}),
           status,
-          source
+          source,
+          updatedAt: new Date()
         },
         select: { id: true }
       })
@@ -59,7 +60,8 @@ export default defineEventHandler(async (event) => {
         product,
         checkoutUrl,
         status,
-        source
+        source,
+        updatedAt: new Date()
       },
       select: { id: true }
     })
