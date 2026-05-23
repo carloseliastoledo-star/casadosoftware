@@ -63,16 +63,14 @@ export default defineEventHandler(async (event) => {
 
     console.log('[api/products/best-sellers] Buscando produtos...')
     
-    const storeFilter = storeSlug
-      ? { ProdutoPrecoLoja: { some: { storeSlug } } }
-      : {}
-
     // Query simples com campos que existem no model Produto
+    // Apenas aplicar filtro de loja se storeSlug estiver configurado
+    // Para casadosoftware.com.br (storeSlug null), não filtrar por ProdutoPrecoLoja
     const produtos = await (prisma as any).produto.findMany({
       where: {
         ativo: true,
         slug: { in: bestSellerSlugs },
-        ...storeFilter
+        ...(storeSlug ? { ProdutoPrecoLoja: { some: { storeSlug } } } : {})
       },
       select: {
         id: true,
