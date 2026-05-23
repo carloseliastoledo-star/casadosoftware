@@ -1,6 +1,7 @@
 import { defineEventHandler, setHeader } from 'h3'
 import prisma from '#root/server/db/prisma'
 import { getStoreContext } from '#root/server/utils/store'
+import { randomUUID } from 'crypto'
 
 const EMPTY = { ok: true, settings: null }
 
@@ -32,7 +33,10 @@ export default defineEventHandler(async (event) => {
       if (existing) return { ok: true, settings: existing }
 
       try {
-        const created = await prismaAny.siteSettings.create({ data: {}, select: SELECT })
+        const created = await prismaAny.siteSettings.create({ 
+          data: { id: randomUUID() }, 
+          select: SELECT 
+        })
         return { ok: true, settings: created }
       } catch {
         return EMPTY
@@ -46,7 +50,7 @@ export default defineEventHandler(async (event) => {
 
     try {
       const created = await prismaAny.siteSettings.create({
-        data: { storeSlug, ...(legacy || {}) },
+        data: { id: randomUUID(), storeSlug, ...(legacy || {}) },
         select: SELECT
       })
       return { ok: true, settings: created }
