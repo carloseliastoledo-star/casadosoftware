@@ -502,6 +502,8 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick } from 'vue'
+
 definePageMeta({ layout: 'admin' })
 
 const copiedText = ref('')
@@ -676,6 +678,10 @@ function applyQuickPeriod(key: string) {
     case 'all':
       dateFrom.value = ''
       dateTo.value = ''
+      // Forçar refresh imediato para remover filtros
+      nextTick(() => {
+        refresh()
+      })
       break
   }
 }
