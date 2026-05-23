@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
     console.log('[admin/orders] Filtros aplicados:', {
       showDeleted,
       hasDateFilter: !!dateFrom && !!dateTo,
-      hasStoreSlugFilter: !!ctx.storeSlug
+      hasStoreSlugFilter: !!storeSlug
     })
     console.log('[admin/orders] Buscando pedidos com Customer, Produto e Licencas...')
     
