@@ -115,9 +115,9 @@ export default defineEventHandler(async (event) => {
   
   let product: any
   try {
-    // Para casadosoftware.com.br (storeSlug null), buscar apenas por slug
-    // Para lojas com storeSlug, usar composite key
-    const whereClause = effectiveStoreSlug === 'casadosoftware' && !storeSlug
+    // Para casadosoftware.com.br, buscar apenas por slug (sem storeSlug)
+    // Para lojas com storeSlug diferente, usar composite key
+    const whereClause = effectiveStoreSlug === 'casadosoftware' || !storeSlug
       ? { slug }
       : searchBy === 'slugEn'
         ? { slugEn: slug }
