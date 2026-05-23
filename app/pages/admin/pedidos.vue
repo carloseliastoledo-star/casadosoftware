@@ -551,7 +551,30 @@ function toggleSelectAllOrders(e: Event) {
 
 async function deleteSelectedOrders() {
   if (!selectedOrderIds.value.length) return
-  if (!confirm(`Tem certeza que deseja apagar ${selectedOrderIds.value.length} pedidos selecionados?`)) return
+
+  const count = selectedOrderIds.value.length
+
+  // Verificar se há pedidos PAID entre os selecionados
+  const paidOrders = orders.value.filter((o: OrderDto) =>
+    selectedOrderIds.value.includes(o.id) && o.status === 'PAID'
+  )
+
+  if (paidOrders.length > 0) {
+    if (!confirm(`ATENÇÃO: ${paidOrders.length} dos pedidos selecionados estão PAGOS. Excluir pedidos pagos pode causar problemas de contabilidade e entrega. Deseja continuar?`)) {
+      return
+    }
+  }
+
+  // Confirmação extra para >10 pedidos
+  if (count > 10) {
+    const confirmation = prompt(`Para excluir ${count} pedidos, digite "EXCLUIR" para confirmar:`)
+    if (confirmation !== 'EXCLUIR') {
+      alert('Exclusão cancelada.')
+      return
+    }
+  } else {
+    if (!confirm(`Tem certeza que deseja apagar ${count} pedidos selecionados?`)) return
+  }
 
   try {
     const res: any = await $fetch('/api/admin/pedidos/bulk-delete', {
@@ -567,6 +590,8 @@ async function deleteSelectedOrders() {
 
     if (skipped > 0) {
       alert(`Pedidos apagados: ${deleted}. Não apagados (PAID ou com licença): ${skipped}.`)
+    } else {
+      alert(`${deleted} pedidos apagados com sucesso.`)
     }
   } catch (err: any) {
     alert(err?.data?.statusMessage || 'Erro ao apagar pedidos')
@@ -686,8 +711,10 @@ function applyQuickPeriod(key: string) {
   }
 }
 
-watch([dateFrom, dateTo], () => {
+watch([dateFrom, dateTo, showDeleted], () => {
   activeQuick.value = ''
+  // Limpar seleção ao trocar filtros para evitar exclusão acidental
+  selectedOrderIds.value = []
 })
 
 type SummaryDto = {

@@ -59,6 +59,29 @@ model AdminUser {
   passwordHash String
   role         AdminUser_role
   createdAt    DateTime       @default(now()) @db.DateTime(0)
+  AuditLog     AuditLog[]
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  action      String
+  entity      String
+  entityId    String?
+  adminId     String
+  adminEmail  String
+  details     String?   @db.Text
+  ip          String?
+  userAgent   String?   @db.Text
+  storeSlug   String?
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+
+  AdminUser   AdminUser @relation(fields: [adminId], references: [id])
+
+  @@index([action])
+  @@index([entity])
+  @@index([adminId])
+  @@index([createdAt])
+  @@index([storeSlug])
 }
 
 model Affiliate {

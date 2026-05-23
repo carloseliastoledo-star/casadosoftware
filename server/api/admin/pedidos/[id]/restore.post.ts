@@ -1,9 +1,11 @@
-import { defineEventHandler, getRouterParam, createError } from 'h3'
+import { defineEventHandler, getRouterParam, createError, getHeader } from 'h3'
 import prisma from '../../../../db/prisma'
-import { requireAdminSession } from '../../../../utils/adminSession'
+import { requireAdminSession, getAdminSession } from '../../../../utils/adminSession'
 import { getStoreContext, whereForStore } from '../../../../utils/store'
+import { createAuditLog } from '../../../../utils/auditLog'
 
 export default defineEventHandler(async (event) => {
+  const session = getAdminSession(event)
   requireAdminSession(event)
 
   const ctx = getStoreContext(event)
@@ -15,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   const order = await (prisma as any).order.findFirst({
     where: whereForStore({ id, deletedAt: { not: null } }, ctx) as any,
-    select: { id: true }
+    select: { id: true, numero: true, status: true }
   })
 
   if (!order) {
@@ -26,6 +28,27 @@ export default defineEventHandler(async (event) => {
     where: { id },
     data: { deletedAt: null }
   })
+
+  // Gravar AuditLog
+  if (session?.id) {
+    const ip = getHeader(event, 'x-forwarded-for') || getHeader(event, 'x-real-ip') || 'unknown'
+    const userAgent = getHeader(event, 'user-agent') || 'unknown'
+
+    await createAuditLog({
+      action: 'ORDER_RESTORE',
+      entity: 'Order',
+      entityId: id,
+      adminId: session.id,
+      adminEmail: session.email || 'unknown',
+      details: JSON.stringify({
+        orderNumero: order.numero,
+        orderStatus: order.status
+      }),
+      ip,
+      userAgent,
+      storeSlug: ctx?.storeSlug
+    })
+  }
 
   return { ok: true }
 })

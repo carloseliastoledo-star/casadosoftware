@@ -51,6 +51,32 @@ export default defineEventHandler(async (event) => {
     storeSlugCounts[slug] = (storeSlugCounts[slug] || 0) + 1
   })
 
+  // Análise de pedidos excluídos
+  const deletedOrders = allOrders.filter((o: any) => o.deletedAt)
+  
+  // Agrupar por horário de exclusão (mesmo segundo)
+  const deletedByTime = deletedOrders.reduce((acc: any, o: any) => {
+    const time = o.deletedAt.toISOString().slice(0, 19) // até segundos
+    if (!acc[time]) acc[time] = []
+    acc[time].push(o)
+    return acc
+  }, {})
+
+  // Encontrar grupos de exclusão em massa (mesmo horário)
+  const bulkDeleteGroups = Object.entries(deletedByTime)
+    .filter(([_, orders]: any) => orders.length > 1)
+    .map(([time, orders]: any) => ({
+      time,
+      count: orders.length,
+      orderNumbers: orders.map((o: any) => o.numero),
+      statuses: orders.map((o: any) => o.status),
+      paidCount: orders.filter((o: any) => o.status === 'PAID').length
+    }))
+    .sort((a: any, b: any) => b.count - a.count)
+
+  console.log('[diagnostic-orders] Pedidos excluídos:', deletedOrders.length)
+  console.log('[diagnostic-orders] Grupos de exclusão em massa:', bulkDeleteGroups.length)
+
   return {
     ok: true,
     environment: {
@@ -58,6 +84,7 @@ export default defineEventHandler(async (event) => {
     },
     allOrders: {
       totalOrders: allOrders.length,
+      deletedCount: deletedOrders.length,
       storeSlugCounts,
       orders: allOrders.map((order: any) => ({
         id: order.id,
@@ -82,6 +109,21 @@ export default defineEventHandler(async (event) => {
         totalAmount: order.totalAmount,
         mercadoPagoPaymentId: order.mercadoPagoPaymentId || null,
         deletedAt: order.deletedAt ? order.deletedAt.toISOString() : null
+      }))
+    },
+    deletedAnalysis: {
+      totalDeleted: deletedOrders.length,
+      paidDeleted: deletedOrders.filter((o: any) => o.status === 'PAID').length,
+      bulkDeleteGroups,
+      deletedOrders: deletedOrders.map((order: any) => ({
+        id: order.id,
+        numero: order.numero,
+        status: order.status,
+        storeSlug: order.storeSlug || '(null)',
+        criadoEm: order.criadoEm.toISOString(),
+        totalAmount: order.totalAmount,
+        mercadoPagoPaymentId: order.mercadoPagoPaymentId || null,
+        deletedAt: order.deletedAt.toISOString()
       }))
     }
   }
