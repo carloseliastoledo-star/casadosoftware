@@ -121,7 +121,7 @@ export default defineEventHandler(async (event) => {
       nome: true,
       preco: true,
       precoAntigo: true,
-      precosLoja: {
+      ProdutoPrecoLoja: {
         where: { storeSlug: storeSlug || undefined },
         select: { preco: true, precoAntigo: true }
       }
@@ -135,7 +135,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const priceOverride = (produto as any).precosLoja?.[0] || null
+  const priceOverride = (produto as any).ProdutoPrecoLoja?.[0] || null
   const effectivePriceRaw = priceOverride?.preco ?? (produto as any).preco
   const effectivePrice = Number(effectivePriceRaw)
 
