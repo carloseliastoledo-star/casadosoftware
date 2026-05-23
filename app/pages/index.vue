@@ -105,6 +105,8 @@ const normalizedHost = computed(() => {
 })
 
 const isCasaDoSoftware = computed(() => {
+  // Localhost sempre usa layout Casa do Software
+  if (normalizedHost.value.includes('localhost') || normalizedHost.value.includes('127.0.0.1')) return true
   if (normalizedHost.value.includes('casadosoftware.com.br')) return true
   if (normalizedHost.value.endsWith('.store') && !normalizedHost.value.includes('globalsoftware.store')) return true
   return storeSlug.value === 'casadosoftware'

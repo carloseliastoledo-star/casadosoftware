@@ -1,4 +1,11 @@
-<template>
+500
+
+Server error
+An unexpected error occurred.
+
+Server Error
+
+Back to home<template>
   <div class="space-y-6">
     <div class="flex items-end justify-between gap-4">
       <div>

@@ -764,13 +764,14 @@ type CategoriaLinkDto = {
 
 const { cart } = useCart()
 
-const { data: siteSettings } = await useFetch('/api/site-settings', { server: true, default: () => null })
+const { data: siteSettings } = await useFetch('/api/site-settings', { server: true, default: () => null, key: 'site-settings' })
 
-const { data: footerPagesData } = await useFetch('/api/paginas/footer', { server: true, default: () => null })
+const { data: footerPagesData } = await useFetch('/api/paginas/footer', { server: true, default: () => null, key: 'footer-pages' })
 
 const { data } = await useFetch<{ ok: true; paginas: PaginaLinkDto[] }>('/api/paginas', {
   server: true,
-  default: () => null
+  default: () => null,
+  key: 'paginas'
 })
 
 const categoriasUrl = computed(() =>
@@ -779,7 +780,7 @@ const categoriasUrl = computed(() =>
 
 const { data: categoriasData } = await useFetch<{ ok: true; categorias: CategoriaLinkDto[] }>(
   () => categoriasUrl.value,
-  { server: true, default: () => null }
+  { server: true, default: () => null, key: 'categorias' }
 )
 
 const paginas = computed(() => data.value?.paginas || [])
