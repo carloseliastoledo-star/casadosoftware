@@ -910,8 +910,8 @@ async function handleGeneratePix() {
       produtoId: produtoId.value,
       email: email.value.trim(),
       nome: nome.value.trim(),
-      document: cpf.value.replace(/\D/g, ''),
-      phone: telefone.value.replace(/\D/g, ''),
+      cpf: cpf.value.replace(/\D/g, ''),
+      whatsapp: telefone.value.replace(/\D/g, ''),
       method: paymentMethod.value,
       orderBump: hasSelectedBumps.value,
       orderBumpIds: hasSelectedBumps.value ? selectedBumpIds.value : [],
@@ -958,8 +958,8 @@ async function handleGeneratePix() {
 
     if (paymentMethod.value === 'pix') {
       // Validar que o Pix foi gerado com sucesso antes de continuar
-      const hasQrCode = result?.qr_code || result?.qrCode || result?.qr_code_base64 || result?.qrCodeUrl || result?.qrCode
-      const hasPaymentId = result?.payment_id
+      const hasQrCode = result?.qrCode || result?.qr_code || result?.qrCodeBase64 || result?.qr_code_base64 || result?.qrCodeUrl || result?.qr_code_url
+      const hasPaymentId = result?.paymentId || result?.payment_id
       
       if (!hasQrCode || !hasPaymentId) {
         // Pix não foi gerado corretamente - mostrar erro, não redirecionar
@@ -969,8 +969,8 @@ async function handleGeneratePix() {
       }
       
       // Pix gerado com sucesso - mostrar QR Code na página de checkout
-      pixQrCode.value = result?.qr_code || result?.qrCode || ''
-      pixQrUrl.value = result?.qr_code_base64 || result?.qrCodeUrl || ''
+      pixQrCode.value = result?.qrCode || result?.qr_code || ''
+      pixQrUrl.value = result?.qrCodeBase64 || result?.qr_code_base64 || result?.qrCodeUrl || result?.qr_code_url || ''
       pixTicketUrl.value = result?.ticket_url || ''
       savePIXSession()
       startPaymentPolling()
