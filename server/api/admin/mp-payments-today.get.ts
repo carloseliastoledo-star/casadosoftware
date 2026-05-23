@@ -6,13 +6,15 @@ export default defineEventHandler(async (event) => {
   
   const payment = getMpPayment()
   
-  // Data de hoje em UTC
-  const today = new Date()
-  const startOfDay = new Date(today)
-  startOfDay.setHours(0, 0, 0, 0)
+  // Data de hoje em timezone America/Sao_Paulo (UTC-3)
+  const now = new Date()
+  const offset = -3 // UTC-3 para São Paulo
   
-  const endOfDay = new Date(today)
-  endOfDay.setHours(23, 59, 59, 999)
+  const startOfDay = new Date(now)
+  startOfDay.setUTCHours(offset, 0, 0, 0)
+  
+  const endOfDay = new Date(now)
+  endOfDay.setUTCHours(offset + 23, 59, 59, 999)
 
   const dateFrom = startOfDay.toISOString().split('T')[0]
   const dateTo = endOfDay.toISOString().split('T')[0]
@@ -20,7 +22,9 @@ export default defineEventHandler(async (event) => {
   console.log('[mp-payments-today] Período:', {
     dateFrom,
     dateTo,
-    timezone: 'UTC'
+    timezone: 'America/Sao_Paulo (UTC-3)',
+    startOfDayISO: startOfDay.toISOString(),
+    endOfDayISO: endOfDay.toISOString()
   })
 
   try {
@@ -64,7 +68,7 @@ export default defineEventHandler(async (event) => {
       period: {
         dateFrom,
         dateTo,
-        timezone: 'UTC'
+        timezone: 'America/Sao_Paulo (UTC-3)'
       },
       totalPayments: payments.length,
       approvedPayments: approvedPayments.length,
