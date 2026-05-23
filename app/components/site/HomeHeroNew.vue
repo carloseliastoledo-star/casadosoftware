@@ -44,19 +44,19 @@
               <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              {{ t.heroProof1 }}
+              Compra segura
             </span>
             <span class="flex items-center gap-2">
               <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              {{ t.heroProof2 }}
+              Entrega imediata
             </span>
             <span class="flex items-center gap-2">
               <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
-              {{ t.heroProof3 }}
+              Suporte técnico
             </span>
           </div>
         </div>
@@ -81,21 +81,21 @@
 
               <!-- Título do produto -->
               <h2 class="text-xl font-semibold text-slate-900 mb-1.5">
-                {{ t.productTitle }}
+                Office 365
               </h2>
 
               <!-- Descrição -->
               <p class="text-slate-500 text-sm leading-relaxed mb-4">
-                {{ t.productDesc }}
+                Para PC e Mac. Ativação rápida.
               </p>
 
               <!-- Preço -->
               <div class="mb-4">
                 <div class="flex items-baseline gap-2 mb-1">
                   <span class="text-5xl font-bold text-slate-900">R$ 99</span>
-                  <span class="text-xs text-slate-500">{{ t.productPriceLabel }}</span>
+                  <span class="text-xs text-slate-500">pagamento único</span>
                 </div>
-                <p class="text-xs text-slate-500">{{ t.productDelivery }}</p>
+                <p class="text-xs text-slate-500">Receba em minutos no e-mail</p>
               </div>
 
               <!-- Botão -->
@@ -103,12 +103,12 @@
                 to="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive"
                 class="block w-full text-center rounded-lg bg-slate-900 hover:bg-slate-800 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-200 shadow-md mb-3"
               >
-                {{ t.activateNow }}
+                Ativar agora
               </NuxtLink>
 
               <!-- Micro copy -->
               <p class="text-center text-xs text-slate-500 mb-3">
-                {{ t.activateMicro }}
+                Receba sua chave em até 2 minutos no e-mail
               </p>
 
               <!-- Confiança -->
@@ -116,7 +116,7 @@
                 <svg class="h-3.5 w-3.5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span>{{ t.securePayment }}</span>
+                <span>Pagamento seguro</span>
               </div>
             </div>
           </div>
@@ -130,8 +130,6 @@
 <script setup lang="ts">
 import type { HomeTheme } from '~/types/homeTheme'
 
-const intl = useIntlContext()
-
 useHead({
   link: [
     { rel: 'preload', as: 'image', href: '/images/office365-hero.webp', fetchpriority: 'high' }
@@ -140,55 +138,11 @@ useHead({
 
 const props = defineProps<{ productsIndexPath: string; homeTheme?: HomeTheme | null }>()
 
-const t = computed(() => {
-  const lang = intl.language.value
-  if (lang === 'en') {
-    return {
-      heroBadge: props.homeTheme?.hero?.badge || 'Instant delivery',
-      heroTitle: props.homeTheme?.hero?.title || 'Activate your software in minutes',
-      heroSubtitle: props.homeTheme?.hero?.subtitle || 'Receive by email and activate with full support.',
-      heroPrimaryLabel: props.homeTheme?.hero?.primaryCtaLabel || 'Activate now',
-      heroPrimaryUrl: props.homeTheme?.hero?.primaryCtaUrl || props.productsIndexPath,
-      heroSecondaryLabel: props.homeTheme?.hero?.secondaryCtaLabel || '',
-      heroSecondaryUrl: props.homeTheme?.hero?.secondaryCtaUrl || '/',
-      heroProof1: 'Secure purchase',
-      heroProof2: 'Instant delivery',
-      heroProof3: 'Technical support',
-      productTitle: 'Office 365',
-      productDesc: 'For PC and Mac. Quick activation.',
-      productPriceLabel: 'one-time payment',
-      productDelivery: 'Receive in minutes by email',
-      activateNow: 'Activate now',
-      activateMicro: 'Receive your key in up to 2 minutes by email',
-      securePayment: 'Secure payment'
-    }
-  }
-  return {
-    heroBadge: props.homeTheme?.hero?.badge || 'Entrega imediata',
-    heroTitle: props.homeTheme?.hero?.title || 'Ative seus softwares em minutos',
-    heroSubtitle: props.homeTheme?.hero?.subtitle || 'Receba por e-mail e ative com suporte completo.',
-    heroPrimaryLabel: props.homeTheme?.hero?.primaryCtaLabel || 'Ativar agora',
-    heroPrimaryUrl: props.homeTheme?.hero?.primaryCtaUrl || props.productsIndexPath,
-    heroSecondaryLabel: props.homeTheme?.hero?.secondaryCtaLabel || '',
-    heroSecondaryUrl: props.homeTheme?.hero?.secondaryCtaUrl || '/',
-    heroProof1: 'Compra segura',
-    heroProof2: 'Entrega imediata',
-    heroProof3: 'Suporte técnico',
-    productTitle: 'Office 365',
-    productDesc: 'Para PC e Mac. Ativação rápida.',
-    productPriceLabel: 'pagamento único',
-    productDelivery: 'Receba em minutos no e-mail',
-    activateNow: 'Ativar agora',
-    activateMicro: 'Receba sua chave em até 2 minutos no e-mail',
-    securePayment: 'Pagamento seguro'
-  }
-})
-
-const heroBadge = computed(() => t.value.heroBadge)
-const heroTitle = computed(() => t.value.heroTitle)
-const heroSubtitle = computed(() => t.value.heroSubtitle)
-const heroPrimaryLabel = computed(() => t.value.heroPrimaryLabel)
-const heroPrimaryUrl = computed(() => t.value.heroPrimaryUrl)
-const heroSecondaryLabel = computed(() => t.value.heroSecondaryLabel)
-const heroSecondaryUrl = computed(() => t.value.heroSecondaryUrl)
+const heroBadge = computed(() => props.homeTheme?.hero?.badge || 'Entrega imediata')
+const heroTitle = computed(() => props.homeTheme?.hero?.title || 'Ative seus softwares em minutos')
+const heroSubtitle = computed(() => props.homeTheme?.hero?.subtitle || 'Receba por e-mail e ative com suporte completo.')
+const heroPrimaryLabel = computed(() => props.homeTheme?.hero?.primaryCtaLabel || 'Ativar agora')
+const heroPrimaryUrl = computed(() => props.homeTheme?.hero?.primaryCtaUrl || props.productsIndexPath)
+const heroSecondaryLabel = computed(() => props.homeTheme?.hero?.secondaryCtaLabel || '')
+const heroSecondaryUrl = computed(() => props.homeTheme?.hero?.secondaryCtaUrl || '/')
 </script>

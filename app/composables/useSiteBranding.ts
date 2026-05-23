@@ -13,11 +13,7 @@ export function useSiteBranding() {
   const isCasaDoSoftware = siteName === 'Casa do Software' || siteName === 'Casa do Software'
   const casaSoftwareLogo = 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png'
   
-  // Detectar se é GVGmall e usar logo local
-  const isGvgmall = siteName === 'GVGmall' || siteName === 'gvgmall'
-  const gvgmallLogo = '/logo-gvg.png'
-  
-  const logoPath = rawLogo && rawLogo !== '/logo.png' ? rawLogo : (isCasaDoSoftware ? casaSoftwareLogo : (isGvgmall ? gvgmallLogo : defaultLogoPath))
+  const logoPath = rawLogo && rawLogo !== '/logo.png' ? rawLogo : (isCasaDoSoftware ? casaSoftwareLogo : defaultLogoPath)
   const supportEmail = String(config.public.supportEmail || '').trim() || 'comercial@casadosoftware.com.br'
   const topbarText = String(config.public.topbarText || '').trim() || ''
   const topbarLink = String(config.public.topbarLink || '').trim() || ''
