@@ -72,10 +72,15 @@ function formatDate(dateString: string) {
 
 async function loadProdutos() {
   try {
-    const response = await $fetch('/api/produtos')
-    produtos.value = response?.produtos || []
+    console.log('[loadProdutos] Iniciando carregamento de produtos')
+    const response = await $fetch('/api/admin/produtos')
+    console.log('[loadProdutos] Response:', response)
+    produtos.value = Array.isArray(response) ? response : []
+    console.log('[loadProdutos] Produtos carregados:', produtos.value.length)
   } catch (err: any) {
-    console.error('Erro ao carregar produtos:', err)
+    console.error('[loadProdutos] Erro ao carregar produtos:', err)
+    console.error('[loadProdutos] Erro status:', err?.statusCode)
+    console.error('[loadProdutos] Erro message:', err?.message)
   }
 }
 
