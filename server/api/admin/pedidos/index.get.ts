@@ -14,8 +14,9 @@ export default defineEventHandler(async (event) => {
     const maskedDbUrl = dbUrl.replace(/:[^:@]+@/, ':****@')
     console.log('[admin/orders] DATABASE_URL:', maskedDbUrl.substring(0, 50) + '...')
     
-    const ctx = getStoreContext(event)
-    console.log('[admin/orders] storeSlug recebido:', ctx.storeSlug || '(null)')
+    // No admin, usar sempre STORE_SLUG da variável de ambiente
+    const storeSlug = process.env.STORE_SLUG || null
+    console.log('[admin/orders] STORE_SLUG:', storeSlug || '(não configurado)')
     
     const q = getQuery(event)
     console.log('[admin/orders] query params:', JSON.stringify(q))
@@ -26,7 +27,7 @@ export default defineEventHandler(async (event) => {
     // Query com includes de Customer, Produto e Licenca
     const where: any = {}
     if (!showDeleted) where.deletedAt = null
-    if (ctx.storeSlug) where.storeSlug = ctx.storeSlug
+    if (storeSlug) where.storeSlug = storeSlug
     
     // Filtro por data
     const dateFrom = String((q as any)?.dateFrom || '').trim()
