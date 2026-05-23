@@ -36,6 +36,8 @@ function detectSubdomainLanguage(host: string): Lang | null {
   if (h.startsWith('es.')) return 'es'
   if (h.startsWith('fr.')) return 'fr'
   if (h.startsWith('it.')) return 'it'
+  // Explicitamente excluir casadosoftware.com.br de ser detectado como inglês
+  if (h.includes('casadosoftware.com.br')) return 'pt'
   if (h.endsWith('.store') || h.includes('casadosoftware.store')) return 'en'
   if (h.includes('gvgmall.co')) return 'en'
   if (h.includes('globalsoftware-prev') && h.includes('vercel.app')) return 'en'
