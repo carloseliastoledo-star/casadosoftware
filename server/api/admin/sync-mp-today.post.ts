@@ -1,7 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { getMpPayment } from '../../utils/mercadopago.js'
-import { markOrderAsPaid } from '../../services/markOrderAsPaid.js'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -21,7 +20,6 @@ async function checkTodayPayments() {
 
   const payment = getMpPayment()
   
-  // Buscar pagamentos das últimas 24h
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
   const dateFrom = yesterday.toISOString().split('T')[0]
@@ -38,7 +36,6 @@ async function checkTodayPayments() {
     
     console.log(`[admin sync-mp-today] ${payments.length} pagamentos encontrados no Mercado Pago`)
 
-    // Buscar pedidos do banco para comparar
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
@@ -49,7 +46,6 @@ async function checkTodayPayments() {
     
     const dbPaymentIds = new Set(dbOrders.map((o: any) => o.mercadoPagoPaymentId).filter(Boolean))
     
-    // Identificar pagamentos sem pedido correspondente
     const missingPayments = payments.filter((p: any) => {
       const paymentId = String(p?.id || '')
       return paymentId && !dbPaymentIds.has(paymentId)
@@ -95,7 +91,6 @@ async function syncTodayPayments() {
     
     console.log(`[admin sync-mp-today] ${payments.length} pagamentos para sincronizar`)
 
-    // Buscar pedidos do banco
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
@@ -114,10 +109,8 @@ async function syncTodayPayments() {
       const paymentId = String(mpPayment?.id || '')
       if (!paymentId) continue
       
-      // Se já existe pedido com esse paymentId, pular
       if (dbPaymentIds.has(paymentId)) continue
       
-      // Se tem external_reference, tentar atualizar pedido existente
       const externalReference = String(mpPayment?.external_reference || '')
       if (externalReference) {
         try {
@@ -126,31 +119,19 @@ async function syncTodayPayments() {
           })
           
           if (existingOrder) {
+            const status = mpPayment.status === 'approved' ? 'PAID' : String(mpPayment.status).toUpperCase()
+            const pagoEm = mpPayment.status === 'approved' && mpPayment.date_approved ? new Date(mpPayment.date_approved) : null
+            
             await prisma.order.update({
               where: { id: externalReference },
               data: {
                 mercadoPagoPaymentId: paymentId,
                 mercadoPagoPaymentTypeId: mpPayment.payment_type_id ? String(mpPayment.payment_type_id) : null,
                 mercadoPagoPaymentMethodId: mpPayment.payment_method_id ? String(mpPayment.payment_method_id) : null,
-                status: mpPayment.status === 'approved' ? 'PAID' : mpPayment.status.toUpperCase(),
-                pagoEm: mpPayment.status === 'approved' ? new Date(mpPayment.date_approved) : null
+                status,
+                pagoEm
               }
             })
-            
-            if (mpPayment.status === 'approved') {
-              try {
-                await markOrderAsPaid({
-                  orderId: externalReference,
-                  gateway: 'mercadopago',
-                  paymentId: paymentId,
-                  source: 'webhook',
-                  paymentMethodId: mpPayment.payment_method_id ? String(mpPayment.payment_method_id) : undefined,
-                  paymentTypeId: mpPayment.payment_type_id ? String(mpPayment.payment_type_id) : undefined
-                })
-              } catch (err) {
-                console.error('[admin sync-mp-today] markOrderAsPaid error:', err)
-              }
-            }
             
             synced++
             continue
@@ -162,10 +143,8 @@ async function syncTodayPayments() {
         }
       }
       
-      // Se não tem external_reference ou pedido não existe, criar manualmente
       try {
         const email = String(mpPayment?.payer?.email || '').trim().toLowerCase()
-        const nome = `${mpPayment?.payer?.first_name || ''} ${mpPayment?.payer?.last_name || ''}`.trim()
         const valor = Number(mpPayment?.transaction_amount)
         const produtoId = mpPayment?.metadata?.produtoId || null
         const storeSlug = mpPayment?.metadata?.storeSlug || 'casadosoftware'
@@ -176,7 +155,6 @@ async function syncTodayPayments() {
           continue
         }
         
-        // Buscar produto
         const produto = await prisma.produto.findUnique({
           where: { id: produtoId },
           select: { id: true, nome: true, preco: true }
@@ -188,17 +166,18 @@ async function syncTodayPayments() {
           continue
         }
         
-        // Criar ou buscar customer
         const customer = await prisma.customer.upsert({
           where: { email_storeSlug: { email, storeSlug } },
-          create: { email, storeSlug, nome },
-          update: { nome }
+          create: { email, storeSlug, nome: email },
+          update: { nome: email }
         })
         
-        // Criar pedido
+        const status = mpPayment.status === 'approved' ? 'PAID' : String(mpPayment.status).toUpperCase()
+        const pagoEm = mpPayment.status === 'approved' && mpPayment.date_approved ? new Date(mpPayment.date_approved) : null
+        
         const order = await prisma.order.create({
           data: {
-            status: mpPayment.status === 'approved' ? 'PAID' : mpPayment.status.toUpperCase(),
+            status,
             storeSlug,
             produtoId: produto.id,
             customerId: customer.id,
@@ -207,24 +186,9 @@ async function syncTodayPayments() {
             mercadoPagoPaymentMethodId: mpPayment.payment_method_id ? String(mpPayment.payment_method_id) : null,
             subtotalAmount: valor,
             totalAmount: valor,
-            pagoEm: mpPayment.status === 'approved' ? new Date(mpPayment.date_approved) : null
+            pagoEm
           }
         })
-        
-        if (mpPayment.status === 'approved') {
-          try {
-            await markOrderAsPaid({
-              orderId: order.id,
-              gateway: 'mercadopago',
-              paymentId: paymentId,
-              source: 'webhook',
-              paymentMethodId: mpPayment.payment_method_id ? String(mpPayment.payment_method_id) : undefined,
-              paymentTypeId: mpPayment.payment_type_id ? String(mpPayment.payment_type_id) : undefined
-            })
-          } catch (err) {
-            console.error('[admin sync-mp-today] markOrderAsPaid error:', err)
-          }
-        }
         
         synced++
       } catch (err) {
