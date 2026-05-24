@@ -190,23 +190,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-useSeoMeta({
-  title: 'Como Instalar e Ativar o Windows 10 Pro | Tutorial Completo',
-  description: 'Veja como instalar e ativar o Windows 10 Pro original com chave digital. Passo a passo para baixar, instalar e ativar o sistema corretamente.',
-  ogTitle: 'Como Instalar e Ativar o Windows 10 Pro | Tutorial Completo',
-  ogDescription: 'Veja como instalar e ativar o Windows 10 Pro original com chave digital. Passo a passo para baixar, instalar e ativar o sistema corretamente.',
-  twitterTitle: 'Como Instalar e Ativar o Windows 10 Pro | Tutorial Completo',
-  twitterDescription: 'Veja como instalar e ativar o Windows 10 Pro original com chave digital. Passo a passo para baixar, instalar e ativar o sistema corretamente.'
-})
-
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: 'https://casadosoftware.com.br/tutoriais/windows-10-pro'
-    }
-  ]
-})
-</script>

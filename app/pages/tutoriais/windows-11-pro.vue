@@ -190,23 +190,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-useSeoMeta({
-  title: 'Como Instalar e Ativar o Windows 11 Pro | Tutorial Passo a Passo',
-  description: 'Aprenda como instalar e ativar o Windows 11 Pro original com chave digital. Tutorial completo para baixar, instalar e ativar o sistema com segurança.',
-  ogTitle: 'Como Instalar e Ativar o Windows 11 Pro | Tutorial Passo a Passo',
-  ogDescription: 'Aprenda como instalar e ativar o Windows 11 Pro original com chave digital. Tutorial completo para baixar, instalar e ativar o sistema com segurança.',
-  twitterTitle: 'Como Instalar e Ativar o Windows 11 Pro | Tutorial Passo a Passo',
-  twitterDescription: 'Aprenda como instalar e ativar o Windows 11 Pro original com chave digital. Tutorial completo para baixar, instalar e ativar o sistema com segurança.'
-})
-
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: 'https://casadosoftware.com.br/tutoriais/windows-11-pro'
-    }
-  ]
-})
-</script>

@@ -43,7 +43,8 @@
         </div>
 
         <p class="mt-4 text-gray-700">
-          <strong>Aplicativos incluídos:</strong> Word, Excel, PowerPoint, Outlook, OneNote, Publisher, Access, e muito mais.
+          <strong>Aplicativos incluídos:</strong> Word, Excel, PowerPoint,
+          Outlook, OneNote, Publisher, Access, e muito mais.
         </p>
       </section>
 
@@ -195,23 +196,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-useSeoMeta({
-  title: 'Como Instalar o Office 365 com Microsoft Authenticator | Tutorial Completo',
-  description: 'Aprenda como instalar o Office 365, acessar sua conta Microsoft, configurar o Microsoft Authenticator e ativar Word, Excel, PowerPoint e Outlook.',
-  ogTitle: 'Como Instalar o Office 365 com Microsoft Authenticator | Tutorial Completo',
-  ogDescription: 'Aprenda como instalar o Office 365, acessar sua conta Microsoft, configurar o Microsoft Authenticator e ativar Word, Excel, PowerPoint e Outlook.',
-  twitterTitle: 'Como Instalar o Office 365 com Microsoft Authenticator | Tutorial Completo',
-  twitterDescription: 'Aprenda como instalar o Office 365, acessar sua conta Microsoft, configurar o Microsoft Authenticator e ativar Word, Excel, PowerPoint e Outlook.'
-})
-
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: 'https://casadosoftware.com.br/tutoriais/office-365'
-    }
-  ]
-})
-</script>

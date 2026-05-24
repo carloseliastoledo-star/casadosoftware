@@ -179,5 +179,120 @@ export const tutorials = {
       'O método online é mais rápido',
       'Guarde sua chave e o ID de confirmação'
     ]
+  },
+
+  // ======================================
+  // OFFICE 365
+  // ======================================
+  'office-365': {
+    title: 'Como Instalar o Office 365 com Microsoft Authenticator',
+    subtitle:
+      'Aprenda como instalar o Office 365, acessar sua conta Microsoft, configurar o Microsoft Authenticator e ativar Word, Excel, PowerPoint e Outlook',
+    date: '24 de maio de 2026',
+
+    productInfo:
+      'Você receberá 1 conta do Office 365 que pode ser usada em até 5 dispositivos simultaneamente (PC, Mac, iOS e Android).',
+
+    warning:
+      'Assinatura vitalícia com acesso contínuo. Válido para 5 dispositivos simultâneos. Inclui 1 TB de armazenamento no OneDrive. Requer conta Microsoft para ativação.',
+
+    applications: [
+      'Word',
+      'Excel',
+      'PowerPoint',
+      'Outlook',
+      'OneNote',
+      'Publisher',
+      'Access',
+      'OneDrive (1 TB)',
+      'Teams'
+    ],
+
+    guarantees: [
+      'Atendimento ao cliente amigável e profissional',
+      'Entrega rápida via painel da loja',
+      'Notificações por e-mail sobre seu pedido',
+      'Acesso em Minha Conta → Ver Pedidos',
+      'Garantia de substituição individual de 7 dias',
+      'Contas 100% autênticas'
+    ],
+
+    attention:
+      'Certifique-se de comprar a versão correta. Não aceitamos devoluções após a entrega.',
+
+    downloadLinks: [
+      {
+        label: 'Site oficial da Microsoft',
+        url: 'https://www.office.com'
+      },
+      {
+        label: 'Portal de conta Microsoft',
+        url: 'https://account.microsoft.com'
+      }
+    ],
+
+    systemCheck:
+      'O Office 365 está disponível para Windows, Mac, iOS e Android.',
+
+    steps: [
+      {
+        title: 'Recebendo sua Conta',
+        content:
+          'Após a compra, acesse Minha Conta → Ver Pedidos para obter e-mail e senha da conta Microsoft.'
+      },
+      {
+        title: 'Acessando a Conta Microsoft',
+        content:
+          'Acesse account.microsoft.com e faça login com as credenciais fornecidas.'
+      },
+      {
+        title: 'Configurando a Autenticação',
+        content:
+          'Será solicitado configurar a autenticação de dois fatores para segurança da conta.'
+      },
+      {
+        title: 'Instalando o Microsoft Authenticator',
+        content:
+          'Baixe o app Microsoft Authenticator no seu celular (iOS ou Android).'
+      },
+      {
+        title: 'Adicionando a Conta no Authenticator',
+        content:
+          'Escaneie o QR Code ou insira o código manualmente para vincular a conta.'
+      },
+      {
+        title: 'Instalando o Office no PC',
+        content:
+          'Acesse office.com, faça login e clique em "Instalar Office".'
+      },
+      {
+        title: 'Executando o Instalador',
+        content:
+          'Baixe e execute o instalador do Office no seu computador.'
+      },
+      {
+        title: 'Ativando os Aplicativos',
+        content:
+          'Abra qualquer aplicativo do Office (Word, Excel, etc.) e faça login com a conta.'
+      },
+      {
+        title: 'Verificando a Ativação',
+        content:
+          'Vá em Arquivo → Conta e confirme que o produto está ativado.'
+      },
+      {
+        title: 'Instalando em Outros Dispositivos',
+        content:
+          'Repita o processo em até 5 dispositivos adicionais.'
+      }
+    ],
+
+    tips: [
+      'Mantenha o Microsoft Authenticator sempre atualizado',
+      'Não compartilhe suas credenciais com terceiros',
+      'Use uma senha forte para sua conta Microsoft',
+      'Ative a verificação em duas etapas para maior segurança',
+      'Guarde as informações de recuperação da conta'
+    ]
   }
 }
