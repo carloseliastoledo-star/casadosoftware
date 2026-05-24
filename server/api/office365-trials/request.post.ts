@@ -181,15 +181,21 @@ export default defineEventHandler(async (event) => {
                     <li>Escaneie o QR Code apresentado na tela</li>
                     <li>Confirme o login no app</li>
                   </ul>
-                  
+
                   <hr style="margin: 30px 0;">
-                  
+
                   <p><strong>Importante:</strong></p>
                   <ul>
                     <li>Seu teste é válido por 7 dias a partir de hoje</li>
                     <li>Após o período de teste, você pode adquirir uma licença permanente</li>
                     <li>Guarde estes dados em local seguro</li>
                   </ul>
+
+                  <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+                    <p style="margin: 0; color: #856404;">
+                      <strong>Aviso:</strong> Este é um teste grátis oferecido pela Casa do Software como condição promocional. Não é um trial oficial da Microsoft.
+                    </p>
+                  </div>
                   
                   <hr style="margin: 30px 0;">
                   
