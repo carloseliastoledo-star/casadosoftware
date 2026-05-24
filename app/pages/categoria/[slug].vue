@@ -154,6 +154,52 @@
             </p>
           </div>
 
+          <!-- Descrição SEO para Windows -->
+          <div v-if="isCasaDoSoftware && categoria?.slug?.includes('windows')" class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+            <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre as Licenças Windows</h3>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              As licenças Windows oferecidas pela Casa do Software são 100% originais e garantem ativação vitalícia. Oferecemos Windows 10 Pro e Windows 11 Pro com entrega imediata via painel da loja. Todas as chaves são ativadas digitalmente através da conta Microsoft, permitindo reinstalação após formatação.
+            </p>
+            <div class="mt-4">
+              <h4 class="font-semibold text-gray-900 mb-2">Tutoriais Relacionados</h4>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li><NuxtLink to="/tutoriais/windows-11-pro" class="text-blue-600 hover:underline">Como Instalar e Ativar o Windows 11 Pro</NuxtLink></li>
+                <li><NuxtLink to="/tutoriais/windows-10-pro" class="text-blue-600 hover:underline">Como Instalar e Ativar o Windows 10 Pro</NuxtLink></li>
+              </ul>
+            </div>
+            <div class="mt-4">
+              <h4 class="font-semibold text-gray-900 mb-2">Perguntas Frequentes</h4>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li><strong>A licença é vitalícia?</strong> Sim, ativação vitalícia sem necessidade de renovação.</li>
+                <li><strong>Funciona após formatação?</strong> Sim, a licença digital permite reinstalação.</li>
+                <li><strong>Quantos PCs posso ativar?</strong> Cada chave ativa 1 PC.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Descrição SEO para Office -->
+          <div v-if="isCasaDoSoftware && categoria?.slug?.includes('office')" class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+            <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre as Licenças Microsoft Office</h3>
+            <p class="text-sm text-gray-700 leading-relaxed">
+              Oferecemos licenças originais Microsoft Office incluindo Office 365, Office 2021 Pro Plus e versões anteriores. Todas as licenças são entregues imediatamente após a confirmação do pagamento, com suporte técnico completo para instalação e ativação.
+            </p>
+            <div class="mt-4">
+              <h4 class="font-semibold text-gray-900 mb-2">Tutoriais Relacionados</h4>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li><NuxtLink to="/tutoriais/office-365" class="text-blue-600 hover:underline">Como Instalar o Office 365 com Microsoft Authenticator</NuxtLink></li>
+                <li><NuxtLink to="/tutoriais/office-2021-pro" class="text-blue-600 hover:underline">Como Ativar Office 2021 Pro Plus por Telefone</NuxtLink></li>
+              </ul>
+            </div>
+            <div class="mt-4">
+              <h4 class="font-semibold text-gray-900 mb-2">Perguntas Frequentes</h4>
+              <ul class="text-sm text-gray-700 space-y-1">
+                <li><strong>Office 365 é vitalício?</strong> Sim, assinatura vitalícia com acesso contínuo.</li>
+                <li><strong>Quantos dispositivos posso usar?</strong> Office 365 permite até 5 dispositivos simultâneos.</li>
+                <li><strong>Inclui OneDrive?</strong> Sim, Office 365 inclui 1 TB de armazenamento no OneDrive.</li>
+              </ul>
+            </div>
+          </div>
+
           <!-- Grid vazio (categoria existe mas sem produtos) -->
           <div v-if="produtos.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
             <div class="text-4xl mb-4" aria-hidden="true">📦</div>
