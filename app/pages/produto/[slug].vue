@@ -191,6 +191,31 @@
           <div v-else class="product-description-content text-gray-500">
             Descrição não disponível para este produto.
           </div>
+
+          <!-- CTA FIXO ABAIXO DA DESCRIÇÃO -->
+          <div class="product-description-cta">
+            <div class="product-description-cta-text">
+              <h3>Pronto para ativar seu produto?</h3>
+              <p>Compre agora com entrega digital rápida e suporte para instalação e ativação.</p>
+            </div>
+
+            <div class="product-description-cta-actions">
+              <button
+                type="button"
+                class="description-cta-primary"
+                @click="buyNow"
+              >
+                Comprar agora
+              </button>
+
+              <NuxtLink
+                to="/contato"
+                class="description-cta-secondary"
+              >
+                Falar com suporte
+              </NuxtLink>
+            </div>
+          </div>
         </section>
 
         <!-- POR QUE O PREÇO É BOM -->
