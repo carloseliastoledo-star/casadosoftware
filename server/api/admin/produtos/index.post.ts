@@ -138,7 +138,7 @@ export default defineEventHandler(async (event) => {
 
     // Categorias
     if (categorias.length) {
-      data.produtoCategorias = {
+      data.ProdutoCategoria = {
         create: categorias.map((slug: string) => ({
           categoria: { connect: { slug } }
         }))
