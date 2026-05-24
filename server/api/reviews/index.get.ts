@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
       where.productId = productId
     }
 
-    const reviews = await (prisma as any).review.findMany({
+    const reviews = await prisma.review.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       take: 50,
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
     })
 
     // Calcular estatísticas
-    const allReviews = await (prisma as any).review.findMany({
+    const allReviews = await prisma.review.findMany({
       where,
       select: { rating: true }
     })
