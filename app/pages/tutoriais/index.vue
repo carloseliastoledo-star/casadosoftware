@@ -1,6 +1,4 @@
 <script setup>
-import { products } from '~/data/products'
-
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String(config.public?.storeSlug || '').trim())
 
@@ -34,6 +32,13 @@ const isCasaDoSoftware = computed(() => {
   return storeSlug.value === 'casadosoftware'
 })
 
+const tutorials = [
+  { slug: 'windows-11-pro', title: 'Como Instalar e Ativar o Windows 11 Pro' },
+  { slug: 'windows-10-pro', title: 'Como Instalar e Ativar o Windows 10 Pro' },
+  { slug: 'office-365', title: 'Como Instalar o Office 365 com Microsoft Authenticator' },
+  { slug: 'office-2021-pro', title: 'Como Ativar Office 2021 Pro Plus por Telefone' }
+]
+
 useSeoMeta(() => {
   if (!isCasaDoSoftware.value) return {}
   const title = 'Tutoriais de Ativação Windows e Office | Casa do Software'
@@ -60,15 +65,15 @@ useSeoMeta(() => {
 
       <ul class="space-y-4">
         <li
-          v-for="p in products"
-          :key="p.slug"
+          v-for="tutorial in tutorials"
+          :key="tutorial.slug"
           class="bg-white border rounded-lg p-6 hover:shadow"
         >
           <NuxtLink
-            :to="`/tutoriais/${p.slug}`"
+            :to="`/tutoriais/${tutorial.slug}`"
             class="text-blue-600 font-semibold hover:underline"
           >
-            Como ativar {{ p.name }}
+            {{ tutorial.title }}
           </NuxtLink>
         </li>
       </ul>
