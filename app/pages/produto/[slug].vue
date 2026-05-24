@@ -191,37 +191,6 @@
           <div v-else class="product-description-content text-gray-500">
             Descrição não disponível para este produto.
           </div>
-
-          <!-- CTA FIXO ABAIXO DA DESCRIÇÃO - PRODUTOS RELACIONADOS -->
-          <div class="product-description-cta">
-            <div class="product-description-cta-text">
-              <h3>Complete sua compra com produtos relacionados</h3>
-              <p>Aproveite para combinar sua licença Windows com soluções Microsoft para produtividade e ativação completa.</p>
-            </div>
-
-            <div class="product-description-cta-actions">
-              <NuxtLink
-                to="/produto/microsoft-windows-11-pro-chave-esd-32-64-bits"
-                class="description-cta-primary"
-              >
-                Ver Windows 11 Pro
-              </NuxtLink>
-
-              <NuxtLink
-                to="/produto/microsoft-office-365-business-premium-1-tb-onedrive-licenca-original-esd"
-                class="description-cta-secondary"
-              >
-                Ver Office 365
-              </NuxtLink>
-
-              <NuxtLink
-                to="/categoria/windows"
-                class="description-cta-secondary"
-              >
-                Ver mais Windows
-              </NuxtLink>
-            </div>
-          </div>
         </section>
 
         <!-- POR QUE O PREÇO É BOM -->
