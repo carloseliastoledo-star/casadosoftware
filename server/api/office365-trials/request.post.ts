@@ -126,16 +126,24 @@ export default defineEventHandler(async (event) => {
     let licenseEmail = null
     let licensePassword = null
 
-    try {
+        try {
       const licensePanelUrl = process.env.LICENSE_PANEL_URL
-const internalApiKey = process.env.INTERNAL_API_KEY
+      const internalApiKey = process.env.INTERNAL_API_KEY
 
-if (!licensePanelUrl || !internalApiKey) {
-  throw createError({
-    statusCode: 500,
-    statusMessage: 'Configuração do painel de licenças ausente'
-  })
-}
+      console.log('[api/office365-trial/request] Reserve license env check:', {
+        licensePanelUrl,
+        hasInternalApiKey: Boolean(internalApiKey),
+        internalApiKeyLength: internalApiKey?.length || 0,
+        leadId,
+        customerEmail: email.trim()
+      })
+
+      if (!licensePanelUrl || !internalApiKey) {
+        throw createError({
+          statusCode: 500,
+          statusMessage: 'Configuração do painel de licenças ausente'
+        })
+      }
 
       const reserveResponse = await $fetch(`${licensePanelUrl}/api/internal/licenses/reserve-test`, {
         method: 'POST',
@@ -150,13 +158,40 @@ if (!licensePanelUrl || !internalApiKey) {
         }
       }) as any
 
-      if (reserveResponse.success && reserveResponse.licenseSend) {
-        licenseReserved = reserveResponse.licenseSend.status === 'SENT'
-        licenseEmail = reserveResponse.licenseSend.licenseEmail
+      console.log('[api/office365-trial/request] Reserve license response:', JSON.stringify(reserveResponse))
+
+      const responseSuccess =
+        reserveResponse === true ||
+        reserveResponse?.success === true ||
+        reserveResponse?.ok === true
+
+      const licenseStatus =
+        reserveResponse?.licenseSend?.status ||
+        reserveResponse?.status ||
+        null
+
+      const responseLicenseEmail =
+        reserveResponse?.licenseSend?.licenseEmail ||
+        reserveResponse?.licenseData?.email ||
+        reserveResponse?.licenseData?.username ||
+        reserveResponse?.license?.email ||
+        reserveResponse?.licenseAccount?.email ||
+        null
+
+      const responseLicensePassword =
+        reserveResponse?.licenseData?.password ||
+        reserveResponse?.license?.password ||
+        reserveResponse?.licenseAccount?.password ||
+        reserveResponse?.licenseSend?.licensePassword ||
+        null
+
+      if (responseSuccess) {
+        licenseReserved = licenseStatus ? licenseStatus === 'SENT' || licenseStatus === 'RESERVED' || licenseStatus === 'ACTIVE' : true
+        licenseEmail = responseLicenseEmail
 
         // Se a licença foi reservada e temos dados, enviar e-mail
-        if (licenseReserved && reserveResponse.licenseData) {
-          licensePassword = reserveResponse.licenseData.password
+        if (licenseReserved && responseLicenseEmail && responseLicensePassword) {
+          licensePassword = responseLicensePassword
 
           // Enviar e-mail com dados da licença
           try {
