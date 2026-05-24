@@ -94,8 +94,16 @@ export default defineEventHandler(async (event) => {
       return []
     }
 
+    // Criar mapa de produtos por slug para ordenação correta
+    const produtoMap = new Map(produtos.map((p: any) => [p.slug, p]))
+
+    // Ordenar produtos na mesma ordem dos slugs configurados
+    const orderedProdutos = bestSellerSlugs
+      .map((slug: string) => produtoMap.get(slug))
+      .filter((p: any) => p) // Remover nulls (produtos não encontrados)
+
     // Mapear para o formato esperado pelo frontend
-    const products = produtos.map((p: any) => ({
+    const products = orderedProdutos.map((p: any) => ({
       id: p.id,
       name: lang === 'en' && p.nomeEn ? p.nomeEn : 
             lang === 'es' && p.nomeEs ? p.nomeEs : p.nome,
