@@ -273,7 +273,7 @@ export default defineEventHandler(async (event) => {
 
                   <p>
                     <strong>E-mail:</strong> suporte@casadosoftware.com.br<br>
-                    <strong>WhatsApp:</strong> (11) 99999-9999
+                    <strong>WhatsApp:</strong> (11) 91051-2647
                   </p>
                   
                   <p style="margin-top: 30px;">Atenciosamente,<br><strong>Equipe Casa do Software</strong></p>
