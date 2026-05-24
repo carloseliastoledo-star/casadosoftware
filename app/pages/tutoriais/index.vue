@@ -33,10 +33,10 @@ const isCasaDoSoftware = computed(() => {
 })
 
 const tutorials = [
+  { slug: 'office-2021-pro', title: 'Como Ativar Office 2021 Pro Plus por Telefone' },
   { slug: 'windows-11-pro', title: 'Como Instalar e Ativar o Windows 11 Pro' },
   { slug: 'windows-10-pro', title: 'Como Instalar e Ativar o Windows 10 Pro' },
-  { slug: 'office-365', title: 'Como Instalar o Office 365 com Microsoft Authenticator' },
-  { slug: 'office-2021-pro', title: 'Como Ativar Office 2021 Pro Plus por Telefone' }
+  { slug: 'office-365', title: 'Como Instalar o Office 365 com Microsoft Authenticator' }
 ]
 
 useSeoMeta(() => {
