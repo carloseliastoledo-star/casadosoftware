@@ -171,7 +171,7 @@ model BlogPostTranslation {
 }
 
 model Categoria {
-  id               String             @id
+  id               String             @id @default(cuid())
   nome             String
   slug             String             @unique
   wcCategoryId     Int?               @unique
@@ -388,7 +388,7 @@ model PartnerApplication {
 }
 
 model Produto {
-  id                          String              @id
+  id                          String              @id @default(cuid())
   nome                        String
   slug                        String
   slugEn                      String?
@@ -455,7 +455,7 @@ model ProdutoCategoria {
 }
 
 model ProdutoPrecoLoja {
-  id          String   @id
+  id          String   @id @default(cuid())
   produtoId   String
   storeSlug   String
   preco       Float
@@ -468,7 +468,7 @@ model ProdutoPrecoLoja {
 }
 
 model ProdutoPrecoMoeda {
-  id        String   @id
+  id        String   @id @default(cuid())
   produtoId String
   storeSlug String
   currency  String
