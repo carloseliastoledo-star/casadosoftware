@@ -1,5 +1,5 @@
 import { defineEventHandler, createError, readBody } from 'h3'
-import { prisma } from '../../db/prisma'
+import prisma from '../../db/prisma'
 
 const LICENSE_PANEL_URL = process.env.LICENSE_PANEL_URL
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY
