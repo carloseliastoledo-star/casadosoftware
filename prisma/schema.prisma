@@ -634,8 +634,36 @@ model Office365TrialLead {
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @updatedAt @db.DateTime(0)
 
+  Office365TestLicenseSend Office365TestLicenseSend[]
+
   @@index([email])
   @@index([status])
   @@index([trialExpiresAt])
   @@index([createdAt])
+}
+
+model Office365TestLicenseSend {
+  id               String   @id @default(cuid())
+  leadId           String
+  customerName     String
+  customerEmail    String
+  licensePanelId  String?
+  licenseEmail     String?
+  sentAt           DateTime @default(now()) @db.DateTime(0)
+  paymentStatus    String   @default("PENDING") // PENDING, PAID, CANCELLED
+  paidAt           DateTime? @db.DateTime(0)
+  orderId          String?
+  status           String   @default("SENT") // SENT, PENDING_STOCK, ERROR
+  source           String   @default("landing_page") // landing_page, manual
+  createdAt        DateTime @default(now()) @db.DateTime(0)
+  updatedAt        DateTime @updatedAt @db.DateTime(0)
+
+  Office365TrialLead Office365TrialLead @relation(fields: [leadId], references: [id])
+
+  @@index([leadId])
+  @@index([customerEmail])
+  @@index([licenseEmail])
+  @@index([paymentStatus])
+  @@index([sentAt])
+  @@index([status])
 }

@@ -1,10 +1,10 @@
-import prisma from '#root/server/db/prisma'
-import { createError } from 'h3'
+import { defineEventHandler, createError, readBody } from 'h3'
+import prisma from '../db/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    
+
     // Validação dos campos obrigatórios
     const { name, email, whatsapp, usageType, systemType, acceptTerms } = body
     
@@ -72,13 +72,14 @@ export default defineEventHandler(async (event) => {
     trialExpiresAt.setDate(trialExpiresAt.getDate() + 7)
     
     // Criar lead no banco
-    const lead = await prisma.$executeRawUnsafe(`
+    const leadId = crypto.randomUUID()
+    await prisma.$executeRawUnsafe(`
       INSERT INTO Office365TrialLead (
-        id, name, email, whatsapp, usageType, systemType, 
+        id, name, email, whatsapp, usageType, systemType,
         status, trialStartAt, trialExpiresAt, createdAt, updatedAt
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, 
-      crypto.randomUUID(),
+    `,
+      leadId,
       name.trim(),
       email.trim(),
       whatsapp.trim(),
@@ -90,10 +91,46 @@ export default defineEventHandler(async (event) => {
       trialStartAt,
       trialStartAt
     )
-    
+
+    // Chamar endpoint interno para reservar licença
+    let licenseReserved = false
+    let licenseEmail = null
+    let licensePassword = null
+
+    try {
+      const reserveResponse = await $fetch('/api/internal/office365-reserve-license', {
+        method: 'POST',
+        body: {
+          leadId,
+          customerName: name.trim(),
+          customerEmail: email.trim(),
+          source: 'landing_page'
+        }
+      })
+
+      if (reserveResponse.success && reserveResponse.licenseSend) {
+        licenseReserved = reserveResponse.licenseSend.status === 'SENT'
+        licenseEmail = reserveResponse.licenseSend.licenseEmail
+
+        // Se a licença foi reservada e temos dados, enviar e-mail
+        if (licenseReserved && reserveResponse.licenseData) {
+          // Aqui você pode adicionar lógica para enviar e-mail
+          // Por enquanto, apenas log
+          console.log('[api/office365-trial/request] License reserved:', reserveResponse.licenseData)
+        }
+      }
+    } catch (reserveError: any) {
+      console.error('[api/office365-trial/request] Reserve license error:', reserveError)
+      // Continuar mesmo se falhar a reserva
+    }
+
     return {
       success: true,
-      message: 'Solicitação recebida. Enviaremos as instruções de acesso no seu e-mail e WhatsApp.'
+      message: licenseReserved
+        ? 'Solicitação recebida. Enviamos as instruções de acesso no seu e-mail.'
+        : 'Solicitação recebida. Entraremos em contato em breve.',
+      licenseReserved,
+      licenseEmail
     }
     
   } catch (error: any) {

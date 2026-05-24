@@ -431,5 +431,33 @@ export default defineEventHandler(async (event) => {
     // ignora falha no lead
   }
 
+  // Atualizar teste Office 365 se o e-mail coincidir
+  try {
+    const testLicense = await prisma.office365TestLicenseSend.findFirst({
+      where: {
+        customerEmail: email,
+        paymentStatus: 'PENDING'
+      },
+      orderBy: {
+        sentAt: 'desc'
+      }
+    })
+
+    if (testLicense) {
+      await prisma.office365TestLicenseSend.update({
+        where: { id: testLicense.id },
+        data: {
+          paymentStatus: 'PAID',
+          paidAt: new Date(),
+          orderId: order.id
+        }
+      })
+      console.log('[checkout] Office 365 test license marked as paid:', testLicense.id)
+    }
+  } catch (error) {
+    console.error('[checkout] Error updating Office 365 test license:', error)
+    // Não bloqueia o fluxo
+  }
+
   return { ok: true, orderId: order.id, ...result }
 })
