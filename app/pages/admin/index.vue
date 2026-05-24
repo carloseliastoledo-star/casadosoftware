@@ -56,6 +56,9 @@ const stats = computed(() => data.value || { produtosTotal: 0, licencasTotal: 0,
           <NuxtLink to="/admin/produtos/novo" class="block text-blue-600 hover:underline text-sm">
             Criar novo produto
           </NuxtLink>
+          <NuxtLink to="/admin/office365-trials" class="block text-blue-600 hover:underline text-sm">
+            Testes Office 365
+          </NuxtLink>
           <NuxtLink :to="productsIndexPath" class="block text-blue-600 hover:underline text-sm">
             Ver loja
           </NuxtLink>
