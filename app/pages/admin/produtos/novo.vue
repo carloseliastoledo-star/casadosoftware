@@ -127,7 +127,11 @@ async function salvar() {
 
       <div class="space-y-2">
         <label class="text-sm font-medium text-gray-700">Descrição (HTML permitido)</label>
-        <TiptapEditor v-model="form.descricao" />
+        <textarea
+          v-model="form.descricao"
+          class="w-full p-3 border rounded-lg min-h-[200px]"
+          placeholder="Descrição do produto (HTML permitido)"
+        />
       </div>
 
       <button
