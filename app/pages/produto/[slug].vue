@@ -180,10 +180,23 @@
         </div>
 
         <!-- DESCRIÇÃO DO PRODUTO -->
-        <div class="bg-white border border-gray-200 rounded-2xl mt-10 p-6 md:p-10 max-w-4xl mx-auto">
-          <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Descrição do Produto</h2>
-          <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed" v-html="safeDescriptionHtml" />
-        </div>
+        <section class="product-description-box force-readable-description mt-10 max-w-4xl mx-auto">
+          <h2 class="product-description-title">Descrição do Produto</h2>
+          
+          <!-- TESTE VISUAL ATIVO - ARQUIVO CERTO -->
+          <p style="color:red !important; font-size:36px !important; font-weight:900 !important; background:yellow !important; padding:20px !important; border:5px solid red !important;">
+            TESTE VISUAL ATIVO - ARQUIVO CERTO
+          </p>
+          
+          <div
+            v-if="safeDescriptionHtml"
+            class="product-description-content force-readable-description-content"
+            v-html="safeDescriptionHtml"
+          />
+          <div v-else class="product-description-content text-gray-500">
+            Descrição não disponível para este produto.
+          </div>
+        </section>
 
         <!-- POR QUE O PREÇO É BOM -->
         <div class="bg-white border border-gray-200 rounded-2xl mt-6 p-6 md:p-10 max-w-4xl mx-auto">
@@ -512,6 +525,7 @@ const safeProduct = computed(() => {
     finalUrl: p.finalUrl || null
   }
 })
+
 
 const tutorialAccess = ref<{ allowed: boolean; reason: string | null } | null>(null)
 const tutorialAccessChecked = ref(false)
@@ -847,7 +861,27 @@ const safeDescriptionHtml = computed(() => {
   const raw = String((safeProduct.value as any)?.description || '').trim()
   if (!raw) return ''
 
-  const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(raw)
+  // Remover TODOS os estilos inline completamente para evitar conflitos
+  const cleaned = raw
+    .replace(/style="[^"]*"/gi, '')
+    .replace(/style='[^']*'/gi, '')
+    .replace(/color:\s*[^;"']+;?/gi, '')
+    .replace(/background-color:\s*[^;"']+;?/gi, '')
+    .replace(/opacity:\s*[^;"']+;?/gi, '')
+    .replace(/class="[^"]*(text-slate-300|text-gray-300|text-slate-400|text-gray-400|text-slate-500|text-gray-500|text-white)[^"]*"/gi, (match) => {
+      // Remove classes de cor clara, mantém outras classes
+      return match
+        .replace(/text-slate-300/gi, '')
+        .replace(/text-gray-300/gi, '')
+        .replace(/text-slate-400/gi, '')
+        .replace(/text-gray-400/gi, '')
+        .replace(/text-slate-500/gi, '')
+        .replace(/text-gray-500/gi, '')
+        .replace(/text-white/gi, '')
+        .replace(/class="\s*"/gi, '') // Remove class vazio
+    })
+
+  const hasHtml = /<\s*\/?\s*[a-z][\s\S]*>/i.test(cleaned)
   const escapeHtml = (s: string) =>
     s
       .replace(/&/g, '&amp;')
@@ -1358,6 +1392,66 @@ function addToCartOnly() {
 </script>
 
 <style scoped>
+/* Product Description Box - Premium Styling */
+.product-description-box {
+  margin-top: 32px;
+  padding: 40px;
+  background: linear-gradient(180deg, #f8fafc 0%, #eaf2ff 100%) !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 20px;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.10);
+}
+
+.product-description-title {
+  color: #020617 !important;
+  opacity: 1 !important;
+}
+
+:deep(.product-description-content),
+:deep(.product-description-content *) {
+  opacity: 1 !important;
+  color: #1e293b !important;
+}
+
+:deep(.product-description-content h1),
+:deep(.product-description-content h2),
+:deep(.product-description-content h3),
+:deep(.product-description-content h4),
+:deep(.product-description-content strong),
+:deep(.product-description-content b) {
+  color: #020617 !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+:deep(.product-description-content p),
+:deep(.product-description-content li),
+:deep(.product-description-content span),
+:deep(.product-description-content div) {
+  color: #1e293b !important;
+  opacity: 1 !important;
+  font-weight: 500;
+}
+
+:deep(.product-description-content a) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 8px 12px 0;
+  padding: 12px 18px;
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border: 1px solid #1d4ed8 !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+:deep(.product-description-content a *) {
+  color: #ffffff !important;
+}
+
 /* Forçar fundo transparente em v-html com estilos inline - Tailwind prose-invert cuida das cores */
 .prose :deep(p),
 .prose :deep(h1),

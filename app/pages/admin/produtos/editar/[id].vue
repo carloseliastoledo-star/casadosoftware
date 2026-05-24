@@ -174,12 +174,10 @@ async function salvar() {
           class="w-full text-2xl border p-3 rounded"
         />
 
-        <textarea
-          v-model="form.descricao"
-          placeholder="Descrição completa"
-          rows="10"
-          class="w-full border p-3 rounded"
-        />
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-gray-700">Descrição (HTML permitido)</label>
+          <TiptapEditor v-model="form.descricao" />
+        </div>
 
         <button
           v-if="isMicrosoft365Candidate"

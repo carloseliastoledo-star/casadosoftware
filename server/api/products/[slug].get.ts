@@ -192,9 +192,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const rawDescription = typeof product.descricao === 'string' ? product.descricao.trim() : ''
+  // Usar descrição do banco se existir, mesmo que seja vazia
+  // Não usar fallback genérico para produtos com descrição cadastrada
   const description = rawDescription
-    ? rawDescription
-    : getDefaultProductDescription({ nome: product.nome, slug: product.slug })
 
   const dbName =
     lang === 'en'

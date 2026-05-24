@@ -101,3 +101,115 @@ body {
   margin: 1rem auto;
   border-radius: 1rem;
 }
+
+/* Product Description Box - Premium Styling - Global CSS */
+.product-description-box {
+  margin-top: 32px !important;
+  padding: 40px !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #eaf2ff 100%) !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 20px !important;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.10) !important;
+}
+
+.product-description-title {
+  color: #020617 !important;
+  opacity: 1 !important;
+  font-weight: 800 !important;
+}
+
+.product-description-content,
+.product-description-content * {
+  opacity: 1 !important;
+}
+
+.product-description-content {
+  color: #1e293b !important;
+  font-size: 17px !important;
+  line-height: 1.85 !important;
+}
+
+.product-description-content h1,
+.product-description-content h2,
+.product-description-content h3,
+.product-description-content h4 {
+  color: #020617 !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+.product-description-content p,
+.product-description-content li,
+.product-description-content span,
+.product-description-content div {
+  color: #1e293b !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+.product-description-content strong,
+.product-description-content b {
+  color: #020617 !important;
+  font-weight: 800 !important;
+  opacity: 1 !important;
+}
+
+.product-description-content a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 12px 8px 12px 0 !important;
+  padding: 12px 18px !important;
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border: 1px solid #1d4ed8 !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25) !important;
+}
+
+.product-description-content a,
+.product-description-content a * {
+  color: #ffffff !important;
+}
+
+/* Force Readable Description - Override tudo para diagnóstico */
+.force-readable-description,
+.force-readable-description * {
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  text-shadow: none !important;
+}
+
+.force-readable-description {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.force-readable-description-content,
+.force-readable-description-content * {
+  color: #000000 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+.force-readable-description-content h1,
+.force-readable-description-content h2,
+.force-readable-description-content h3,
+.force-readable-description-content h4,
+.force-readable-description-content strong,
+.force-readable-description-content b {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+.force-readable-description-content p,
+.force-readable-description-content li,
+.force-readable-description-content span,
+.force-readable-description-content div {
+  color: #111827 !important;
+  font-weight: 500 !important;
+}
