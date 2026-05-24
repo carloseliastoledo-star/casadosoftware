@@ -73,14 +73,14 @@ export default defineEventHandler(async (event) => {
     })
 
     // Retornar dados da licença
-    // NOTA: passwordEncrypted está criptografado e não deve ser descriptografado
-    // O sistema principal deve lidar com isso ou ajustar o armazenamento para criptografia reversível
+    // NOTA: Atualmente passwordEncrypted é armazenado em texto plano
+    // Futuramente implementar criptografia reversível com chave no .env
     return {
       success: true,
       license: {
         id: updatedLicense.id,
         email: updatedLicense.email,
-        passwordEncrypted: updatedLicense.passwordEncrypted,
+        password: updatedLicense.passwordEncrypted, // Senha legível para envio ao cliente
         licenseType: updatedLicense.licenseType,
         tenantDomain: updatedLicense.tenantDomain,
         deliveredAt: updatedLicense.deliveredAt

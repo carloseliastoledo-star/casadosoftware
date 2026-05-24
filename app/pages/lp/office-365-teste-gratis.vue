@@ -38,7 +38,7 @@ async function submitForm() {
   success.value = false
 
   try {
-    const response = await $fetch('/api/office365-trial/request', {
+    const response = await $fetch('/api/office365-trials/request', {
       method: 'POST',
       body: formData.value
     })

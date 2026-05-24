@@ -633,6 +633,17 @@ model Office365TrialLead {
   notes            String?  @db.Text
   createdAt        DateTime @default(now()) @db.DateTime(0)
   updatedAt        DateTime @updatedAt @db.DateTime(0)
+  ip               String?  @db.Text
+  userAgent        String?  @db.Text
+  referrer         String?  @db.Text
+  landingPage      String?  @db.Text
+  utmSource        String?  @db.Text
+  utmMedium        String?  @db.Text
+  utmCampaign      String?  @db.Text
+  utmContent       String?  @db.Text
+  utmTerm          String?  @db.Text
+  gclid            String?  @db.Text
+  fbclid           String?  @db.Text
 
   Office365TestLicenseSend Office365TestLicenseSend[]
 
