@@ -1,5 +1,5 @@
-import prisma from '#root/server/db/prisma'
-import { createError } from 'h3'
+import { defineEventHandler, createError, readBody } from 'h3'
+import prisma from '../../../db/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     const { status, microsoftLogin, temporaryPassword, checkoutUrl, notes } = body
 
     const result = await prisma.$executeRawUnsafe(`
-      UPDATE Office365TrialLead 
+      UPDATE Office365TrialLead
       SET status = ?, microsoftLogin = ?, temporaryPassword = ?, checkoutUrl = ?, notes = ?, updatedAt = NOW()
       WHERE id = ?
     `, status || null, microsoftLogin || null, temporaryPassword || null, checkoutUrl || null, notes || null, id)

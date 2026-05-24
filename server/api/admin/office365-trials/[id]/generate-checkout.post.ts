@@ -1,5 +1,5 @@
-import prisma from '#root/server/db/prisma'
-import { createError } from 'h3'
+import { defineEventHandler, createError } from 'h3'
+import prisma from '../../../../db/prisma'
 
 export default defineEventHandler(async (event) => {
   try {

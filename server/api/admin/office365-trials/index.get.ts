@@ -1,9 +1,10 @@
-import prisma from '#root/server/db/prisma'
+import { defineEventHandler } from 'h3'
+import prisma from '../../../db/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
     const leads = await prisma.$queryRawUnsafe(`
-      SELECT * FROM Office365TrialLead 
+      SELECT * FROM Office365TrialLead
       ORDER BY createdAt DESC
     `)
 

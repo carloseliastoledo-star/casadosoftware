@@ -1,7 +1,7 @@
-import prisma from '#root/server/db/prisma'
-import { createError } from 'h3'
-import { sendEmail } from '#root/server/services/emailService'
-import { generateDeliveryMessage, generateDay5Message, generateDay7Message, generatePostExpirationMessage } from '#root/server/services/office365TrialMessages'
+import { defineEventHandler, createError, readBody } from 'h3'
+import prisma from '../../../../db/prisma'
+import { sendEmail } from '../../../../services/emailService'
+import { generateDeliveryMessage, generateDay5Message, generateDay7Message, generatePostExpirationMessage } from '../../../../services/office365TrialMessages'
 
 export default defineEventHandler(async (event) => {
   try {
