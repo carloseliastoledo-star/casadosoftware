@@ -105,116 +105,52 @@
   </section>
 
   <section v-else class="bg-[#010d1a] min-h-screen">
-    <!-- Header visual premium -->
-    <CategoryHeaderPremium
-      :category-name="String(categoria?.nome || 'Softwares').replace(/[\u00AD\u200B\u200C\u200D\u200E\u200F\u2028\u2029\u202A-\u202E\u2060\uFEFF]/g, '').normalize('NFC')"
-      :product-count="produtos.length"
-    />
-
     <!-- Conteúdo principal -->
-    <div class="max-w-7xl mx-auto px-5 py-8">
-      <div class="flex flex-col lg:flex-row gap-7 items-start">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <!-- Loading state -->
+      <div v-if="pending" class="flex items-center justify-center py-20 text-gray-400">
+        <svg class="animate-spin w-6 h-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+        </svg>
+        Carregando produtos...
+      </div>
 
-        <!-- Sidebar -->
-        <CategorySidebarPremium :current-slug="String(categoria?.slug || '')" />
+      <!-- Categoria não encontrada -->
+      <div v-else-if="!categoria" class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="text-4xl mb-4" aria-hidden="true">🔍</div>
+        <h2 class="text-lg font-bold text-gray-800 mb-1">Categoria não encontrada</h2>
+        <p class="text-sm text-gray-500 mb-5">Verifique o link ou volte para a página inicial.</p>
+        <NuxtLink
+          to="/"
+          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-5 rounded-xl transition"
+        >
+          Ir para o início
+        </NuxtLink>
+      </div>
 
-        <!-- Área de grid -->
-        <div class="flex-1 min-w-0">
+      <!-- Categoria com produtos -->
+      <div v-else>
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold text-white">
+            {{ categoria?.nome || 'Softwares' }}
+          </h1>
+        </div>
 
-          <!-- Loading state -->
-          <div v-if="pending" class="flex items-center justify-center py-20 text-gray-400">
-            <svg class="animate-spin w-6 h-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-            </svg>
-            Carregando produtos...
-          </div>
+        <!-- Grid vazio (categoria existe mas sem produtos) -->
+        <div v-if="produtos.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="text-4xl mb-4" aria-hidden="true">📦</div>
+          <h2 class="text-lg font-bold text-gray-800 mb-1">Nenhum produto encontrado</h2>
+          <p class="text-sm text-gray-500">Esta categoria ainda não tem produtos cadastrados.</p>
+        </div>
 
-          <!-- Categoria não encontrada -->
-          <div v-else-if="!categoria" class="flex flex-col items-center justify-center py-20 text-center">
-            <div class="text-4xl mb-4" aria-hidden="true">🔍</div>
-            <h2 class="text-lg font-bold text-gray-800 mb-1">Categoria não encontrada</h2>
-            <p class="text-sm text-gray-500 mb-5">Verifique o link ou volte para a página inicial.</p>
-            <NuxtLink
-              to="/"
-              class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-5 rounded-xl transition"
-            >
-              Ir para o início
-            </NuxtLink>
-          </div>
-
-          <!-- Descrição específica para Autodesk -->
-          <div v-if="categoria?.slug?.includes('autodesk')" class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre as licenças Autodesk</h3>
-            <p class="text-sm text-gray-700 leading-relaxed">
-              Os produtos Autodesk utilizam o modelo de licença por assinatura anual, que garante acesso às versões mais recentes dos softwares, atualizações e suporte técnico. A licença é vinculada a uma conta Autodesk e pode ser usada em um dispositivo por usuário. Após o período de assinatura, é necessário renovar para continuar utilizando o software.
-            </p>
-            <p class="text-sm text-gray-700 leading-relaxed mt-3">
-              Somos uma loja independente e não somos afiliados ou representantes oficiais da Autodesk. Todas as marcas mencionadas pertencem aos seus respectivos proprietários.
-            </p>
-          </div>
-
-          <!-- Descrição SEO para Windows -->
-          <div v-if="isCasaDoSoftware && categoria?.slug?.includes('windows')" class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre as Licenças Windows</h3>
-            <p class="text-sm text-gray-700 leading-relaxed">
-              As licenças Windows oferecidas pela Casa do Software são 100% originais e garantem ativação vitalícia. Oferecemos Windows 10 Pro e Windows 11 Pro com entrega imediata via painel da loja. Todas as chaves são ativadas digitalmente através da conta Microsoft, permitindo reinstalação após formatação.
-            </p>
-            <div class="mt-4">
-              <h4 class="font-semibold text-gray-900 mb-2">Tutoriais Relacionados</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li><NuxtLink to="/tutoriais/windows-11-pro" class="text-blue-600 hover:underline">Como Instalar e Ativar o Windows 11 Pro</NuxtLink></li>
-                <li><NuxtLink to="/tutoriais/windows-10-pro" class="text-blue-600 hover:underline">Como Instalar e Ativar o Windows 10 Pro</NuxtLink></li>
-              </ul>
-            </div>
-            <div class="mt-4">
-              <h4 class="font-semibold text-gray-900 mb-2">Perguntas Frequentes</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li><strong>A licença é vitalícia?</strong> Sim, ativação vitalícia sem necessidade de renovação.</li>
-                <li><strong>Funciona após formatação?</strong> Sim, a licença digital permite reinstalação.</li>
-                <li><strong>Quantos PCs posso ativar?</strong> Cada chave ativa 1 PC.</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Descrição SEO para Office -->
-          <div v-if="isCasaDoSoftware && categoria?.slug?.includes('office')" class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h3 class="text-lg font-bold text-gray-900 mb-3">Sobre as Licenças Microsoft Office</h3>
-            <p class="text-sm text-gray-700 leading-relaxed">
-              Oferecemos licenças originais Microsoft Office incluindo Office 365, Office 2021 Pro Plus e versões anteriores. Todas as licenças são entregues imediatamente após a confirmação do pagamento, com suporte técnico completo para instalação e ativação.
-            </p>
-            <div class="mt-4">
-              <h4 class="font-semibold text-gray-900 mb-2">Tutoriais Relacionados</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li><NuxtLink to="/tutoriais/office-365" class="text-blue-600 hover:underline">Como Instalar o Office 365 com Microsoft Authenticator</NuxtLink></li>
-                <li><NuxtLink to="/tutoriais/office-2021-pro" class="text-blue-600 hover:underline">Como Ativar Office 2021 Pro Plus por Telefone</NuxtLink></li>
-              </ul>
-            </div>
-            <div class="mt-4">
-              <h4 class="font-semibold text-gray-900 mb-2">Perguntas Frequentes</h4>
-              <ul class="text-sm text-gray-700 space-y-1">
-                <li><strong>Office 365 é vitalício?</strong> Sim, assinatura vitalícia com acesso contínuo.</li>
-                <li><strong>Quantos dispositivos posso usar?</strong> Office 365 permite até 5 dispositivos simultâneos.</li>
-                <li><strong>Inclui OneDrive?</strong> Sim, Office 365 inclui 1 TB de armazenamento no OneDrive.</li>
-              </ul>
-            </div>
-          </div>
-
-          <!-- Grid vazio (categoria existe mas sem produtos) -->
-          <div v-if="produtos.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
-            <div class="text-4xl mb-4" aria-hidden="true">📦</div>
-            <h2 class="text-lg font-bold text-gray-800 mb-1">Nenhum produto encontrado</h2>
-            <p class="text-sm text-gray-500">Esta categoria ainda não tem produtos cadastrados.</p>
-          </div>
-
-          <!-- Grid de produtos premium -->
-          <CategoryGridPremium v-else>
-            <ProductCard
-              v-for="p in produtos"
-              :key="p.id + (p.imagem || p.image || '')"
-              :product="p"
-            />
-          </CategoryGridPremium>
+        <!-- Grid de produtos -->
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <ProductCard
+            v-for="p in produtos"
+            :key="p.id + (p.imagem || p.image || '')"
+            :product="p"
+          />
         </div>
       </div>
     </div>
