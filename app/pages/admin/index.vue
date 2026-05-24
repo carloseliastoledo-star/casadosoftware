@@ -62,6 +62,9 @@ const stats = computed(() => data.value || { produtosTotal: 0, licencasTotal: 0,
           <NuxtLink to="/admin/office365-trials" class="block text-blue-600 hover:underline text-sm">
             Leads Office 365
           </NuxtLink>
+          <a href="https://casadosoftware.com.br/admin/office365-trials" target="_blank" rel="noopener noreferrer" class="block text-blue-600 hover:underline text-sm">
+            Office 365 Trials (LP)
+          </a>
           <NuxtLink :to="productsIndexPath" class="block text-blue-600 hover:underline text-sm">
             Ver loja
           </NuxtLink>
