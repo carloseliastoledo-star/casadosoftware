@@ -127,9 +127,28 @@ export default defineEventHandler(async (event) => {
     let licensePassword = null
 
     try {
-      const reserveResponse = await $fetch('/api/internal/office365-reserve-license' as any, {
-        method: 'POST',
-        body: {
+      const licensePanelUrl = process.env.LICENSE_PANEL_URL
+const internalApiKey = process.env.INTERNAL_API_KEY
+
+if (!licensePanelUrl || !internalApiKey) {
+  throw createError({
+    statusCode: 500,
+    statusMessage: 'Configuração do painel de licenças ausente'
+  })
+}
+
+const reserveResponse = await $fetch(`${licensePanelUrl}/api/internal/licenses/reserve-test` as any, {
+  method: 'POST',
+  headers: {
+    'x-internal-api-key': internalApiKey
+  },
+  body: {
+    leadId,
+    customerName: name.trim(),
+    customerEmail: email.trim(),
+    source: 'landing_page'
+  }
+})
           leadId,
           customerName: name.trim(),
           customerEmail: email.trim(),
