@@ -183,11 +183,6 @@
         <section class="product-description-box force-readable-description mt-10 max-w-4xl mx-auto">
           <h2 class="product-description-title">Descrição do Produto</h2>
           
-          <!-- TESTE VISUAL ATIVO - ARQUIVO CERTO -->
-          <p style="color:red !important; font-size:36px !important; font-weight:900 !important; background:yellow !important; padding:20px !important; border:5px solid red !important;">
-            TESTE VISUAL ATIVO - ARQUIVO CERTO
-          </p>
-          
           <div
             v-if="safeDescriptionHtml"
             class="product-description-content force-readable-description-content"
@@ -861,14 +856,14 @@ const safeDescriptionHtml = computed(() => {
   const raw = String((safeProduct.value as any)?.description || '').trim()
   if (!raw) return ''
 
-  // Remover TODOS os estilos inline completamente para evitar conflitos
+  // Remover TODOS os estilos inline e classes de cor clara para garantir contraste
   const cleaned = raw
     .replace(/style="[^"]*"/gi, '')
     .replace(/style='[^']*'/gi, '')
     .replace(/color:\s*[^;"']+;?/gi, '')
     .replace(/background-color:\s*[^;"']+;?/gi, '')
     .replace(/opacity:\s*[^;"']+;?/gi, '')
-    .replace(/class="[^"]*(text-slate-300|text-gray-300|text-slate-400|text-gray-400|text-slate-500|text-gray-500|text-white)[^"]*"/gi, (match) => {
+    .replace(/class="[^"]*(text-slate-300|text-gray-300|text-slate-400|text-gray-400|text-slate-500|text-gray-500|text-white|text-white\/\d+)[^"]*"/gi, (match) => {
       // Remove classes de cor clara, mantém outras classes
       return match
         .replace(/text-slate-300/gi, '')
@@ -878,6 +873,7 @@ const safeDescriptionHtml = computed(() => {
         .replace(/text-slate-500/gi, '')
         .replace(/text-gray-500/gi, '')
         .replace(/text-white/gi, '')
+        .replace(/text-white\/\d+/gi, '')
         .replace(/class="\s*"/gi, '') // Remove class vazio
     })
 
