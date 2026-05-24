@@ -4,9 +4,9 @@
       <div v-if="pending" class="text-sm text-gray-600">{{ t('blog.loading') }}</div>
       <div v-else-if="error" class="text-sm text-red-600">{{ t('blog.notFound') }}</div>
 
-      <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        <article class="lg:col-span-8 bg-white rounded-2xl border border-gray-100 overflow-hidden">
-          <div class="p-6 md:p-10">
+      <div v-else>
+        <article class="max-w-5xl mx-auto bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          <div class="p-6 md:p-8 lg:p-10">
             <nav class="text-xs text-gray-500 mb-5">
               <NuxtLink :to="`${langPrefix}/`" class="hover:text-blue-700 transition">Home</NuxtLink>
               <span class="mx-2">/</span>
@@ -15,7 +15,7 @@
               <span v-if="post?.titulo" class="text-gray-700 font-medium">{{ post?.titulo }}</span>
             </nav>
 
-            <header class="max-w-3xl">
+            <header class="max-w-4xl">
               <p class="text-xs font-semibold tracking-wide text-blue-600 uppercase">Blog</p>
               <h1 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">
                 {{ post?.titulo }}
@@ -37,131 +37,13 @@
               <div ref="articleEl" class="blog-article blog-content" v-html="safePostHtml" />
             </div>
 
-            <div v-if="relatedPosts.length" class="mt-10 border-t pt-8">
-              <div class="flex items-center justify-between gap-4">
-                <h2 class="text-lg md:text-xl font-bold text-gray-900">{{ ui.related }}</h2>
-                <NuxtLink :to="`${langPrefix}/blog`" class="text-sm text-blue-700 font-semibold hover:text-blue-800 transition">{{ ui.viewAll }}</NuxtLink>
-              </div>
-
-              <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
-                <article
-                  v-for="p in relatedPosts"
-                  :key="p.slug"
-                  class="border border-gray-100 rounded-2xl overflow-hidden hover:border-blue-200 hover:shadow-sm transition bg-white"
-                >
-                  <NuxtLink :to="`${langPrefix}/blog/${p.slug}`" class="block">
-                    <div class="bg-gray-100">
-                      <img
-                        :src="p.featuredImage || '/images/blog-default.svg'"
-                        :alt="p.titulo"
-                        class="w-full h-36 object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div class="p-5">
-                      <div class="text-base font-extrabold text-gray-900 leading-snug line-clamp-2">{{ p.titulo }}</div>
-                      <div v-if="p.descricao" class="text-sm text-gray-600 mt-2 line-clamp-2">{{ p.descricao }}</div>
-                      <div v-if="p.atualizadoEm" class="text-xs text-gray-500 mt-3">{{ formatDate(String(p.atualizadoEm)) }}</div>
-                    </div>
-                  </NuxtLink>
-                </article>
-              </div>
-            </div>
-
-            <div v-if="relatedProducts.length" class="mt-10 border-t pt-8">
-              <div class="flex items-center justify-between gap-4">
-                <h2 class="text-lg md:text-xl font-bold text-gray-900">{{ isEn ? 'Related Products' : 'Produtos Relacionados' }}</h2>
-                <NuxtLink :to="`${langPrefix}/produtos`" class="text-sm text-blue-700 font-semibold hover:text-blue-800 transition">{{ isEn ? 'View all' : 'Ver todos' }}</NuxtLink>
-              </div>
-
-              <div class="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                <article
-                  v-for="p in relatedProducts"
-                  :key="p.slug"
-                  class="border border-gray-100 rounded-2xl overflow-hidden hover:border-blue-200 hover:shadow-sm transition bg-white"
-                >
-                  <NuxtLink :to="`${langPrefix}/produto/${p.slug}`" class="block">
-                    <div class="bg-gray-100">
-                      <img
-                        :src="p.image || '/products/placeholder.svg'"
-                        :alt="p.name"
-                        class="w-full h-36 object-contain p-4"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div class="p-5">
-                      <div class="text-base font-extrabold text-gray-900 leading-snug line-clamp-2">{{ p.name }}</div>
-                      <div v-if="p.price" class="text-lg font-bold text-blue-600 mt-2">{{ formatPrice(p.price, p.currency) }}</div>
-                    </div>
-                  </NuxtLink>
-                </article>
-              </div>
-            </div>
-
             <IntlLanguageSwitcher
               page-type="blog-post"
               :slug="String(slug)"
               class="mt-8"
             />
-
-            <div class="mt-10 border-t pt-8">
-              <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div>
-                    <h2 class="text-lg md:text-xl font-bold">{{ t('blog.ctaTitle') }}</h2>
-                    <p class="text-white/90 text-sm mt-1">{{ t('blog.ctaBody') }}</p>
-                  </div>
-                  <NuxtLink
-                    :to="`${langPrefix}/produtos`"
-                    class="inline-flex items-center justify-center rounded-xl bg-white text-blue-700 font-semibold px-5 py-3 hover:bg-blue-50 transition"
-                  >
-                    {{ t('blog.ctaButton') }}
-                  </NuxtLink>
-                </div>
-              </div>
-            </div>
           </div>
         </article>
-
-        <aside class="lg:col-span-4 lg:sticky lg:top-6 space-y-5">
-          <div class="bg-white rounded-2xl border border-gray-100 p-5">
-            <div class="text-sm font-semibold text-gray-900">{{ t('blog.ctaTitle') }}</div>
-            <div class="text-xs text-gray-600 mt-1">{{ t('blog.ctaBody') }}</div>
-            <NuxtLink
-              :to="`${langPrefix}/produtos`"
-              class="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-blue-600 text-white font-semibold px-4 py-2.5 hover:bg-blue-700 transition"
-            >
-              {{ t('blog.ctaButton') }}
-            </NuxtLink>
-          </div>
-
-          <div v-if="toc.length" class="bg-white rounded-2xl border border-gray-100 p-5">
-            <div class="text-sm font-semibold text-gray-900">{{ ui.toc }}</div>
-            <nav class="mt-3">
-              <a
-                v-for="item in toc"
-                :key="item.id"
-                :href="`#${item.id}`"
-                class="blog-toc-link"
-                :class="item.level === 3 ? 'pl-4' : ''"
-              >
-                {{ item.text }}
-              </a>
-            </nav>
-          </div>
-
-          <div v-if="recentPosts.length" class="bg-white rounded-2xl border border-gray-100 p-5">
-            <div class="text-sm font-semibold text-gray-900">{{ ui.recent }}</div>
-            <div class="mt-3 space-y-3">
-              <NuxtLink v-for="p in recentPosts" :key="p.slug" :to="`${langPrefix}/blog/${p.slug}`" class="block group">
-                <div class="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition line-clamp-2">
-                  {{ p.titulo }}
-                </div>
-                <div v-if="p.atualizadoEm" class="text-xs text-gray-500 mt-1">{{ formatDate(String(p.atualizadoEm)) }}</div>
-              </NuxtLink>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   </section>
@@ -180,25 +62,10 @@ const ui = computed(() => {
   return {
     related:   isEn ? 'Related content'  : 'Conteúdos relacionados',
     viewAll:   isEn ? 'View all'          : 'Ver todos',
-    toc:       isEn ? 'Table of contents' : 'Sumário',
-    recent:    isEn ? 'Recent posts'      : 'Posts recentes',
   }
 })
 
 const isEn = computed(() => intl.language.value === 'en')
-
-function formatPrice(price: number, currency: string) {
-  try {
-    const currencyCode = currency === 'BRL' ? 'BRL' : currency === 'USD' ? 'USD' : currency === 'EUR' ? 'EUR' : 'BRL'
-    const locale = currencyCode === 'BRL' ? 'pt-BR' : 'en-US'
-    return Number(price || 0).toLocaleString(locale, {
-      style: 'currency',
-      currency: currencyCode
-    })
-  } catch {
-    return String(price || 0)
-  }
-}
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
@@ -432,75 +299,6 @@ type BlogPostListDto = {
   atualizadoEm: string
 }
 
-const { data: recentData } = await useFetch<{ ok: true; posts: BlogPostListDto[] }>('/api/blog', {
-  server: true,
-  default: () => null
-})
-
-const { data: productsData } = await useFetch<any[]>('/api/products', {
-  server: true,
-  default: () => null
-})
-
-const recentPosts = computed(() => {
-  const all = recentData.value?.posts || []
-  const current = String(post.value?.slug || '')
-  return all.filter((p) => String(p?.slug || '') && String(p.slug) !== current).slice(0, 5)
-})
-
-const relatedProducts = computed(() => {
-  const all = productsData.value || []
-  const kw = String((post.value as any)?.keyword || '').trim()
-  const baseTokens = kw ? normalizeTokens(kw) : normalizeTokens(post.value?.titulo)
-  if (!baseTokens.length) return all.slice(0, 4)
-
-  const scored = all
-    .map((p) => {
-      const candidate = String(p?.name || '') || String(p?.description || '')
-      const tokens = normalizeTokens(candidate)
-      const score = tokens.reduce((acc, t) => (baseTokens.includes(t) ? acc + 1 : acc), 0)
-      return { p, score }
-    })
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4)
-    .map((x) => x.p)
-
-  return scored.length ? scored : all.slice(0, 4)
-})
-
-function normalizeTokens(input: unknown): string[] {
-  return String(input || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, ' ')
-    .split(/\s+/g)
-    .map((t) => t.trim())
-    .filter((t) => t.length >= 3)
-    .slice(0, 12)
-}
-
-const relatedPosts = computed(() => {
-  const all = recentData.value?.posts || []
-  const currentSlug = String(post.value?.slug || '')
-  const kw = String((post.value as any)?.keyword || '').trim()
-  const baseTokens = kw ? normalizeTokens(kw) : normalizeTokens(post.value?.titulo)
-  if (!baseTokens.length) return []
-
-  const scored = all
-    .filter((p) => String(p?.slug || '') && String(p.slug) !== currentSlug)
-    .map((p) => {
-      const candidate = String((p as any)?.keyword || '') || String(p?.titulo || '')
-      const tokens = normalizeTokens(candidate)
-      const score = tokens.reduce((acc, t) => (baseTokens.includes(t) ? acc + 1 : acc), 0)
-      return { p, score }
-    })
-    .filter((x) => x.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4)
-    .map((x) => x.p)
-
-  return scored
-})
 
 const { siteName, logoPath, companyLegalName } = useSiteBranding()
 
