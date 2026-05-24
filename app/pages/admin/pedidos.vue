@@ -89,6 +89,40 @@
       </div>
     </div>
 
+    <!-- Dashboard Origem das Vendas -->
+    <div v-if="!trafficPending && trafficData" class="bg-white rounded shadow p-4 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">Origem das Vendas</h2>
+        <span class="text-xs text-gray-500">{{ trafficData.summary.totalOrders }} pedidos pagos</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div
+          v-for="channel in trafficData.channels"
+          :key="channel.channel"
+          class="border rounded-lg p-4"
+          :style="{ borderLeftColor: channel.color, borderLeftWidth: '4px' }"
+        >
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-medium text-sm">{{ channel.label }}</span>
+            <span class="text-xs text-gray-500">{{ channel.orderCount }} pedidos</span>
+          </div>
+          <div class="text-lg font-bold">{{ formatBRL(channel.totalRevenue) }}</div>
+          <div class="text-xs text-gray-500 mt-1">Ticket médio: {{ formatBRL(channel.averageTicket) }}</div>
+          <div v-if="channel.mainCampaign" class="text-xs text-gray-500 mt-1 truncate" :title="channel.mainCampaign">
+            Campanha: {{ channel.mainCampaign }}
+          </div>
+          <div v-if="channel.lastSaleAt" class="text-xs text-gray-400 mt-2">
+            Última: {{ formatDate(channel.lastSaleAt) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="trafficPending" class="bg-white rounded shadow p-4 mb-6">
+      <div class="text-sm text-gray-500">Carregando dados de origem...</div>
+    </div>
+
     <div v-if="pending" class="text-gray-500">Carregando...</div>
     <div v-else-if="error" class="text-red-600">Não foi possível carregar os pedidos.</div>
 
@@ -748,6 +782,16 @@ const orders = computed(() => data.value?.orders || [])
 
 const summary = computed<SummaryDto>(() => {
   return data.value?.summary || { countPaid: 0, totalPaid: 0 }
+})
+
+// Dados de origem das vendas
+const { data: trafficData, pending: trafficPending } = await useFetch('/api/admin/reports/traffic-sources', {
+  server: false,
+  query: computed(() => ({
+    dateFrom: dateFrom.value || undefined,
+    dateTo: dateTo.value || undefined
+  })),
+  watch: [dateFrom, dateTo]
 })
 
 const showEdit = ref(false)
