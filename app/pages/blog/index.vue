@@ -7,24 +7,6 @@
       </div>
     </section>
 
-    <section class="max-w-6xl mx-auto px-6 mb-12">
-      <h2 class="text-2xl font-bold mb-6">{{ ui.popular }}</h2>
-      <div class="grid md:grid-cols-3 gap-6">
-        <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
-          <h3 class="font-bold">{{ ui.p1Title }}</h3>
-          <p class="text-sm text-gray-600 mt-2">{{ ui.p1Desc }}</p>
-        </div>
-        <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
-          <h3 class="font-bold">{{ ui.p2Title }}</h3>
-          <p class="text-sm text-gray-600 mt-2">{{ ui.p2Desc }}</p>
-        </div>
-        <div class="bg-white border rounded-xl p-5 hover:shadow-md transition">
-          <h3 class="font-bold">{{ ui.p3Title }}</h3>
-          <p class="text-sm text-gray-600 mt-2">{{ ui.p3Desc }}</p>
-        </div>
-      </div>
-    </section>
-
     <section class="py-10 md:py-14">
       <div class="max-w-6xl mx-auto px-6">
         <div v-if="pending" class="text-sm text-gray-600">{{ t('blog.loading') }}</div>
@@ -95,15 +77,8 @@ const ui = computed(() => {
   return {
     heroTitle:   isEn ? 'Blog'              : 'Blog Casa do Software',
     heroSub:     isEn ? 'Guides, tutorials and news about Windows, Office and digital licenses.' : 'Guias, tutoriais e novidades sobre Windows, Office e licenças digitais.',
-    popular:     isEn ? '🔥 Popular articles'                : '🔥 Artigos populares',
     readMore:    isEn ? 'Read article →'                     : 'Ler artigo →',
     readTime:    isEn ? '5 min read'                         : '5 min leitura',
-    p1Title:     isEn ? 'Windows OEM vs Retail'              : 'Windows OEM vs Retail',
-    p1Desc:      isEn ? 'Understand the differences between Windows licenses and which to choose.' : 'Entenda as diferenças entre as licenças Windows e qual escolher.',
-    p2Title:     isEn ? 'How to activate Windows 11'         : 'Como ativar Windows 11',
-    p2Desc:      isEn ? 'Learn how to activate Windows 11 step by step.' : 'Aprenda a ativar o Windows 11 passo a passo.',
-    p3Title:     isEn ? 'Is Office 365 worth it?'            : 'Office 365 vale a pena?',
-    p3Desc:      isEn ? 'Find out if Office 365 is worth it in 2026.'   : 'Descubra se o Office 365 compensa em 2026.',
   }
 })
 
