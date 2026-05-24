@@ -14,7 +14,7 @@
       <!-- Produto -->
       <div v-else-if="safeProduct?.id">
 
-        <!-- ÔöÇÔöÇ HERO ÔöÇÔöÇ -->
+        <!-- HERO -->
         <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
           <!-- Imagem -->
@@ -103,7 +103,7 @@
           </div>
         </div>
 
-        <!-- ÔöÇÔöÇ BANNER URGÊNCIA ÔöÇÔöÇ -->
+        <!-- BANNER URGÊNCIA -->
         <div class="mt-10 flex items-center justify-center gap-3 bg-red-600/10 border border-red-500/30 rounded-2xl px-6 py-4">
           <span class="text-xl"></span>
           <span class="text-sm font-bold text-red-400">{{ t.urgencyStock }}</span>
@@ -136,7 +136,7 @@
           </div>
         </div>
 
-        <!-- ÔöÇÔöÇ CTA REPETIDO ÔöÇÔöÇ -->
+        <!-- CTA REPETIDO -->
         <div class="mt-10 flex flex-col items-center text-center gap-4">
           <p class="text-sm text-slate-500">{{ t.ctaUrgency }}</p>
           <button
@@ -293,7 +293,7 @@ const storeSlug = computed(() => String((config.public as any)?.storeSlug || '')
 
 const affiliateEnabled = computed(() => Boolean((config.public as any)?.affiliateEnabled))
 
-// CRITICAL: read host AND path synchronously in setup ÔÇö useRequestURL/useRequestHeaders/useRequestEvent
+// CRITICAL: read host AND path synchronously in setup - useRequestURL/useRequestHeaders/useRequestEvent
 // only work in synchronous setup context, NOT inside computed (lazy evaluation loses request context)
 const { _ssrHost, _ssrPath } = (() => {
   if (import.meta.server) {
@@ -412,7 +412,7 @@ const whyPriceCardClass = computed(() => {
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 
-// Detect intl domain ÔÇö multi-signal: client window > SSR path > SSR host
+// Detect intl domain - multi-signal: client window > SSR path > SSR host
 const isIntlDomain = computed(() => {
   // 1. After onMounted, window.location.host is authoritative
   if (_clientIsIntl.value !== null) return _clientIsIntl.value
@@ -1014,7 +1014,7 @@ function onImageError(e: Event) {
 }
 
 const effectiveCurrencyLower = computed(() => {
-  // Domain takes priority ÔÇö gvgmall.co always USD regardless of product.currency in DB
+  // Domain takes priority - gvgmall.co always USD regardless of product.currency in DB
   if (isIntlDomain.value) return 'usd'
   const c = String((safeProduct as any)?.currency || '').trim().toLowerCase()
   if (c === 'usd' || c === 'eur' || c === 'brl') return c
