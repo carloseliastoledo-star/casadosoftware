@@ -145,6 +145,18 @@ export default defineNuxtConfig({
       }
     },
     
+    // Página de produtos (sem cache para garantir conteúdo atualizado)
+    '/produtos': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
+    },
+    '/products': {
+      headers: {
+        'cache-control': 'no-cache, no-store, must-revalidate'
+      }
+    },
+
     // Home page (página inicial)
     '/': {
       headers: {

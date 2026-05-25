@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
 
   const application = await (prisma as any).partnerApplication.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true }
+    select: { id: true, name: true, email: true, storeSlug: true }
   })
 
   if (!application) throw createError({ statusCode: 404, statusMessage: 'Inscrição não encontrada' })
@@ -56,9 +56,11 @@ export default defineEventHandler(async (event) => {
   if (!name) throw createError({ statusCode: 400, statusMessage: 'Nome inválido' })
   if (!email || !email.includes('@')) throw createError({ statusCode: 400, statusMessage: 'Email inválido' })
 
+  const storeSlug = String(application.storeSlug || 'casadosoftware')
+
   const affiliate = await (prisma as any).affiliate.upsert({
-    where: { email },
-    create: { name, email, code, commissionRate, isActive: false },
+    where: { storeSlug_email: { storeSlug, email } },
+    create: { name, email, code, commissionRate, storeSlug, isActive: false },
     update: { name, code, commissionRate },
     select: { id: true }
   })
