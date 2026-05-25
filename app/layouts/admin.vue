@@ -77,6 +77,10 @@
           🌐 Office 365 LP (External)
         </a>
 
+        <a href="https://casadosoftware.com.br/admin/office365-trials" target="_blank" rel="noopener noreferrer" class="menu">
+          📋 Office 365 Trials (Casa)
+        </a>
+
         <NuxtLink to="/admin/inscricoes-afiliados" class="menu">
           📨 Inscrições (Afiliados)
         </NuxtLink>
