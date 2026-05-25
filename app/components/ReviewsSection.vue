@@ -39,7 +39,7 @@ const stats = computed(() => data.value?.stats || { total: 0, average: 0 })
 </script>
 
 <template>
-  <div v-if="!pending && reviews.length > 0" class="reviews-section">
+  <div v-if="!pending" class="reviews-section">
     <!-- Versão compacta para checkout -->
     <div v-if="compact" class="flex items-center gap-2 text-sm flex-wrap">
       <span class="text-yellow-500 tracking-tight">★★★★★</span>
@@ -58,7 +58,7 @@ const stats = computed(() => data.value?.stats || { total: 0, average: 0 })
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div v-if="reviews.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <ReviewCard
           v-for="review in reviews"
           :key="review.id"
