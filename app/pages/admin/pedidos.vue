@@ -691,18 +691,13 @@ type OrderDto = {
 }
 
 function todayStr() {
-  const now = new Date()
-  const offset = now.getTimezoneOffset() * 60000
-  const local = new Date(now.getTime() - offset)
-  return local.toISOString().slice(0, 10)
+  return new Date().toISOString().slice(0, 10)
 }
 
 function daysAgoStr(n: number) {
   const d = new Date()
   d.setDate(d.getDate() - n)
-  const offset = d.getTimezoneOffset() * 60000
-  const local = new Date(d.getTime() - offset)
-  return local.toISOString().slice(0, 10)
+  return d.toISOString().slice(0, 10)
 }
 
 const dateFrom = ref(todayStr())
