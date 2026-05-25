@@ -1194,7 +1194,9 @@ async function importLicenses() {
 
 function formatDate(input: string) {
   try {
-    return new Date(input).toLocaleString('pt-BR')
+    return new Date(input).toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo'
+    })
   } catch {
     return input
   }
