@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const review = await (prisma as any).review.create({
+    const review = await prisma.review.create({
       data: {
         id: randomUUID(),
         customerName: String(customerName),
