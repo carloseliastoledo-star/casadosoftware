@@ -32,6 +32,8 @@ interface Product {
   precoAntigo?: number | null
   image?: string | null
   imagem?: string | null
+  imageAlt?: string | null
+  imageTitle?: string | null
   cardItems?: string | null
 }
 
@@ -425,7 +427,8 @@ const checkoutTo = computed(() => ({
     >
       <img
         :src="productImage"
-        :alt="productName"
+        :alt="(props.product as any).imageAlt || productName"
+        :title="(props.product as any).imageTitle || `Comprar ${productName}`"
         loading="lazy"
         decoding="async"
         class="absolute inset-0 h-full w-full object-cover object-center brightness-110 contrast-115 saturate-120 transition-transform duration-500 group-hover:scale-105"

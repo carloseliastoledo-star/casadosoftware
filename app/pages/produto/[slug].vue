@@ -21,7 +21,8 @@
           <div class="relative rounded-2xl overflow-hidden bg-[#021326] border border-cyan-500/20 flex items-center justify-center p-6 min-h-[320px] lg:min-h-[480px]">
             <img
               :src="safeImage"
-              :alt="safeProduct.name"
+              :alt="(safeProduct as any)?.imageAlt || (safeProduct as any)?.name || 'Produto'"
+              :title="(safeProduct as any)?.imageTitle || `Comprar ${(safeProduct as any)?.name || 'Produto'}`"
               fetchpriority="high"
               loading="eager"
               decoding="async"
@@ -814,7 +815,11 @@ useHead(() => {
       priceCurrency,
       price: price > 0 ? price : undefined,
       availability: 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/NewCondition'
+      itemCondition: 'https://schema.org/NewCondition',
+      seller: {
+        '@type': 'Organization',
+        name: String(siteName || 'Casa do Software')
+      }
     }
   }
 

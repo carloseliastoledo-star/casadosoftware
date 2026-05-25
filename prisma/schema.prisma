@@ -432,6 +432,9 @@ model Produto {
   seoTitle                    String?
   seoDescription              String?             @db.Text
   seoContent                  String?             @db.Text
+  imageAlt                    String?
+  imageTitle                  String?
+  imageCaption                String?
   Licenca                     Licenca[]
   Order                       Order[]
   Vendor                      Vendor?             @relation(fields: [vendorId], references: [id])

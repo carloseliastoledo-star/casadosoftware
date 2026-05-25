@@ -29,7 +29,10 @@ const form = reactive({
   tutorialConteudo: '',
   seoTitle: '',
   seoDescription: '',
-  seoContent: ''
+  seoContent: '',
+  imageAlt: '',
+  imageTitle: '',
+  imageCaption: ''
 })
 
 const uploadLoading = ref(false)
@@ -93,6 +96,9 @@ watchEffect(() => {
   form.seoTitle = p.seoTitle ?? ''
   form.seoDescription = p.seoDescription ?? ''
   form.seoContent = p.seoContent ?? ''
+  form.imageAlt = p.imageAlt ?? ''
+  form.imageTitle = p.imageTitle ?? ''
+  form.imageCaption = p.imageCaption ?? ''
 })
 
 async function uploadImagem(event) {
@@ -312,6 +318,25 @@ async function salvar() {
           </div>
 
           <img v-if="form.imagem" :src="form.imagem" class="rounded border" />
+
+          <div class="space-y-2 pt-2 border-t">
+            <label class="text-sm font-semibold text-gray-700">SEO da Imagem</label>
+            <input
+              v-model="form.imageAlt"
+              placeholder="Alt da imagem (ex: Office 365 Vitalício - Licença Original)"
+              class="w-full border p-2 rounded text-sm"
+            />
+            <input
+              v-model="form.imageTitle"
+              placeholder="Title da imagem (ex: Comprar Office 365 Vitalício)"
+              class="w-full border p-2 rounded text-sm"
+            />
+            <input
+              v-model="form.imageCaption"
+              placeholder="Legenda da imagem (opcional)"
+              class="w-full border p-2 rounded text-sm"
+            />
+          </div>
         </div>
 
         <div class="space-y-2">
