@@ -165,6 +165,9 @@ export default defineEventHandler(async (event) => {
         seoTitle: true,
         seoDescription: true,
         seoContent: true,
+        imageAlt: true,
+        imageTitle: true,
+        imageCaption: true,
         ProdutoPrecoLoja: storeSlug ? { where: { storeSlug }, select: { storeSlug: true }, take: 1 } : undefined
       }
     })
@@ -313,6 +316,9 @@ export default defineEventHandler(async (event) => {
     seoTitle: (product as any).seoTitle || null,
     seoDescription: (product as any).seoDescription || null,
     seoContent: (product as any).seoContent || null,
+    imageAlt: (product as any).imageAlt || null,
+    imageTitle: (product as any).imageTitle || null,
+    imageCaption: (product as any).imageCaption || null,
     criadoEm: product.criadoEm
   }
   } catch (err: any) {
