@@ -36,13 +36,11 @@ model AbandonedCheckout {
   source        String?
   contactedAt   DateTime? @db.DateTime(0)
   recoveredAt   DateTime? @db.DateTime(0)
-  checkoutUrl   String?
+  checkoutUrl   String?   @db.VarChar(500)
   messageStep   Int       @default(0)
   lastMessageAt DateTime? @db.DateTime(0)
   repliedAt     DateTime? @db.DateTime(0)
-  updatedAt     DateTime  @db.DateTime(0)
-  lastSentAt    DateTime? @db.DateTime(0)
-  lockedAt      DateTime? @db.DateTime(0)
+  updatedAt     DateTime  @default(now()) @db.DateTime(0)
 
   @@index([contactedAt])
   @@index([createdAt])
@@ -59,37 +57,13 @@ model AdminUser {
   passwordHash String
   role         AdminUser_role
   createdAt    DateTime       @default(now()) @db.DateTime(0)
-  AuditLog     AuditLog[]
-}
-
-model AuditLog {
-  id          String    @id @default(cuid())
-  action      String
-  entity      String
-  entityId    String?
-  adminId     String
-  adminEmail  String
-  details     String?   @db.Text
-  ip          String?
-  userAgent   String?   @db.Text
-  storeSlug   String?
-  createdAt   DateTime  @default(now()) @db.DateTime(0)
-
-  AdminUser   AdminUser @relation(fields: [adminId], references: [id])
-
-  @@index([action])
-  @@index([entity])
-  @@index([adminId])
-  @@index([createdAt])
-  @@index([storeSlug])
 }
 
 model Affiliate {
   id                     Int                      @id @default(autoincrement())
   name                   String
-  email                  String
-  code                   String
-  storeSlug              String                   @default("casadosoftware")
+  email                  String                   @unique
+  code                   String                   @unique
   commissionRate         Float                    @default(0.25)
   totalEarnings          Float                    @default(0)
   createdAt              DateTime                 @default(now())
@@ -101,10 +75,6 @@ model Affiliate {
   AffiliatePayoutRequest AffiliatePayoutRequest[]
   Commission             Commission[]
   Order                  Order[]
-
-  @@unique([storeSlug, email])
-  @@unique([storeSlug, code])
-  @@index([storeSlug])
 }
 
 model AffiliateCommission {
@@ -118,7 +88,6 @@ model AffiliateCommission {
   paidAt      DateTime?
   Affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
 
-  @@unique([orderId, affiliateId])
   @@index([affiliateId])
 }
 
@@ -129,7 +98,7 @@ model AffiliatePayoutRequest {
   status      String    @default("requested")
   note        String?   @db.Text
   createdAt   DateTime  @default(now()) @db.DateTime(0)
-  updatedAt   DateTime  @db.DateTime(0)
+  updatedAt   DateTime  @default(now()) @db.DateTime(0)
   Affiliate   Affiliate @relation(fields: [affiliateId], references: [id])
 
   @@index([affiliateId])
@@ -138,23 +107,24 @@ model AffiliatePayoutRequest {
 model BlogPost {
   id                  String                @id @default(uuid())
   titulo              String
-  slug                String
-  storeSlug           String                @default("casadosoftware")
-  html                String?               @db.LongText
+  slug                String                @unique
+  html                String?               @db.Text
   publicado           Boolean               @default(false)
   criadoEm            DateTime              @default(now()) @db.DateTime(0)
   atualizadoEm        DateTime              @db.DateTime(0)
   featuredImage       String?               @db.Text
+  excerpt             String?               @db.VarChar(512)
+  keyword             String?
+  autoSeo             Boolean               @default(false)
+  storeSlug           String                @default("casadosoftware")
   imageAlt            String?
   imageTitle          String?
   imageCaption        String?
-  excerpt             String?
-  keyword             String?
-  autoSeo             Boolean               @default(false)
   BlogPostTranslation BlogPostTranslation[]
 
-  @@unique([storeSlug, slug])
   @@index([storeSlug])
+  @@index([autoSeo])
+  @@index([keyword])
 }
 
 model BlogPostTranslation {
@@ -163,11 +133,8 @@ model BlogPostTranslation {
   lang          String
   titulo        String
   featuredImage String?  @db.Text
-  imageAlt      String?
-  imageTitle    String?
-  imageCaption  String?
   excerpt       String?  @db.VarChar(512)
-  html          String?  @db.LongText
+  html          String?  @db.Text
   criadoEm      DateTime @default(now()) @db.DateTime(0)
   atualizadoEm  DateTime @default(now()) @db.DateTime(0)
   BlogPost      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
@@ -179,43 +146,40 @@ model BlogPostTranslation {
 model Categoria {
   id               String             @id @default(cuid())
   nome             String
-  slug             String             @unique
+  slug             String
   wcCategoryId     Int?               @unique
   ativo            Boolean            @default(true)
+  storeSlug        String             @default("casadosoftware") @db.VarChar(100)
   ProdutoCategoria ProdutoCategoria[]
+
+  @@unique([slug, storeSlug])
+  @@index([storeSlug])
 }
 
 model ChatConversation {
-  id               String                   @id @db.VarChar(25)
-  customerName     String?                  @db.VarChar(255)
-  customerEmail    String?                  @db.VarChar(255)
-  orderNumber      String?                  @db.VarChar(255)
-  status           ChatConversation_status?
-  sourcePage       String?                  @db.Text
-  userIp           String?                  @db.VarChar(255)
-  agentId          String?                  @db.VarChar(36)
-  closedByAgentId  String?                  @db.VarChar(36)
-  needsHuman       Boolean?                 @default(false)
-  humanRequestedAt DateTime?                @db.DateTime(0)
-  humanNotifiedAt  DateTime?                @db.DateTime(0)
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @default(now())
+  id            String                  @id @db.VarChar(25)
+  customerName  String?                 @db.VarChar(255)
+  customerEmail String?                 @db.VarChar(255)
+  orderNumber   String?                 @db.VarChar(255)
+  status        ChatConversation_status @default(AI)
+  sourcePage    String?                 @db.Text
+  userIp        String?                 @db.VarChar(255)
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @default(now())
+  ChatMessage   ChatMessage[]
 
-  @@index([agentId])
-  @@index([closedByAgentId])
   @@index([createdAt])
-  @@index([humanRequestedAt])
-  @@index([needsHuman])
   @@index([status])
   @@index([updatedAt])
 }
 
 model ChatMessage {
-  id             String             @id @db.VarChar(25)
-  conversationId String             @db.VarChar(25)
-  sender         ChatMessage_sender
-  content        String             @db.Text
-  createdAt      DateTime           @default(now())
+  id               String             @id @db.VarChar(25)
+  conversationId   String             @db.VarChar(25)
+  sender           ChatMessage_sender
+  content          String             @db.Text
+  createdAt        DateTime           @default(now())
+  ChatConversation ChatConversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([createdAt])
@@ -239,8 +203,7 @@ model Commission {
 
 model Cupom {
   id        String    @id
-  code      String
-  storeSlug String    @default("casadosoftware")
+  code      String    @unique
   percent   Int
   active    Boolean   @default(true)
   startsAt  DateTime? @db.DateTime(0)
@@ -248,10 +211,8 @@ model Cupom {
   maxUses   Int?
   usedCount Int       @default(0)
   createdAt DateTime  @default(now()) @db.DateTime(0)
+  storeSlug String    @default("casadosoftware")
   Order     Order[]
-
-  @@unique([storeSlug, code])
-  @@index([storeSlug])
 }
 
 model Lead {
@@ -274,7 +235,7 @@ model Licenca {
   chave      String
   status     String
   produtoId  String
-  criadoEm   DateTime  @default(now())
+  criadoEm   DateTime  @default(now()) @db.DateTime(0)
   customerId String?
   orderId    String?
   storeSlug  String?
@@ -384,10 +345,10 @@ model PartnerApplication {
   website        String?
   social         String?
   country        String
-  storeSlug      String   @default("casadosoftware")
   monthlyTraffic String?
   promotionPlan  String?
   createdAt      DateTime @default(now())
+  storeSlug      String   @default("casadosoftware")
 
   @@index([email])
   @@index([storeSlug])
@@ -396,17 +357,15 @@ model PartnerApplication {
 model Produto {
   id                          String              @id @default(cuid())
   nome                        String
-  slug                        String
-  slugEn                      String?
-  storeSlug                   String?
+  slug                        String              @unique
   descricao                   String?             @db.Text
   preco                       Float
-  criadoEm                    DateTime            @default(now())
-  imagem                      String?             @db.Text
+  criadoEm                    DateTime            @default(now()) @db.DateTime(0)
+  imagem                      String?             @db.LongText
+  ativo                       Boolean             @default(true)
   tutorialConteudo            String?             @db.Text
   tutorialSubtitulo           String?
   tutorialTitulo              String?
-  ativo                       Boolean             @default(true)
   googleAdsConversionCurrency String?
   googleAdsConversionLabel    String?
   googleAdsConversionValue    Float?
@@ -438,6 +397,8 @@ model Produto {
   seoTitle                    String?
   seoDescription              String?             @db.Text
   seoContent                  String?             @db.Text
+  storeSlug                   String              @default("casadosoftware") @db.VarChar(100)
+  slugEn                      String?             @unique
   imageAlt                    String?
   imageTitle                  String?
   imageCaption                String?
@@ -448,7 +409,6 @@ model Produto {
   ProdutoPrecoLoja            ProdutoPrecoLoja[]
   ProdutoPrecoMoeda           ProdutoPrecoMoeda[]
 
-  @@unique([slug, storeSlug])
   @@index([storeSlug])
   @@index([vendorId], map: "Produto_vendorId_fkey")
 }
@@ -510,7 +470,6 @@ model Review {
 
 model SeoPage {
   id                 String    @id
-  storeSlug          String    @default("casadosoftware")
   locale             String
   slug               String
   title              String
@@ -530,8 +489,8 @@ model SeoPage {
   createdAt          DateTime  @default(now()) @db.DateTime(0)
   updatedAt          DateTime  @db.DateTime(0)
 
-  @@unique([storeSlug, locale, slug])
-  @@index([storeSlug, locale, status])
+  @@unique([locale, slug])
+  @@index([locale, status])
 }
 
 model SiteSettings {
@@ -550,14 +509,40 @@ model SiteSettings {
   footerPolicyLinks        String?  @db.Text
   pixGateway               String?  @default("mercadopago")
   cardGateway              String?  @default("mercadopago")
+  homeThemeJson            String?  @db.Text
+  orderBumpsJson           String?  @db.Text
+  googleAdsConfigJson      String?  @db.Text
   metaPixelId              String?  @db.VarChar(64)
   tiktokPixelId            String?  @db.VarChar(64)
   orderBumpTitle           String?  @db.VarChar(255)
   orderBumpDescription     String?  @db.Text
   orderBumpPrice           Float?   @default(19)
-  homeThemeJson            String?  @db.Text
-  orderBumpsJson           String?  @db.Text
-  googleAdsConfigJson      String?  @db.Text
+  siteName                 String?  @db.VarChar(255)
+  supportEmail             String?  @db.VarChar(255)
+  whatsappNumber           String?  @db.VarChar(64)
+  logoPath                 String?  @db.VarChar(512)
+  themeColor               String?  @db.VarChar(32)
+  topbarText               String?  @db.Text
+  topbarLink               String?  @db.VarChar(512)
+  companyLegalName         String?  @db.VarChar(255)
+  companyCnpj              String?  @db.VarChar(32)
+  companyAddress           String?  @db.VarChar(512)
+  companyPhone             String?  @db.VarChar(64)
+  companyEmail             String?  @db.VarChar(255)
+  affiliateEnabled         Boolean? @default(false)
+  seoEnableEnDomain        Boolean? @default(false)
+  ptDomainUrl              String?  @db.VarChar(512)
+  enDomainUrl              String?  @db.VarChar(512)
+  mercadopagoPublicKey     String?  @db.VarChar(512)
+  stripePublishableKey     String?  @db.VarChar(512)
+  stripeSecretKey          String?  @db.VarChar(512)
+  telegramBotToken         String?  @db.VarChar(512)
+  telegramChatId           String?  @db.VarChar(128)
+  smtpHost                 String?  @db.VarChar(255)
+  smtpPort                 Int?
+  smtpUser                 String?  @db.VarChar(255)
+  smtpPass                 String?  @db.VarChar(512)
+  smtpFrom                 String?  @db.VarChar(255)
 }
 
 model Vendor {
@@ -606,6 +591,66 @@ model WooOrderItem {
   @@index([orderId], map: "WooOrderItem_orderId_fkey")
 }
 
+model Office365TrialLead {
+  id                       String                     @id @default(cuid())
+  name                     String
+  email                    String
+  whatsapp                 String
+  usageType                String
+  systemType               String
+  status                   String                     @default("PENDING")
+  trialStartAt             DateTime                   @default(now()) @db.DateTime(0)
+  trialExpiresAt           DateTime                   @db.DateTime(0)
+  checkoutUrl              String?
+  microsoftLogin           String?
+  temporaryPassword        String?
+  notes                    String?                    @db.Text
+  createdAt                DateTime                   @default(now()) @db.DateTime(0)
+  updatedAt                DateTime                   @default(now()) @updatedAt @db.DateTime(0)
+  ip                       String?                    @db.Text
+  userAgent                String?                    @db.Text
+  referrer                 String?                    @db.Text
+  landingPage              String?                    @db.Text
+  utmSource                String?                    @db.Text
+  utmMedium                String?                    @db.Text
+  utmCampaign              String?                    @db.Text
+  utmContent               String?                    @db.Text
+  utmTerm                  String?                    @db.Text
+  gclid                    String?                    @db.Text
+  fbclid                   String?                    @db.Text
+  Office365TestLicenseSend Office365TestLicenseSend[]
+
+  @@index([email])
+  @@index([status])
+  @@index([trialExpiresAt])
+  @@index([createdAt])
+}
+
+model Office365TestLicenseSend {
+  id                 String             @id @default(cuid())
+  leadId             String
+  customerName       String
+  customerEmail      String
+  licensePanelId     String?
+  licenseEmail       String?
+  sentAt             DateTime           @default(now()) @db.DateTime(0)
+  paymentStatus      String             @default("PENDING")
+  paidAt             DateTime?          @db.DateTime(0)
+  orderId            String?
+  status             String             @default("SENT")
+  source             String             @default("landing_page")
+  createdAt          DateTime           @default(now()) @db.DateTime(0)
+  updatedAt          DateTime           @default(now()) @updatedAt @db.DateTime(0)
+  Office365TrialLead Office365TrialLead @relation(fields: [leadId], references: [id])
+
+  @@index([leadId])
+  @@index([customerEmail])
+  @@index([licenseEmail])
+  @@index([paymentStatus])
+  @@index([sentAt])
+  @@index([status])
+}
+
 enum ChatMessage_sender {
   CUSTOMER
   AI
@@ -621,69 +666,6 @@ enum AdminUser_role {
 
 enum ChatConversation_status {
   AI
-  WAITING_HUMAN
   HUMAN
   CLOSED
-}
-
-model Office365TrialLead {
-  id               String   @id @default(cuid())
-  name             String
-  email            String
-  whatsapp         String
-  usageType        String
-  systemType       String
-  status           String   @default("PENDING")
-  trialStartAt     DateTime @default(now()) @db.DateTime(0)
-  trialExpiresAt   DateTime @db.DateTime(0)
-  checkoutUrl      String?
-  microsoftLogin   String?
-  temporaryPassword String?
-  notes            String?  @db.Text
-  createdAt        DateTime @default(now()) @db.DateTime(0)
-  updatedAt        DateTime @updatedAt @db.DateTime(0)
-  ip               String?  @db.Text
-  userAgent        String?  @db.Text
-  referrer         String?  @db.Text
-  landingPage      String?  @db.Text
-  utmSource        String?  @db.Text
-  utmMedium        String?  @db.Text
-  utmCampaign      String?  @db.Text
-  utmContent       String?  @db.Text
-  utmTerm          String?  @db.Text
-  gclid            String?  @db.Text
-  fbclid           String?  @db.Text
-
-  Office365TestLicenseSend Office365TestLicenseSend[]
-
-  @@index([email])
-  @@index([status])
-  @@index([trialExpiresAt])
-  @@index([createdAt])
-}
-
-model Office365TestLicenseSend {
-  id               String   @id @default(cuid())
-  leadId           String
-  customerName     String
-  customerEmail    String
-  licensePanelId  String?
-  licenseEmail     String?
-  sentAt           DateTime @default(now()) @db.DateTime(0)
-  paymentStatus    String   @default("PENDING") // PENDING, PAID, CANCELLED
-  paidAt           DateTime? @db.DateTime(0)
-  orderId          String?
-  status           String   @default("SENT") // SENT, PENDING_STOCK, ERROR
-  source           String   @default("landing_page") // landing_page, manual
-  createdAt        DateTime @default(now()) @db.DateTime(0)
-  updatedAt        DateTime @updatedAt @db.DateTime(0)
-
-  Office365TrialLead Office365TrialLead @relation(fields: [leadId], references: [id])
-
-  @@index([leadId])
-  @@index([customerEmail])
-  @@index([licenseEmail])
-  @@index([paymentStatus])
-  @@index([sentAt])
-  @@index([status])
 }
