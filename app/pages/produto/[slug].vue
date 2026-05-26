@@ -1,4 +1,5 @@
 ﻿<template>
+  <div style="display:none">PRODUCT_PAGE_DEBUG_2026_05_25</div>
   <section class="bg-[#010d1a] min-h-screen text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
 
