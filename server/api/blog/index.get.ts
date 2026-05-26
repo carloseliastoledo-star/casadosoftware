@@ -1,6 +1,7 @@
 import { defineEventHandler, createError } from 'h3'
 import prisma from '../../db/prisma.js'
 import { getStoreContext } from '../../utils/store.js'
+import { publicBlogFilter } from '../../utils/blogFilter.js'
 
 export default defineEventHandler(async (event) => {
   console.log('[api/blog] ===== START =====')
@@ -14,8 +15,9 @@ export default defineEventHandler(async (event) => {
     const isIntl = storeSlug === 'international'
     const effectiveStoreSlug = isIntl ? 'casadosoftware' : storeSlug
 
+    const storeFilter = effectiveStoreSlug ? { storeSlug: effectiveStoreSlug } : {}
     const posts = await (prisma as any).blogPost.findMany({
-      where: { publicado: true, ...(effectiveStoreSlug ? { storeSlug: effectiveStoreSlug } : {}) },
+      where: publicBlogFilter(storeFilter),
       orderBy: { criadoEm: 'desc' },
       take: 50,
       select: {

@@ -1,0 +1,2 @@
+-- Migration reconciliation: exists in DB, created locally to sync history
+-- This migration was applied directly to the database

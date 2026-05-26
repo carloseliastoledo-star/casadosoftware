@@ -20,8 +20,14 @@ export default defineEventHandler(async (event) => {
         imageAlt: true,
         imageTitle: true,
         imageCaption: true,
+        excerpt: true,
         html: true,
         publicado: true,
+        status: true,
+        scheduledAt: true,
+        publishedAt: true,
+        seoTitle: true,
+        seoDescription: true,
         criadoEm: true,
         atualizadoEm: true
       }

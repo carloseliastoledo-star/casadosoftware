@@ -1,6 +1,7 @@
 import { defineEventHandler, createError, getRouterParam } from 'h3'
 import prisma from '../../db/prisma.js'
 import { getStoreContext } from '../../utils/store.js'
+import { publicBlogFilter } from '../../utils/blogFilter.js'
 
 export default defineEventHandler(async (event) => {
   console.log('[api/blog/slug] ===== START =====')
@@ -21,12 +22,9 @@ export default defineEventHandler(async (event) => {
     const isIntl = storeSlug === 'international'
     const effectiveStoreSlug = isIntl ? 'casadosoftware' : storeSlug
 
+    const storeFilter = effectiveStoreSlug ? { storeSlug: effectiveStoreSlug } : {}
     const post = await (prisma as any).blogPost.findFirst({
-      where: {
-        slug,
-        publicado: true,
-        ...(effectiveStoreSlug ? { storeSlug: effectiveStoreSlug } : {})
-      },
+      where: publicBlogFilter({ slug, ...storeFilter }),
       select: {
         id: true,
         titulo: true,

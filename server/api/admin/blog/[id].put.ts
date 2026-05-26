@@ -22,6 +22,29 @@ export default defineEventHandler(async (event) => {
   const imageCaption = imageCaptionRaw ? imageCaptionRaw : null
   const htmlRaw = body?.html != null ? String(body.html) : null
   const publicado = Boolean(body?.publicado)
+  const excerptRaw = body?.excerpt != null ? String(body.excerpt).trim() : ''
+  const excerpt = excerptRaw || null
+  const seoTitleRaw = body?.seoTitle != null ? String(body.seoTitle).trim() : ''
+  const seoTitle = seoTitleRaw || null
+  const seoDescriptionRaw = body?.seoDescription != null ? String(body.seoDescription).trim() : ''
+  const seoDescription = seoDescriptionRaw || null
+
+  const statusRaw = String(body?.status || '').trim()
+  const now = new Date()
+  let status = 'draft'
+  let scheduledAt: Date | null = null
+  let publishedAt: Date | null = null
+
+  if (statusRaw === 'published' || publicado) {
+    status = 'published'
+    publishedAt = body?.publishedAt ? new Date(body.publishedAt) : now
+  } else if (statusRaw === 'scheduled' && body?.scheduledAt) {
+    const d = new Date(body.scheduledAt)
+    if (!isNaN(d.getTime())) {
+      status = 'scheduled'
+      scheduledAt = d
+    }
+  }
 
   if (!titulo) throw createError({ statusCode: 400, statusMessage: 'Título obrigatório' })
   if (!slug) throw createError({ statusCode: 400, statusMessage: 'Slug obrigatório' })
@@ -39,8 +62,15 @@ export default defineEventHandler(async (event) => {
         imageAlt,
         imageTitle,
         imageCaption,
+        excerpt,
         html,
-        publicado
+        publicado: status === 'published',
+        status,
+        scheduledAt,
+        publishedAt,
+        seoTitle,
+        seoDescription,
+        atualizadoEm: now
       },
       select: {
         id: true,
@@ -50,8 +80,14 @@ export default defineEventHandler(async (event) => {
         imageAlt: true,
         imageTitle: true,
         imageCaption: true,
+        excerpt: true,
         html: true,
         publicado: true,
+        status: true,
+        scheduledAt: true,
+        publishedAt: true,
+        seoTitle: true,
+        seoDescription: true,
         criadoEm: true,
         atualizadoEm: true
       }

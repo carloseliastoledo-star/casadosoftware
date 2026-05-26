@@ -19,6 +19,9 @@ export default defineEventHandler(async (event) => {
         slug: true,
         featuredImage: true,
         publicado: true,
+        status: true,
+        scheduledAt: true,
+        publishedAt: true,
         criadoEm: true,
         atualizadoEm: true,
         BlogPostTranslation: isIntl

@@ -120,11 +120,17 @@ model BlogPost {
   imageAlt            String?
   imageTitle          String?
   imageCaption        String?
+  status              String                @default("draft")
+  scheduledAt         DateTime?             @db.DateTime(0)
+  publishedAt         DateTime?             @db.DateTime(0)
+  seoTitle            String?               @db.VarChar(255)
+  seoDescription      String?               @db.VarChar(512)
   BlogPostTranslation BlogPostTranslation[]
 
   @@index([storeSlug])
   @@index([autoSeo])
   @@index([keyword])
+  @@index([status, scheduledAt])
 }
 
 model BlogPostTranslation {

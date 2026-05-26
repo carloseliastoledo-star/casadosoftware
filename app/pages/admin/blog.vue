@@ -125,7 +125,8 @@
           <tr>
             <th class="p-3 text-left">Título</th>
             <th class="p-3 text-left">Slug</th>
-            <th class="p-3 text-left">Publicado</th>
+            <th class="p-3 text-left">Status</th>
+            <th class="p-3 text-left">Agendado / Publicado</th>
             <th class="p-3 text-left">Atualizado</th>
             <th class="p-3 text-left">Ações</th>
           </tr>
@@ -136,11 +137,20 @@
             <td class="p-3 font-mono text-xs">/blog/{{ p.slug }}</td>
             <td class="p-3">
               <span
-                class="px-2 py-1 rounded text-xs"
-                :class="p.publicado ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'"
+                class="px-2 py-1 rounded text-xs font-medium"
+                :class="{
+                  'bg-green-100 text-green-800': (p.status || (p.publicado ? 'published' : 'draft')) === 'published',
+                  'bg-yellow-100 text-yellow-800': (p.status || 'draft') === 'scheduled',
+                  'bg-gray-100 text-gray-600': (p.status || (p.publicado ? 'published' : 'draft')) === 'draft'
+                }"
               >
-                {{ p.publicado ? 'SIM' : 'NÃO' }}
+                {{ (p.status || (p.publicado ? 'published' : 'draft')) === 'published' ? 'Publicado' : (p.status || 'draft') === 'scheduled' ? 'Agendado' : 'Rascunho' }}
               </span>
+            </td>
+            <td class="p-3 text-xs text-gray-600">
+              <span v-if="p.scheduledAt" class="text-yellow-700">{{ formatDate(p.scheduledAt) }}</span>
+              <span v-else-if="p.publishedAt">{{ formatDate(p.publishedAt) }}</span>
+              <span v-else class="text-gray-400">—</span>
             </td>
             <td class="p-3 text-xs text-gray-600">{{ formatDate(p.atualizadoEm) }}</td>
             <td class="p-3">
@@ -415,31 +425,98 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2">
-              <input id="pub" v-model="formPublicado" type="checkbox" class="h-4 w-4" />
-              <label for="pub" class="text-sm">Publicar no site</label>
+            <!-- Resumo / Excerpt -->
+            <div class="border-t pt-4">
+              <label class="block font-medium mb-2">Resumo (excerpt)</label>
+              <textarea
+                v-model="formExcerpt"
+                rows="2"
+                class="w-full border rounded-lg p-3 text-sm"
+                placeholder="Breve descrição do post para cards e SEO"
+              />
+            </div>
+
+            <!-- SEO -->
+            <div class="space-y-2 pt-2 border-t">
+              <label class="text-sm font-semibold text-gray-700">SEO</label>
+              <input
+                v-model="formSeoTitle"
+                placeholder="SEO Title (deixe vazio para usar o título)"
+                class="w-full border p-2 rounded text-sm"
+              />
+              <textarea
+                v-model="formSeoDescription"
+                rows="2"
+                placeholder="Meta description (deixe vazio para usar o excerpt)"
+                class="w-full border p-2 rounded text-sm"
+              />
+            </div>
+
+            <!-- Status / Agendamento -->
+            <div class="border-t pt-4 space-y-3">
+              <label class="text-sm font-semibold text-gray-700">Publicação</label>
+
+              <!-- Badge atual -->
+              <div class="flex items-center gap-2">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                  :class="{
+                    'bg-green-100 text-green-800': formStatus === 'published',
+                    'bg-yellow-100 text-yellow-800': formStatus === 'scheduled',
+                    'bg-gray-100 text-gray-600': formStatus === 'draft'
+                  }"
+                >
+                  {{ formStatus === 'published' ? 'Publicado' : formStatus === 'scheduled' ? `Programado para ${formScheduledAt ? new Date(formScheduledAt).toLocaleString('pt-BR') : '...'}` : 'Rascunho' }}
+                </span>
+              </div>
+
+              <div class="flex flex-wrap gap-3">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input v-model="formStatus" type="radio" value="draft" class="h-4 w-4" />
+                  <span class="text-sm">Salvar como rascunho</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input v-model="formStatus" type="radio" value="published" class="h-4 w-4" />
+                  <span class="text-sm">Publicar agora</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input v-model="formStatus" type="radio" value="scheduled" class="h-4 w-4" />
+                  <span class="text-sm">Programar publicação</span>
+                </label>
+              </div>
+
+              <div v-if="formStatus === 'scheduled'" class="flex items-center gap-3">
+                <input
+                  v-model="formScheduledAt"
+                  type="datetime-local"
+                  class="border rounded-lg p-2 text-sm"
+                />
+                <span class="text-xs text-gray-500">Fuso: America/Sao_Paulo</span>
+              </div>
             </div>
 
             <div v-if="modalMessage" class="text-green-700 text-sm font-medium">{{ modalMessage }}</div>
             <div v-if="modalError" class="text-red-700 text-sm font-medium">{{ modalError }}</div>
           </div>
 
-          <div class="p-5 border-t flex items-center justify-end gap-3 shrink-0">
-            <button class="px-4 py-2 rounded-lg border" @click="closeModal" :disabled="modalLoading">Cancelar</button>
-            <button
-              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
-              @click="publishNow"
-              :disabled="modalLoading"
-            >
-              Publicar
-            </button>
-            <button
-              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-              @click="saveModal"
-              :disabled="modalLoading"
-            >
-              {{ modalLoading ? 'Salvando...' : 'Salvar' }}
-            </button>
+          <div class="p-5 border-t flex items-center justify-between gap-3 shrink-0 flex-wrap">
+            <button class="px-4 py-2 rounded-lg border text-sm" @click="closeModal" :disabled="modalLoading">Cancelar</button>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button
+                class="px-4 py-2 rounded-lg border text-sm bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
+                @click="saveDraft"
+                :disabled="modalLoading"
+              >
+                Rascunho
+              </button>
+              <button
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm"
+                @click="saveModal"
+                :disabled="modalLoading"
+              >
+                {{ modalLoading ? 'Salvando...' : formStatus === 'scheduled' ? 'Agendar' : formStatus === 'published' ? 'Publicar' : 'Salvar' }}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -464,6 +541,9 @@ type BlogPostListItem = {
   titulo: string
   slug: string
   publicado: boolean
+  status: string
+  scheduledAt: string | null
+  publishedAt: string | null
   criadoEm: string
   atualizadoEm: string
 }
@@ -476,8 +556,14 @@ type BlogPostDetail = {
   imageAlt: string | null
   imageTitle: string | null
   imageCaption: string | null
+  excerpt: string | null
   html: string | null
   publicado: boolean
+  status: string
+  scheduledAt: string | null
+  publishedAt: string | null
+  seoTitle: string | null
+  seoDescription: string | null
   criadoEm: string
   atualizadoEm: string
 }
@@ -607,6 +693,11 @@ const formImageTitle = ref('')
 const formImageCaption = ref('')
 const formHtml = ref('')
 const formPublicado = ref(false)
+const formStatus = ref<'draft' | 'scheduled' | 'published'>('draft')
+const formScheduledAt = ref('')
+const formExcerpt = ref('')
+const formSeoTitle = ref('')
+const formSeoDescription = ref('')
 
 const featuredUploadInput = ref<HTMLInputElement | null>(null)
 const featuredUploadLoading = ref(false)
@@ -731,13 +822,37 @@ const importPaginaId = ref('')
 const importLoading = ref(false)
 const importError = ref('')
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+}
+
+watch(() => formTitulo.value, (val) => {
+  if (!editingId.value && val) {
+    formSlug.value = slugify(val)
+  }
+})
+
 function openCreate() {
   editingId.value = null
   formTitulo.value = ''
   formSlug.value = ''
   formFeaturedImage.value = ''
+  formImageAlt.value = ''
+  formImageTitle.value = ''
+  formImageCaption.value = ''
+  formExcerpt.value = ''
   formHtml.value = ''
-  formPublicado.value = true
+  formPublicado.value = false
+  formStatus.value = 'draft'
+  formScheduledAt.value = ''
+  formSeoTitle.value = ''
+  formSeoDescription.value = ''
   modalMessage.value = ''
   modalError.value = ''
   importPaginaId.value = ''
@@ -766,7 +881,12 @@ async function openEdit(id: string) {
     formImageCaption.value = res.post.imageCaption || ''
     const loadedHtml = res.post.html || ''
     formHtml.value = loadedHtml
+    formExcerpt.value = res.post.excerpt || ''
     formPublicado.value = Boolean(res.post.publicado)
+    formStatus.value = (res.post.status as any) || (res.post.publicado ? 'published' : 'draft')
+    formScheduledAt.value = res.post.scheduledAt ? new Date(res.post.scheduledAt).toISOString().slice(0, 16) : ''
+    formSeoTitle.value = res.post.seoTitle || ''
+    formSeoDescription.value = res.post.seoDescription || ''
     if (isComplexHtml(loadedHtml)) {
       showHtmlSource.value = true
     } else {
@@ -863,7 +983,14 @@ async function importarHtmlPagina() {
 }
 
 async function publishNow() {
+  formStatus.value = 'published'
   formPublicado.value = true
+  await saveModal()
+}
+
+async function saveDraft() {
+  formStatus.value = 'draft'
+  formPublicado.value = false
   await saveModal()
 }
 
@@ -876,13 +1003,15 @@ async function saveModal() {
   modalMessage.value = ''
   modalError.value = ''
 
-  if (!editingId.value && !formPublicado.value) {
-    const proceed = process.client
-      ? window.confirm('Este post será salvo como rascunho e não aparecerá no site público. Deseja continuar?')
-      : false
-    if (!proceed) {
+  if (formStatus.value === 'scheduled') {
+    if (!formScheduledAt.value) {
       modalLoading.value = false
-      modalError.value = 'Publicação cancelada. Marque "Publicar no site" para deixar o post visível no site.'
+      modalError.value = 'Informe a data e horário para agendamento.'
+      return
+    }
+    if (new Date(formScheduledAt.value) <= new Date()) {
+      modalLoading.value = false
+      modalError.value = 'A data de agendamento deve ser no futuro.'
       return
     }
   }
@@ -897,15 +1026,20 @@ async function saveModal() {
     const imageCaptionRaw = String(formImageCaption.value || '').trim()
     const imageCaption = imageCaptionRaw ? imageCaptionRaw : null
 
-    const payload = {
+    const payload: Record<string, any> = {
       titulo: formTitulo.value,
       slug: formSlug.value,
       featuredImage,
       imageAlt,
       imageTitle,
       imageCaption,
+      excerpt: String(formExcerpt.value || '').trim() || null,
       html: formHtml.value,
-      publicado: formPublicado.value
+      publicado: formStatus.value === 'published',
+      status: formStatus.value,
+      scheduledAt: formStatus.value === 'scheduled' ? formScheduledAt.value : null,
+      seoTitle: String(formSeoTitle.value || '').trim() || null,
+      seoDescription: String(formSeoDescription.value || '').trim() || null
     }
 
     if (editingId.value) {
@@ -920,9 +1054,14 @@ async function saveModal() {
       })
     }
 
-    modalMessage.value = 'Post salvo com sucesso.'
+    const msgs: Record<string, string> = {
+      published: 'Post publicado com sucesso.',
+      scheduled: `Post programado para ${formScheduledAt.value ? new Date(formScheduledAt.value).toLocaleString('pt-BR') : ''}.`,
+      draft: 'Post salvo como rascunho.'
+    }
+    modalMessage.value = msgs[formStatus.value] || 'Post salvo com sucesso.'
     await refresh()
-    closeModal()
+    setTimeout(() => closeModal(), 1200)
   } catch (err: any) {
     modalError.value = err?.data?.statusMessage || 'Erro ao salvar post'
   } finally {
