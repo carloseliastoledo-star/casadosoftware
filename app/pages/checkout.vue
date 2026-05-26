@@ -260,6 +260,14 @@
               <span class="text-sm font-semibold text-green-700">+ R$ {{ bump.price.toFixed(2).replace('.', ',') }}</span>
             </div>
 
+            <!-- Desconto do cupom -->
+            <div v-if="appliedCoupon" class="flex items-center justify-between py-2 border-b border-gray-100">
+              <span class="text-sm text-green-700 font-medium">Cupom {{ appliedCoupon.code }} ({{ appliedCoupon.percent }}%)</span>
+              <span class="text-sm font-semibold text-green-700">
+                - R$ {{ couponDiscountDisplay }}
+              </span>
+            </div>
+
             <!-- Total -->
             <div class="flex items-center justify-between pt-3 mb-4">
               <span class="text-sm font-black text-gray-900">Total</span>
@@ -471,18 +479,24 @@ const productImage = ref('')
 const { cart, cartTotal, clearCart } = useCart()
 
 const emailValido = computed(() => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
+const checkoutSubtotal = computed(() =>
+  cart.value.length > 0
+    ? cartTotal.value
+    : basePrice.value + (showOrderBump.value ? bumpTotal.value : 0)
+)
+
 const totalPrice = computed(() => {
-  // Se o carrinho tem itens, usa o total do carrinho
-  if (cart.value.length > 0) {
-    return cartTotal.value
-  }
-  // Caso contrário, usa a lógica antiga (compatibilidade)
-  const subtotal = basePrice.value + (showOrderBump.value ? bumpTotal.value : 0)
   if (appliedCoupon.value && appliedCoupon.value.percent) {
-    const discount = subtotal * (appliedCoupon.value.percent / 100)
-    return subtotal - discount
+    const discount = Math.round(checkoutSubtotal.value * (appliedCoupon.value.percent / 100) * 100) / 100
+    return Math.round((checkoutSubtotal.value - discount) * 100) / 100
   }
-  return subtotal
+  return checkoutSubtotal.value
+})
+
+const couponDiscountDisplay = computed(() => {
+  if (!appliedCoupon.value?.percent) return '0,00'
+  const discount = Math.round(checkoutSubtotal.value * (appliedCoupon.value.percent / 100) * 100) / 100
+  return discount.toFixed(2).replace('.', ',')
 })
 
 useSeoMeta({
