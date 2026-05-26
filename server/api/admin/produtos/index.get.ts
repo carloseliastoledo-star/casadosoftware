@@ -1,7 +1,7 @@
 import { createError } from 'h3'
 import prisma from '../../../db/prisma'
 import { requireAdminSession } from '../../../utils/adminSession'
-import { getStoreContext, whereForStore } from '#root/server/utils/store'
+import { getStoreContext } from '#root/server/utils/store'
 
 export default defineEventHandler(async (event) => {
   console.log('[admin/produtos] ===== START =====')
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     const host = getRequestHeader(event, 'host')
     console.log('[admin/produtos] storeSlug:', ctx.storeSlug || '(null)', 'host:', host)
 
-    // Filter products by storeSlug using whereForStore to handle casadosoftware (null/empty) correctly
+    const storeSlugFilter = ctx.storeSlug || 'casadosoftware'
     const products = await (prisma as any).produto.findMany({
       select: {
         id: true,
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
           }
         }
       },
-      where: whereForStore({}, ctx),
+      where: { storeSlug: storeSlugFilter },
       orderBy: { nome: 'asc' }
     })
 
