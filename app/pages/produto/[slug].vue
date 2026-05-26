@@ -35,6 +35,9 @@
                 {{ discountPercent }}% OFF
               </span>
             </div>
+            <div v-if="(safeProduct as any)?.imageCaption" class="absolute bottom-3 left-3 right-3 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-white/90 text-center">
+              {{ (safeProduct as any).imageCaption }}
+            </div>
           </div>
 
           <!-- Coluna compra -->
@@ -517,6 +520,9 @@ const safeProduct = computed(() => {
     seoTitle: p.seoTitle || null,
     seoDescription: p.seoDescription || null,
     seoContent: p.seoContent || null,
+    imageAlt: p.imageAlt || null,
+    imageTitle: p.imageTitle || null,
+    imageCaption: p.imageCaption || null,
     createdAt: p.criadoEm || p.createdAt || null,
     finalUrl: p.finalUrl || null
   }
