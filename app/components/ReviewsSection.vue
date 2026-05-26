@@ -49,7 +49,7 @@ const stats = computed(() => data.value?.stats || { total: 0, average: 0 })
     </div>
 
     <!-- Versão completa para Home, produto e página de avaliações -->
-    <div v-else>
+    <div v-else class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-2">O que nossos clientes dizem</h2>
         <div class="flex items-center justify-center gap-2">
