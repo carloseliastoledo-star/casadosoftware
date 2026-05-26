@@ -231,6 +231,25 @@
               </div>
             </div>
 
+            <div class="space-y-2 pt-2 border-t">
+              <label class="text-sm font-semibold text-gray-700">SEO da Imagem</label>
+              <input
+                v-model="formImageAlt"
+                placeholder="Alt da imagem (ex: Windows 11 - Ativação original)"
+                class="w-full border p-2 rounded text-sm"
+              />
+              <input
+                v-model="formImageTitle"
+                placeholder="Title da imagem (ex: Tutorial Windows 11)"
+                class="w-full border p-2 rounded text-sm"
+              />
+              <input
+                v-model="formImageCaption"
+                placeholder="Legenda da imagem (opcional)"
+                class="w-full border p-2 rounded text-sm"
+              />
+            </div>
+
             <div>
               <label class="block font-medium mb-2">Conteúdo</label>
 
@@ -454,6 +473,9 @@ type BlogPostDetail = {
   titulo: string
   slug: string
   featuredImage: string | null
+  imageAlt: string | null
+  imageTitle: string | null
+  imageCaption: string | null
   html: string | null
   publicado: boolean
   criadoEm: string
@@ -580,6 +602,9 @@ const editingId = ref<string | null>(null)
 const formTitulo = ref('')
 const formSlug = ref('')
 const formFeaturedImage = ref('')
+const formImageAlt = ref('')
+const formImageTitle = ref('')
+const formImageCaption = ref('')
 const formHtml = ref('')
 const formPublicado = ref(false)
 
@@ -736,6 +761,9 @@ async function openEdit(id: string) {
     formTitulo.value = res.post.titulo
     formSlug.value = res.post.slug
     formFeaturedImage.value = res.post.featuredImage || ''
+    formImageAlt.value = res.post.imageAlt || ''
+    formImageTitle.value = res.post.imageTitle || ''
+    formImageCaption.value = res.post.imageCaption || ''
     const loadedHtml = res.post.html || ''
     formHtml.value = loadedHtml
     formPublicado.value = Boolean(res.post.publicado)
@@ -862,11 +890,20 @@ async function saveModal() {
   try {
     const featuredImageRaw = String(formFeaturedImage.value || '').trim()
     const featuredImage = featuredImageRaw ? featuredImageRaw : null
+    const imageAltRaw = String(formImageAlt.value || '').trim()
+    const imageAlt = imageAltRaw ? imageAltRaw : null
+    const imageTitleRaw = String(formImageTitle.value || '').trim()
+    const imageTitle = imageTitleRaw ? imageTitleRaw : null
+    const imageCaptionRaw = String(formImageCaption.value || '').trim()
+    const imageCaption = imageCaptionRaw ? imageCaptionRaw : null
 
     const payload = {
       titulo: formTitulo.value,
       slug: formSlug.value,
       featuredImage,
+      imageAlt,
+      imageTitle,
+      imageCaption,
       html: formHtml.value,
       publicado: formPublicado.value
     }

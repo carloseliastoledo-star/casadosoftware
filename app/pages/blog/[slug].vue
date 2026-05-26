@@ -28,10 +28,14 @@
 
             <img
               :src="post?.featuredImage || '/images/blog-default.svg'"
-              :alt="post?.titulo || 'Imagem do post'"
+              :alt="post?.imageAlt || post?.titulo || 'Imagem do post'"
+              :title="post?.imageTitle || post?.titulo || 'Post'"
               class="blog-featured-image"
               loading="lazy"
             />
+            <p v-if="post?.imageCaption" class="mt-2 text-sm text-gray-500 text-center">
+              {{ post.imageCaption }}
+            </p>
 
             <div class="mt-8">
               <div ref="articleEl" class="blog-article blog-content" v-html="safePostHtml" />

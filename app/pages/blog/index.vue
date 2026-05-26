@@ -25,7 +25,8 @@
                 <div class="bg-gray-100">
                   <img
                     :src="post.featuredImage || '/images/blog-default.svg'"
-                    :alt="post.titulo"
+                    :alt="post.imageAlt || post.titulo"
+                    :title="post.imageTitle || post.titulo"
                     class="w-full h-52 object-cover"
                     loading="lazy"
                   />

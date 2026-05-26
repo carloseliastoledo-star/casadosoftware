@@ -32,13 +32,16 @@ export default defineEventHandler(async (event) => {
         titulo: true,
         slug: true,
         featuredImage: true,
+        imageAlt: true,
+        imageTitle: true,
+        imageCaption: true,
         excerpt: true,
         keyword: true,
         html: true,
         criadoEm: true,
         atualizadoEm: true,
         BlogPostTranslation: isIntl
-          ? { where: { lang: 'en' }, select: { titulo: true, excerpt: true, featuredImage: true, html: true }, take: 1 }
+          ? { where: { lang: 'en' }, select: { titulo: true, excerpt: true, featuredImage: true, imageAlt: true, imageTitle: true, imageCaption: true, html: true }, take: 1 }
           : false
       }
     })
@@ -55,6 +58,9 @@ export default defineEventHandler(async (event) => {
       titulo: tr?.titulo || post.titulo,
       slug: post.slug,
       featuredImage: tr?.featuredImage || post.featuredImage,
+      imageAlt: tr?.imageAlt || post.imageAlt || null,
+      imageTitle: tr?.imageTitle || post.imageTitle || null,
+      imageCaption: tr?.imageCaption || post.imageCaption || null,
       excerpt: tr?.excerpt || post.excerpt,
       keyword: post.keyword,
       html: tr?.html || post.html,

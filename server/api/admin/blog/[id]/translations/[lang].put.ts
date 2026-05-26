@@ -28,6 +28,12 @@ export default defineEventHandler(async (event) => {
   const titulo = String(body?.titulo || '').trim()
   const featuredImageRaw = body?.featuredImage != null ? String(body.featuredImage).trim() : ''
   const featuredImage = featuredImageRaw ? featuredImageRaw : null
+  const imageAltRaw = body?.imageAlt != null ? String(body.imageAlt).trim() : ''
+  const imageAlt = imageAltRaw ? imageAltRaw : null
+  const imageTitleRaw = body?.imageTitle != null ? String(body.imageTitle).trim() : ''
+  const imageTitle = imageTitleRaw ? imageTitleRaw : null
+  const imageCaptionRaw = body?.imageCaption != null ? String(body.imageCaption).trim() : ''
+  const imageCaption = imageCaptionRaw ? imageCaptionRaw : null
   const excerptRaw = body?.excerpt != null ? String(body.excerpt).trim() : ''
   const excerpt = excerptRaw ? excerptRaw : null
   const htmlRaw = body?.html != null ? String(body.html) : null
@@ -47,13 +53,16 @@ export default defineEventHandler(async (event) => {
     const translation = existing
       ? await (prisma as any).blogPostTranslation.update({
           where: { id: existing.id },
-          data: { titulo, featuredImage, excerpt, html },
+          data: { titulo, featuredImage, imageAlt, imageTitle, imageCaption, excerpt, html },
           select: {
             id: true,
             postId: true,
             lang: true,
             titulo: true,
             featuredImage: true,
+            imageAlt: true,
+            imageTitle: true,
+            imageCaption: true,
             excerpt: true,
             html: true,
             criadoEm: true,
@@ -61,13 +70,16 @@ export default defineEventHandler(async (event) => {
           }
         })
       : await (prisma as any).blogPostTranslation.create({
-          data: { id: randomUUID(), postId, lang, titulo, featuredImage, excerpt, html },
+          data: { id: randomUUID(), postId, lang, titulo, featuredImage, imageAlt, imageTitle, imageCaption, excerpt, html },
           select: {
             id: true,
             postId: true,
             lang: true,
             titulo: true,
             featuredImage: true,
+            imageAlt: true,
+            imageTitle: true,
+            imageCaption: true,
             excerpt: true,
             html: true,
             criadoEm: true,

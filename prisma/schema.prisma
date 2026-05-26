@@ -145,6 +145,9 @@ model BlogPost {
   criadoEm            DateTime              @default(now()) @db.DateTime(0)
   atualizadoEm        DateTime              @db.DateTime(0)
   featuredImage       String?               @db.Text
+  imageAlt            String?
+  imageTitle          String?
+  imageCaption        String?
   excerpt             String?
   keyword             String?
   autoSeo             Boolean               @default(false)
@@ -160,6 +163,9 @@ model BlogPostTranslation {
   lang          String
   titulo        String
   featuredImage String?  @db.Text
+  imageAlt      String?
+  imageTitle    String?
+  imageCaption  String?
   excerpt       String?  @db.VarChar(512)
   html          String?  @db.LongText
   criadoEm      DateTime @default(now()) @db.DateTime(0)

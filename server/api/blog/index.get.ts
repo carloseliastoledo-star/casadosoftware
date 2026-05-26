@@ -23,11 +23,14 @@ export default defineEventHandler(async (event) => {
         titulo: true,
         slug: true,
         featuredImage: true,
+        imageAlt: true,
+        imageTitle: true,
+        imageCaption: true,
         excerpt: true,
         criadoEm: true,
         atualizadoEm: true,
         BlogPostTranslation: isIntl
-          ? { where: { lang: 'en' }, select: { titulo: true, excerpt: true, featuredImage: true }, take: 1 }
+          ? { where: { lang: 'en' }, select: { titulo: true, excerpt: true, featuredImage: true, imageAlt: true, imageTitle: true, imageCaption: true }, take: 1 }
           : false
       }
     })
@@ -41,6 +44,9 @@ export default defineEventHandler(async (event) => {
             titulo: tr?.titulo || p?.titulo || '',
             slug: p?.slug || '',
             featuredImage: tr?.featuredImage || p?.featuredImage || null,
+            imageAlt: tr?.imageAlt || p?.imageAlt || null,
+            imageTitle: tr?.imageTitle || p?.imageTitle || null,
+            imageCaption: tr?.imageCaption || p?.imageCaption || null,
             descricao: tr?.excerpt || p?.excerpt || '',
             criadoEm: p?.criadoEm,
             atualizadoEm: p?.atualizadoEm

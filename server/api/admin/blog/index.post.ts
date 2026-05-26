@@ -22,6 +22,12 @@ export default defineEventHandler(async (event) => {
   const slug = String(body?.slug || '').trim()
   const featuredImageRaw = body?.featuredImage != null ? String(body.featuredImage).trim() : ''
   const featuredImage = featuredImageRaw ? featuredImageRaw : null
+  const imageAltRaw = body?.imageAlt != null ? String(body.imageAlt).trim() : ''
+  const imageAlt = imageAltRaw ? imageAltRaw : null
+  const imageTitleRaw = body?.imageTitle != null ? String(body.imageTitle).trim() : ''
+  const imageTitle = imageTitleRaw ? imageTitleRaw : null
+  const imageCaptionRaw = body?.imageCaption != null ? String(body.imageCaption).trim() : ''
+  const imageCaption = imageCaptionRaw ? imageCaptionRaw : null
   const htmlRaw = body?.html != null ? String(body.html) : null
   const publicado = Boolean(body?.publicado)
 
@@ -40,6 +46,9 @@ export default defineEventHandler(async (event) => {
         slug,
         storeSlug,
         featuredImage,
+        imageAlt,
+        imageTitle,
+        imageCaption,
         html,
         publicado,
         atualizadoEm: new Date()
@@ -49,6 +58,9 @@ export default defineEventHandler(async (event) => {
         titulo: true,
         slug: true,
         featuredImage: true,
+        imageAlt: true,
+        imageTitle: true,
+        imageCaption: true,
         html: true,
         publicado: true,
         criadoEm: true,
