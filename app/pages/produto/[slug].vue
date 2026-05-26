@@ -21,8 +21,8 @@
           <div class="relative rounded-2xl overflow-hidden bg-[#021326] border border-cyan-500/20 flex items-center justify-center p-6 min-h-[320px] lg:min-h-[480px]">
             <img
               :src="safeImage"
-              :alt="(safeProduct as any)?.imageAlt || (safeProduct as any)?.name || 'Produto'"
-              :title="(safeProduct as any)?.imageTitle || `Comprar ${(safeProduct as any)?.name || 'Produto'}`"
+              :alt="(safeProduct as any)?.imageAlt || (safeProduct as any)?.nome || (safeProduct as any)?.name || 'Produto'"
+              :title="(safeProduct as any)?.imageTitle || `Comprar ${(safeProduct as any)?.nome || (safeProduct as any)?.name || 'Produto'}`"
               fetchpriority="high"
               loading="eager"
               decoding="async"
@@ -30,6 +30,11 @@
               referrerpolicy="no-referrer"
               @error="onImageError"
             />
+            <span style="display:none">
+              ALT_DEBUG: {{ (safeProduct as any)?.imageAlt }}
+              TITLE_DEBUG: {{ (safeProduct as any)?.imageTitle }}
+              CAPTION_DEBUG: {{ (safeProduct as any)?.imageCaption }}
+            </span>
             <div v-if="discountPercent" class="absolute top-3 right-3">
               <span class="inline-flex items-center rounded-full bg-red-600 px-3 py-1 text-sm font-black text-white tracking-wider">
                 {{ discountPercent }}% OFF
