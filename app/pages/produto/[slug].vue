@@ -1,5 +1,4 @@
 ﻿<template>
-  <div style="display:none">PRODUCT_PAGE_DEBUG_2026_05_25</div>
   <section class="bg-[#010d1a] min-h-screen text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
 
@@ -31,11 +30,6 @@
               referrerpolicy="no-referrer"
               @error="onImageError"
             />
-            <span style="display:none">
-              ALT_DEBUG: {{ (safeProduct as any)?.imageAlt }}
-              TITLE_DEBUG: {{ (safeProduct as any)?.imageTitle }}
-              CAPTION_DEBUG: {{ (safeProduct as any)?.imageCaption }}
-            </span>
             <div v-if="discountPercent" class="absolute top-3 right-3">
               <span class="inline-flex items-center rounded-full bg-red-600 px-3 py-1 text-sm font-black text-white tracking-wider">
                 {{ discountPercent }}% OFF
@@ -848,8 +842,7 @@ useHead(() => {
   return {
     title,
     meta: [
-      { name: 'description', content: description },
-      { name: 'x-debug-page', content: 'PRODUCT_PAGE_DEBUG_2026_05_25' }
+      { name: 'description', content: description }
     ],
     link,
     script: [
