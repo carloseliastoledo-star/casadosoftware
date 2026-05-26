@@ -847,7 +847,10 @@ useHead(() => {
 
   return {
     title,
-    meta: [{ name: 'description', content: description }],
+    meta: [
+      { name: 'description', content: description },
+      { name: 'x-debug-page', content: 'PRODUCT_PAGE_DEBUG_2026_05_25' }
+    ],
     link,
     script: [
       {
