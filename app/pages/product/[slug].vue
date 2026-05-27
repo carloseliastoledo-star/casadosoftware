@@ -175,26 +175,24 @@ async function loadProduct() {
   loading.value = true
   error.value = ''
   try {
-    const data: any = await $fetch('/api/intl/products')
-    const list: any[] = Array.isArray(data) ? data : Array.isArray(data?.produtos) ? data.produtos : []
-    const found = list.find((p: any) => p.slug === slug.value)
+    const data: any = await $fetch(`/api/intl/products/${slug.value}`)
 
-    if (!found) {
+    if (!data || data.error) {
       error.value = 'Product not found or not available in your region.'
       return
     }
 
-    const rawDesc = String(found.descricao || found.description || '')
+    const rawDesc = String(data.descricao || data.description || '')
 
     product.value = {
-      id: String(found.id || ''),
-      nome: String(found.name || found.nome || ''),
-      slug: String(found.slug || slug.value),
-      imagem: found.image || found.imagem || null,
+      id: String(data.id || ''),
+      nome: String(data.name || data.nome || ''),
+      slug: String(data.slug || slug.value),
+      imagem: data.image || data.imagem || null,
       descricao: rawDesc || null,
-      usdPrice: Number(found.usdPrice || 0),
-      oldUsdPrice: found.oldUsdPrice ? Number(found.oldUsdPrice) : null,
-      cardItems: Array.isArray(found.cardItems) ? found.cardItems : [],
+      usdPrice: Number(data.usdPrice || 0),
+      oldUsdPrice: data.oldUsdPrice ? Number(data.oldUsdPrice) : null,
+      cardItems: Array.isArray(data.cardItems) ? data.cardItems : [],
     }
 
     useSeoMeta({
