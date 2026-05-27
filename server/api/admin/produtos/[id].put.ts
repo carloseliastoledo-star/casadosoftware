@@ -183,6 +183,27 @@ export default defineEventHandler(async (event) => {
         }
       })
 
+      // Criar ProdutoPrecoLoja para 'gvgmall' se storeSlug for 'international'
+      if (storeSlug === 'international') {
+        await (prisma as any).produtoPrecoLoja.upsert({
+          where: { produtoId_storeSlug: { produtoId: id, storeSlug: 'gvgmall' } },
+          create: {
+            id: crypto.randomUUID(),
+            produtoId: id,
+            storeSlug: 'gvgmall',
+            preco: Number(body.preco),
+            precoAntigo: precoAntigoProvided ? (precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo) : null,
+            updatedAt: new Date()
+          },
+          update: {
+            preco: Number(body.preco),
+            ...(precoAntigoProvided ? { precoAntigo: precoAntigo === null || Number.isNaN(precoAntigo) ? null : precoAntigo } : {}),
+            updatedAt: new Date()
+          }
+        })
+      }
+    }
+
       if (precoUsdProvided) {
         if (precoUsd !== null && Number.isFinite(precoUsd) && precoUsd > 0) {
           await (prisma as any).produtoPrecoMoeda.upsert({
