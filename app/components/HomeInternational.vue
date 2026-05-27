@@ -185,7 +185,7 @@
           <NuxtLink
             v-for="cat in categories"
             :key="cat.slug"
-            :to="`/products?category=${cat.slug}`"
+            :to="`/category/${cat.slug}`"
             class="bg-white border border-slate-200 hover:border-blue-300 rounded-2xl p-5 text-center hover:shadow-sm transition group"
           >
             <div class="text-3xl mb-2">{{ cat.icon }}</div>
