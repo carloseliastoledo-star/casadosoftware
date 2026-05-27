@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
   const order = await (prisma as any).order.findFirst({
     where: whereForStore({ id, deletedAt: null }, ctx) as any,
-    select: { id: true, status: true, storeSlug: true, licencas: { select: { id: true } } }
+    select: { id: true, status: true, storeSlug: true, Licenca: { select: { id: true } } }
   })
 
   if (!order) {
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
     if (!allowed.includes(statusRaw as AllowedStatus)) {
       throw createError({ statusCode: 400, statusMessage: 'status inválido' })
     }
-    if (order.licencas.length > 0 && statusRaw !== 'PAID') {
+    if (order.Licenca.length > 0 && statusRaw !== 'PAID') {
       throw createError({
         statusCode: 400,
         statusMessage: 'Não é possível alterar status para diferente de PAID quando já existe licença vinculada ao pedido'
