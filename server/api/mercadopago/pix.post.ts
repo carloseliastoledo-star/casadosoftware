@@ -33,6 +33,11 @@ export default defineEventHandler(async (event) => {
   const cpf = body?.cpf ? String(body.cpf).trim() : undefined
   const couponCode = body?.couponCode ? String(body.couponCode).trim() : ''
 
+  // Quantidade do produto (suporte a carrinho)
+  const cartItems: Array<{ productId: string; quantity: number }> = Array.isArray(body?.cartItems) ? body.cartItems : []
+  const cartItem = cartItems.find((i: any) => i.productId === produtoId)
+  const quantity = Math.max(1, Math.floor(Number(cartItem?.quantity ?? body?.quantity ?? 1) || 1))
+
   console.log('[mp pix] Dados do checkout:', {
     produtoId,
     email,
@@ -321,7 +326,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const subtotalAmount = round2(effectivePrice)
+    const subtotalAmount = round2(effectivePrice * quantity)
     const pixDiscountPercent = 5
     const pixDiscountAmount = round2(subtotalAmount * 0.05)
     const couponDiscountAmount = coupon
