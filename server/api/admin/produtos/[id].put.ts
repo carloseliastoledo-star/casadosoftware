@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
 
   const { storeSlug } = getStoreContext(event)
 
-  const id = event.context.params.id
+  const id = event.context.params?.id
   const body = await readBody(event)
 
   const hasGoogleAds = Boolean(body.googleAdsConversionLabel)
@@ -204,54 +204,53 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-      if (precoUsdProvided) {
-        if (precoUsd !== null && Number.isFinite(precoUsd) && precoUsd > 0) {
-          await (prisma as any).produtoPrecoMoeda.upsert({
-            where: { produtoId_storeSlug_currency: { produtoId: id, storeSlug, currency: 'usd' } },
-            create: {
-              id: crypto.randomUUID(),
-              produtoId: id,
-              storeSlug,
-              currency: 'usd',
-              amount: precoUsd,
-              oldAmount: null,
-              updatedAt: new Date()
-            },
-            update: {
-              amount: precoUsd,
-              updatedAt: new Date()
-            }
-          })
-        } else {
-          await (prisma as any).produtoPrecoMoeda.deleteMany({
-            where: { produtoId: id, storeSlug, currency: 'usd' }
-          })
-        }
+    if (precoUsdProvided) {
+      if (precoUsd !== null && Number.isFinite(precoUsd) && precoUsd > 0) {
+        await (prisma as any).produtoPrecoMoeda.upsert({
+          where: { produtoId_storeSlug_currency: { produtoId: id, storeSlug, currency: 'usd' } },
+          create: {
+            id: crypto.randomUUID(),
+            produtoId: id,
+            storeSlug,
+            currency: 'usd',
+            amount: precoUsd,
+            oldAmount: null,
+            updatedAt: new Date()
+          },
+          update: {
+            amount: precoUsd,
+            updatedAt: new Date()
+          }
+        })
+      } else {
+        await (prisma as any).produtoPrecoMoeda.deleteMany({
+          where: { produtoId: id, storeSlug, currency: 'usd' }
+        })
       }
+    }
 
-      if (precoEurProvided) {
-        if (precoEur !== null && Number.isFinite(precoEur) && precoEur > 0) {
-          await (prisma as any).produtoPrecoMoeda.upsert({
-            where: { produtoId_storeSlug_currency: { produtoId: id, storeSlug, currency: 'eur' } },
-            create: {
-              id: crypto.randomUUID(),
-              produtoId: id,
-              storeSlug,
-              currency: 'eur',
-              amount: precoEur,
-              oldAmount: null,
-              updatedAt: new Date()
-            },
-            update: {
-              amount: precoEur,
-              updatedAt: new Date()
-            }
-          })
-        } else {
-          await (prisma as any).produtoPrecoMoeda.deleteMany({
-            where: { produtoId: id, storeSlug, currency: 'eur' }
-          })
-        }
+    if (precoEurProvided) {
+      if (precoEur !== null && Number.isFinite(precoEur) && precoEur > 0) {
+        await (prisma as any).produtoPrecoMoeda.upsert({
+          where: { produtoId_storeSlug_currency: { produtoId: id, storeSlug, currency: 'eur' } },
+          create: {
+            id: crypto.randomUUID(),
+            produtoId: id,
+            storeSlug,
+            currency: 'eur',
+            amount: precoEur,
+            oldAmount: null,
+            updatedAt: new Date()
+          },
+          update: {
+            amount: precoEur,
+            updatedAt: new Date()
+          }
+        })
+      } else {
+        await (prisma as any).produtoPrecoMoeda.deleteMany({
+          where: { produtoId: id, storeSlug, currency: 'eur' }
+        })
       }
     }
 
