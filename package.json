@@ -6,12 +6,12 @@
     "node": ">=22 <23"
   },
   "scripts": {
-    "build": "prisma generate && prisma db push --skip-generate --accept-data-loss && nuxt build",
-    "vercel-build": "prisma generate && prisma db push --skip-generate --accept-data-loss && nuxt build",
+    "build": "prisma generate && nuxt build",
+    "vercel-build": "prisma generate && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "start": "prisma db push --skip-generate --accept-data-loss && node .output/server/index.mjs",
-    "start:prod": "prisma db push --skip-generate --accept-data-loss && node .output/server/index.mjs",
+    "start": "node .output/server/index.mjs",
+    "start:prod": "node .output/server/index.mjs",
     "preview": "nuxt preview",
     "postinstall": "prisma generate"
   },
