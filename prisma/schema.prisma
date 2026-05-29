@@ -62,7 +62,7 @@ model AdminUser {
 model Affiliate {
   id                     Int                      @id @default(autoincrement())
   name                   String
-  email                  String                   @unique
+  email                  String
   code                   String                   @unique
   commissionRate         Float                    @default(0.25)
   totalEarnings          Float                    @default(0)
@@ -71,10 +71,13 @@ model Affiliate {
   inviteTokenHash        String?
   inviteExpiresAt        DateTime?
   isActive               Boolean                  @default(false)
+  storeSlug              String                   @default("casadosoftware")
   AffiliateCommission    AffiliateCommission[]
   AffiliatePayoutRequest AffiliatePayoutRequest[]
   Commission             Commission[]
   Order                  Order[]
+
+  @@unique([storeSlug, email])
 }
 
 model AffiliateCommission {
