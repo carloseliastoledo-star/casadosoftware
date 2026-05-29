@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
 
   const affiliatesRaw = emails.length
     ? await prismaAny.affiliate.findMany({
-        where: { storeSlug, email: { in: emails } },
+        where: { email: { in: emails } },
         select: { email: true, code: true, commissionRate: true }
       })
     : []

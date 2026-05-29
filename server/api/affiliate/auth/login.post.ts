@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const affiliate = await (prisma as any).affiliate.findUnique({
-    where: { storeSlug_email: { storeSlug: 'casadosoftware', email } },
+    where: { email },
     select: { id: true, email: true, passwordHash: true, isActive: true }
   })
 
