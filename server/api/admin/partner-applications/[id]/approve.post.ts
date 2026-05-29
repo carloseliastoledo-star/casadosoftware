@@ -59,8 +59,8 @@ export default defineEventHandler(async (event) => {
   const storeSlug = String(application.storeSlug || 'casadosoftware')
 
   const affiliate = await (prisma as any).affiliate.upsert({
-    where: { storeSlug_email: { storeSlug, email } },
-    create: { name, email, code, commissionRate, storeSlug, isActive: false },
+    where: { email },
+    create: { name, email, code, commissionRate, isActive: false },
     update: { name, code, commissionRate },
     select: { id: true }
   })
