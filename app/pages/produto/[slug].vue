@@ -1,5 +1,9 @@
 ﻿<template>
-  <section class="bg-[#010d1a] min-h-screen text-white">
+  <!-- Layout estático para Office 365 quando flag está ativa -->
+  <StaticOffice365 v-if="useStaticLayout" />
+
+  <!-- Layout normal da loja quando flag está desativada -->
+  <section v-else class="bg-[#010d1a] min-h-screen text-white">
     <div class="max-w-6xl mx-auto px-4 py-10">
 
       <!-- Loading -->
@@ -283,6 +287,8 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
 
 definePageMeta({ ssr: true })
 
+import { USE_STATIC_LAYOUT, OFFICE_365_STATIC_SLUG } from '~/config/static-layout'
+
 const intl = useIntlContext()
 
 const { siteName } = useSiteBranding()
@@ -356,6 +362,11 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
+// Detecta se deve usar layout estático para este produto
+const useStaticLayout = computed(() => {
+  return USE_STATIC_LAYOUT.office365 && slug.value === OFFICE_365_STATIC_SLUG
+})
+
 const sectionClass = computed(() => {
   return isLicencasDigitais.value ? 'bg-white min-h-screen' : 'bg-gray-50 min-h-screen py-10'
 })
@@ -407,9 +418,6 @@ const descriptionCardClass = computed(() => {
 const whyPriceCardClass = computed(() => {
   return isLicencasDigitais.value ? 'bg-white border rounded-2xl mt-8 p-6 md:p-8' : 'bg-white rounded-2xl border border-gray-100 shadow-sm mt-8 p-8'
 })
-
-const route = useRoute()
-const slug = computed(() => String(route.params.slug || ''))
 
 // Detect intl domain - multi-signal: client window > SSR path > SSR host
 const isIntlDomain = computed(() => {

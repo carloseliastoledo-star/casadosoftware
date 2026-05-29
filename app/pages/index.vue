@@ -1,8 +1,14 @@
 <template>
-  <HomeCasaSoftware v-if="isCasaDoSoftware" :home-theme="homeTheme" />
-  <HomeCenterKeys v-else-if="isLicencasDigitais" :only-best-sellers="true" :home-theme="homeTheme" />
-  <HomeInternational v-else-if="isInternational" />
-  <HomeCenterKeys v-else :only-best-sellers="false" :home-theme="homeTheme" />
+  <!-- Layout estático quando flag está ativa -->
+  <StaticHome v-if="USE_STATIC_LAYOUT.home" />
+
+  <!-- Layout normal da loja quando flag está desativada -->
+  <template v-else>
+    <HomeCasaSoftware v-if="isCasaDoSoftware" :home-theme="homeTheme" />
+    <HomeCenterKeys v-else-if="isLicencasDigitais" :only-best-sellers="true" :home-theme="homeTheme" />
+    <HomeInternational v-else-if="isInternational" />
+    <HomeCenterKeys v-else :only-best-sellers="false" :home-theme="homeTheme" />
+  </template>
 
   <div v-if="debugHost" class="fixed bottom-3 left-3 z-[9999] max-w-[92vw] rounded-lg bg-black/70 text-white text-xs p-3">
     <div><b>host:</b> {{ host }}</div>
@@ -14,7 +20,13 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ ssr: false, layout: 'default' })
+import { USE_STATIC_LAYOUT } from '~/config/static-layout'
+
+// Define layout baseado na flag de layout estático
+definePageMeta({
+  ssr: false,
+  layout: USE_STATIC_LAYOUT.home ? 'static-blank' : 'default'
+})
 
 import { useJsonLd } from '~/composables/useJsonLd'
 import { getCasaHomeJsonLdBundle } from '~/services/casaJsonLd'
