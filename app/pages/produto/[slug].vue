@@ -362,6 +362,9 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
+const route = useRoute()
+const slug = computed(() => String(route.params.slug || ''))
+
 // Detecta se deve usar layout estático para este produto
 const useStaticLayout = computed(() => {
   return USE_STATIC_LAYOUT.office365 && slug.value === OFFICE_365_STATIC_SLUG

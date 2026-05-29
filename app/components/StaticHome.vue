@@ -1,87 +1,87 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-blue-600 to-blue-800 text-white py-20 px-4">
-      <div class="max-w-6xl mx-auto text-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-6">Casa do Software</h1>
-        <p class="text-xl md:text-2xl mb-8 text-blue-100">Licenças de Software Originais e Garantidas</p>
-        <a href="https://wa.me/5511999999999" target="_blank" class="inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-full transition-colors">
-          Fale no WhatsApp
-        </a>
+  <div class="min-h-screen" style="background: #f4f7fc; color: #1e2a3e; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.5;">
+    <!-- Header -->
+    <div class="header" style="background: #2c5f7a; color: white; padding: 1rem 2rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 3px solid #e6b800;">
+      <div class="logo">
+        <h1 style="font-size: 1.5rem; font-weight: 600; margin: 0;">Casa do Software</h1>
+        <p style="font-size: 0.75rem; color: #cce7f0; margin: 0;">Licenças de Software Originais</p>
       </div>
-    </section>
+      <div class="nav" style="display: flex; gap: 2rem;">
+        <a href="/" style="color: white; text-decoration: none; font-weight: 500;">Início</a>
+        <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive" style="color: white; text-decoration: none; font-weight: 500;">Office 365</a>
+      </div>
+    </div>
 
-    <!-- Features Grid -->
-    <section class="py-16 px-4">
-      <div class="max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Por que escolher a Casa do Software?</h2>
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-            <div class="text-4xl mb-4">✓</div>
-            <h3 class="text-xl font-semibold mb-2 text-gray-800">Licenças Originais</h3>
-            <p class="text-gray-600">Todas as licenças são 100% originais e garantidas</p>
+    <!-- Container -->
+    <div class="container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem;">
+      
+      <!-- Hero -->
+      <div class="hero" style="background: linear-gradient(135deg, #2c5f7a 0%, #1a3f5e 100%); border-radius: 24px; padding: 2.5rem 2rem; margin-bottom: 2rem; color: white;">
+        <h2 style="font-size: 2rem; margin: 0 0 0.75rem 0;">Licenças de Software Originais e Garantidas</h2>
+        <p style="font-size: 1.1rem; max-width: 700px; opacity: 0.9; margin: 0;">Oferecemos licenças originais de Microsoft Office, Windows e outros softwares com entrega imediata e suporte técnico especializado.</p>
+      </div>
+
+      <!-- Card: Sobre -->
+      <div class="card" style="background: white; border-radius: 20px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+        <h2 style="color: #2c5f7a; border-left: 5px solid #e6b800; padding-left: 1rem; margin: 0 0 1.5rem 0; font-size: 1.6rem;">📌 Sobre a Casa do Software</h2>
+        <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+          <div class="info-item" style="background: #f8fafc; padding: 1rem 1.2rem; border-radius: 14px; border-left: 3px solid #e6b800;">
+            <strong style="color: #2c5f7a; display: block; margin-bottom: 0.3rem;">Licenças Originais</strong>
+            Todas as licenças são 100% originais e garantidas
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-            <div class="text-4xl mb-4">⚡</div>
-            <h3 class="text-xl font-semibold mb-2 text-gray-800">Entrega Imediata</h3>
-            <p class="text-gray-600">Receba sua licença por e-mail em minutos</p>
+          <div class="info-item" style="background: #f8fafc; padding: 1rem 1.2rem; border-radius: 14px; border-left: 3px solid #e6b800;">
+            <strong style="color: #2c5f7a; display: block; margin-bottom: 0.3rem;">Entrega Imediata</strong>
+            Receba sua licença por e-mail em minutos
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-            <div class="text-4xl mb-4">🛡️</div>
-            <h3 class="text-xl font-semibold mb-2 text-gray-800">Suporte Técnico</h3>
-            <p class="text-gray-600">Suporte especializado para instalação e ativação</p>
+          <div class="info-item" style="background: #f8fafc; padding: 1rem 1.2rem; border-radius: 14px; border-left: 3px solid #e6b800;">
+            <strong style="color: #2c5f7a; display: block; margin-bottom: 0.3rem;">Suporte Técnico</strong>
+            Suporte especializado para instalação e ativação
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- Products Preview -->
-    <section class="py-16 px-4 bg-white">
-      <div class="max-w-6xl mx-auto">
-        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Produtos em Destaque</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
-            <h3 class="text-lg font-semibold mb-2 text-gray-800">Microsoft Office 365</h3>
-            <p class="text-gray-600 mb-4">Licença vitalícia para PC, Mac e dispositivos móveis</p>
-            <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive" class="text-blue-600 hover:text-blue-800 font-medium">
-              Ver produto →
-            </a>
+      <!-- Card: Produtos -->
+      <div class="card" style="background: white; border-radius: 20px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+        <h2 style="color: #2c5f7a; border-left: 5px solid #e6b800; padding-left: 1rem; margin: 0 0 1.5rem 0; font-size: 1.6rem;">📦 Produtos em Destaque</h2>
+        <div class="servicos-grid" style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem;">
+          <div class="servico" style="flex: 1; min-width: 200px; background: #ffffff; padding: 1.5rem; border-radius: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eef2f6; transition: transform 0.2s;">
+            <div class="servico-icon" style="font-size: 2rem; margin-bottom: 0.8rem;">📝</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #2c5f7a;">Microsoft Office 365</h3>
+            <p style="font-size: 0.9rem; color: #666; margin: 0 0 1rem 0;">Licença vitalícia para 5 dispositivos</p>
+            <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive" style="color: #2c5f7a; text-decoration: none; font-weight: 500;">Ver produto →</a>
           </div>
-          <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
-            <h3 class="text-lg font-semibold mb-2 text-gray-800">Windows 11 Pro</h3>
-            <p class="text-gray-600 mb-4">Sistema operacional mais recente da Microsoft</p>
-            <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">
-              Ver produto →
-            </a>
+          <div class="servico" style="flex: 1; min-width: 200px; background: #ffffff; padding: 1.5rem; border-radius: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eef2f6; transition: transform 0.2s;">
+            <div class="servico-icon" style="font-size: 2rem; margin-bottom: 0.8rem;">🪟</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #2c5f7a;">Windows 11 Pro</h3>
+            <p style="font-size: 0.9rem; color: #666; margin: 0 0 1rem 0;">Sistema operacional mais recente</p>
+            <a href="#" style="color: #2c5f7a; text-decoration: none; font-weight: 500;">Ver produto →</a>
           </div>
-          <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
-            <h3 class="text-lg font-semibold mb-2 text-gray-800">Windows 10 Pro</h3>
-            <p class="text-gray-600 mb-4">Sistema operacional estável e confiável</p>
-            <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">
-              Ver produto →
-            </a>
+          <div class="servico" style="flex: 1; min-width: 200px; background: #ffffff; padding: 1.5rem; border-radius: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eef2f6; transition: transform 0.2s;">
+            <div class="servico-icon" style="font-size: 2rem; margin-bottom: 0.8rem;">💻</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #2c5f7a;">Windows 10 Pro</h3>
+            <p style="font-size: 0.9rem; color: #666; margin: 0 0 1rem 0;">Sistema operacional estável</p>
+            <a href="#" style="color: #2c5f7a; text-decoration: none; font-weight: 500;">Ver produto →</a>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- CTA Section -->
-    <section class="py-16 px-4 bg-blue-50">
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl font-bold mb-6 text-gray-800">Precisa de ajuda?</h2>
-        <p class="text-xl mb-8 text-gray-600">Entre em contato conosco pelo WhatsApp para atendimento personalizado</p>
-        <a href="https://wa.me/5511999999999" target="_blank" class="inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-full transition-colors">
-          Fale no WhatsApp
-        </a>
+      <!-- Card: Contato -->
+      <div class="card" style="background: white; border-radius: 20px; padding: 1.8rem; margin-bottom: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+        <h2 style="color: #2c5f7a; border-left: 5px solid #e6b800; padding-left: 1rem; margin: 0 0 1.5rem 0; font-size: 1.6rem;">📞 Entre em Contato</h2>
+        <div class="contato-info" style="background: #eef2f9; border-radius: 20px; padding: 1.5rem; margin-top: 0.5rem;">
+          <p style="margin: 0.5rem 0;"><strong>WhatsApp:</strong> (11) 99999-9999</p>
+          <p style="margin: 0.5rem 0;"><strong>E-mail:</strong> contato@casadosoftware.com.br</p>
+          <p style="margin: 0.5rem 0;"><strong>Horário:</strong> Segunda a sexta, das 9h às 18h</p>
+          <a href="https://wa.me/5511999999999" target="_blank" class="whatsapp-btn" style="background: #25D366; color: white; padding: 0.5rem 1.2rem; border-radius: 40px; text-decoration: none; display: inline-block; margin-top: 0.5rem; font-weight: 500; font-size: 0.9rem;">📱 Conversar no WhatsApp</a>
+        </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Simple Footer -->
-    <footer class="bg-gray-800 text-white py-8 px-4">
-      <div class="max-w-6xl mx-auto text-center">
-        <p class="text-gray-400">© 2024 Casa do Software. Todos os direitos reservados.</p>
-        <p class="text-gray-500 text-sm mt-2">Licenças de software originais e garantidas</p>
-      </div>
+    <!-- Footer -->
+    <footer style="background: #2c5f7a; color: #cbd5e6; text-align: center; padding: 2rem; margin-top: 2rem; font-size: 0.85rem;">
+      <p style="margin: 0.5rem 0;"><strong>Casa do Software</strong> | Licenças Originais e Garantidas</p>
+      <p style="margin: 0.5rem 0;">📞 (11) 99999-9999 | ✉️ contato@casadosoftware.com.br</p>
+      <p style="margin: 0.5rem 0;">© 2024 - Todos os direitos reservados</p>
     </footer>
   </div>
 </template>
