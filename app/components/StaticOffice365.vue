@@ -6,10 +6,6 @@
         <h1 style="font-size: 1.5rem; font-weight: 600; margin: 0;">Casa do Software</h1>
         <p style="font-size: 0.75rem; color: #cce7f0; margin: 0;">Licenças de Software Originais</p>
       </div>
-      <div class="nav" style="display: flex; gap: 2rem;">
-        <a href="/" style="color: white; text-decoration: none; font-weight: 500;">Início</a>
-        <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive" style="color: white; text-decoration: none; font-weight: 500;">Office 365</a>
-      </div>
     </div>
 
     <!-- Container -->
@@ -101,7 +97,6 @@
           <p style="margin: 0.5rem 0;"><strong>WhatsApp:</strong> (11) 99999-9999</p>
           <p style="margin: 0.5rem 0;"><strong>E-mail:</strong> contato@casadosoftware.com.br</p>
           <p style="margin: 0.5rem 0;"><strong>Horário:</strong> Segunda a sexta, das 9h às 18h</p>
-          <a href="https://wa.me/5511999999999" target="_blank" class="whatsapp-btn" style="background: #25D366; color: white; padding: 0.5rem 1.2rem; border-radius: 40px; text-decoration: none; display: inline-block; margin-top: 0.5rem; font-weight: 500; font-size: 0.9rem;">📱 Comprar no WhatsApp</a>
         </div>
       </div>
     </div>

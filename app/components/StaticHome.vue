@@ -6,10 +6,6 @@
         <h1 style="font-size: 1.5rem; font-weight: 600; margin: 0;">Casa do Software</h1>
         <p style="font-size: 0.75rem; color: #cce7f0; margin: 0;">Licenças de Software Originais</p>
       </div>
-      <div class="nav" style="display: flex; gap: 2rem;">
-        <a href="/" style="color: white; text-decoration: none; font-weight: 500;">Início</a>
-        <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive" style="color: white; text-decoration: none; font-weight: 500;">Office 365</a>
-      </div>
     </div>
 
     <!-- Container -->
@@ -47,20 +43,17 @@
           <div class="servico" style="flex: 1; min-width: 200px; background: #ffffff; padding: 1.5rem; border-radius: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eef2f6; transition: transform 0.2s;">
             <div class="servico-icon" style="font-size: 2rem; margin-bottom: 0.8rem;">📝</div>
             <h3 style="margin: 0 0 0.5rem 0; color: #2c5f7a;">Microsoft Office 365</h3>
-            <p style="font-size: 0.9rem; color: #666; margin: 0 0 1rem 0;">Licença vitalícia para 5 dispositivos</p>
-            <a href="/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive" style="color: #2c5f7a; text-decoration: none; font-weight: 500;">Ver produto →</a>
+            <p style="font-size: 0.9rem; color: #666; margin: 0;">Licença vitalícia para 5 dispositivos</p>
           </div>
           <div class="servico" style="flex: 1; min-width: 200px; background: #ffffff; padding: 1.5rem; border-radius: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eef2f6; transition: transform 0.2s;">
             <div class="servico-icon" style="font-size: 2rem; margin-bottom: 0.8rem;">🪟</div>
             <h3 style="margin: 0 0 0.5rem 0; color: #2c5f7a;">Windows 11 Pro</h3>
-            <p style="font-size: 0.9rem; color: #666; margin: 0 0 1rem 0;">Sistema operacional mais recente</p>
-            <a href="#" style="color: #2c5f7a; text-decoration: none; font-weight: 500;">Ver produto →</a>
+            <p style="font-size: 0.9rem; color: #666; margin: 0;">Sistema operacional mais recente</p>
           </div>
           <div class="servico" style="flex: 1; min-width: 200px; background: #ffffff; padding: 1.5rem; border-radius: 18px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border: 1px solid #eef2f6; transition: transform 0.2s;">
             <div class="servico-icon" style="font-size: 2rem; margin-bottom: 0.8rem;">💻</div>
             <h3 style="margin: 0 0 0.5rem 0; color: #2c5f7a;">Windows 10 Pro</h3>
-            <p style="font-size: 0.9rem; color: #666; margin: 0 0 1rem 0;">Sistema operacional estável</p>
-            <a href="#" style="color: #2c5f7a; text-decoration: none; font-weight: 500;">Ver produto →</a>
+            <p style="font-size: 0.9rem; color: #666; margin: 0;">Sistema operacional estável</p>
           </div>
         </div>
       </div>
@@ -72,7 +65,6 @@
           <p style="margin: 0.5rem 0;"><strong>WhatsApp:</strong> (11) 99999-9999</p>
           <p style="margin: 0.5rem 0;"><strong>E-mail:</strong> contato@casadosoftware.com.br</p>
           <p style="margin: 0.5rem 0;"><strong>Horário:</strong> Segunda a sexta, das 9h às 18h</p>
-          <a href="https://wa.me/5511999999999" target="_blank" class="whatsapp-btn" style="background: #25D366; color: white; padding: 0.5rem 1.2rem; border-radius: 40px; text-decoration: none; display: inline-block; margin-top: 0.5rem; font-weight: 500; font-size: 0.9rem;">📱 Conversar no WhatsApp</a>
         </div>
       </div>
     </div>
