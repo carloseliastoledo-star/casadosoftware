@@ -1,6 +1,6 @@
 ﻿<template>
-  <!-- Layout estático para Office 365 quando flag está ativa -->
-  <StaticOffice365 v-if="useStaticLayout" />
+  <!-- Página estática CPA Projetos quando flag está ativa -->
+  <CpaProjetosStaticPage v-if="useStaticLayout" />
 
   <!-- Layout normal da loja quando flag está desativada -->
   <section v-else class="bg-[#010d1a] min-h-screen text-white">
@@ -287,7 +287,8 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
 
 definePageMeta({ ssr: true })
 
-import { USE_STATIC_LAYOUT, OFFICE_365_STATIC_SLUG } from '~/config/static-layout'
+import { STATIC_OFFICE365_PRODUCT_ENABLED, OFFICE365_STATIC_SLUG } from '~/utils/staticPagesFlags'
+import CpaProjetosStaticPage from '~/components/static/CpaProjetosStaticPage.vue'
 
 const intl = useIntlContext()
 
@@ -367,7 +368,7 @@ const slug = computed(() => String(route.params.slug || ''))
 
 // Detecta se deve usar layout estático para este produto
 const useStaticLayout = computed(() => {
-  return USE_STATIC_LAYOUT.office365 && slug.value === OFFICE_365_STATIC_SLUG
+  return STATIC_OFFICE365_PRODUCT_ENABLED && slug.value === OFFICE365_STATIC_SLUG
 })
 
 const sectionClass = computed(() => {

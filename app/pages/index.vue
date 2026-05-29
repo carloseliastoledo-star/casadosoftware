@@ -1,6 +1,6 @@
 <template>
-  <!-- Layout estático quando flag está ativa -->
-  <StaticHome v-if="USE_STATIC_LAYOUT.home" />
+  <!-- Página estática CPA Projetos quando flag está ativa -->
+  <CpaProjetosStaticPage v-if="STATIC_HOME_ENABLED" />
 
   <!-- Layout normal da loja quando flag está desativada -->
   <template v-else>
@@ -20,18 +20,19 @@
 </template>
 
 <script setup lang="ts">
-import { USE_STATIC_LAYOUT } from '~/config/static-layout'
+import { STATIC_HOME_ENABLED } from '~/utils/staticPagesFlags'
 
-// Define layout baseado na flag de layout estático
+// Define layout baseado na flag de página estática
 definePageMeta({
   ssr: false,
-  layout: USE_STATIC_LAYOUT.home ? 'static-blank' : 'default'
+  layout: STATIC_HOME_ENABLED ? 'static-blank' : 'default'
 })
 
 import { useJsonLd } from '~/composables/useJsonLd'
 import { getCasaHomeJsonLdBundle } from '~/services/casaJsonLd'
 import { useHomeTheme } from '~/composables/useHomeTheme'
 import HomeInternational from '~/components/HomeInternational.vue'
+import CpaProjetosStaticPage from '~/components/static/CpaProjetosStaticPage.vue'
 
 const { homeTheme } = useHomeTheme()
 
