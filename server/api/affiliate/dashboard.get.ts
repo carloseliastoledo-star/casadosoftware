@@ -8,16 +8,19 @@ function round2(n: number) {
 
 export default defineEventHandler(async (event) => {
   const session = requireAffiliateSession(event)
+  console.log('[affiliate dashboard] session:', session)
 
   const affiliateRaw = await (prisma as any).affiliate.findUnique({
     where: { id: session.affiliateId },
     select: { id: true, name: true, email: true, code: true, commissionRate: true, createdAt: true }
   })
-  
+  console.log('[affiliate dashboard] affiliateRaw:', affiliateRaw)
+
   // Mapear code para refCode para compatibilidade
   const affiliate = affiliateRaw ? { ...affiliateRaw, refCode: affiliateRaw.code } : null
 
   if (!affiliate) {
+    console.log('[affiliate dashboard] affiliate not found')
     return { ok: false }
   }
 
