@@ -1,6 +1,6 @@
 ﻿<template>
   <!-- Página estática CPA Projetos quando flag está ativa -->
-  <CpaProjetosStaticPage v-if="useStaticLayout" />
+  <CpaProjetosStaticPage v-if="useStaticLayout" :showHeaderFooter="false" />
 
   <!-- Layout normal da loja quando flag está desativada -->
   <section v-else class="bg-[#010d1a] min-h-screen text-white">

@@ -1,7 +1,7 @@
 <template>
   <div class="cpa-static-page">
     <!-- Header -->
-    <div class="header">
+    <div v-if="showHeaderFooter" class="header">
       <div class="logo">
         <h1>CPA Projetos</h1>
         <p>Contabilidade, Projetos e Assessoria</p>
@@ -57,7 +57,7 @@
             <div class="info-item">
               <strong>Telefone / WhatsApp</strong><br>
               (71) 98859-1484<br>
-              <a href="https://wa.me/5571988591484?text=Ol%C3%A1%2C%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20servi%C3%A7os%20cont%C3%A1beis" target="_blank" class="whatsapp-btn">📱 Conversar no WhatsApp</a>
+              <a v-if="showHeaderFooter" href="https://wa.me/5571988591484?text=Ol%C3%A1%2C%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20servi%C3%A7os%20cont%C3%A1beis" target="_blank" class="whatsapp-btn">📱 Conversar no WhatsApp</a>
             </div>
             <div class="info-item">
               <strong>Correspondência</strong><br>
@@ -149,7 +149,7 @@
       </div>
     </div>
 
-    <footer>
+    <footer v-if="showHeaderFooter">
       <p><strong>CPA Contabilidade Projetos e Assessoria LTDA</strong> | CNPJ 07.179.560/0001-02 | CRC/BA</p>
       <p>Rua Raimundo de Santana Ribeiro, 88 - Centro | São Francisco do Conde - BA | CEP: 43900-000</p>
       <p>📞 (71) 98859-1484 | ✉️ contato@cpaprojetos.com.br</p>
@@ -160,6 +160,13 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+
+const props = defineProps({
+  showHeaderFooter: {
+    type: Boolean,
+    default: true
+  }
+})
 
 onMounted(() => {
   const homeDiv = document.getElementById('home-page')
