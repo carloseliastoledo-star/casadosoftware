@@ -285,10 +285,18 @@ function safeSanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED
   return str
 }
 
-definePageMeta({ ssr: true })
-
 import { STATIC_OFFICE365_PRODUCT_ENABLED, OFFICE365_STATIC_SLUG } from '~/utils/staticPagesFlags'
 import CpaProjetosStaticPage from '~/components/static/CpaProjetosStaticPage.vue'
+
+// Usa layout estático quando flag está ativa e slug corresponde ao Office 365
+const route = useRoute()
+const currentSlug = String(route.params.slug || '')
+const isOffice365Page = STATIC_OFFICE365_PRODUCT_ENABLED && currentSlug === OFFICE365_STATIC_SLUG
+
+definePageMeta({
+  ssr: true,
+  layout: isOffice365Page ? 'static-office365' : 'default'
+})
 
 const intl = useIntlContext()
 
