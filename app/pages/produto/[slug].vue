@@ -367,6 +367,7 @@ const isLicencasDigitais = computed(() => {
   return storeSlug.value === 'licencasdigitais'
 })
 
+const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 
 // Detecta se deve usar layout estático para este produto
