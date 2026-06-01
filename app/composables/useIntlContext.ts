@@ -160,6 +160,12 @@ export function useIntlContext() {
     const cookie = String(langCookie.value || '').trim()
     if (cookie) return normalizeLanguage(cookie)
 
+    // Forçar PT para Casa do Software (resolve VPS com IP)
+    const storeSlug = String((config.public as any)?.storeSlug || '').trim()
+    if (storeSlug === 'casadosoftware') {
+      return 'pt'
+    }
+
     if (isEnDomain.value) return 'en'
 
     if (!import.meta.server) {
