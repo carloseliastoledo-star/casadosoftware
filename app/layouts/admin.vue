@@ -97,6 +97,10 @@
           🎨 Tema da Home
         </NuxtLink>
 
+        <NuxtLink to="/admin/produtos-destaque-intl" class="menu">
+          🌍 Destaques Internacional
+        </NuxtLink>
+
         <NuxtLink to="/admin/configuracoes" class="menu">
           ⚙️ Configurações
         </NuxtLink>

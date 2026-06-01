@@ -25,21 +25,17 @@ export default defineEventHandler(async (event) => {
 
   try {
     // Buscar licença disponível do tipo Office 365
-    // Critérios: status active, não ativada, tipo compatível com teste
-    const availableLicense = await prisma.licenseAccount.findFirst({
-      where: {
-        status: 'active',
-        activationStatus: 'not_activated',
-        licenseType: {
-          in: ['business_basic', 'business_standard', 'business_premium']
-        }
-      },
-      orderBy: {
-        createdAt: 'asc'
-      }
-    })
+    // Priorizar licenças de estoque (customerId: null)
+    const availableLicense = await prisma.$queryRawUnsafe(`
+      SELECT * FROM LicenseAccount
+      WHERE customerId IS NULL
+      AND status = 'active'        AND activationStatus IN ('not_activated', 'activated')
+      AND licenseType IN ('business_basic', 'business_standard', 'business_premium')
+      ORDER BY createdAt ASC
+      LIMIT 1
+    `) as any[]
 
-    if (!availableLicense) {
+    if (!availableLicense || availableLicense.length === 0) {
       return {
         success: false,
         error: 'NO_LICENSE_AVAILABLE',
@@ -47,9 +43,11 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    const license = availableLicense[0]
+
     // Marcar licença como ativada/enviada
     const updatedLicense = await prisma.licenseAccount.update({
-      where: { id: availableLicense.id },
+      where: { id: license.id },
       data: {
         activationStatus: 'activated',
         deliveredAt: new Date(),
@@ -58,18 +56,24 @@ export default defineEventHandler(async (event) => {
     })
 
     // Criar log de histórico
+    const logData: any = {
+      licenseAccountId: license.id,
+      performedBy: 'internal_api',
+      action: 'reserve_test',
+      metadata: JSON.stringify({
+        customerName,
+        customerEmail,
+        source
+      })
+    }
+
+    // Só incluir customerId se existir
+    if (updatedLicense.customerId) {
+      logData.customerId = updatedLicense.customerId
+    }
+
     await prisma.licenseLog.create({
-      data: {
-        customerId: availableLicense.customerId,
-        licenseAccountId: availableLicense.id,
-        performedBy: 'internal_api',
-        action: 'reserve_test',
-        metadata: JSON.stringify({
-          customerName,
-          customerEmail,
-          source
-        })
-      }
+      data: logData
     })
 
     // Retornar dados da licença

@@ -77,10 +77,12 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Upload não configurado. Configure as variáveis SPACES_BUCKET, SPACES_ENDPOINT, SPACES_KEY e SPACES_SECRET no servidor.'
-    })
+    // Fallback: return base64 data URL if Spaces is not configured
+    const base64 = Buffer.from(file.data).toString('base64')
+    const mimeType = file.type || 'image/jpeg'
+    const dataUrl = `data:${mimeType};base64,${base64}`
+
+    return { url: dataUrl, isBase64: true }
   } catch (err: any) {
     if (err?.statusCode) throw err
     console.error('[admin][upload] Unexpected failure', { message: err?.message, name: err?.name, stack: err?.stack })

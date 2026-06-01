@@ -511,7 +511,7 @@ const products = computed<IntlProduct[]>(() => {
   const raw = rawProducts.value
   const list = Array.isArray(raw) ? raw : Array.isArray(raw?.produtos) ? raw.produtos : []
   return list
-    .filter((p: any) => p.usdPrice != null && Number(p.usdPrice) > 0)
+    .filter((p: any) => p != null)
     .map((p: any) => ({
       id: p.id,
       name: p.name || p.nome,
