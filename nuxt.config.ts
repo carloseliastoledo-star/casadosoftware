@@ -74,6 +74,31 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
+    // Redirects 301 para URLs antigas de produtos
+    '/produto/microsoft-office-365-vitalicio': {
+      redirect: '/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
+    },
+    '/produto/microsoft-office-365-vitalicio-5-licenses-pc-mac-android-ou-ios-1-tb-one-drive': {
+      redirect: '/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive'
+    },
+
+    // Redirects 301 para idiomas não usados (apenas PT para casadosoftware.com.br)
+    '/en': { redirect: '/' },
+    '/es': { redirect: '/' },
+    '/fr': { redirect: '/' },
+    '/it': { redirect: '/' },
+    '/en/**': { redirect: '/' },
+    '/es/**': { redirect: '/' },
+    '/fr/**': { redirect: '/' },
+    '/it/**': { redirect: '/' },
+
+    // Bloquear indexação de vps.casadosoftware.com.br
+    '/**': {
+      headers: {
+        'X-Robots-Tag': 'noindex, nofollow'
+      }
+    },
+
     // APIs de produtos e categorias (não sensíveis)
     '/api/products': {
       headers: {
@@ -255,11 +280,6 @@ export default defineNuxtConfig({
         path: '/product/:slug',
         file: productFile
       })
-      pages.push({
-        name: 'producto-slug',
-        path: '/producto/:slug',
-        file: productFile
-      })
 
       const productsIndexFile = resolve(__dirname, 'app/pages/produtos/index.vue')
       pages.push({
@@ -281,52 +301,6 @@ export default defineNuxtConfig({
         path: '/categories',
         file: categoriesIndexFile
       })
-
-      // ?????? Language-prefixed home pages ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-      const homeFile = resolve(__dirname, 'app/pages/index.vue')
-      for (const lang of ['en', 'es', 'fr', 'it']) {
-        pages.push({ name: `${lang}-home`, path: `/${lang}`, file: homeFile })
-      }
-
-      // ?????? Language-prefixed product pages ????????????????????????????????????????????????????????????????????????????????????????????????????????????
-      const langProductPaths: Array<{ lang: string; prefix: string; listSuffix: string }> = [
-        { lang: 'en', prefix: 'product',  listSuffix: 'products'  },
-        { lang: 'es', prefix: 'producto', listSuffix: 'productos' },
-        { lang: 'fr', prefix: 'produit',  listSuffix: 'produits'  },
-        { lang: 'it', prefix: 'prodotto', listSuffix: 'prodotti'  }
-      ]
-      for (const { lang, prefix, listSuffix } of langProductPaths) {
-        pages.push({
-          name: `${lang}-${prefix}-slug`,
-          path: `/${lang}/${prefix}/:slug`,
-          file: productFile
-        })
-        pages.push({
-          name: `${lang}-${listSuffix}-index`,
-          path: `/${lang}/${listSuffix}`,
-          file: productsIndexFile
-        })
-      }
-
-      // ?????? Language-prefixed category pages ?????????????????????????????????????????????????????????????????????????????????????????????????????????
-      const langCategoryPaths: Array<{ lang: string; prefix: string; listSuffix: string }> = [
-        { lang: 'en', prefix: 'category',  listSuffix: 'categories' },
-        { lang: 'es', prefix: 'categoria', listSuffix: 'categorias' },
-        { lang: 'fr', prefix: 'categorie', listSuffix: 'categories' },
-        { lang: 'it', prefix: 'categoria', listSuffix: 'categorie'  }
-      ]
-      for (const { lang, prefix, listSuffix } of langCategoryPaths) {
-        pages.push({
-          name: `${lang}-${prefix}-slug`,
-          path: `/${lang}/${prefix}/:slug`,
-          file: categoryFile
-        })
-        pages.push({
-          name: `${lang}-${listSuffix}-list`,
-          path: `/${lang}/${listSuffix}`,
-          file: categoriesIndexFile
-        })
-      }
 
       const aboutUsFile = resolve(__dirname, 'app/pages/quem-somos.vue')
       pages.push({
@@ -365,48 +339,17 @@ export default defineNuxtConfig({
 
       const blogIndexFile = resolve(__dirname, 'app/pages/blog/index.vue')
       const blogSlugFile = resolve(__dirname, 'app/pages/blog/[slug].vue')
-      const blogLangPrefixes = ['pt', 'en', 'es', 'fr', 'it', 'de']
 
-      for (const lang of blogLangPrefixes) {
-        pages.push({
-          name: `${lang}-blog-index`,
-          path: `/${lang}/blog`,
-          file: blogIndexFile
-        })
-        pages.push({
-          name: `${lang}-blog-slug`,
-          path: `/${lang}/blog/:slug`,
-          file: blogSlugFile
-        })
-      }
-
-      const affiliateLoginFile = resolve(__dirname, 'app/pages/affiliate/login.vue')
-      const affiliateActivateFile = resolve(__dirname, 'app/pages/affiliate/ativar.vue')
-      const affiliateSubscribeFile = resolve(__dirname, 'app/pages/affiliate/inscrever.vue')
-      const affiliateDashboardFile = resolve(__dirname, 'app/pages/affiliate/dashboard.vue')
-
-      for (const lang of blogLangPrefixes) {
-        pages.push({
-          name: `${lang}-affiliate-login`,
-          path: `/${lang}/affiliate/login`,
-          file: affiliateLoginFile
-        })
-        pages.push({
-          name: `${lang}-affiliate-ativar`,
-          path: `/${lang}/affiliate/ativar`,
-          file: affiliateActivateFile
-        })
-        pages.push({
-          name: `${lang}-affiliate-inscrever`,
-          path: `/${lang}/affiliate/inscrever`,
-          file: affiliateSubscribeFile
-        })
-        pages.push({
-          name: `${lang}-affiliate-dashboard`,
-          path: `/${lang}/affiliate/dashboard`,
-          file: affiliateDashboardFile
-        })
-      }
+      pages.push({
+        name: 'blog-index',
+        path: '/blog',
+        file: blogIndexFile
+      })
+      pages.push({
+        name: 'blog-slug',
+        path: '/blog/:slug',
+        file: blogSlugFile
+      })
     }
   }
 })

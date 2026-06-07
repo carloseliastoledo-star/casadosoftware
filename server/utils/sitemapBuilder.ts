@@ -34,50 +34,6 @@ export const LANG_CONFIGS: LangConfig[] = [
     productsPath:    '/produtos',
     categoriesPath:  '/categorias',
     blogIndexPath:   '/blog'
-  },
-  {
-    lang: 'en',
-    base: EN_BASE,
-    homePath:        '/en',
-    productPath:  (s) => `/en/product/${s}`,
-    categoryPath: (s) => `/en/category/${s}`,
-    blogPath:     (s) => `/en/blog/${s}`,
-    productsPath:    '/en/products',
-    categoriesPath:  '/en/categories',
-    blogIndexPath:   '/en/blog'
-  },
-  {
-    lang: 'es',
-    base: PT_BASE,
-    homePath:        '/es',
-    productPath:  (s) => `/es/producto/${s}`,
-    categoryPath: (s) => `/es/categoria/${s}`,
-    blogPath:     (s) => `/es/blog/${s}`,
-    productsPath:    '/es/productos',
-    categoriesPath:  '/es/categorias',
-    blogIndexPath:   '/es/blog'
-  },
-  {
-    lang: 'fr',
-    base: PT_BASE,
-    homePath:        '/fr',
-    productPath:  (s) => `/fr/produit/${s}`,
-    categoryPath: (s) => `/fr/categorie/${s}`,
-    blogPath:     (s) => `/fr/blog/${s}`,
-    productsPath:    '/fr/produits',
-    categoriesPath:  '/fr/categories',
-    blogIndexPath:   '/fr/blog'
-  },
-  {
-    lang: 'it',
-    base: PT_BASE,
-    homePath:        '/it',
-    productPath:  (s) => `/it/prodotto/${s}`,
-    categoryPath: (s) => `/it/categoria/${s}`,
-    blogPath:     (s) => `/it/blog/${s}`,
-    productsPath:    '/it/prodotti',
-    categoriesPath:  '/it/categorie',
-    blogIndexPath:   '/it/blog'
   }
 ]
 

@@ -11,15 +11,11 @@
 export const PT_DOMAIN = 'https://casadosoftware.com.br'
 export const EN_DOMAIN = 'https://casadosoftware.store'
 
-export const SEO_LANGS = ['pt', 'en', 'es', 'fr', 'it'] as const
+export const SEO_LANGS = ['pt'] as const
 export type SeoLang = typeof SEO_LANGS[number]
 
 export const HREFLANG_CODES: Record<SeoLang, string> = {
-  pt: 'pt-BR',
-  en: 'en',
-  es: 'es',
-  fr: 'fr',
-  it: 'it'
+  pt: 'pt-BR'
 }
 
 export function sanitizePath(path: string): string {
@@ -64,58 +60,34 @@ export type SeoPageType =
   | 'generic'
 
 export function productPathForLang(lang: SeoLang, slug: string): string {
-  if (lang === 'en') return `/en/product/${slug}`
-  if (lang === 'es') return `/es/producto/${slug}`
-  if (lang === 'fr') return `/fr/produit/${slug}`
-  if (lang === 'it') return `/it/prodotto/${slug}`
   return `/produto/${slug}`
 }
 
 export function categoryPathForLang(lang: SeoLang, slug: string): string {
-  if (lang === 'en') return `/en/category/${slug}`
-  if (lang === 'es') return `/es/categoria/${slug}`
-  if (lang === 'fr') return `/fr/categorie/${slug}`
-  if (lang === 'it') return `/it/categoria/${slug}`
   return `/categoria/${slug}`
 }
 
 export function blogPostPathForLang(lang: SeoLang, slug: string): string {
-  if (lang === 'pt') return `/blog/${slug}`
-  return `/${lang}/blog/${slug}`
+  return `/blog/${slug}`
 }
 
 export function blogIndexPathForLang(lang: SeoLang): string {
-  if (lang === 'pt') return '/blog'
-  return `/${lang}/blog`
+  return '/blog'
 }
 
 export function homePathForLang(lang: SeoLang): string {
-  if (lang === 'pt') return '/'
-  return `/${lang}`
+  return '/'
 }
 
 export function productsPathForLang(lang: SeoLang): string {
-  if (lang === 'en') return '/en/products'
-  if (lang === 'es') return '/es/productos'
-  if (lang === 'fr') return '/fr/produits'
-  if (lang === 'it') return '/it/prodotti'
   return '/produtos'
 }
 
 export function categoriesPathForLang(lang: SeoLang): string {
-  if (lang === 'en') return '/en/categories'
-  if (lang === 'es') return '/es/categorias'
-  if (lang === 'fr') return '/fr/categories'
-  if (lang === 'it') return '/it/categorie'
   return '/categorias'
 }
 
 export function detectLangFromPath(path: string): SeoLang {
-  const p = String(path || '')
-  if (p === '/en' || p.startsWith('/en/')) return 'en'
-  if (p === '/es' || p.startsWith('/es/')) return 'es'
-  if (p === '/fr' || p.startsWith('/fr/')) return 'fr'
-  if (p === '/it' || p.startsWith('/it/')) return 'it'
   return 'pt'
 }
 
@@ -203,19 +175,8 @@ export function useSeoLocale(options: {
   const hreflangLinks = computed(() => {
     const links: Array<{ rel: string; hreflang: string; href: string }> = []
     for (const lang of SEO_LANGS) {
-      if (lang === 'en' && !isOnEnDomain.value) continue
-      let href: string
-      if (lang === 'en') {
-        // Use canonical .store paths (no /en/ prefix — domain itself signals language)
-        // Use slugEn if available for EN domain
-        const enSlug = slugEn.value || slug.value
-        const enPath = enPathOnStoreDomain(options.pageType, enSlug)
-        href = `${enDomain.value}${enPath}`
-      } else {
-        const path = pathForLang(options.pageType, lang, slug.value)
-        href = `${ptDomain.value}${path}`
-      }
-      links.push({ rel: 'alternate', hreflang: HREFLANG_CODES[lang], href })
+      const path = pathForLang(options.pageType, lang, slug.value)
+      links.push({ rel: 'alternate', hreflang: HREFLANG_CODES[lang], href: `${ptDomain.value}${path}` })
     }
     links.push({
       rel: 'alternate',
