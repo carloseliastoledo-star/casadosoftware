@@ -17,8 +17,8 @@
         <div class="inline-flex items-center justify-center rounded-full bg-orange-100 px-4 py-1.5 text-xs font-black text-orange-700 mb-3">
           ⏳ Oferta válida hoje
         </div>
-        <h1 class="text-2xl md:text-3xl font-black text-gray-900">⚡ Você está a 1 passo de ativar seu Office completo</h1>
-        <p class="text-green-700 text-sm md:text-base font-bold mt-2">🔥 Entrega imediata após pagamento</p>
+        <h1 class="text-2xl md:text-3xl font-black text-gray-900">⚡ Você está a 1 passo de concluir sua compra</h1>
+        <p class="text-green-700 text-sm md:text-base font-bold mt-2">🔥 Entrega digital após confirmação do pagamento</p>
       </div>
 
       <!-- ReviewsSection compacto -->
@@ -217,7 +217,7 @@
         <div class="lg:w-72 xl:w-80 shrink-0">
           <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 lg:sticky lg:top-4">
             <div class="mb-4 rounded-xl bg-green-50 border border-green-100 px-3 py-2 text-center">
-              <p class="text-xs font-black text-green-800">🔥 Seu Office completo liberado em minutos</p>
+              <p class="text-xs font-black text-green-800">🔥 Seu produto digital liberado em minutos</p>
             </div>
 
             <h2 class="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest">Resumo do pedido</h2>
@@ -655,9 +655,14 @@ onMounted(async () => {
     try {
       const res: any = await $fetch(`/api/products/${productSlug.value}`)
       const p = res?.product || res
-      console.log('[checkout] product loaded:', !!p, 'id:', p?.id)
+      console.log('[checkout] product loaded:', !!p, 'id:', p?.id, 'preco:', p?.preco)
       productName.value = String(p?.nome || p?.name || productName.value)
-      const price = Number(p?.preco ?? p?.price ?? p?.effectivePrice ?? 49)
+      const price = Number(p?.preco ?? p?.price ?? p?.effectivePrice ?? 0)
+      if (price <= 0) {
+        console.error('[checkout] Invalid price from API:', { price, produto: p })
+        await navigateTo('/')
+        return
+      }
       basePrice.value = price
       produtoId.value = String(p?.id || '')
       productImage.value = String(p?.imagem || p?.image || '')

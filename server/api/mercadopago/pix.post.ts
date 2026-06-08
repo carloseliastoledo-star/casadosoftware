@@ -327,8 +327,9 @@ export default defineEventHandler(async (event) => {
     }
 
     const subtotalAmount = round2(effectivePrice * quantity)
-    const pixDiscountPercent = 5
-    const pixDiscountAmount = round2(subtotalAmount * 0.05)
+    // Desconto PIX removido - usar preço exato do produto
+    const pixDiscountPercent = 0
+    const pixDiscountAmount = 0
     const couponDiscountAmount = coupon
       ? round2(subtotalAmount * (coupon.percent / 100))
       : 0
@@ -499,7 +500,7 @@ export default defineEventHandler(async (event) => {
           nome: nome || null,
           whatsapp: whatsapp || null,
           cpf: cpf || null,
-          pixDiscountPercent: 5,
+          pixDiscountPercent: 0,
           couponCode: coupon?.code || null,
           couponPercent: coupon?.percent || null
         },
