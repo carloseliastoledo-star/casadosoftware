@@ -471,23 +471,24 @@ const pageH1 = computed(() => {
 const baseUrl = useSiteUrl()
 
 const canonicalUrl = computed(() => {
-  const s = String(slug.value || '').trim()
-  if (!s) return baseUrl ? `${baseUrl}/` : ''
+  // Use product slug from DB if available, otherwise use URL slug
+  const productSlug = String((safeProduct as any)?.slug || slug.value || '').trim()
+  if (!productSlug) return baseUrl ? `${baseUrl}/` : ''
 
   // On international domains, use slugEn for canonical URL if available
   if (isIntlDomain.value) {
     const slugEn = String((safeProduct as any)?.slugEn || '').trim()
-    const slugToUse = slugEn || s
+    const slugToUse = slugEn || productSlug
     return baseUrl ? `${baseUrl}/product/${slugToUse}` : ''
   }
 
   // For casadosoftware.com.br, always use /produto/
   if (isCasaDoSoftware.value) {
-    return baseUrl ? `${baseUrl}/produto/${s}` : ''
+    return baseUrl ? `${baseUrl}/produto/${productSlug}` : ''
   }
 
   const segment = lang.value === 'en' ? 'product' : 'produto'
-  return baseUrl ? `${baseUrl}/${segment}/${s}` : ''
+  return baseUrl ? `${baseUrl}/${segment}/${productSlug}` : ''
 })
 
 const asyncProductKey = computed(() => `product-${slug.value}-${String(lang.value || 'pt')}`)
@@ -672,6 +673,7 @@ const absoluteImageUrl = computed(() => {
 })
 
 const seoTitle = computed(() => {
+  // Fallback order: seoTitle (DB) > nome (DB) + suffix
   const customSeoTitle = String((safeProduct as any)?.seoTitle || '').trim()
   if (customSeoTitle) return customSeoTitle
 
@@ -725,6 +727,7 @@ const seoTitle = computed(() => {
 })
 
 const seoDescription = computed(() => {
+  // Fallback order: seoDescription (DB) > descricao (DB) > hardcoded
   const customSeoDesc = String((safeProduct as any)?.seoDescription || '').trim()
   if (customSeoDesc) return customSeoDesc
 
@@ -784,6 +787,7 @@ const seoDescription = computed(() => {
     return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
   }
 
+  // Fallback to product description
   const rawShort = String((safeProduct as any)?.description || '').trim()
   const rawLong = String((safeProduct as any)?.descricao || '').trim()
 
