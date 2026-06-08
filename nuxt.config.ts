@@ -245,7 +245,7 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: process.env.NITRO_PRESET || 'vercel',
+    preset: 'node-server',
     publicAssets: [
       {
         baseURL: '/',
