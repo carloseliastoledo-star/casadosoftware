@@ -742,35 +742,23 @@ useHead(() => {
   }
 })
 
-// Apply SEO meta tags directly from product
-useSeoMeta({
-  title: () => productSeoTitle.value,
-  description: () => productSeoDescription.value,
-  ogTitle: () => productSeoTitle.value,
-  ogDescription: () => productSeoDescription.value,
-  twitterTitle: () => productSeoTitle.value,
-  twitterDescription: () => productSeoDescription.value,
-  robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
-})
-
-useHead({
+// Apply SEO meta tags directly from product - single useHead to avoid conflicts
+useHead(() => ({
+  title: productSeoTitle.value,
+  meta: [
+    { name: 'description', content: productSeoDescription.value },
+    { property: 'og:title', content: productSeoTitle.value },
+    { property: 'og:description', content: productSeoDescription.value },
+    { name: 'twitter:title', content: productSeoTitle.value },
+    { name: 'twitter:description', content: productSeoDescription.value },
+    { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }
+  ],
   link: [
-    {
-      rel: 'canonical',
-      href: () => productCanonicalUrl.value
-    },
-    {
-      rel: 'alternate',
-      hreflang: 'pt-BR',
-      href: () => productCanonicalUrl.value
-    },
-    {
-      rel: 'alternate',
-      hreflang: 'x-default',
-      href: () => productCanonicalUrl.value
-    }
+    { rel: 'canonical', href: productCanonicalUrl.value },
+    { rel: 'alternate', hreflang: 'pt-BR', href: productCanonicalUrl.value },
+    { rel: 'alternate', hreflang: 'x-default', href: productCanonicalUrl.value }
   ]
-})
+}))
 
 const safeDescriptionHtml = computed(() => {
   const raw = String((safeProduct.value as any)?.description || '').trim()
