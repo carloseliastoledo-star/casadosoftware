@@ -470,27 +470,6 @@ const pageH1 = computed(() => {
 })
 const baseUrl = useSiteUrl()
 
-const canonicalUrl = computed(() => {
-  // Use product slug from DB if available, otherwise use URL slug
-  const productSlug = String((safeProduct as any)?.slug || slug.value || '').trim()
-  if (!productSlug) return baseUrl ? `${baseUrl}/` : ''
-
-  // On international domains, use slugEn for canonical URL if available
-  if (isIntlDomain.value) {
-    const slugEn = String((safeProduct as any)?.slugEn || '').trim()
-    const slugToUse = slugEn || productSlug
-    return baseUrl ? `${baseUrl}/product/${slugToUse}` : ''
-  }
-
-  // For casadosoftware.com.br, always use /produto/
-  if (isCasaDoSoftware.value) {
-    return baseUrl ? `${baseUrl}/produto/${productSlug}` : ''
-  }
-
-  const segment = lang.value === 'en' ? 'product' : 'produto'
-  return baseUrl ? `${baseUrl}/${segment}/${productSlug}` : ''
-})
-
 const asyncProductKey = computed(() => `product-${slug.value}-${String(lang.value || 'pt')}`)
 
 const { data: product, pending, error } = await useAsyncData(
@@ -503,6 +482,40 @@ const { data: product, pending, error } = await useAsyncData(
     default: () => null
   }
 )
+
+// Helper to strip HTML tags
+const stripHtml = (html?: string | null) => {
+  return String(html || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+// SEO computed properties - directly from product.value
+const productSeoTitle = computed(() => {
+  const seoTitle = product.value?.seoTitle?.trim()
+  const nome = product.value?.nome?.trim() || product.value?.name?.trim()
+
+  if (seoTitle) return seoTitle
+  if (nome) return `${nome} | Casa do Software`
+  return 'Casa do Software'
+})
+
+const productSeoDescription = computed(() => {
+  const seoDescription = product.value?.seoDescription?.trim()
+  const descricao = stripHtml(product.value?.descricao || product.value?.description)
+  const nome = product.value?.nome?.trim() || product.value?.name?.trim()
+
+  if (seoDescription) return seoDescription
+  if (descricao) return descricao.slice(0, 160)
+  if (nome) return `Compre ${nome} com entrega digital imediata, suporte especializado e pagamento seguro na Casa do Software.`
+  return 'Licenças digitais originais com entrega imediata, suporte especializado e pagamento seguro.'
+})
+
+const productCanonicalUrl = computed(() => {
+  const slug = product.value?.slug || slug.value
+  return `https://casadosoftware.com.br/produto/${slug}`
+})
 
 const { data: productsData } = await useFetch<any[]>('/api/products', {
   server: true,
@@ -672,153 +685,13 @@ const absoluteImageUrl = computed(() => {
   return `${origin}${raw}`
 })
 
-const seoTitle = computed(() => {
-  // Fallback order: seoTitle (DB) > nome (DB) + suffix
-  const customSeoTitle = String((safeProduct as any)?.seoTitle || '').trim()
-  if (customSeoTitle) return customSeoTitle
-
-  const slugValue = String((safeProduct as any)?.slug || slug.value || '').trim().toLowerCase()
-  const lang = effectiveLang.value
-  const base = String(siteName || 'Casa do Software')
-
-  if (isCasaDoSoftware.value) {
-    if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
-      if (lang === 'en') return `Windows 11 Pro Original License – Instant Activation | ${base}`
-      if (lang === 'es') return `Licencia Windows 11 Pro Original – Activación Inmediata | ${base}`
-      if (lang === 'fr') return `Licence Windows 11 Pro Originale – Activation Instantanée | ${base}`
-      if (lang === 'it') return `Licenza Windows 11 Pro Originale – Attivazione Immediata | ${base}`
-      return `Licença Windows 11 Pro Original – Ativação Imediata | ${base}`
-    }
-    if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
-      if (lang === 'en') return `Windows 10 Pro Original License – Lifetime Digital Key | ${base}`
-      if (lang === 'es') return `Licencia Windows 10 Pro Original – Clave Digital Vitalicia | ${base}`
-      if (lang === 'fr') return `Licence Windows 10 Pro Originale – Clé Numérique à Vie | ${base}`
-      if (lang === 'it') return `Licenza Windows 10 Pro Originale – Chiave Digitale a Vita | ${base}`
-      return `Windows 10 Pro Original – Licença Digital Vitalícia | ${base}`
-    }
-    if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
-      if (isOffice365FiveLicenses.value) {
-        if (lang === 'en') return `Original Microsoft 365 License – 5 Devices, 1TB OneDrive | ${base}`
-        if (lang === 'es') return `Licencia Microsoft 365 Original – 5 Dispositivos, 1TB OneDrive | ${base}`
-        if (lang === 'fr') return `Licence Microsoft 365 Originale – 5 Appareils, 1To OneDrive | ${base}`
-        if (lang === 'it') return `Licenza Microsoft 365 Originale – 5 Dispositivi, 1TB OneDrive | ${base}`
-        return `Licença Microsoft 365 Original PC e Mac | Entrega imediata`
-      }
-      if (lang === 'en') return `Buy Microsoft Office 365 License – Instant Delivery | ${base}`
-      if (lang === 'es') return `Comprar Licencia Microsoft Office 365 – Entrega Inmediata | ${base}`
-      if (lang === 'fr') return `Acheter Licence Microsoft Office 365 – Livraison Instantanée | ${base}`
-      if (lang === 'it') return `Acquista Licenza Microsoft Office 365 – Consegna Immediata | ${base}`
-      return `Office 365 Original – Licença Oficial com Entrega Imediata`
-    }
-  }
-  const name = String((safeProduct as any)?.name || '').trim()
-  if (name) {
-    // For casadosoftware.com.br, always use Portuguese
-    if (isCasaDoSoftware.value) {
-      return `${name} | Licença Digital + Acesso Imediato | ${base}`
-    }
-    if (lang === 'en') return `Buy ${name} – Instant Digital Delivery | ${base}`
-    if (lang === 'es') return `Comprar ${name} – Entrega Digital Inmediata | ${base}`
-    if (lang === 'fr') return `Acheter ${name} – Livraison Numérique Instantanée | ${base}`
-    if (lang === 'it') return `Acquista ${name} – Consegna Digitale Immediata | ${base}`
-    return `${name} | ${base}`
-  }
-  return base
-})
-
-const seoDescription = computed(() => {
-  // Fallback order: seoDescription (DB) > descricao (DB) > hardcoded
-  const customSeoDesc = String((safeProduct as any)?.seoDescription || '').trim()
-  if (customSeoDesc) return customSeoDesc
-
-  const slugValue = String((safeProduct as any)?.slug || slug.value || '').trim().toLowerCase()
-  const lang = effectiveLang.value
-
-  if (isCasaDoSoftware.value) {
-    // For casadosoftware.com.br, always use Portuguese
-    if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
-      return 'Windows 11 Pro original com chave vitalícia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
-    }
-    if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
-      return 'Windows 10 Pro Original – Licença Digital Vitalícia. Ativação imediata, instalação simples e suporte completo. Entrega por e-mail!'
-    }
-    if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
-      if (isOffice365FiveLicenses.value) {
-        return 'Licença Microsoft 365 Original PC e Mac – Entrega imediata. Ative em até 5 dispositivos, 1TB OneDrive, conta oficial e suporte completo.'
-      }
-      return 'Office 365 Original – Licença Oficial com Entrega Imediata. Ative em minutos, conta oficial e suporte completo. Entrega por e-mail!'
-    }
-  }
-
-  // For international domains or other stores
-  if (slugValue.includes('windows-11') && slugValue.includes('pro')) {
-    if (lang === 'en') return 'Buy Windows 11 Pro original license with lifetime key and instant delivery. Install and activate in minutes with full support. Secure payment!'
-    if (lang === 'es') return '┬íCompra tu licencia original de Windows 11 Pro con clave vitalicia y entrega inmediata. Instala y activa en minutos con soporte completo!'
-    if (lang === 'fr') return 'Achetez votre licence Windows 11 Pro originale avec clé à vie et livraison instantanée. Installation simple avec assistance compl├¿te!'
-    if (lang === 'it') return 'Acquista la licenza originale di Windows 11 Pro con chiave a vita e consegna immediata. Attiva in pochi minuti con supporto completo!'
-    return 'Windows 11 Pro original com chave vitalícia e entrega na hora. Instale e ative em minutos com suporte completo. Compra segura!'
-  }
-  if (slugValue.includes('windows-10') && slugValue.includes('pro')) {
-    if (lang === 'en') return 'Buy Windows 10 Pro original with instant activation and lifetime guarantee. Digital license for PC or laptop. Support included!'
-    if (lang === 'es') return 'Compra Windows 10 Pro original con activación instantánea y garantía vitalicia. Licencia digital para PC o portátil. ┬íSoporte incluido!'
-    if (lang === 'fr') return 'Achetez Windows 10 Pro original avec activation instantanée et garantie à vie. Licence numérique pour PC ou ordinateur portable. Support inclus!'
-    if (lang === 'it') return 'Acquista Windows 10 Pro originale con attivazione immediata e garanzia a vita. Licenza digitale per PC o laptop. Supporto incluso!'
-    return 'Compre Windows 10 Pro original com ativação instantânea e garantia. Licença vitalícia para PC ou notebook. Suporte incluso!'
-  }
-  if (slugValue.includes('office') && (slugValue.includes('365') || slugValue.includes('microsoft-365'))) {
-    if (isOffice365FiveLicenses.value) {
-      if (lang === 'en') return 'Buy original Microsoft 365 license for up to 5 devices. Fast activation, official account, 1TB OneDrive storage. Instant delivery by email!'
-      if (lang === 'es') return 'Compra tu licencia Microsoft 365 original para hasta 5 dispositivos. Activación rápida, cuenta oficial y 1TB de almacenamiento. ┬íEntrega inmediata!'
-      if (lang === 'fr') return 'Achetez votre licence Microsoft 365 originale pour jusqu\'à 5 appareils. Activation rapide, compte officiel, 1To OneDrive. Livraison instantanée!'
-      if (lang === 'it') return 'Acquista la tua licenza Microsoft 365 originale per fino a 5 dispositivi. Attivazione rapida, account ufficiale, 1TB OneDrive. Consegna immediata!'
-      return 'Comprar licença do pacote Office permanente nunca foi tão fácil. Original, ativação rápida, conta oficial, suporte completo e envio imediato por email.'
-    }
-    if (lang === 'en') return 'Original Microsoft Office 365 for PC and Mac. Fast activation, official account and full support. Get it now by email!'
-    if (lang === 'es') return 'Microsoft Office 365 original para PC y Mac. Activación rápida, cuenta oficial y soporte completo. ┬íRecíbelo ahora por email!'
-    if (lang === 'fr') return 'Microsoft Office 365 original pour PC et Mac. Activation rapide, compte officiel et support complet. Recevez-le maintenant par email!'
-    if (lang === 'it') return 'Microsoft Office 365 originale per PC e Mac. Attivazione rapida, account ufficiale e supporto completo. Ricevilo ora per email!'
-    return 'Microsoft Office 365 original para PC e Mac. Ativação rápida, conta oficial e suporte completo. Receba agora por e-mail!'
-  }
-  if (slugValue.includes('office') && slugValue.includes('2021')) {
-    if (lang === 'en') return 'Buy Microsoft Office 2021 original with permanent key and simple installation. Instant delivery and secure payment. Activate in minutes!'
-    if (lang === 'es') return '┬íCompra Microsoft Office 2021 original con clave permanente e instalación simple. Entrega inmediata y pago seguro. Actívalo en minutos!'
-    if (lang === 'fr') return 'Achetez Microsoft Office 2021 original avec clé permanente et installation simple. Livraison instantanée et paiement sécurisé. Activez en minutes!'
-    if (lang === 'it') return 'Acquista Microsoft Office 2021 originale con chiave permanente e installazione semplice. Consegna immediata e pagamento sicuro. Attiva in minuti!'
-    return 'Licença Office 2021 original com chave permanente e instalação simples. Entrega imediata e pagamento seguro. Ative em minutos!'
-  }
-
-  // Fallback to product description
-  const rawShort = String((safeProduct as any)?.description || '').trim()
-  const rawLong = String((safeProduct as any)?.descricao || '').trim()
-
-  const raw = rawShort || rawLong
-  if (!raw) return ''
-
-  const textOnly = safeSanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] })
-    .replace(/\s+/g, ' ')
-    .trim()
-
-  return textOnly.length > 155 ? textOnly.slice(0, 155) : textOnly
-})
-
+// JSON-LD for structured data (Product and Breadcrumb)
 useHead(() => {
-  const title = seoTitle.value
-  const description = seoDescription.value
-  const selfCanonical = canonicalUrl.value
-  const link: any[] = [
-    ...(selfCanonical ? [{ rel: 'canonical', href: selfCanonical }] : []),
-    ...(productHreflang.value as any[])
-  ]
-
   const p = safeProduct as any
   const hasProduct = !pending.value && !error.value && String(p?.name || '').trim()
 
   if (!hasProduct) {
-    return {
-      title,
-      meta: [{ name: 'description', content: description }],
-      link
-    }
+    return {}
   }
 
   const price = Number(p?.price || 0)
@@ -828,7 +701,7 @@ useHead(() => {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: String(p?.name || '').trim() || undefined,
-    description: String(description || '').trim() || undefined,
+    description: String(productSeoDescription.value || '').trim() || undefined,
     image: absoluteImageUrl.value ? [absoluteImageUrl.value] : undefined,
     sku: String(p?.id || '').trim() || undefined,
     brand: {
@@ -837,7 +710,7 @@ useHead(() => {
     },
     offers: {
       '@type': 'Offer',
-      url: canonicalUrl.value || undefined,
+      url: productCanonicalUrl.value || undefined,
       priceCurrency,
       price: price > 0 ? price : undefined,
       availability: 'https://schema.org/InStock',
@@ -849,22 +722,17 @@ useHead(() => {
     }
   }
 
-  const homeUrl = selfCanonical ? selfCanonical.replace(/\/(?:en|es|fr|it)\/.*|\/produto\/.*|\/product\/.*|\/producto\/.*|\/produit\/.*|\/prodotto\/.*/, '/') : '/'
+  const homeUrl = productCanonicalUrl.value ? productCanonicalUrl.value.replace(/\/(?:en|es|fr|it)\/.*|\/produto\/.*|\/product\/.*|\/producto\/.*|\/produit\/.*|\/prodotto\/.*/, '/') : '/'
   const breadcrumbJsonLd: any = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: siteName || 'Casa do Software', item: homeUrl },
-      { '@type': 'ListItem', position: 2, name: String(p?.name || '').trim() || 'Produto', item: selfCanonical || '' }
+      { '@type': 'ListItem', position: 2, name: String(p?.name || '').trim() || 'Produto', item: productCanonicalUrl.value || '' }
     ]
   }
 
   return {
-    title,
-    meta: [
-      { name: 'description', content: description }
-    ],
-    link,
     script: [
       {
         type: 'application/ld+json',
@@ -874,15 +742,34 @@ useHead(() => {
   }
 })
 
-const seoMetaTitle = computed(() => seoTitle.value)
-const seoMetaDescription = computed(() => seoDescription.value)
+// Apply SEO meta tags directly from product
 useSeoMeta({
-  title: seoMetaTitle,
-  description: seoMetaDescription,
-  ogTitle: seoMetaTitle,
-  ogDescription: seoMetaDescription,
-  twitterTitle: seoMetaTitle,
-  twitterDescription: seoMetaDescription
+  title: () => productSeoTitle.value,
+  description: () => productSeoDescription.value,
+  ogTitle: () => productSeoTitle.value,
+  ogDescription: () => productSeoDescription.value,
+  twitterTitle: () => productSeoTitle.value,
+  twitterDescription: () => productSeoDescription.value,
+  robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+})
+
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: () => productCanonicalUrl.value
+    },
+    {
+      rel: 'alternate',
+      hreflang: 'pt-BR',
+      href: () => productCanonicalUrl.value
+    },
+    {
+      rel: 'alternate',
+      hreflang: 'x-default',
+      href: () => productCanonicalUrl.value
+    }
+  ]
 })
 
 const safeDescriptionHtml = computed(() => {
