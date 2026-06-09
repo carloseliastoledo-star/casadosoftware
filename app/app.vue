@@ -30,7 +30,7 @@ useHead(() => {
   const origin = String(siteUrl || '').replace(/\/$/, '') || 'https://casadosoftware.com.br'
   const orgName = companyLegalName || siteName || 'Casa do Software'
   const logo = logoPath
-    ? (String(logoPath).startsWith('https://') ? logoPath : `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}`)
+    ? (String(logoPath).startsWith('http://') || String(logoPath).startsWith('https://') ? logoPath : `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}`)
     : undefined
 
   const scripts: any[] = [{

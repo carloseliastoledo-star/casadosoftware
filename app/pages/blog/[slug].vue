@@ -98,7 +98,7 @@ const hreflangLinks = computed(() => {
   const HREFLANG: Record<string, string> = { pt: 'pt-BR' }
   const allLangPrefixes = ['pt']
 
-  const rawPath = String(route.fullPath || '/').split('?')[0].split('#')[0]
+  const rawPath = String(route.path || '/').split('?')[0].split('#')[0]
   const parts = rawPath.split('/').filter(Boolean)
   const first = parts[0] || ''
   const baseParts = first && allLangPrefixes.includes(first) ? parts.slice(1) : parts
@@ -305,7 +305,7 @@ useHead(() => {
   const url = String(canonicalForHead.value || '')
   const origin = String(siteUrl || '').replace(/\/$/, '')
   const logoAbsolute = logoPath
-    ? (String(logoPath).startsWith('https://') ? logoPath : `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}`)
+    ? (String(logoPath).startsWith('http://') || String(logoPath).startsWith('https://') ? logoPath : `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}`)
     : undefined
 
   const jsonLd: any[] = []
