@@ -97,7 +97,7 @@ const siteUrl = useSiteUrl()
 const canonicalUrl = computed(() => {
   const origin = String(siteUrl || '').replace(/\/$/, '')
   if (!origin) return ''
-  const path = String(route.fullPath || '/').split('#')[0]
+  const path = String(route.path || '/').split('#')[0]
   return `${origin}${path}`
 })
 

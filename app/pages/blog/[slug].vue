@@ -124,7 +124,7 @@ const canonicalUrl = computed(() => {
       const host = String(headers?.['x-forwarded-host'] || headers?.host || '')
         .split(',')[0]
         ?.trim()
-      if (host) return `${proto}://${host}${String(route.fullPath || '')}`
+      if (host) return `${proto}://${host}${String(route.path || '')}`
       return ''
     }
     return String(window.location.href || '')
