@@ -117,8 +117,6 @@ const hreflangLinks = computed(() => {
 const canonicalUrl = computed(() => {
   try {
     if (process.server) {
-      const url = useRequestURL()
-      if (url?.href) return String(url.href)
       const headers = useRequestHeaders(['x-forwarded-proto', 'x-forwarded-host', 'host']) as Record<string, string | undefined>
       const proto = String(headers?.['x-forwarded-proto'] || 'https')
       const host = String(headers?.['x-forwarded-host'] || headers?.host || '')
@@ -127,7 +125,7 @@ const canonicalUrl = computed(() => {
       if (host) return `${proto}://${host}${String(route.path || '')}`
       return ''
     }
-    return String(window.location.href || '')
+    return String(window.location.origin + window.location.pathname || '')
   } catch {
     return ''
   }
@@ -297,6 +295,7 @@ type BlogPostListDto = {
 
 
 const { siteName, logoPath, companyLegalName } = useSiteBranding()
+import { normalizeUrl } from '~/utils/normalizeUrl'
 
 useHead(() => {
   const title = post.value?.titulo ? `${post.value.titulo} - ${siteName}` : siteName
@@ -304,9 +303,7 @@ useHead(() => {
 
   const url = String(canonicalForHead.value || '')
   const origin = String(siteUrl || '').replace(/\/$/, '')
-  const logoAbsolute = logoPath
-    ? (String(logoPath).startsWith('http://') || String(logoPath).startsWith('https://') ? logoPath : `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}`)
-    : undefined
+  const logoAbsolute = logoPath ? normalizeUrl(logoPath, origin) : undefined
 
   const jsonLd: any[] = []
   if (url) {

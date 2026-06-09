@@ -10,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+import { normalizeUrl } from '~/utils/normalizeUrl'
+
 const route = useRoute()
 const { companyLegalName, siteName, logoPath } = useSiteBranding()
 const siteUrl = useSiteUrl()
@@ -29,9 +31,7 @@ useHead(() => {
 
   const origin = String(siteUrl || '').replace(/\/$/, '') || 'https://casadosoftware.com.br'
   const orgName = companyLegalName || siteName || 'Casa do Software'
-  const logo = logoPath
-    ? (String(logoPath).startsWith('http://') || String(logoPath).startsWith('https://') ? logoPath : `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}`)
-    : undefined
+  const logo = logoPath ? normalizeUrl(logoPath, origin) : undefined
 
   const scripts: any[] = [{
     type: 'application/ld+json',
