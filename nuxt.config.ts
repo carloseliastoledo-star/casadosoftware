@@ -92,12 +92,8 @@ export default defineNuxtConfig({
     '/fr/**': { redirect: '/' },
     '/it/**': { redirect: '/' },
 
-    // Bloquear indexação de vps.casadosoftware.com.br
-    '/**': {
-      headers: {
-        'X-Robots-Tag': 'noindex, nofollow'
-      }
-    },
+    
+
 
     // APIs de produtos e categorias (não sensíveis)
     '/api/products': {
@@ -353,3 +349,4 @@ export default defineNuxtConfig({
     }
   }
 })
+
