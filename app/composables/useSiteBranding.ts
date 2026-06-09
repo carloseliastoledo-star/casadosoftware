@@ -24,7 +24,7 @@ export function useSiteBranding() {
   const companyAddress = String((config.public as any).companyAddress || '').trim() ||
     'AV ENG LUIZ CARLOS BERRINI, 1748 - Cidade Monções, São Paulo - SP'
   const companyPhone = String((config.public as any).companyPhone || '').trim() || '+55 11 91069-1485'
-  const companyEmail = String((config.public as any).companyEmail || '').trim() || 'sac@mercadosoftwares.com.br'
+  const companyEmail = String((config.public as any).companyEmail || '').trim() || 'comercial@casadosoftware.com.br'
   const googleReviewsUrl = String((config.public as any).googleReviewsUrl || '').trim() || 'https://maps.app.goo.gl/LqHsKbBC4Y7FjqDo7'
   const googleReviewRequestUrl = String((config.public as any).googleReviewRequestUrl || '').trim() || 'https://g.page/r/CQzqUpnMFYiKEAE/review'
 

@@ -278,8 +278,6 @@ useHead(computed(() => ({
   link: [
     { rel: 'canonical', href: canonicalHref.value },
     { rel: 'alternate', hreflang: 'en', href: `${GVG_BASE}/` },
-    { rel: 'alternate', hreflang: 'es', href: `${GVG_BASE}/es` },
-    { rel: 'alternate', hreflang: 'fr', href: `${GVG_BASE}/fr` },
     { rel: 'alternate', hreflang: 'x-default', href: `${GVG_BASE}/` },
   ]
 })))

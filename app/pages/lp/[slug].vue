@@ -56,7 +56,7 @@ useHead({
   link: computed(() => {
     const links: any[] = [{ rel: 'canonical', href: canonicalUrl.value }]
     if (!isNoindex.value) {
-      links.push({ rel: 'alternate', hreflang: locale === 'en' ? 'en' : 'pt-BR', href: canonicalUrl.value })
+      links.push({ rel: 'alternate', hreflang: 'pt-BR', href: `https://casadosoftware.com.br/lp/${slug.value}` })
       links.push({ rel: 'alternate', hreflang: 'x-default', href: `https://casadosoftware.com.br/lp/${slug.value}` })
     }
     return links

@@ -94,9 +94,9 @@ const ptDomainBase = computed(() => String((config.public as any)?.ptDomainUrl |
 const enDomainBase = computed(() => String((config.public as any)?.enDomainUrl || 'https://casadosoftware.store').replace(/\/$/, ''))
 
 const hreflangLinks = computed(() => {
-  const SEO_ACTIVE_LANGS = ['pt', 'en', 'es', 'fr', 'it'] as const
-  const HREFLANG: Record<string, string> = { pt: 'pt-BR', en: 'en', es: 'es', fr: 'fr', it: 'it' }
-  const allLangPrefixes = ['pt', 'en', 'es', 'fr', 'it', 'de']
+  const SEO_ACTIVE_LANGS = ['pt'] as const
+  const HREFLANG: Record<string, string> = { pt: 'pt-BR' }
+  const allLangPrefixes = ['pt']
 
   const rawPath = String(route.fullPath || '/').split('?')[0].split('#')[0]
   const parts = rawPath.split('/').filter(Boolean)
@@ -106,8 +106,7 @@ const hreflangLinks = computed(() => {
 
   const links: any[] = []
   for (const l of SEO_ACTIVE_LANGS) {
-    if (l === 'en' && !seoEnableEnDomain.value) continue
-    const base = l === 'en' ? enDomainBase.value : ptDomainBase.value
+    const base = ptDomainBase.value
     const prefix = l === 'pt' ? '' : `/${l}`
     links.push({ rel: 'alternate', hreflang: HREFLANG[l], href: `${base}${prefix}${basePath}` })
   }
@@ -305,7 +304,9 @@ useHead(() => {
 
   const url = String(canonicalForHead.value || '')
   const origin = String(siteUrl || '').replace(/\/$/, '')
-  const logoAbsolute = origin && logoPath ? `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}` : undefined
+  const logoAbsolute = logoPath
+    ? (String(logoPath).startsWith('https://') ? logoPath : `${origin}${String(logoPath).startsWith('/') ? '' : '/'}${logoPath}`)
+    : undefined
 
   const jsonLd: any[] = []
   if (url) {
