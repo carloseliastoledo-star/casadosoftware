@@ -76,9 +76,10 @@ const CASA_HOME_DESCRIPTION = computed(() =>
 )
 
 const { canonicalUrl: homeCanonical, hreflangLinks: homeHreflang } = useSeoLocale({ pageType: 'home' })
+const fixedCanonical = 'https://casadosoftware.com.br/'
 useHead(() => ({
   link: [
-    { rel: 'canonical', href: homeCanonical.value },
+    { rel: 'canonical', href: fixedCanonical },
     ...(homeHreflang.value as any[])
   ]
 }))

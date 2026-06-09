@@ -85,14 +85,7 @@ const langPrefix = computed(() => {
 const siteUrl = useSiteUrl()
 
 const canonicalForHead = computed(() => {
-  const origin = String(siteUrl || '').replace(/\/$/, '')
-  if (!origin) return String(canonicalUrl.value || '')
-  try {
-    const path = String(route.fullPath || '/').split('#')[0]
-    return `${origin}${path}`
-  } catch {
-    return String(canonicalUrl.value || '')
-  }
+  return `https://casadosoftware.com.br/blog/${slug.value}`
 })
 
 const config = useRuntimeConfig()

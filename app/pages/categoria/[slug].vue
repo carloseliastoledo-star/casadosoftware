@@ -168,6 +168,7 @@ const slug = String(route.params.slug || '')
 const baseUrl = useSiteUrl()
 const { siteName } = useSiteBranding()
 const { canonicalUrl, hreflangLinks } = useSeoLocale({ pageType: 'category', slug })
+const fixedCanonical = computed(() => `https://casadosoftware.com.br/categoria/${slug}`)
 
 const config = useRuntimeConfig()
 const storeSlug = computed(() => String((config.public as any)?.storeSlug || '').trim())
@@ -313,7 +314,7 @@ useSeoMeta({
 
 useHead(() => ({
   link: [
-    ...(canonicalUrl.value ? [{ rel: 'canonical', href: canonicalUrl.value }] : []),
+    { rel: 'canonical', href: fixedCanonical.value },
     ...(hreflangLinks.value as any[])
   ]
 }))
