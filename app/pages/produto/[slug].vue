@@ -513,8 +513,8 @@ const productSeoDescription = computed(() => {
 })
 
 const productCanonicalUrl = computed(() => {
-  const slug = product.value?.slug || slug.value
-  return `https://casadosoftware.com.br/produto/${slug}`
+  const productSlug = product.value?.slug || slug.value
+  return `https://casadosoftware.com.br/produto/${productSlug}`
 })
 
 const { data: productsData } = await useFetch<any[]>('/api/products', {
