@@ -184,7 +184,7 @@ useHead({
         "contactPoint": [
           {
             "@type": "ContactPoint",
-            "telephone": "+55 11 91069-1485",
+            "telephone": "+55 11 910512647",
             "contactType": "customer support",
             "areaServed": "BR",
             "availableLanguage": "Portuguese"
