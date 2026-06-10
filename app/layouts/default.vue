@@ -589,11 +589,11 @@ const {
   topbarText,
   topbarLink,
   whatsappNumber,
-  companyLegalName,
-  companyCnpj,
-  companyAddress,
-  companyPhone,
-  companyEmail
+  companyLegalName: companyLegalNameBase,
+  companyCnpj: companyCnpjBase,
+  companyAddress: companyAddressBase,
+  companyPhone: companyPhoneBase,
+  companyEmail: companyEmailBase
 } = useSiteBranding()
 
 const config = useRuntimeConfig()
@@ -765,6 +765,12 @@ type CategoriaLinkDto = {
 const { cart } = useCart()
 
 const { data: siteSettings } = await useFetch('/api/site-settings', { server: true, default: () => null })
+
+const companyLegalName = computed(() => (siteSettings.value as any)?.companyLegalName || companyLegalNameBase)
+const companyCnpj = computed(() => (siteSettings.value as any)?.companyCnpj || companyCnpjBase)
+const companyAddress = computed(() => (siteSettings.value as any)?.companyAddress || companyAddressBase)
+const companyPhone = computed(() => (siteSettings.value as any)?.companyPhone || companyPhoneBase)
+const companyEmail = computed(() => (siteSettings.value as any)?.companyEmail || companyEmailBase)
 
 const { data: footerPagesData } = await useFetch('/api/paginas/footer', { server: true, default: () => null })
 
