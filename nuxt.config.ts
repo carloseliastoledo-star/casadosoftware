@@ -17,19 +17,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       script: [
-        {
-          key: 'gtm',
-          innerHTML: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TRF7PNLP');`,
-          tagPriority: 0
-        },
         { src: 'https://sdk.mercadopago.com/js/v2' }
-      ],
-      noscript: [
-        {
-          key: 'gtm-noscript',
-          innerHTML: `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRF7PNLP" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
-          tagPosition: 'bodyOpen'
-        }
       ],
       link: [
         { rel: 'icon', href: '/favicon.ico?v2' },
