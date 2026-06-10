@@ -15,13 +15,16 @@ const GTM_HEAD = OPEN +
 const GTM_BODY = `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRF7PNLP" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>`
 
 export default defineNitroPlugin((nitroApp: any) => {
+  console.log('[gtm-inject] plugin loaded')
   nitroApp.hooks.hook('render:html', (html: any) => {
-    console.log('[gtm-inject] render:html hook called')
+    console.log('[gtm-inject] render:html called, head is array:', Array.isArray(html.head), 'bodyPrepend is array:', Array.isArray(html.bodyPrepend))
     if (Array.isArray(html.head) && !html.head.some((s: string) => s.includes('GTM-TRF7PNLP'))) {
       html.head.unshift(GTM_HEAD)
+      console.log('[gtm-inject] GTM_HEAD injected')
     }
     if (Array.isArray(html.bodyPrepend) && !html.bodyPrepend.some((s: string) => s.includes('GTM-TRF7PNLP'))) {
       html.bodyPrepend.unshift(GTM_BODY)
+      console.log('[gtm-inject] GTM_BODY injected')
     }
   })
 })
