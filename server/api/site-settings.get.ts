@@ -16,7 +16,15 @@ const SELECT = {
   bodyCloseHtml: true,
   homeBestSellerSlugs: true,
   homeVideoUrl: true,
-  footerPolicyLinks: true
+  footerPolicyLinks: true,
+  siteName: true,
+  supportEmail: true,
+  whatsappNumber: true,
+  companyLegalName: true,
+  companyCnpj: true,
+  companyAddress: true,
+  companyPhone: true,
+  companyEmail: true
 }
 
 export default defineEventHandler(async (event) => {
