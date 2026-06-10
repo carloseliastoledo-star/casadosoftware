@@ -1,10 +1,12 @@
 export function useSiteBranding() {
   const config = useRuntimeConfig()
+  const nuxtApp = tryUseNuxtApp()
+  const siteSettings = nuxtApp?.$siteSettings as any
 
   const defaultSiteName = 'Mercado Softwares'
   const defaultLogoPath = '/logo-mercadosoftwares.png'
 
-  const rawName = String((config.public as any)?.siteName || '').trim()
+  const rawName = String(siteSettings?.siteName || (config.public as any)?.siteName || '').trim()
   const siteName = rawName && rawName !== 'Site' ? rawName : defaultSiteName
 
   const rawLogo = String(config.public.logoPath || '').trim()
@@ -14,17 +16,17 @@ export function useSiteBranding() {
   const casaSoftwareLogo = 'https://pub-388810139d004c3eb59d2d54c6e92aa7.r2.dev/uploads/Logo%20Marca%201.png'
   
   const logoPath = rawLogo && rawLogo !== '/logo.png' ? rawLogo : (isCasaDoSoftware ? casaSoftwareLogo : defaultLogoPath)
-  const supportEmail = String(config.public.supportEmail || '').trim() || 'comercial@casadosoftware.com.br'
-  const topbarText = String(config.public.topbarText || '').trim() || ''
-  const topbarLink = String(config.public.topbarLink || '').trim() || ''
-  const whatsappNumber = String(config.public.whatsappNumber || '').trim() || ''
+  const supportEmail = String(siteSettings?.supportEmail || config.public.supportEmail || '').trim() || 'comercial@casadosoftware.com.br'
+  const topbarText = String(siteSettings?.topbarText || config.public.topbarText || '').trim() || ''
+  const topbarLink = String(siteSettings?.topbarLink || config.public.topbarLink || '').trim() || ''
+  const whatsappNumber = String(siteSettings?.whatsappNumber || config.public.whatsappNumber || '').trim() || ''
 
-  const companyLegalName = String((config.public as any).companyLegalName || '').trim() || 'Softwares Mundi LTDA'
-  const companyCnpj = String((config.public as any).companyCnpj || '').trim() || '66.464.267/0001-48'
-  const companyAddress = String((config.public as any).companyAddress || '').trim() ||
+  const companyLegalName = String(siteSettings?.companyLegalName || (config.public as any).companyLegalName || '').trim() || 'Softwares Mundi LTDA'
+  const companyCnpj = String(siteSettings?.companyCnpj || (config.public as any).companyCnpj || '').trim() || '66.464.267/0001-48'
+  const companyAddress = String(siteSettings?.companyAddress || (config.public as any).companyAddress || '').trim() ||
     'AV ENG LUIZ CARLOS BERRINI, 1748 - Cidade Monções, São Paulo - SP'
-  const companyPhone = String((config.public as any).companyPhone || '').trim() || '+55 11 910512647'
-  const companyEmail = String((config.public as any).companyEmail || '').trim() || 'comercial@casadosoftware.com.br'
+  const companyPhone = String(siteSettings?.companyPhone || (config.public as any).companyPhone || '').trim() || '+55 11 910512647'
+  const companyEmail = String(siteSettings?.companyEmail || (config.public as any).companyEmail || '').trim() || 'comercial@casadosoftware.com.br'
   const googleReviewsUrl = String((config.public as any).googleReviewsUrl || '').trim() || 'https://maps.app.goo.gl/LqHsKbBC4Y7FjqDo7'
   const googleReviewRequestUrl = String((config.public as any).googleReviewRequestUrl || '').trim() || 'https://g.page/r/CQzqUpnMFYiKEAE/review'
 
