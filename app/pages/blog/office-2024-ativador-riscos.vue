@@ -410,44 +410,6 @@ const jsonLd = [
   },
   {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'Todo ativador tem vírus?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Nem todo ativador tem vírus, mas estudos mostram que mais de 75% contêm algum tipo de malware. É impossível saber qual é seguro até ser tarde demais. A única forma 100% segura é usar licença original.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Posso ser processado por usar ativador?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Embora raro para usuários finais individuais, o uso de ativadores é ilegal e viola os termos de serviço da Microsoft. Empresas podem sofrer fiscalizações e multas significativas.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Como saber se meu Office foi ativado com ativador?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Se você não comprou uma chave de ativação de um revendedor autorizado, provavelmente usou um método não oficial. Ativações legítimas mostram "Produto Licenciado" nas configurações da conta Office.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'Qual o preço de uma licença original do Office 2024?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Na Casa do Software, licenças originais do Office 2024 começam em R$ 79. Considerando segurança, suporte e a tranquilidade de usar software legal, é um investimento que vale muito a pena.'
-        }
-      }
-    ]
-  },
-  {
-    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       {
