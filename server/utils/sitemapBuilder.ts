@@ -132,6 +132,14 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
     const lastmod = post.atualizadoEm ? new Date(post.atualizadoEm).toISOString().slice(0, 10) : undefined
     entries.push(urlEntry(base + cfg.blogPath(s), lastmod, '0.7', 'monthly'))
   }
+  // Static SEO/CRO blog pages created as Vue routes
+  if (cfg.lang === 'pt') {
+    entries.push(urlEntry(base + '/blog/office-2024-ativador-riscos', undefined, '0.8', 'weekly'))
+    entries.push(urlEntry(base + '/blog/office-2024-torrent-riscos', undefined, '0.8', 'weekly'))
+    entries.push(urlEntry(base + '/blog/office-2024-crack-riscos', undefined, '0.8', 'weekly'))
+    entries.push(urlEntry(base + '/blog/como-ativar-office-2024-com-licenca-original', undefined, '0.8', 'weekly'))
+    entries.push(urlEntry(base + '/blog/office-2024-download-seguro', undefined, '0.8', 'weekly'))
+  }
 
   // SEO Pages (published, not noindex, matching locale)
   for (const sp of seoPages) {
@@ -150,3 +158,4 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
     '</urlset>'
   ].join('\n')
 }
+
