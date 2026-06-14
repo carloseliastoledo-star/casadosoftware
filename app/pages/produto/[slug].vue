@@ -736,7 +736,7 @@ useHead(() => {
     script: [
       {
         type: 'application/ld+json',
-        children: JSON.stringify([productJsonLd, breadcrumbJsonLd])
+        innerHTML: JSON.stringify([productJsonLd, breadcrumbJsonLd])
       }
     ]
   }

@@ -36,7 +36,7 @@ useHead(() => {
   const scripts: any[] = [{
     type: 'application/ld+json',
     key: 'org-jsonld',
-    children: JSON.stringify({
+    innerHTML: JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: orgName,

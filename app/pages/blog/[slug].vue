@@ -372,7 +372,7 @@ useHead(() => {
       ? [
           {
             type: 'application/ld+json',
-            children: JSON.stringify(jsonLd.length === 1 ? jsonLd[0] : jsonLd)
+            innerHTML: JSON.stringify(jsonLd.length === 1 ? jsonLd[0] : jsonLd)
           }
         ]
       : []
