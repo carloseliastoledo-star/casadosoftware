@@ -98,10 +98,18 @@ export default defineEventHandler(async (event) => {
         select: { customerId: true }
       })
       if (currentOrder?.customerId) {
-        await (prisma as any).customer.update({
-          where: { id: currentOrder.customerId },
-          data: { email }
+        const existingCustomer = await (prisma as any).customer.findFirst({
+          where: { email, storeSlug: order.storeSlug },
+          select: { id: true }
         })
+        if (existingCustomer && existingCustomer.id !== currentOrder.customerId) {
+          data.customerId = existingCustomer.id
+        } else if (!existingCustomer) {
+          await (prisma as any).customer.update({
+            where: { id: currentOrder.customerId },
+            data: { email }
+          })
+        }
       }
     }
   }
