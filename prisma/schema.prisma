@@ -71,10 +71,13 @@ model Affiliate {
   inviteTokenHash        String?
   inviteExpiresAt        DateTime?
   isActive               Boolean                  @default(false)
+  storeSlug              String                   @default("casadosoftware")
   AffiliateCommission    AffiliateCommission[]
   AffiliatePayoutRequest AffiliatePayoutRequest[]
   Commission             Commission[]
   Order                  Order[]
+
+  @@index([storeSlug])
 }
 
 model AffiliateCommission {
