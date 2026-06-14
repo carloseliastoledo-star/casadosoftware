@@ -72,7 +72,7 @@ const CASA_HOME_TITLE = computed(() =>
 const CASA_HOME_DESCRIPTION = computed(() =>
   isEN.value
     ? 'Buy genuine Windows 10, 11 and Office licenses with instant delivery and expert support.'
-    : 'Compre licenças digitais originais Windows 10, 11 e Office com entrega imediata e suporte técnico.'
+    : 'Compre licenças digitais originais de Windows, Office, Office 365 e Windows Server com entrega por e-mail, pagamento seguro e suporte de instalação.'
 )
 
 const { canonicalUrl: homeCanonical, hreflangLinks: homeHreflang } = useSeoLocale({ pageType: 'home' })
@@ -148,6 +148,7 @@ if (applyCasaSeo.value) {
   useSeoMeta({
     title: CASA_HOME_TITLE.value,
     description: CASA_HOME_DESCRIPTION.value,
+    robots: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
     ogTitle: CASA_HOME_TITLE.value,
     ogDescription: CASA_HOME_DESCRIPTION.value,
     ogImage,
@@ -155,7 +156,8 @@ if (applyCasaSeo.value) {
     ogUrl: homeCanonical.value,
     twitterTitle: CASA_HOME_TITLE.value,
     twitterDescription: CASA_HOME_DESCRIPTION.value,
-    twitterImage: ogImage
+    twitterImage: ogImage,
+    twitterCard: 'summary_large_image'
   })
 }
 
