@@ -317,16 +317,6 @@ const jsonLd = [
   },
   {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      { '@type': 'Question', name: 'A ativação precisa de internet?', acceptedAnswer: { '@type': 'Answer', text: 'Sim, a ativação inicial requer conexão com internet para validar a chave nos servidores da Microsoft. Após ativado, o Office funciona normalmente offline.' } },
-      { '@type': 'Question', name: 'Posso reativar se formatar o computador?', acceptedAnswer: { '@type': 'Answer', text: 'Sim! Com a licença original da Casa do Software, você pode reativar o Office usando a mesma chave após formatar ou trocar de computador (dentro dos limites da licença).' } },
-      { '@type': 'Question', name: 'Quanto tempo leva a ativação?', acceptedAnswer: { '@type': 'Answer', text: 'A ativação online leva apenas alguns segundos após digitar a chave. Todo o processo, do início ao fim, leva menos de 5 minutos.' } },
-      { '@type': 'Question', name: 'A chave expira?', acceptedAnswer: { '@type': 'Answer', text: 'Não. A chave de ativação do Office 2024 é permanente. Uma vez ativada, funciona para sempre no computador onde foi instalada (ou pode ser transferida se você trocar de PC).' } }
-    ]
-  },
-  {
-    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://casadosoftware.com.br/' },

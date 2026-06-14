@@ -303,16 +303,6 @@ const jsonLd = [
   },
   {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      { '@type': 'Question', name: 'Posso baixar Office 2024 direto do site da Microsoft?', acceptedAnswer: { '@type': 'Answer', text: 'Sim, através do Office Deployment Tool. Porém, a Microsoft não fornece link direto de download simples para consumidores finais - você precisa de ferramentas técnicas ou uma licença que inclua o link.' } },
-      { '@type': 'Question', name: 'O download da Casa do Software é oficial?', acceptedAnswer: { '@type': 'Answer', text: 'Sim! Fornecemos links de download dos servidores oficiais da Microsoft. A diferença é que você recebe o link pronto + chave de ativação + suporte, sem precisar de conhecimentos técnicos.' } },
-      { '@type': 'Question', name: 'Quanto tempo leva o download?', acceptedAnswer: { '@type': 'Answer', text: 'O arquivo tem cerca de 2-4GB. Com uma conexão de 10Mbps, leva aproximadamente 30-50 minutos. Conexões mais rápidas (50Mbps+) completam em menos de 10 minutos.' } },
-      { '@type': 'Question', name: 'Preciso de internet durante a instalação?', acceptedAnswer: { '@type': 'Answer', text: 'Sim. O instalador baixa componentes adicionais durante o processo. Mantenha a conexão ativa durante toda a instalação (10-20 minutos).' } }
-    ]
-  },
-  {
-    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://casadosoftware.com.br/' },

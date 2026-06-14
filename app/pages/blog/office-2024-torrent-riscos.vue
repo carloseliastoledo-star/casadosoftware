@@ -241,16 +241,6 @@ const jsonLd = [
   },
   {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      { '@type': 'Question', name: 'Torrents de Office são sempre perigosos?', acceptedAnswer: { '@type': 'Answer', text: 'A grande maioria contém algum tipo de risco. Mesmo torrents que aparentam ter muitos seeds positivos podem ter sido manipulados. Não há garantia de segurança.' } },
-      { '@type': 'Question', name: 'Como identificar se um torrent tem malware?', acceptedAnswer: { '@type': 'Answer', text: 'É praticamente impossível identificar visualmente. Antivírus nem sempre detectam ameaças zero-day. A única proteção 100% efetiva é não usar torrents de software.' } },
-      { '@type': 'Question', name: 'VPN protege contra os riscos de torrent?', acceptedAnswer: { '@type': 'Answer', text: 'VPN oculta seu IP, mas NÃO protege contra malware no arquivo baixado. Se o torrent contém vírus, ele infectará seu computador independente da VPN.' } },
-      { '@type': 'Question', name: 'Qual o custo de uma licença original vs recuperação de dados?', acceptedAnswer: { '@type': 'Answer', text: 'Uma licença original do Office 2024 na Casa do Software custa a partir de R$ 79. Recuperação de dados após ransomware custa R$ 2.000-10.000+ e nem sempre é possível.' } }
-    ]
-  },
-  {
-    '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://casadosoftware.com.br/' },

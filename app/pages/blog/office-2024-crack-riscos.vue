@@ -252,16 +252,7 @@ const jsonLd = [
     inLanguage: 'pt-BR',
     keywords: 'crack Office 2024 riscos, Office 2024 crackeado perigos, problema crack Office, licença Office 2024 vs crack'
   },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      { '@type': 'Question', name: 'Crack sempre causa problemas?', acceptedAnswer: { '@type': 'Answer', text: 'Na maioria dos casos, sim. Mesmo que funcione inicialmente, cracks causam instabilidade ao longo do tempo e impedem atualizações críticas de segurança.' } },
-      { '@type': 'Question', name: 'Posso ser processado por usar Office crackeado?', acceptedAnswer: { '@type': 'Answer', text: 'Sim. O uso de software sem licença adequada viola leis de direitos autorais. Empresas são mais vulneráveis a fiscalizações, mas usuários individuais também podem enfrentar consequências.' } },
-      { '@type': 'Question', name: 'Como migrar de Office crackeado para original?', acceptedAnswer: { '@type': 'Answer', text: 'Desinstale completamente a versão crackeada (recomendamos usar a ferramenta de remoção da Microsoft), baixe o Office oficial e ative com sua nova chave de licença. Todos os documentos permanecem seguros.' } },
-      { '@type': 'Question', name: 'Qual a diferença de preço real entre crack e licença?', acceptedAnswer: { '@type': 'Answer', text: 'Na Casa do Software, licenças do Office 2024 começam em R$ 79. Considerando a estabilidade, segurança e ausência de riscos legais, a licença é economicamente mais vantajosa.' } }
-    ]
-  },
+
   {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
