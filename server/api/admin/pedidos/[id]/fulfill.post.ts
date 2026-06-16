@@ -116,7 +116,7 @@ export default defineEventHandler(async (event) => {
       produtoNome: produto.nome,
       licenca: updatedLicenca,
       tutorialHtml: produto.tutorialConteudo || undefined
-    })
+      }
   })
 
   // 2. Send email OUTSIDE the transaction (so SMTP failure doesn't roll back license)
