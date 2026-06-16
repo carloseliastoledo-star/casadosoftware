@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
 
     const [customer, produto] = await Promise.all([
       tx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
-      tx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
+      tx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true, tutorialConteudo: true } })
     ])
 
     if (!customer?.email) {
@@ -114,8 +114,9 @@ export default defineEventHandler(async (event) => {
     return {
       customerEmail: customer.email,
       produtoNome: produto.nome,
-      licenca: updatedLicenca
-    }
+      licenca: updatedLicenca,
+      tutorialHtml: produto.tutorialConteudo || undefined
+    })
   })
 
   // 2. Send email OUTSIDE the transaction (so SMTP failure doesn't roll back license)
@@ -125,7 +126,8 @@ export default defineEventHandler(async (event) => {
     const html = renderLicenseEmail({
       produtoNome: result.produtoNome,
       licenseKey: result.licenca.chave,
-      orderId: order.id
+      orderId: order.id,
+      tutorialHtml: result.tutorialHtml
     })
 
     const bcc =

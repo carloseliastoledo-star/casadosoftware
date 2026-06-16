@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
       fulfillmentError: true,
       Licenca: { select: { id: true, chave: true } },
       Customer: { select: { email: true } },
-      Produto: { select: { nome: true } }
+      Produto: { select: { nome: true, tutorialConteudo: true } }
     },
     orderBy: { criadoEm: 'desc' },
     take: 50
@@ -57,7 +57,8 @@ export default defineEventHandler(async (event) => {
         const html = renderLicenseEmail({
           produtoNome: order.Produto.nome,
           licenseKey: licenca.chave,
-          orderId: order.id
+          orderId: order.id,
+          tutorialHtml: order.Produto?.tutorialConteudo || undefined
         })
 
         const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
@@ -149,7 +150,8 @@ export default defineEventHandler(async (event) => {
       const html = renderLicenseEmail({
         produtoNome: order.Produto.nome,
         licenseKey: licenca.chave,
-        orderId: order.id
+        orderId: order.id,
+        tutorialHtml: order.Produto?.tutorialConteudo || undefined
       })
 
       const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'

@@ -85,10 +85,18 @@ export function renderLicenseEmail(params: {
   produtoNome: string
   licenseKey: string
   orderId: string
+  tutorialHtml?: string
 }) {
-  const { produtoNome, licenseKey, orderId } = params
+  const { produtoNome, licenseKey, orderId, tutorialHtml } = params
   const siteUrl = String(process.env.SITE_URL || 'https://casadosoftware.com.br').replace(/\/$/, '')
   const siteName = 'Casa do Software'
+
+  const tutorialSection = tutorialHtml
+    ? `<div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 16px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0 0 12px; color: #1d4ed8; font-size: 14px; font-weight: 600;">📖 Tutorial de Instalação</p>
+        <div style="color: #374151; font-size: 14px; line-height: 1.6;">${tutorialHtml}</div>
+      </div>`
+    : ''
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -129,6 +137,7 @@ export function renderLicenseEmail(params: {
                 <p style="margin: 0 0 6px; color: #15803d; font-size: 12px; font-weight: 600; text-transform: uppercase;">Sua Licença</p>
                 <p style="margin: 0; color: #111827; font-size: 15px; font-family: 'Courier New', Courier, monospace; word-break: break-all; line-height: 1.6;">${escapeHtml(licenseKey)}</p>
               </div>
+              ${tutorialSection}
               <p style="margin: 0 0 8px; color: #6b7280; font-size: 13px; line-height: 1.5;">
                 &#128274; Guarde este e-mail em local seguro para referência futura.
               </p>

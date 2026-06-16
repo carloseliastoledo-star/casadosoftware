@@ -119,7 +119,7 @@ export async function fulfillPaidOrder(orderId: string) {
 
     const [customer, produto] = await Promise.all([
       tx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
-      tx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
+      tx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true, tutorialConteudo: true } })
     ])
 
     if (!customer?.email || !produto?.nome) {
@@ -138,7 +138,8 @@ export async function fulfillPaidOrder(orderId: string) {
     const html = renderLicenseEmail({
       produtoNome: produto.nome,
       licenseKey: licenca.chave,
-      orderId: order.id
+      orderId: order.id,
+      tutorialHtml: produto.tutorialConteudo || undefined
     })
 
     const now = new Date()

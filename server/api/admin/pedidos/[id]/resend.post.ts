@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
         status: true,
         storeSlug: true,
         Customer: { select: { email: true } },
-        Produto: { select: { nome: true } },
+        Produto: { select: { nome: true, tutorialConteudo: true } },
         Licenca: { select: { chave: true } }
       }
     })
@@ -67,10 +67,13 @@ export default defineEventHandler(async (event) => {
     }
 
     console.log('[manual resend] Gerando email...')
+    const tutorialHtml = order.Produto?.tutorialConteudo || undefined
+    
     const html = renderLicenseEmail({
       produtoNome,
       licenseKey,
-      orderId: order.id
+      orderId: order.id,
+      tutorialHtml
     })
 
     const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'

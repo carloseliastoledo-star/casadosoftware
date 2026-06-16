@@ -26,7 +26,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
 
   type TelegramReservation = { orderId: string; reservedAt: Date }
   type TelegramPayload = { orderId: string; produtoNome: string; customerEmail: string }
-  type EmailPayload = { orderId: string; customerEmail: string; produtoNome: string; licenseKey: string }
+  type EmailPayload = { orderId: string; customerEmail: string; produtoNome: string; licenseKey: string; tutorialHtml?: string }
 
   let telegramReservation: TelegramReservation | null = null
   let telegramPayload: TelegramPayload | null = null
@@ -285,7 +285,7 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
 
     const [customer, produto] = await Promise.all([
       anyTx.customer.findUnique({ where: { id: order.customerId }, select: { email: true } }),
-      anyTx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true } })
+      anyTx.produto.findUnique({ where: { id: order.produtoId }, select: { nome: true, tutorialConteudo: true } })
     ])
 
     if (!customer?.email || !produto?.nome) {
@@ -306,7 +306,8 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
       orderId: order.id,
       customerEmail: customer.email,
       produtoNome: produto.nome,
-      licenseKey: licenca.chave
+      licenseKey: licenca.chave,
+      tutorialHtml: produto.tutorialConteudo || undefined
     }
 
     console.log('[markOrderAsPaid] Transação concluída, licença vinculada:', licenca.id, 'email será enviado fora da tx')
@@ -322,7 +323,8 @@ export async function markOrderAsPaid(options: MarkOrderAsPaidOptions) {
       const html = renderLicenseEmail({
         produtoNome: ep.produtoNome,
         licenseKey: ep.licenseKey,
-        orderId: ep.orderId
+        orderId: ep.orderId,
+        tutorialHtml: ep.tutorialHtml
       })
 
       const bcc = String(process.env.LICENSE_EMAIL_BCC || '').trim() || 'carloseliastoledo@gmail.com'
