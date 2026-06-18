@@ -833,10 +833,16 @@ function channelBadge(o: OrderDto | null): { label: string; cls: string } | null
 
   const gclid = o.lastTouchGclid || o.firstTouchGclid || o.gclid
   const fbclid = o.lastTouchFbclid || o.firstTouchFbclid || o.fbclid
-  const medium = o.lastTouchMedium || o.firstTouchMedium || o.utmMedium
-  const source = (o.lastTouchSource || o.firstTouchSource || o.utmSource || '').toLowerCase()
+  const medium = (o.lastTouchMedium || o.firstTouchMedium || o.utmMedium || '').trim()
+  const source = (o.lastTouchSource || o.firstTouchSource || o.utmSource || '').toLowerCase().trim()
   const landingPage = (o.landingPage || o.firstTouchLandingPage || o.lastTouchLandingPage || '').toLowerCase()
-  const referrer = (o.referrer || o.firstTouchReferrer || o.lastTouchReferrer || '').toLowerCase()
+  const referrerRaw = (o.referrer || o.firstTouchReferrer || o.lastTouchReferrer || '').toLowerCase()
+  const isInternalReferrer = referrerRaw.includes('casadosoftware') || referrerRaw.includes('localhost')
+  const referrer = isInternalReferrer ? '' : referrerRaw
+  const trafficType = (o.trafficSourceType || '').toLowerCase()
+
+  // Debug
+  console.log('[channelBadge debug]', { orderId: o.id, trafficType, source, medium, gclid: !!gclid, fbclid: !!fbclid, referrer: !!referrer })
 
   // Google Ads (gclid ou medium=cpc/ppc/paid)
   if (gclid) return { label: 'Google Ads', cls: 'bg-blue-100 text-blue-800' }
@@ -872,17 +878,23 @@ function channelBadge(o: OrderDto | null): { label: string; cls: string } | null
     return { label: 'Referral', cls: 'bg-orange-100 text-orange-800' }
   }
 
-  // Direto (sem dados de tracking)
-  if (!source && !medium && !gclid && !fbclid && !referrer && !landingPage) {
+  // Direto (sem UTMs, sem referrer externo, com ou sem landingPage/referrer interno)
+  if (!source && !medium && !gclid && !fbclid && !referrer) {
     return { label: 'Direto', cls: 'bg-gray-100 text-gray-600' }
   }
 
-  // Desconhecido (tem algum dado mas não classificou)
+  // Fallback pelo trafficSourceType do backend
+  if (trafficType === 'direct') return { label: 'Direto', cls: 'bg-gray-100 text-gray-600' }
+  if (trafficType === 'organic') return { label: 'Orgânico', cls: 'bg-green-100 text-green-800' }
+  if (trafficType === 'cpc') return { label: 'Pago', cls: 'bg-amber-100 text-amber-800' }
+  if (trafficType === 'referral') return { label: 'Direto', cls: 'bg-gray-100 text-gray-600' }
+
+  // Desconhecido (tem source/medium mas não classificou)
   if (source || medium) {
     return { label: `${source || '?'} / ${medium || '?'}`, cls: 'bg-gray-100 text-gray-600' }
   }
 
-  return { label: 'Desconhecido', cls: 'bg-gray-100 text-gray-500' }
+  return { label: 'Direto', cls: 'bg-gray-100 text-gray-600' }
 }
 
 function hasFirstTouch(o: OrderDto | null): boolean {

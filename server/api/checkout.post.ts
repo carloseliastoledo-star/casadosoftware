@@ -79,6 +79,7 @@ export default defineEventHandler(async (event) => {
     if (gclid || utmMedium === 'cpc' || utmMedium === 'ppc' || utmMedium === 'paid' || utmMedium === 'paidsearch') return 'cpc'
     if (utmMedium === 'organic') return 'organic'
     if (!referrer) return 'direct'
+    if (/casadosoftware|localhost/.test(referrer)) return 'direct'
     if (/google\.|bing\.|yahoo\.|duckduckgo\.|yandex\./.test(referrer)) return 'organic'
     return 'referral'
   }

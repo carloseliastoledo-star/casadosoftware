@@ -58,6 +58,11 @@ export default defineEventHandler(async (event) => {
   const referrer = body?.referrer ? String(body.referrer).trim() : undefined
   const landingPage = body?.landingPage ? String(body.landingPage).trim() : undefined
 
+  // Attribution tracking (first/last touch)
+  const tracking = body?.tracking || {}
+  const firstTouch = tracking.first_touch || {}
+  const lastTouch = tracking.last_touch || {}
+
   function inferTrafficSourceType(): string {
     const medium = String(utmMedium || '').trim().toLowerCase()
 
@@ -78,6 +83,10 @@ export default defineEventHandler(async (event) => {
     const ref = String(referrer || '').trim().toLowerCase()
 
     if (!ref) {
+      return 'direct'
+    }
+
+    if (ref.includes('casadosoftware') || ref.includes('localhost')) {
       return 'direct'
     }
 
@@ -379,6 +388,27 @@ export default defineEventHandler(async (event) => {
         fbclid: fbclid || null,
         referrer: referrer || null,
         landingPage: landingPage || null,
+        firstTouchSource: firstTouch.source || null,
+        firstTouchMedium: firstTouch.medium || null,
+        firstTouchCampaign: firstTouch.campaign || null,
+        firstTouchContent: firstTouch.content || null,
+        firstTouchTerm: firstTouch.term || null,
+        firstTouchGclid: firstTouch.gclid || null,
+        firstTouchFbclid: firstTouch.fbclid || null,
+        firstTouchReferrer: firstTouch.referrer || null,
+        firstTouchLandingPage: firstTouch.landing_page || null,
+        lastTouchSource: lastTouch.source || null,
+        lastTouchMedium: lastTouch.medium || null,
+        lastTouchCampaign: lastTouch.campaign || null,
+        lastTouchContent: lastTouch.content || null,
+        lastTouchTerm: lastTouch.term || null,
+        lastTouchGclid: lastTouch.gclid || null,
+        lastTouchFbclid: lastTouch.fbclid || null,
+        lastTouchReferrer: lastTouch.referrer || null,
+        lastTouchLandingPage: lastTouch.landing_page || null,
+        checkoutPage: tracking.checkout_page || null,
+        trackingUserAgent: tracking.user_agent || null,
+        trackingDevice: tracking.device || null,
         produtoId: produto.id,
         customerId: customer.id,
         cupomId: coupon?.id || null,

@@ -98,17 +98,26 @@ export function useAttributionTracking() {
     if (!import.meta.client) return
 
     const payload = buildPayload()
-    if (!payload) return
+
+    // Sempre construir um payload mínimo com landing page e device
+    const minimalPayload: TrackingPayload = {
+      landing_page: window.location.href,
+      page: window.location.href,
+      user_agent: navigator.userAgent,
+      device: getDevice(),
+      referrer: getExternalReferrer() || undefined
+    }
 
     try {
       const first = localStorage.getItem(FIRST_KEY)
       if (!first) {
-        localStorage.setItem(FIRST_KEY, JSON.stringify(payload))
-        console.log('[ATTRIBUTION] first touch saved', payload)
+        localStorage.setItem(FIRST_KEY, JSON.stringify(payload || minimalPayload))
+        console.log('[ATTRIBUTION] first touch saved', payload || minimalPayload)
       }
 
-      localStorage.setItem(LAST_KEY, JSON.stringify(payload))
-      console.log('[ATTRIBUTION] last touch updated', payload)
+      // Atualiza last touch com payload completo (se tiver UTMs) ou mínimo
+      localStorage.setItem(LAST_KEY, JSON.stringify(payload || minimalPayload))
+      console.log('[ATTRIBUTION] last touch updated', payload || minimalPayload)
     } catch {
       // localStorage indisponível
     }
@@ -139,9 +148,12 @@ export function useAttributionTracking() {
       const firstRaw = localStorage.getItem(FIRST_KEY)
       const lastRaw = localStorage.getItem(LAST_KEY)
 
+      const firstTouch = firstRaw ? JSON.parse(firstRaw) : null
+      const lastTouch = lastRaw ? JSON.parse(lastRaw) : null
+
       return {
-        first_touch: firstRaw ? JSON.parse(firstRaw) : null,
-        last_touch: lastRaw ? JSON.parse(lastRaw) : null,
+        first_touch: firstTouch,
+        last_touch: lastTouch,
         checkout_page: window.location.href,
         user_agent: navigator.userAgent,
         device: getDevice()
