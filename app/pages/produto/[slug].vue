@@ -685,6 +685,11 @@ const absoluteImageUrl = computed(() => {
   return `${origin}${raw}`
 })
 
+const cleanHtml = (html?: string | null) => {
+  if (!html) return ''
+  return String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 // JSON-LD for structured data (Product and Breadcrumb)
 const productPrice = computed(() => {
   const rawPrice = safeProduct.value?.price ?? 0
@@ -705,7 +710,7 @@ const productSchema = computed(() => {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: String(p?.name || '').trim() || undefined,
-    description: String(productSeoDescription.value || '').trim() || undefined,
+    description: String(productSeoDescription.value || cleanHtml(p?.description) || '').trim() || undefined,
     image: absoluteImageUrl.value ? [absoluteImageUrl.value] : undefined,
     sku: String(p?.id || '').trim() || undefined,
     brand: {
@@ -727,6 +732,22 @@ const productSchema = computed(() => {
   }
 })
 
+const breadcrumbSchema = computed(() => {
+  const p = safeProduct.value as any
+  if (!p) return null
+
+  const homeUrl = productCanonicalUrl.value ? productCanonicalUrl.value.replace(/\/(?:en|es|fr|it)\/.*|\/produto\/.*|\/product\/.*|\/producto\/.*|\/produit\/.*|\/prodotto\/.*/, '/') : '/'
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: siteName || 'Casa do Software', item: homeUrl },
+      { '@type': 'ListItem', position: 2, name: String(p?.name || '').trim() || 'Produto', item: productCanonicalUrl.value || '' }
+    ]
+  }
+})
+
+// Apply SEO meta tags and JSON-LD in a single useHead to avoid conflicts
 useHead(() => {
   const p = safeProduct.value as any
   const hasProduct = !pending.value && !error.value && String(p?.name || '').trim()
@@ -735,42 +756,44 @@ useHead(() => {
     return {}
   }
 
-  const homeUrl = productCanonicalUrl.value ? productCanonicalUrl.value.replace(/\/(?:en|es|fr|it)\/.*|\/produto\/.*|\/product\/.*|\/producto\/.*|\/produit\/.*|\/prodotto\/.*/, '/') : '/'
-  const breadcrumbJsonLd: any = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: siteName || 'Casa do Software', item: homeUrl },
-      { '@type': 'ListItem', position: 2, name: String(p?.name || '').trim() || 'Produto', item: productCanonicalUrl.value || '' }
-    ]
-  }
-
   const scripts: any[] = []
   if (productSchema.value) {
-    scripts.push({ type: 'application/ld+json', innerHTML: JSON.stringify(productSchema.value) })
+    scripts.push({
+      key: 'product-jsonld',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(productSchema.value)
+    })
   }
-  scripts.push({ type: 'application/ld+json', innerHTML: JSON.stringify(breadcrumbJsonLd) })
+  if (breadcrumbSchema.value) {
+    scripts.push({
+      key: 'breadcrumb-jsonld',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(breadcrumbSchema.value)
+    })
+  }
 
-  return { script: scripts }
+  return {
+    __dangerouslyDisableSanitizersByTagID: {
+      'product-jsonld': ['innerHTML'],
+      'breadcrumb-jsonld': ['innerHTML']
+    },
+    title: productSeoTitle.value,
+    meta: [
+      { name: 'description', content: productSeoDescription.value },
+      { property: 'og:title', content: productSeoTitle.value },
+      { property: 'og:description', content: productSeoDescription.value },
+      { name: 'twitter:title', content: productSeoTitle.value },
+      { name: 'twitter:description', content: productSeoDescription.value },
+      { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }
+    ],
+    link: [
+      { rel: 'canonical', href: productCanonicalUrl.value },
+      { rel: 'alternate', hreflang: 'pt-BR', href: productCanonicalUrl.value },
+      { rel: 'alternate', hreflang: 'x-default', href: productCanonicalUrl.value }
+    ],
+    script: scripts
+  }
 })
-
-// Apply SEO meta tags directly from product - single useHead to avoid conflicts
-useHead(() => ({
-  title: productSeoTitle.value,
-  meta: [
-    { name: 'description', content: productSeoDescription.value },
-    { property: 'og:title', content: productSeoTitle.value },
-    { property: 'og:description', content: productSeoDescription.value },
-    { name: 'twitter:title', content: productSeoTitle.value },
-    { name: 'twitter:description', content: productSeoDescription.value },
-    { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }
-  ],
-  link: [
-    { rel: 'canonical', href: productCanonicalUrl.value },
-    { rel: 'alternate', hreflang: 'pt-BR', href: productCanonicalUrl.value },
-    { rel: 'alternate', hreflang: 'x-default', href: productCanonicalUrl.value }
-  ]
-}))
 
 const safeDescriptionHtml = computed(() => {
   const raw = String((safeProduct.value as any)?.description || '').trim()

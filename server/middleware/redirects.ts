@@ -23,4 +23,19 @@ export default defineEventHandler((event: H3Event) => {
     })
     return 'Moved Permanently'
   }
+
+  // Redirect 301: slugs antigos de produtos para novos slugs
+  const productRedirects: Record<string, string> = {
+    '/produto/office-365-original': '/produto/microsoft-office-365-vitalicio-5-licencas-pc-mac-android-ou-ios-1-tb-one-drive',
+    '/produto/windows-11-pro': '/produto/microsoft-windows-11-pro-chave-esd-32-64-bits'
+  }
+
+  if (productRedirects[path]) {
+    setResponseStatus(event, 301)
+    setResponseHeaders(event, {
+      'Location': productRedirects[path],
+      'Cache-Control': 'public, max-age=31536000, immutable'
+    })
+    return 'Moved Permanently'
+  }
 })
