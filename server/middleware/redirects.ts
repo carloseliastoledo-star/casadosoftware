@@ -38,4 +38,20 @@ export default defineEventHandler((event: H3Event) => {
     })
     return 'Moved Permanently'
   }
+
+  // Redirect 301: categorias vazias, genéricas ou duplicadas
+  const categoryRedirects: Record<string, string> = {
+    '/categoria/games': '/categoria/jogos',
+    '/categoria/electronics': '/',
+    '/categoria/adobe': '/categoria/autodesk'
+  }
+
+  if (categoryRedirects[path]) {
+    setResponseStatus(event, 301)
+    setResponseHeaders(event, {
+      'Location': categoryRedirects[path],
+      'Cache-Control': 'public, max-age=31536000, immutable'
+    })
+    return 'Moved Permanently'
+  }
 })

@@ -4,6 +4,21 @@
  */
 import prisma from '#root/server/db/prisma'
 
+/** Category slugs that should never appear in the sitemap (empty, generic or duplicated). */
+const EXCLUDED_CATEGORY_SLUGS = new Set([
+  'electronics',
+  'adobe',
+  'games'
+])
+
+/** Check if a category slug should be included in the sitemap. */
+function isCategorySlugAllowed(slug: string): boolean {
+  const normalized = String(slug ?? '').trim().toLowerCase()
+  if (!normalized) return false
+  if (EXCLUDED_CATEGORY_SLUGS.has(normalized)) return false
+  return true
+}
+
 export type LangConfig = {
   lang: 'pt' | 'en' | 'es' | 'fr' | 'it'
   base: string
@@ -81,7 +96,16 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
   try {
     const results = await Promise.all([
       prisma.produto.findMany({ where: { ativo: true }, select: { slug: true, slugEn: true, criadoEm: true } }),
-      prisma.categoria.findMany({ select: { slug: true } }),
+      prisma.categoria.findMany({
+        where: {
+          produtos: {
+            some: {
+              Produto: { ativo: true }
+            }
+          }
+        },
+        select: { slug: true }
+      }),
       (prisma as any).blogPost.findMany({ where: { publicado: true }, select: { slug: true, atualizadoEm: true } }),
       (prisma as any).seoPage.findMany({
         where: { locale: seoLocale, status: 'published', noindex: false },
@@ -111,7 +135,7 @@ export async function buildSitemapForLang(cfg: LangConfig): Promise<string> {
   // Categories (individual pages only — no listing page for intl)
   for (const cat of categories) {
     const s = safeSlug(cat?.slug)
-    if (!s) continue
+    if (!s || !isCategorySlugAllowed(cat?.slug)) continue
     entries.push(urlEntry(base + cfg.categoryPath(s), undefined, '0.8', 'weekly'))
   }
 
