@@ -686,18 +686,22 @@ const absoluteImageUrl = computed(() => {
 })
 
 // JSON-LD for structured data (Product and Breadcrumb)
-useHead(() => {
-  const p = safeProduct as any
-  const hasProduct = !pending.value && !error.value && String(p?.name || '').trim()
-
-  if (!hasProduct) {
-    return {}
+const productPrice = computed(() => {
+  const rawPrice = safeProduct.value?.price ?? 0
+  const numericPrice = Number(rawPrice)
+  if (!Number.isFinite(numericPrice) || numericPrice <= 0) {
+    return null
   }
+  return numericPrice.toFixed(2)
+})
 
-  const price = Number(p?.price || 0)
+const productSchema = computed(() => {
+  const p = safeProduct.value as any
+  if (!p || !productPrice.value) return null
+
   const priceCurrency = String(p?.currency || intl.currency.value || 'BRL').trim().toUpperCase()
 
-  const productJsonLd: any = {
+  return {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: String(p?.name || '').trim() || undefined,
@@ -712,7 +716,7 @@ useHead(() => {
       '@type': 'Offer',
       url: productCanonicalUrl.value || undefined,
       priceCurrency,
-      price: price > 0 ? price : undefined,
+      price: productPrice.value,
       availability: 'https://schema.org/InStock',
       itemCondition: 'https://schema.org/NewCondition',
       seller: {
@@ -720,6 +724,15 @@ useHead(() => {
         name: String(siteName || 'Casa do Software')
       }
     }
+  }
+})
+
+useHead(() => {
+  const p = safeProduct.value as any
+  const hasProduct = !pending.value && !error.value && String(p?.name || '').trim()
+
+  if (!hasProduct) {
+    return {}
   }
 
   const homeUrl = productCanonicalUrl.value ? productCanonicalUrl.value.replace(/\/(?:en|es|fr|it)\/.*|\/produto\/.*|\/product\/.*|\/producto\/.*|\/produit\/.*|\/prodotto\/.*/, '/') : '/'
@@ -732,14 +745,13 @@ useHead(() => {
     ]
   }
 
-  return {
-    script: [
-      {
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify([productJsonLd, breadcrumbJsonLd])
-      }
-    ]
+  const scripts: any[] = []
+  if (productSchema.value) {
+    scripts.push({ type: 'application/ld+json', innerHTML: JSON.stringify(productSchema.value) })
   }
+  scripts.push({ type: 'application/ld+json', innerHTML: JSON.stringify(breadcrumbJsonLd) })
+
+  return { script: scripts }
 })
 
 // Apply SEO meta tags directly from product - single useHead to avoid conflicts
