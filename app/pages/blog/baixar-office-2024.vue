@@ -622,27 +622,6 @@ const jsonLd = [
         item: canonicalUrl
       }
     ]
-  },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: 'Microsoft Office 2024 Pro Plus',
-    description: 'Licença permanente do Microsoft Office 2024 com Word, Excel, PowerPoint e Outlook. Ativação oficial e suporte completo.',
-    brand: {
-      '@type': 'Brand',
-      name: 'Microsoft'
-    },
-    offers: {
-      '@type': 'Offer',
-      url: 'https://casadosoftware.com.br/produto/microsoft-office-2024-pro-plus-licenca-permanente-1-pc',
-      priceCurrency: 'BRL',
-      availability: 'https://schema.org/InStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      seller: {
-        '@type': 'Organization',
-        name: 'Casa do Software'
-      }
-    }
   }
 ]
 
