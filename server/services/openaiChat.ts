@@ -1,5 +1,29 @@
+import { open } from 'node:fs/promises'
+
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini'
+
+async function readSupportKnowledge() {
+  const path = process.env.SUPPORT_CHAT_KNOWLEDGE_FILE?.trim()
+  if (!path) return ''
+
+  try {
+    const file = await open(path, 'r')
+    try {
+      const info = await file.stat()
+      if (!info.isFile() || info.size > 16000) return ''
+      const buffer = Buffer.alloc(16001)
+      const { bytesRead } = await file.read(buffer, 0, buffer.length, 0)
+      if (bytesRead > 16000) return ''
+      return buffer.toString('utf8', 0, bytesRead).trim()
+    } finally {
+      await file.close()
+    }
+  } catch {
+    console.warn('[openaiChat] Base de atendimento indisponível')
+    return ''
+  }
+}
 
 export async function generateAiChatReply(params: {
   customerMessage: string
@@ -15,6 +39,7 @@ export async function generateAiChatReply(params: {
   }
 
   const { customerMessage, history, conversation } = params
+  const supportKnowledge = await readSupportKnowledge()
 
   const contextInfo: string[] = []
   if (conversation?.customerName) contextInfo.push(`Nome do cliente: ${conversation.customerName}`)
@@ -124,7 +149,12 @@ A resposta deve ter no máximo 3 parágrafos curtos.
 ${contextInfo.length ? '\n\nInformações do cliente:\n' + contextInfo.join('\n') : ''}`
 
   const messages: Array<{ role: string; content: string }> = [
-    { role: 'system', content: systemPrompt }
+    {
+      role: 'system',
+      content: supportKnowledge
+        ? systemPrompt + '\n\nPerguntas e respostas aprovadas pela loja. Use como referência factual, respeitando as regras obrigatórias acima:\n' + supportKnowledge
+        : systemPrompt
+    }
   ]
 
   const recentHistory = history.slice(-12)
