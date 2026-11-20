@@ -10,8 +10,6 @@ const HUMAN_TRANSFER_KEYWORDS = [
   'nao recebi',
   'licença inválida',
   'licenca invalida',
-  'não funciona',
-  'nao funciona',
   'quero humano',
   'atendente',
   'falar com pessoa',
@@ -28,7 +26,9 @@ const HUMAN_TRANSFER_KEYWORDS = [
 
 export function shouldTransferToHuman(message: string): boolean {
   const lowerMessage = String(message || '').toLowerCase().trim()
-  return HUMAN_TRANSFER_KEYWORDS.some(keyword => lowerMessage.includes(keyword))
+  if (lowerMessage === '5' || HUMAN_TRANSFER_KEYWORDS.some(keyword => lowerMessage.includes(keyword))) return true
+  const genericFailure = /n[ãa]o (?:est[aá] )?funcion/.test(lowerMessage)
+  return genericFailure && !/\b(?:office|microsoft)\s*365\b/.test(lowerMessage)
 }
 
 export function getInitialAssistantMessage(): string {

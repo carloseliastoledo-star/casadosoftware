@@ -1,5 +1,6 @@
-import { defineEventHandler, readBody, createError } from 'h3'
+import { defineEventHandler, readBody, createError, setResponseHeader } from 'h3'
 import prisma from '../../db/prisma'
+import { requireChatSession } from '../../utils/chatSession'
 import { shouldTransferToHuman } from '../../services/chatRules'
 import { generateAiChatReply } from '../../services/openaiChat'
 
@@ -25,6 +26,9 @@ export default defineEventHandler(async (event) => {
   if (message.length > MAX_MESSAGE_LENGTH) {
     throw createError({ statusCode: 400, statusMessage: `Mensagem muito longa (máximo ${MAX_MESSAGE_LENGTH} caracteres)` })
   }
+
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+  requireChatSession(event, conversationId)
 
   const conversation = await prisma.chatConversation.findUnique({
     where: { id: conversationId }
@@ -59,10 +63,10 @@ export default defineEventHandler(async (event) => {
 
   const transferToHuman = shouldTransferToHuman(message)
 
-  if (conversation.status === 'HUMAN') {
+  if (conversation.status === 'HUMAN' || conversation.status === 'WAITING_HUMAN') {
     return {
       conversationId,
-      status: 'HUMAN',
+      status: conversation.status,
       reply: 'Sua mensagem foi enviada. Um atendente humano responderá por aqui.'
     }
   }
@@ -98,13 +102,14 @@ export default defineEventHandler(async (event) => {
 
   const history = await prisma.chatMessage.findMany({
     where: { conversationId },
-    orderBy: { createdAt: 'asc' },
+    orderBy: { createdAt: 'desc' },
+    take: 12,
     select: { sender: true, content: true }
   })
 
   const aiReply = await generateAiChatReply({
     customerMessage: message,
-    history,
+    history: history.reverse(),
     conversation: {
       customerName: conversation.customerName,
       customerEmail: conversation.customerEmail,

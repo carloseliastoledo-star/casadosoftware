@@ -1,0 +1,5 @@
+ALTER TABLE `ChatConversation`
+  MODIFY `status` ENUM('AI', 'WAITING_HUMAN', 'HUMAN', 'CLOSED') NOT NULL DEFAULT 'AI',
+  ADD COLUMN `needsHuman` BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN `humanRequestedAt` DATETIME(3) NULL,
+  ADD COLUMN `humanNotifiedAt` DATETIME(3) NULL;

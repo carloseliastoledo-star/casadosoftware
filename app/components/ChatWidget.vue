@@ -32,13 +32,27 @@
           </button>
         </div>
 
-        <div v-if="status === 'HUMAN'" class="bg-blue-50 px-4 py-2 text-xs text-blue-700">
+        <div v-if="(status === 'HUMAN' || status === 'WAITING_HUMAN')" class="bg-blue-50 px-4 py-2 text-xs text-blue-700">
           Atendimento encaminhado para humano. Você pode continuar enviando mensagens por aqui.
         </div>
 
         <div v-if="status === 'CLOSED'" class="bg-red-50 px-4 py-2 text-xs text-red-700">
           Este atendimento foi encerrado. Abra uma nova conversa se precisar de ajuda.
         </div>
+
+        <details class="border-b border-gray-200 px-4 py-2 text-sm">
+          <summary class="cursor-pointer">Consultar pedido</summary>
+          <form @submit.prevent="checkOrder" class="mt-2 flex gap-2">
+            <input v-model="orderNumber" inputmode="numeric" maxlength="10"
+              aria-label="Número do pedido" placeholder="Número do pedido"
+              class="min-w-0 flex-1 rounded border px-2 py-1" required />
+            <button type="submit" :disabled="checkingOrder" class="rounded border px-2 py-1">
+              Consultar
+            </button>
+          </form>
+          <p v-if="orderResult" class="mt-2" role="status">{{ orderResult }}</p>
+          <NuxtLink v-if="orderLoginRequired" to="/minha-conta" class="underline">Entrar em Minha conta</NuxtLink>
+        </details>
 
         <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
           <div
@@ -72,7 +86,6 @@
               placeholder="Digite sua mensagem..."
               class="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
               :disabled="isSending"
-              @keydown.enter="sendMessage"
             />
             <button
               type="submit"
@@ -102,12 +115,40 @@
 
 <script setup lang="ts">
 const isOpen = ref(false)
+const orderNumber = ref('')
+const checkingOrder = ref(false)
+const orderResult = ref('')
+const orderLoginRequired = ref(false)
+
+async function checkOrder() {
+  if (checkingOrder.value) return
+  orderResult.value = ''
+  orderLoginRequired.value = false
+  checkingOrder.value = true
+  try {
+    const order = await $fetch<{ number: number; payment: string; delivery: string }>('/api/chat/order', {
+      query: { number: orderNumber.value.trim() }
+    })
+    orderResult.value = `Pedido ${order.number}. ${order.payment}. ${order.delivery}.`
+  } catch (error: any) {
+    orderLoginRequired.value = error.statusCode === 401
+    orderResult.value = orderLoginRequired.value
+      ? 'Entre na sua conta para consultar o pedido.'
+      : error.statusCode === 404
+        ? 'Pedido não localizado. Confira em Minha conta.'
+        : error.statusCode === 400
+          ? 'Informe um número de pedido válido.'
+          : 'Consulta indisponível. Tente novamente.'
+  } finally {
+    checkingOrder.value = false
+  }
+}
 const conversationId = ref<string | null>(null)
 const messages = ref<Array<{ id: string; sender: string; content: string; createdAt: string }>>([])
 const newMessage = ref('')
 const isSending = ref(false)
 const isTyping = ref(false)
-const status = ref<'AI' | 'HUMAN' | 'CLOSED'>('AI')
+const status = ref<'AI' | 'HUMAN' | 'WAITING_HUMAN' | 'CLOSED'>('AI')
 const pollingInterval = ref<any>(null)
 const messagesContainer = ref<HTMLElement | null>(null)
 
@@ -119,7 +160,6 @@ onMounted(() => {
   const savedId = localStorage.getItem(STORAGE_KEY)
   if (savedId) {
     conversationId.value = savedId
-    loadMessages()
   }
 })
 
@@ -148,7 +188,7 @@ async function startConversation() {
   if (!import.meta.client) return
 
   try {
-    const sourcePage = window.location.href
+    const sourcePage = window.location.pathname
 
     const response = await $fetch('/api/chat/start', {
       method: 'POST',
@@ -171,8 +211,10 @@ async function startConversation() {
       }
     ]
 
+    if (isOpen.value) startPolling()
     scrollToBottom()
   } catch (error) {
+    messages.value = [{ id: 'start-error', sender: 'SYSTEM', content: 'Atendimento indisponível. Feche e reabra o chat para tentar novamente.', createdAt: new Date().toISOString() }]
     console.error('[ChatWidget] Error starting conversation:', error)
   }
 }
@@ -239,7 +281,12 @@ async function loadMessages() {
     messages.value = response.messages || []
 
     scrollToBottom()
-  } catch (error) {
+  } catch (error: any) {
+    if (error.statusCode === 404 && isOpen.value) {
+      stopPolling()
+      startNewConversation()
+      return
+    }
     console.error('[ChatWidget] Error loading messages:', error)
   }
 }

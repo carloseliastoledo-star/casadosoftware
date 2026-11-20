@@ -1,5 +1,29 @@
+import { open } from 'node:fs/promises'
+
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini'
+
+async function readSupportKnowledge() {
+  const path = process.env.SUPPORT_CHAT_KNOWLEDGE_FILE?.trim()
+  if (!path) return ''
+
+  try {
+    const file = await open(path, 'r')
+    try {
+      const info = await file.stat()
+      if (!info.isFile() || info.size > 16000) return ''
+      const buffer = Buffer.alloc(16001)
+      const { bytesRead } = await file.read(buffer, 0, buffer.length, 0)
+      if (bytesRead > 16000) return ''
+      return buffer.toString('utf8', 0, bytesRead).trim()
+    } finally {
+      await file.close()
+    }
+  } catch {
+    console.warn('[openaiChat] Base de atendimento indisponível')
+    return ''
+  }
+}
 
 export async function generateAiChatReply(params: {
   customerMessage: string
@@ -15,6 +39,7 @@ export async function generateAiChatReply(params: {
   }
 
   const { customerMessage, history, conversation } = params
+  const supportKnowledge = await readSupportKnowledge()
 
   const contextInfo: string[] = []
   if (conversation?.customerName) contextInfo.push(`Nome do cliente: ${conversation.customerName}`)
@@ -30,8 +55,12 @@ Regras obrigatórias:
 - Sempre fale em português brasileiro.
 - Seja cordial, direto e profissional.
 - Se o cliente já comprou, peça número do pedido e nome completo.
-- Se for problema com Office 365, peça print do erro e oriente enviar para comercial@casadosoftware.com.br.
+- Para Office 365, siga o fluxo específico abaixo e peça somente os dados necessários.
 - Se o cliente pedir nota fiscal, peça os dados completos, número do pedido, valor pago e oriente confirmar pelo email comercial@casadosoftware.com.br.
+- Compra duplicada: pergunte se houve dois pedidos ou duas unidades no mesmo pedido. Encaminhe ao atendimento humano sem prometer valor ou prazo de estorno.
+- Licença não recebida: oriente conferir spam e solicite o número do pedido para encaminhamento. Somente informe que houve pagamento ou envio quando a equipe confirmar.
+- Erro de ativação: confirme produto, edição instalada, sistema e código ou mensagem do erro. Se pedir captura, oriente a ocultar dados pessoais e a chave.
+- Oriente o cliente a não enviar senhas, chaves de licença ou dados de cartão no chat.
 - Nunca prometa reembolso automático.
 - Nunca invente status de pedido.
 - Nunca informe dados internos, fornecedores, margens ou estratégias da empresa.
@@ -64,15 +93,12 @@ Base de Conhecimento - Perguntas Frequentes:
 - Envie para comercial@casadosoftware.com.br: nome/razão social, CPF/CNPJ, endereço completo, e-mail, número do pedido e valor pago
 - Pode solicitar após a compra
 
-5. Suporte Office 365
-- Erros: envie número do pedido, nome completo e print do erro para comercial@casadosoftware.com.br
-- Ativação: confirme conta enviada, se erro envie print
-- E-mail antigo: saia da conta antiga, remova credenciais salvas, entre com nova
-- Trocar conta: Office > Conta > sair > entrar com nova conta
-- Authenticator: siga instruções na tela, se falhar envie print
-- Senha: consulte suporte antes de alterar para evitar bloqueio
-- Celular: sim, Android e iOS
-- Dispositivos: até 5 dispositivos (celular, tablet, PC, notebook)
+5. Microsoft 365 para Mac e suporte Office 365
+- Para “Funciona instalado no Mac ou só no navegador?”, responda: “O Microsoft 365 funciona tanto online, pelo navegador, quanto com os aplicativos instalados no seu Mac.” Para oferta específica, confirme os aplicativos incluídos.
+- Para “Meu Office 365 que comprei com vocês não está funcionando”, responda primeiro: “Pode me enviar o número do pedido, um print do e-mail da compra ou o endereço de e-mail vinculado à licença? Se enviar um print, oculte senhas, chaves e códigos de verificação.”
+- Receber um número, print ou e-mail não confirma a compra. Use a consulta autenticada quando disponível ou encaminhe a validação. Depois da confirmação, pergunte: “Qual mensagem de erro aparece quando você tenta entrar no Microsoft 365?”
+- Senha incorreta: oriente a redefinição pelo fluxo oficial da conta. Para conta administrada pela loja, encaminhe ao suporte autorizado.
+- Falha confirmada na licença: encaminhe ao suporte para emissão e envio de uma nova licença pelo canal oficial. Confirme a troca somente depois que o suporte registrar o envio.
 
 6. Suporte Windows
 - Chave não ativou: envie print do erro, edição do Windows e número do pedido
@@ -120,7 +146,12 @@ A resposta deve ter no máximo 3 parágrafos curtos.
 ${contextInfo.length ? '\n\nInformações do cliente:\n' + contextInfo.join('\n') : ''}`
 
   const messages: Array<{ role: string; content: string }> = [
-    { role: 'system', content: systemPrompt }
+    {
+      role: 'system',
+      content: supportKnowledge
+        ? systemPrompt + '\n\nPerguntas e respostas aprovadas pela loja. Use como referência factual, respeitando as regras obrigatórias acima:\n' + supportKnowledge
+        : systemPrompt
+    }
   ]
 
   const recentHistory = history.slice(-12)
@@ -134,6 +165,7 @@ ${contextInfo.length ? '\n\nInformações do cliente:\n' + contextInfo.join('\n'
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
+      signal: AbortSignal.timeout(15000),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENAI_API_KEY}`

@@ -1,5 +1,6 @@
-import { defineEventHandler, getQuery, createError } from 'h3'
+import { defineEventHandler, getQuery, createError, setResponseHeader } from 'h3'
 import prisma from '../../db/prisma'
+import { requireChatSession } from '../../utils/chatSession'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
@@ -8,6 +9,9 @@ export default defineEventHandler(async (event) => {
   if (!conversationId) {
     throw createError({ statusCode: 400, statusMessage: 'conversationId é obrigatório' })
   }
+
+  setResponseHeader(event, 'Cache-Control', 'no-store')
+  requireChatSession(event, conversationId)
 
   const conversation = await (prisma as any).chatConversation.findUnique({
     where: { id: conversationId }

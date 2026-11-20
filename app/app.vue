@@ -1,6 +1,7 @@
 <template>
   <ClientOnly>
     <TrackingHead v-if="isPublicSite" />
+    <LazyChatWidget v-if="showSupportChat" />
   </ClientOnly>
 
   <NuxtLayout>
@@ -13,6 +14,7 @@
 import { normalizeUrl } from '~/utils/normalizeUrl'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const { companyLegalName, siteName, logoPath } = useSiteBranding()
 const siteUrl = useSiteUrl()
 
@@ -20,6 +22,12 @@ type SiteSettingsResponse = { settings?: { headHtml?: string; bodyOpenHtml?: str
 
 
 const isPublicSite = computed(() => !String(route.path || '').startsWith('/admin'))
+
+const showSupportChat = computed(() => {
+  const path = route.path
+  return String(config.public.supportChatEnabled) === 'true' && isPublicSite.value &&
+    !/^\/(?:checkout|obrigado|sucesso|upsell|es|en|fr|it)(?:\/|$)/.test(path)
+})
 
 const NOINDEX_PATHS = ['/checkout', '/obrigado', '/sucesso', '/upsell', '/admin']
 const isNoindex = computed(() => NOINDEX_PATHS.some((p) => String(route.path || '').startsWith(p)))
