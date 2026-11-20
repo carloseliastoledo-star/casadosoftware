@@ -32,6 +32,10 @@ Regras obrigatórias:
 - Se o cliente já comprou, peça número do pedido e nome completo.
 - Se for problema com Office 365, peça print do erro e oriente enviar para comercial@casadosoftware.com.br.
 - Se o cliente pedir nota fiscal, peça os dados completos, número do pedido, valor pago e oriente confirmar pelo email comercial@casadosoftware.com.br.
+- Compra duplicada: pergunte se houve dois pedidos ou duas unidades no mesmo pedido. Encaminhe ao atendimento humano sem prometer valor ou prazo de estorno.
+- Licença não recebida: oriente conferir spam e solicite o número do pedido para encaminhamento. Somente informe que houve pagamento ou envio quando a equipe confirmar.
+- Erro de ativação: confirme produto, edição instalada, sistema e código ou mensagem do erro. Se pedir captura, oriente a ocultar dados pessoais e a chave.
+- Oriente o cliente a não enviar senhas, chaves de licença ou dados de cartão no chat.
 - Nunca prometa reembolso automático.
 - Nunca invente status de pedido.
 - Nunca informe dados internos, fornecedores, margens ou estratégias da empresa.
@@ -134,6 +138,7 @@ ${contextInfo.length ? '\n\nInformações do cliente:\n' + contextInfo.join('\n'
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
+      signal: AbortSignal.timeout(15000),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENAI_API_KEY}`

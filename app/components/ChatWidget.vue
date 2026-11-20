@@ -32,7 +32,7 @@
           </button>
         </div>
 
-        <div v-if="status === 'HUMAN'" class="bg-blue-50 px-4 py-2 text-xs text-blue-700">
+        <div v-if="(status === 'HUMAN' || status === 'WAITING_HUMAN')" class="bg-blue-50 px-4 py-2 text-xs text-blue-700">
           Atendimento encaminhado para humano. Você pode continuar enviando mensagens por aqui.
         </div>
 
@@ -72,7 +72,6 @@
               placeholder="Digite sua mensagem..."
               class="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
               :disabled="isSending"
-              @keydown.enter="sendMessage"
             />
             <button
               type="submit"
@@ -107,7 +106,7 @@ const messages = ref<Array<{ id: string; sender: string; content: string; create
 const newMessage = ref('')
 const isSending = ref(false)
 const isTyping = ref(false)
-const status = ref<'AI' | 'HUMAN' | 'CLOSED'>('AI')
+const status = ref<'AI' | 'HUMAN' | 'WAITING_HUMAN' | 'CLOSED'>('AI')
 const pollingInterval = ref<any>(null)
 const messagesContainer = ref<HTMLElement | null>(null)
 
@@ -119,7 +118,6 @@ onMounted(() => {
   const savedId = localStorage.getItem(STORAGE_KEY)
   if (savedId) {
     conversationId.value = savedId
-    loadMessages()
   }
 })
 
@@ -148,7 +146,7 @@ async function startConversation() {
   if (!import.meta.client) return
 
   try {
-    const sourcePage = window.location.href
+    const sourcePage = window.location.pathname
 
     const response = await $fetch('/api/chat/start', {
       method: 'POST',
@@ -171,8 +169,10 @@ async function startConversation() {
       }
     ]
 
+    if (isOpen.value) startPolling()
     scrollToBottom()
   } catch (error) {
+    messages.value = [{ id: 'start-error', sender: 'SYSTEM', content: 'Atendimento indisponível. Feche e reabra o chat para tentar novamente.', createdAt: new Date().toISOString() }]
     console.error('[ChatWidget] Error starting conversation:', error)
   }
 }
@@ -239,7 +239,12 @@ async function loadMessages() {
     messages.value = response.messages || []
 
     scrollToBottom()
-  } catch (error) {
+  } catch (error: any) {
+    if (error.statusCode === 404 && isOpen.value) {
+      stopPolling()
+      startNewConversation()
+      return
+    }
     console.error('[ChatWidget] Error loading messages:', error)
   }
 }

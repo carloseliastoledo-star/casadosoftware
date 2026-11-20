@@ -1,8 +1,13 @@
-import { defineEventHandler, readBody, getHeader } from 'h3'
+import { defineEventHandler, readBody, getHeader, createError } from 'h3'
 import prisma from '../../db/prisma'
+import { setChatSession } from '../../utils/chatSession'
 import { getInitialAssistantMessage } from '../../services/chatRules'
 
 export default defineEventHandler(async (event) => {
+  if (!process.env.CUSTOMER_SESSION_SECRET && !process.env.CUSTOMER_RESET_SECRET) {
+    throw createError({ statusCode: 503, statusMessage: 'Atendimento temporariamente indisponível' })
+  }
+
   const body = await readBody(event) || {}
 
   const customerName = String(body?.customerName || '').trim() || null
@@ -32,6 +37,8 @@ export default defineEventHandler(async (event) => {
       content: initialMessageContent
     }
   })
+
+  setChatSession(event, conversation.id)
 
   return {
     conversationId: conversation.id,
